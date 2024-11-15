@@ -14,7 +14,7 @@ from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.entry_points.tasks.charge_link_periods_task import (
-    ChargeLinksTask,
+    ChargeLinkPeriodsTask,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from utils import get_actual_files
@@ -41,7 +41,7 @@ def test_execute_charge_link_periods__when_energy_supplier__returns_expected(
         CsvColumnNames.charge_link_from_date,
         CsvColumnNames.charge_link_to_date,
     ]
-    task = ChargeLinksTask(
+    task = ChargeLinkPeriodsTask(
         spark, dbutils, standard_wholesale_fixing_scenario_energy_supplier_args
     )
 
@@ -85,7 +85,7 @@ def test_execute_charge_link_periods__when_grid_access_provider__returns_expecte
         CsvColumnNames.charge_link_from_date,
         CsvColumnNames.charge_link_to_date,
     ]
-    task = ChargeLinksTask(
+    task = ChargeLinkPeriodsTask(
         spark, dbutils, standard_wholesale_fixing_scenario_grid_access_provider_args
     )
 
@@ -141,7 +141,7 @@ def test_execute_charge_link_periods__when_system_operator_or_datahub_admin_with
         CsvColumnNames.charge_link_to_date,
         CsvColumnNames.energy_supplier_id,
     ]
-    task = ChargeLinksTask(spark, dbutils, args)
+    task = ChargeLinkPeriodsTask(spark, dbutils, args)
 
     # Act
     task.execute()
@@ -190,7 +190,7 @@ def test_execute_charge_link_periods__when_system_operator_or_datahub_admin_with
         CsvColumnNames.charge_link_to_date,
         CsvColumnNames.energy_supplier_id,
     ]
-    task = ChargeLinksTask(spark, dbutils, args)
+    task = ChargeLinkPeriodsTask(spark, dbutils, args)
 
     # Act
     task.execute()
@@ -218,7 +218,7 @@ def test_execute_charge_link_periods__when_include_basis_data_false__returns_no_
     # Arrange
     args = standard_wholesale_fixing_scenario_args
     args.include_basis_data = False
-    task = ChargeLinksTask(spark, dbutils, args)
+    task = ChargeLinkPeriodsTask(spark, dbutils, args)
 
     # Act
     task.execute()

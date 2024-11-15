@@ -7,7 +7,7 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
 )
 from settlement_report_job.entry_points.task_type import TaskType
 from settlement_report_job.entry_points.tasks.charge_link_periods_task import (
-    ChargeLinksTask,
+    ChargeLinkPeriodsTask,
 )
 from settlement_report_job.entry_points.tasks.energy_resuls_task import (
     EnergyResultsTask,
@@ -48,7 +48,7 @@ def create(
             spark=spark, dbutils=dbutils, args=args, task_type=TaskType.TimeSeriesHourly
         )
     elif task_type is TaskType.ChargeLinks:
-        return ChargeLinksTask(spark=spark, dbutils=dbutils, args=args)
+        return ChargeLinkPeriodsTask(spark=spark, dbutils=dbutils, args=args)
     elif task_type is TaskType.EnergyResults:
         return EnergyResultsTask(spark=spark, dbutils=dbutils, args=args)
     elif task_type is TaskType.WholesaleResults:

@@ -20,7 +20,7 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
 from telemetry_logging import use_span
 
 
-class ChargeLinksTask(TaskBase):
+class ChargeLinkPeriodsTask(TaskBase):
     def __init__(
         self, spark: SparkSession, dbutils: Any, args: SettlementReportArgs
     ) -> None:
