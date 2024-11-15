@@ -24,6 +24,7 @@ import telemetry_logging.logging_configuration as config
 from pyspark.sql import SparkSession
 from telemetry_logging.span_recording import span_record_exception
 from settlement_report_job.entry_points import task_factory
+from settlement_report_job.entry_points.get_dbutils import get_dbutils
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -114,7 +115,7 @@ def start_task_with_deps(
             span.set_attributes(config.get_extras())
             args = parse_job_args(command_line_args)
             spark = initialize_spark()
-            dbutils = _get_dbutils(spark)
+            dbutils = get_dbutils(spark)
 
             task = task_factory.create(task_type, spark, dbutils, args)
             task.execute()
@@ -128,23 +129,3 @@ def start_task_with_deps(
         except Exception as e:
             span_record_exception(e, span)
             sys.exit(4)
-
-
-def _get_dbutils(spark: SparkSession) -> Any:
-    """Get the DBUtils object from the SparkSession.
-
-    Args:
-        spark (SparkSession): The SparkSession object.
-
-    Returns:
-        DBUtils: The DBUtils object.
-    """
-    try:
-        from pyspark.dbutils import DBUtils  # type: ignore
-
-        dbutils = DBUtils(spark)
-    except ImportError:
-        raise ImportError(
-            "DBUtils is not available in local mode. This is expected when running tests."  # noqa
-        )
-    return dbutils
