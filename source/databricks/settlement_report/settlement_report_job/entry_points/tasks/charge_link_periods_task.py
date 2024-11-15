@@ -17,6 +17,7 @@ from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
+
 from telemetry_logging import use_span
 
 

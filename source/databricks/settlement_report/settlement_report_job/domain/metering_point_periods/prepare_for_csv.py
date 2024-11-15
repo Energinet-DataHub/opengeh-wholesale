@@ -16,7 +16,7 @@ from pyspark.sql import DataFrame, functions as F
 
 from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.domain.utils.report_naming_convention import (
+from settlement_report_job.domain.utils.map_to_csv_naming import (
     METERING_POINT_TYPES,
     SETTLEMENT_METHODS,
 )
@@ -24,7 +24,9 @@ from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
     EphemeralColumns,
 )
-from settlement_report_job.infrastructure.utils import map_from_dict
+from settlement_report_job.domain.utils.map_from_dict import (
+    map_from_dict,
+)
 from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
 )
