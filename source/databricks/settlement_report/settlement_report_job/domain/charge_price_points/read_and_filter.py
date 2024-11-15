@@ -19,8 +19,8 @@ from pyspark.sql import DataFrame, functions as F
 from settlement_report_job.domain.utils.factory_filters import (
     filter_by_charge_owner_and_tax_depending_on_market_role,
 )
-from settlement_report_job.domain.utils.join_metering_points_periods_and_charge_links_periods import (
-    join_metering_points_periods_and_charge_links_periods,
+from settlement_report_job.domain.utils.join_metering_points_periods_and_charge_link_periods import (
+    join_metering_points_periods_and_charge_link_periods,
 )
 from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.utils.market_role import MarketRole
@@ -114,7 +114,7 @@ def _join_with_charge_link_and_metering_point_periods(
     )
 
     charge_links_and_metering_point_periods = (
-        join_metering_points_periods_and_charge_links_periods(
+        join_metering_points_periods_and_charge_link_periods(
             charge_link_periods, metering_point_periods
         )
     )
