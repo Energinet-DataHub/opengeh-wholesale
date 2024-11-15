@@ -61,19 +61,18 @@ class TestWhenInvokedWithValidArguments:
         task_factory_mock = Mock()
 
         # Act
-        with pytest.raises(SystemExit):
+        with patch(
+            "settlement_report_job.entry_points.task_factory.create",
+            task_factory_mock,
+        ):
             with patch(
-                "settlement_report_job.entry_points.task_factory.create",
-                task_factory_mock,
+                "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
+                return_value=None,
             ):
-                with patch(
-                    "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
-                    return_value=None,
-                ):
-                    start_task_with_deps(
-                        task_type=TaskType.TimeSeriesHourly,
-                        applicationinsights_connection_string=applicationinsights_connection_string,
-                    )
+                start_task_with_deps(
+                    task_type=TaskType.TimeSeriesHourly,
+                    applicationinsights_connection_string=applicationinsights_connection_string,
+                )
 
         # Assert
         # noinspection PyTypeChecker
