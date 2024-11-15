@@ -355,7 +355,7 @@ jobs:
           infrastructure/
           test_settlement_report_utils.py"
 
-          IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
+          IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count_settment_report.sh $filter
 
   settlement_report_mypy_check:
     if: ${{ inputs.has_settlement_report_job_changes }}
