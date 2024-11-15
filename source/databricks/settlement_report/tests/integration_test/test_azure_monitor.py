@@ -104,6 +104,79 @@ class TestWhenInvokedWithArguments:
             assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
 
+    def test_add_info_log_record_to_azure_monitor_with_expected_settings(
+        self,
+        standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+        integration_test_configuration: IntegrationTestConfiguration,
+    ) -> None:
+        """
+        Assert that the settlement report job adds log records to Azure Monitor with the expected settings:
+        | where AppRoleName == "dbr-settlement-report"
+        | where SeverityLevel == 1
+        | where Message startswith_cs "Command line arguments"
+        | where OperationId != "00000000000000000000000000000000"
+        | where Properties.Subsystem == "wholesale-aggregations"
+        - custom field "settlement_report_id" = <the settlement report id>
+        - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
+
+        Debug level is not tested as it is not intended to be logged by default.
+        """
+
+        # Arrange
+        valid_task_type = TaskType.TimeSeriesHourly
+        standard_wholesale_fixing_scenario_args.grid_area_codes = (
+            804  # Should produce an error
+        )
+        self.prepare_command_line_arguments(standard_wholesale_fixing_scenario_args)
+        applicationinsights_connection_string = (
+            integration_test_configuration.get_applicationinsights_connection_string()
+        )
+        os.environ["CATALOG_NAME"] = "test_catalog"
+        task_factory_mock = Mock()
+
+        # Act
+        with patch(
+            "settlement_report_job.entry_points.task_factory.create",
+            task_factory_mock,
+        ):
+            with patch(
+                "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
+                return_value=None,
+            ):
+                start_task_with_deps(
+                    task_type=valid_task_type,
+                    applicationinsights_connection_string=applicationinsights_connection_string,
+                )
+
+        # Assert
+        # noinspection PyTypeChecker
+        logs_client = LogsQueryClient(integration_test_configuration.credential)
+
+        query = f"""
+        AppExceptions
+        | where AppRoleName == "dbr-settlement-report"
+        | where ExceptionType == "ValueError"
+        | where OuterMessage startswith_cs "Grid area codes must"
+        | where OperationId != "00000000000000000000000000000000"
+        | where Properties.Subsystem == "wholesale-aggregations"
+        | where Properties.settlement_report_id == "{standard_wholesale_fixing_scenario_args.report_id}"
+        | where Properties.CategoryName == "Energinet.DataHub.settlement_report_job.entry_points.job_args.settlement_report_job_args"
+        | count
+        """
+
+        workspace_id = integration_test_configuration.get_analytics_workspace_id()
+
+        def assert_logged():
+            actual = logs_client.query_workspace(
+                workspace_id, query, timespan=timedelta(minutes=5)
+            )
+            assert_row_count(actual, 1)
+
+        # Assert, but timeout if not succeeded
+        wait_for_condition(
+            assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
+        )
+
     @staticmethod
     def prepare_command_line_arguments(
         standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -129,7 +202,9 @@ class TestWhenInvokedWithArguments:
         )
         sys.argv.append("--requesting-actor-market-role=datahub_administrator")
         sys.argv.append("--requesting-actor-id=1234567890123")
-        sys.argv.append("--grid-area-codes=[804]")
+        sys.argv.append(
+            f"--grid-area-codes={str(standard_wholesale_fixing_scenario_args.grid_area_codes)}"
+        )
         sys.argv.append(
             '--calculation-id-by-grid-area={"804": "bf6e1249-d4c2-4ec2-8ce5-4c7fe8756253"}'
         )
