@@ -23,19 +23,19 @@ from typing import Callable, Generator
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 
-from tests.dbutils_fixture import DBUtilsFixture
-from tests.integration_test_configuration import IntegrationTestConfiguration
+from dbutils_fixture import DBUtilsFixture
+from integration_test_configuration import IntegrationTestConfiguration
 from settlement_report_job.entry_points.job_args.calculation_type import CalculationType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
 from settlement_report_job.domain.utils.market_role import MarketRole
 
-from tests.data_seeding import (
+from data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
     standard_balance_fixing_scenario_data_generator,
 )
-from tests.data_seeding.write_test_data import (
+from data_seeding.write_test_data import (
     write_metering_point_time_series_to_delta_table,
     write_charge_link_periods_to_delta_table,
     write_charge_price_points_to_delta_table,
