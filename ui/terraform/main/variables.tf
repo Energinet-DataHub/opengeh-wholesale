@@ -143,3 +143,9 @@ variable "budget_alert_amount" {
   type        = number
   description = "The budget amount for this subproduct"
 }
+
+variable "feature_management_use_process_manager" {
+  type        = bool
+  description = "When `true` then use Process Manager Client and API's instead of using Wholesale calculations API."
+  default     = false
+}
