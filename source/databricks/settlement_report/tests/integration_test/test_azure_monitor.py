@@ -33,14 +33,14 @@ from tests.integration_test_configuration import IntegrationTestConfiguration
 from settlement_report_job.entry_points import task_factory
 
 
-class TestWhenInvokedWithValidArguments:
+class TestWhenInvokedWithArguments:
     def test_add_info_log_record_to_azure_monitor_with_expected_settings(
         self,
         standard_wholesale_fixing_scenario_args: SettlementReportArgs,
         integration_test_configuration: IntegrationTestConfiguration,
     ) -> None:
         """
-        Assert that the calculator job adds log records to Azure Monitor with the expected settings:
+        Assert that the settlement report job adds log records to Azure Monitor with the expected settings:
         | where AppRoleName == "dbr-settlement-report"
         | where SeverityLevel == 1
         | where Message startswith_cs "Command line arguments"
@@ -53,6 +53,7 @@ class TestWhenInvokedWithValidArguments:
         """
 
         # Arrange
+        valid_task_type = TaskType.TimeSeriesHourly
         self.prepare_command_line_arguments(standard_wholesale_fixing_scenario_args)
         applicationinsights_connection_string = (
             integration_test_configuration.get_applicationinsights_connection_string()
@@ -70,7 +71,7 @@ class TestWhenInvokedWithValidArguments:
                 return_value=None,
             ):
                 start_task_with_deps(
-                    task_type=TaskType.TimeSeriesHourly,
+                    task_type=valid_task_type,
                     applicationinsights_connection_string=applicationinsights_connection_string,
                 )
 
@@ -83,6 +84,78 @@ class TestWhenInvokedWithValidArguments:
         | where AppRoleName == "dbr-settlement-report"
         | where SeverityLevel == 1
         | where Message startswith_cs "Command line arguments"
+        | where OperationId != "00000000000000000000000000000000"
+        | where Properties.Subsystem == "wholesale-aggregations"
+        | where Properties.settlement_report_id == "{standard_wholesale_fixing_scenario_args.report_id}"
+        | where Properties.CategoryName == "Energinet.DataHub.settlement_report_job.entry_points.job_args.settlement_report_job_args"
+        | count
+        """
+
+        workspace_id = integration_test_configuration.get_analytics_workspace_id()
+
+        def assert_logged():
+            actual = logs_client.query_workspace(
+                workspace_id, query, timespan=timedelta(minutes=5)
+            )
+            assert_row_count(actual, 1)
+
+        # Assert, but timeout if not succeeded
+        wait_for_condition(
+            assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
+        )
+
+    def test_add_exception_log_record_to_azure_monitor_when_throwing(
+        self,
+        standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+        integration_test_configuration: IntegrationTestConfiguration,
+    ) -> None:
+        """
+        Assert that the settlement report job adds log records to Azure Monitor with the expected settings:
+        | where AppRoleName == "dbr-settlement-report"
+        | where SeverityLevel == 1
+        | where Message startswith_cs "Command line arguments"
+        | where OperationId != "00000000000000000000000000000000"
+        | where Properties.Subsystem == "wholesale-aggregations"
+        - custom field "settlement_report_id" = <the settlement report id>
+        - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
+
+        Debug level is not tested as it is not intended to be logged by default.
+        """
+
+        # Arrange
+        error_message = "Some error"
+        valid_task_type = TaskType.TimeSeriesHourly
+        self.prepare_command_line_arguments(standard_wholesale_fixing_scenario_args)
+        applicationinsights_connection_string = (
+            integration_test_configuration.get_applicationinsights_connection_string()
+        )
+        os.environ["CATALOG_NAME"] = "test_catalog"
+        task_factory_mock = Mock()
+
+        # Act
+        with patch(
+            "settlement_report_job.entry_points.task_factory.create",
+            task_factory_mock,
+        ):
+            with patch(
+                "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
+                return_value=None,
+            ) as execute_mock:
+                execute_mock.side_effect = SystemExit(error_message)
+                start_task_with_deps(
+                    task_type=valid_task_type,
+                    applicationinsights_connection_string=applicationinsights_connection_string,
+                )
+
+        # Assert
+        # noinspection PyTypeChecker
+        logs_client = LogsQueryClient(integration_test_configuration.credential)
+
+        query = f"""
+        AppExceptions
+        | where AppRoleName == "dbr-settlement-report"
+        | where SeverityLevel == 1
+        | where Message startswith_cs "{error_message}"
         | where OperationId != "00000000000000000000000000000000"
         | where Properties.Subsystem == "wholesale-aggregations"
         | where Properties.settlement_report_id == "{standard_wholesale_fixing_scenario_args.report_id}"
