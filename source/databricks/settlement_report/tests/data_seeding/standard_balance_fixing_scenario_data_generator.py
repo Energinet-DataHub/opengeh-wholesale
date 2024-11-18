@@ -4,14 +4,16 @@ from decimal import Decimal
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     CalculationTypeDataProductValue,
     MeteringPointResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
+    SettlementMethodDataProductValue,
 )
-from tests.test_factories.default_test_data_spec import create_energy_results_data_spec
-from tests.test_factories import (
+from test_factories.default_test_data_spec import create_energy_results_data_spec
+from test_factories import (
     metering_point_time_series_factory,
+    metering_point_periods_factory,
     latest_calculations_factory,
     energy_factory,
 )
@@ -75,6 +77,35 @@ def create_metering_point_time_series(spark: SparkSession) -> DataFrame:
             df = df.union(next_df)
 
     return df
+
+
+def create_metering_point_periods(spark: SparkSession) -> DataFrame:
+    """
+    Creates a DataFrame with metering point periods for testing purposes.
+    """
+    rows = []
+    for metering_point in _get_all_metering_points():
+        rows.append(
+            metering_point_periods_factory.MeteringPointPeriodsRow(
+                calculation_id=CALCULATION_ID,
+                calculation_type=CALCULATION_TYPE,
+                calculation_version=1,
+                metering_point_id=metering_point.metering_point_id,
+                metering_point_type=metering_point.metering_point_type,
+                settlement_method=SettlementMethodDataProductValue.FLEX,
+                resolution=metering_point.resolution,
+                grid_area_code=metering_point.grid_area_code,
+                energy_supplier_id=metering_point.energy_supplier_id,
+                balance_responsible_party_id=BALANCE_RESPONSIBLE_PARTY_ID,
+                from_grid_area_code=None,
+                to_grid_area_code=None,
+                parent_metering_point_id=None,
+                from_date=FROM_DATE,
+                to_date=TO_DATE,
+            )
+        )
+
+    return metering_point_periods_factory.create(spark, rows)
 
 
 def create_latest_calculations(spark: SparkSession) -> DataFrame:

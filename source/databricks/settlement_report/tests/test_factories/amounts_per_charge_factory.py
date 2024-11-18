@@ -6,17 +6,19 @@ from typing import Union, List
 from pyspark.sql import SparkSession, DataFrame
 
 
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
+from settlement_report_job.infrastructure.wholesale.data_values import (
     CalculationTypeDataProductValue,
     ChargeTypeDataProductValue,
     ChargeResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
 )
-from settlement_report_job.wholesale.data_values.settlement_method import (
+from settlement_report_job.infrastructure.wholesale.data_values.settlement_method import (
     SettlementMethodDataProductValue,
 )
-from settlement_report_job.wholesale.schemas.amounts_per_charge_v1 import (
+from settlement_report_job.infrastructure.wholesale.schemas.amounts_per_charge_v1 import (
     amounts_per_charge_v1,
 )
 

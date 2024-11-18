@@ -20,19 +20,22 @@ from typing import Callable, Generator
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 
-from tests.dbutils_fixture import DBUtilsFixture
-from settlement_report_job.infrastructure.calculation_type import CalculationType
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from dbutils_fixture import DBUtilsFixture
+from settlement_report_job.entry_points.job_args.calculation_type import CalculationType
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
+from settlement_report_job.domain.utils.market_role import MarketRole
 
 
-from tests.data_seeding import (
+from data_seeding import (
     standard_wholesale_fixing_scenario_data_generator,
     standard_balance_fixing_scenario_data_generator,
 )
-from tests.data_seeding.write_test_data import (
+from data_seeding.write_test_data import (
     write_metering_point_time_series_to_delta_table,
     write_charge_link_periods_to_delta_table,
+    write_charge_price_points_to_delta_table,
     write_charge_price_information_periods_to_delta_table,
     write_energy_to_delta_table,
     write_energy_per_es_to_delta_table,
@@ -198,6 +201,15 @@ def standard_balance_fixing_scenario_data_written_to_delta(
         spark, time_series_df, input_database_location
     )
 
+    metering_point_periods = (
+        standard_balance_fixing_scenario_data_generator.create_metering_point_periods(
+            spark
+        )
+    )
+    write_metering_point_periods_to_delta_table(
+        spark, metering_point_periods, input_database_location
+    )
+
     energy_df = standard_balance_fixing_scenario_data_generator.create_energy(spark)
     write_energy_to_delta_table(spark, energy_df, input_database_location)
 
@@ -244,6 +256,15 @@ def standard_wholesale_fixing_scenario_data_written_to_delta(
     )
     write_charge_link_periods_to_delta_table(
         spark, charge_link_periods, input_database_location
+    )
+
+    charge_price_points = (
+        standard_wholesale_fixing_scenario_data_generator.create_charge_price_points(
+            spark
+        )
+    )
+    write_charge_price_points_to_delta_table(
+        spark, charge_price_points, input_database_location
     )
 
     charge_price_information_periods = standard_wholesale_fixing_scenario_data_generator.create_charge_price_information_periods(
