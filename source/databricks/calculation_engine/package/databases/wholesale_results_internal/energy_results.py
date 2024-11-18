@@ -42,7 +42,6 @@ def write_energy_results(
 
     # Checkpoint all calculations pre-writing, as autoscaling during this step leads to
     # the "indeterminate result" issue from incident INC0409592.
-    spark.sparkContext.setCheckpointDir()
     for field in fields(energy_results_output):
         field_value = getattr(energy_results_output, field.name)
         if field_value is not None:
