@@ -56,7 +56,7 @@ class TimeSeriesTask(TaskBase):
 
         repository = WholesaleRepository(self.spark, self.args.catalog_name)
         if self.args.calculation_type is CalculationType.BALANCE_FIXING:
-            time_series_df = create_time_series_for_balance_fixing(
+            time_series_points_df = create_time_series_for_balance_fixing(
                 period_start=self.args.period_start,
                 period_end=self.args.period_end,
                 grid_area_codes=self.args.grid_area_codes,
@@ -67,7 +67,7 @@ class TimeSeriesTask(TaskBase):
                 repository=repository,
             )
         else:
-            time_series_df = create_time_series_for_wholesale(
+            time_series_points_df = create_time_series_for_wholesale(
                 period_start=self.args.period_start,
                 period_end=self.args.period_end,
                 calculation_id_by_grid_area=self.args.calculation_id_by_grid_area,
@@ -82,7 +82,7 @@ class TimeSeriesTask(TaskBase):
         csv_writer.write(
             dbutils=self.dbutils,
             args=self.args,
-            df=time_series_df,
+            df=time_series_points_df,
             report_data_type=report_type,
             order_by_columns=order_by_columns(self.args.requesting_actor_market_role),
         )

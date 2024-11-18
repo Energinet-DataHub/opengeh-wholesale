@@ -312,7 +312,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_
     return_rows: bool,
 ) -> None:
     # Arrange
-    time_series_df = time_series_factory.create(
+    time_series_points_df = time_series_factory.create(
         spark,
         default_data.create_time_series_data_spec(),
     )
@@ -327,7 +327,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_
         default_data.create_charge_link_periods_row(charge_owner_id=SYSTEM_OPERATOR_ID),
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series_df
+    mock_repository.read_metering_point_time_series.return_value = time_series_points_df
     mock_repository.read_charge_price_information_periods.return_value = (
         charge_price_information_period_df
     )
@@ -359,7 +359,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_time_series_from_lates
     # Arrange
     not_latest_calculation_id = "11111111-9fc8-409a-a169-fbd49479d718"
     latest_calculation_id = "22222222-9fc8-409a-a169-fbd49479d718"
-    time_series_df = reduce(
+    time_series_points_df = reduce(
         lambda df1, df2: df1.union(df2),
         [
             time_series_factory.create(
@@ -380,7 +380,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_time_series_from_lates
     )
 
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series_df
+    mock_repository.read_metering_point_time_series.return_value = time_series_points_df
     mock_repository.read_latest_calculations.return_value = latest_calculations
 
     # Act

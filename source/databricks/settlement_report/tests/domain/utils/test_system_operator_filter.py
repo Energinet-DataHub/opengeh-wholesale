@@ -66,7 +66,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_points_wit
             ),
         )
     )
-    time_series_df = time_series_factory.create(
+    time_series_points_df = time_series_factory.create(
         spark,
         default_data.create_time_series_data_spec(
             from_date=mp_from_date, to_date=mp_to_date
@@ -75,7 +75,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_points_wit
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        time_series_points=time_series_df,
+        time_series_points=time_series_points_df,
         system_operator_id=default_data.DEFAULT_CHARGE_OWNER_ID,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
@@ -131,7 +131,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_if_calcula
         ),
     )
 
-    time_series_df = time_series_factory.create(
+    time_series_points_df = time_series_factory.create(
         spark,
         default_data.create_time_series_data_spec(
             calculation_id=calculation_id_metering_point,
@@ -140,7 +140,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_if_calcula
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        time_series_points=time_series_df,
+        time_series_points=time_series_points_df,
         system_operator_id=default_data.DEFAULT_CHARGE_OWNER_ID,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
@@ -167,7 +167,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_where_the_
         ),
     )
 
-    time_series_df = time_series_factory.create(
+    time_series_points_df = time_series_factory.create(
         spark,
         default_data.create_time_series_data_spec(
             metering_point_id="matching_metering_point_id"
@@ -183,7 +183,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_where_the_
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        time_series_points=time_series_df,
+        time_series_points=time_series_points_df,
         system_operator_id=default_data.DEFAULT_CHARGE_OWNER_ID,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
@@ -228,14 +228,14 @@ def test_filter_time_series_on_charge_owner__when_multiple_links_matches_on_mete
         )
     )
 
-    time_series_df = time_series_factory.create(
+    time_series_points_df = time_series_factory.create(
         spark,
         default_data.create_time_series_data_spec(),
     )
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        time_series_points=time_series_df,
+        time_series_points=time_series_points_df,
         system_operator_id=default_data.DEFAULT_CHARGE_OWNER_ID,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
@@ -284,7 +284,7 @@ def test_filter_time_series_on_charge_owner__when_charge_owner_is_not_system_ope
         )
     )
 
-    time_series_df = time_series_factory.create(
+    time_series_points_df = time_series_factory.create(
         spark,
         default_data.create_time_series_data_spec(
             metering_point_id=system_operator_metering_point_id
@@ -300,7 +300,7 @@ def test_filter_time_series_on_charge_owner__when_charge_owner_is_not_system_ope
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        time_series_points=time_series_df,
+        time_series_points=time_series_points_df,
         system_operator_id=system_operator_id,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
@@ -341,14 +341,14 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_from_meter
         default_data.create_charge_link_periods_row(charge_owner_id=system_operator_id),
     )
 
-    time_series_df = time_series_factory.create(
+    time_series_points_df = time_series_factory.create(
         spark,
         default_data.create_time_series_data_spec(),
     )
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        time_series_points=time_series_df,
+        time_series_points=time_series_points_df,
         system_operator_id=system_operator_id,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
