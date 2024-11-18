@@ -1,0 +1,3 @@
+calculation_id;calculation_type;calculation_execution_time_start;calculation_result_id;grid_area_code;energy_supplier_id;time;amount;charge_owner_id
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;59efecf8-3d30-5bc9-964b-c662efe890fe;800;3000000000000;2023-01-31 23:00:00;1128.5;0000000000800
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;56cf026d-58de-50f9-bfbc-cf1646ca0918;800;9000000000000;2023-01-31 23:00:00;2750;0000000000800
