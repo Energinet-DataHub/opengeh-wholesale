@@ -56,7 +56,7 @@ public class SettlementReportWholesaleCalculationsJobGeneratesZipScenario : Subs
         // Expectations
         Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromMinutes(15);
         Fixture.ScenarioState.ExpectedRelativeOutputFilePath =
-            $"/wholesale_settlement_report_output/settlement_reports/{Fixture.ScenarioState.ReportId}.zip";
+            $"/wholesale_settlement_report_output/settlement_reports/3b0b3d20-59b3-4025-89e8-f45a18d8959d.zip";
     }
 
     [ScenarioStep(1)]
@@ -103,10 +103,35 @@ public class SettlementReportWholesaleCalculationsJobGeneratesZipScenario : Subs
         outputFileInfo.Should().NotBeNull($"because we expected the file (relative path) '{Fixture.ScenarioState.ExpectedRelativeOutputFilePath}' to exists.");
     }
 
+    [ScenarioStep(4)]
+    [SubsystemFact]
+    public async Task AndThen_ZipFileContainsCsvFilesWithExpectedPrefix()
+    {
+        var expectedFilePrefixes = new[]
+        {
+            "TSSD60",
+            "TSSD15",
+            "MDMP",
+            "CHARGELINK",
+            "CHARGEPRICE",
+            "RESULTENERGY",
+            "RESULTWHOLESALE",
+            "RESULTMONTHLY",
+        };
+        await using var zipStream = await Fixture.GetFileStreamAsync(Fixture.ScenarioState.ExpectedRelativeOutputFilePath);
+
+        zipStream.Should().NotBeNull();
+
+        using var archive = new System.IO.Compression.ZipArchive(zipStream!, System.IO.Compression.ZipArchiveMode.Read);
+
+        var entryFound = expectedFilePrefixes.Any(prefix => archive.Entries.Any(e => e.Name.StartsWith(prefix)));
+        entryFound.Should().BeTrue($"because we expected the zip file to contain a file with a name starting with one of the specified prefixes: {string.Join(", ", expectedFilePrefixes)}");
+    }
+
     /// <summary>
     /// In this step we verify the 'duration' of the job is within our 'performance goal'.
     /// </summary>
-    [ScenarioStep(4)]
+    [ScenarioStep(5)]
     [SubsystemFact]
     public void AndThen_JobDurationIsLessThanOrEqualToTimeLimit()
     {
