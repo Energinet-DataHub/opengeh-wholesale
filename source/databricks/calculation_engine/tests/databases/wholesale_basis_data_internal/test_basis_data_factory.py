@@ -26,10 +26,12 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     charge_price_information_periods_schema,
     charge_price_points_schema,
     grid_loss_metering_point_ids_schema,
-    metering_point_periods_schema_uc,
 )
 from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods_schema import (
     charge_link_periods_schema,
+)
+from package.databases.wholesale_basis_data_internal.schemas.metering_point_periods_schema import (
+    metering_point_periods_schema_v1,
 )
 from tests.databases.wholesale_basis_data_internal.basis_data_test_factory import (
     create_basis_data_factory,
@@ -56,7 +58,7 @@ time_series_points_schema_temp = StructType(
     [
         (
             "metering_point_periods",
-            metering_point_periods_schema_uc,
+            metering_point_periods_schema_v1,
         ),
         (
             "time_series_points",
