@@ -53,26 +53,27 @@ class TestWhenInvokedWithArguments:
 
         # Arrange
         valid_task_type = TaskType.TimeSeriesHourly
-        self.prepare_command_line_arguments(standard_wholesale_fixing_scenario_args)
+        standard_wholesale_fixing_scenario_args.report_id = str(uuid.uuid4())
         applicationinsights_connection_string = (
             integration_test_configuration.get_applicationinsights_connection_string()
         )
         os.environ["CATALOG_NAME"] = "test_catalog"
         task_factory_mock = Mock()
 
-        # Act
-        with patch(
-            "settlement_report_job.entry_points.tasks.task_factory.create",
-            task_factory_mock,
-        ):
+        with patch("sys.argv", standard_wholesale_fixing_scenario_args):
+            # Act
             with patch(
-                "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
-                return_value=None,
+                "settlement_report_job.entry_points.tasks.task_factory.create",
+                task_factory_mock,
             ):
-                start_task_with_deps(
-                    task_type=valid_task_type,
-                    applicationinsights_connection_string=applicationinsights_connection_string,
-                )
+                with patch(
+                    "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
+                    return_value=None,
+                ):
+                    start_task_with_deps(
+                        task_type=valid_task_type,
+                        applicationinsights_connection_string=applicationinsights_connection_string,
+                    )
 
         # Assert
         # noinspection PyTypeChecker
@@ -123,33 +124,34 @@ class TestWhenInvokedWithArguments:
 
         # Arrange
         valid_task_type = TaskType.TimeSeriesHourly
+        standard_wholesale_fixing_scenario_args.report_id = str(uuid.uuid4())
         standard_wholesale_fixing_scenario_args.calculation_type = (
             CalculationType.BALANCE_FIXING
         )
         standard_wholesale_fixing_scenario_args.grid_area_codes = [
             "8054"
         ]  # Should produce an error with balance fixing
-        self.prepare_command_line_arguments(standard_wholesale_fixing_scenario_args)
         applicationinsights_connection_string = (
             integration_test_configuration.get_applicationinsights_connection_string()
         )
         os.environ["CATALOG_NAME"] = "test_catalog"
         task_factory_mock = Mock()
 
-        # Act
-        with pytest.raises(SystemExit):
-            with patch(
-                "settlement_report_job.entry_points.tasks.task_factory.create",
-                task_factory_mock,
-            ):
+        with patch("sys.argv", standard_wholesale_fixing_scenario_args):
+            # Act
+            with pytest.raises(SystemExit):
                 with patch(
-                    "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
-                    return_value=None,
+                    "settlement_report_job.entry_points.tasks.task_factory.create",
+                    task_factory_mock,
                 ):
-                    start_task_with_deps(
-                        task_type=valid_task_type,
-                        applicationinsights_connection_string=applicationinsights_connection_string,
-                    )
+                    with patch(
+                        "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
+                        return_value=None,
+                    ):
+                        start_task_with_deps(
+                            task_type=valid_task_type,
+                            applicationinsights_connection_string=applicationinsights_connection_string,
+                        )
 
         # Assert
         # noinspection PyTypeChecker
