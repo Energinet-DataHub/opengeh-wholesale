@@ -23,8 +23,8 @@ from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal import (
     get_metering_point_periods_basis_data,
 )
-from package.databases.wholesale_basis_data_internal.schemas import (
-    metering_point_periods_schema_uc,
+from package.databases.wholesale_basis_data_internal.schemas.metering_point_periods_schema import (
+    metering_point_periods_schema_v1,
 )
 from tests.calculation.preparation.transformations import metering_point_periods_factory
 
@@ -41,7 +41,7 @@ def test__when_valid_input__returns_df_with_expected_schema(
     )
 
     # Assert
-    assert_schema(actual.schema, metering_point_periods_schema_uc)
+    assert_schema(actual.schema, metering_point_periods_schema_v1)
 
 
 def test__each_metering_point_has_a_row(spark: SparkSession) -> None:

@@ -28,8 +28,10 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     charge_link_periods_schema,
     charge_price_points_schema,
     grid_loss_metering_point_ids_schema,
-    metering_point_periods_schema_uc,
     time_series_points_schema,
+)
+from package.databases.wholesale_basis_data_internal.schemas.metering_point_periods_schema import (
+    metering_point_periods_schema_v1,
 )
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
@@ -334,7 +336,7 @@ def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
     [
         (
             paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-            metering_point_periods_schema_uc,
+            metering_point_periods_schema_v1,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
