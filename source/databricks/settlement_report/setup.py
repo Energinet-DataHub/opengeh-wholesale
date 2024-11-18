@@ -33,8 +33,8 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "create_hourly_time_series_points    = settlement_report_job.entry_points.entry_point:start_hourly_time_series_points",
-            "create_quarterly_time_series_points = settlement_report_job.entry_points.entry_point:start_quarterly_time_series_points",
+            "create_hourly_time_series    = settlement_report_job.entry_points.entry_point:start_hourly_time_series_points",
+            "create_quarterly_time_series = settlement_report_job.entry_points.entry_point:start_quarterly_time_series_points",
             "create_metering_point_periods = settlement_report_job.entry_points.entry_point:start_metering_point_periods",
             "create_charge_links          = settlement_report_job.entry_points.entry_point:start_charge_link_periods",
             "create_charge_price_points   = settlement_report_job.entry_points.entry_point:start_charge_price_points",

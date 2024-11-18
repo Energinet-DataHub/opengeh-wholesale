@@ -41,8 +41,8 @@ def assert_entry_point_exists(entry_point_name: str) -> Any:
 @pytest.mark.parametrize(
     "entry_point_name",
     [
-        "create_hourly_time_series_points",
-        "create_quarterly_time_series_points",
+        "create_hourly_time_series",
+        "create_quarterly_time_series",
         "create_charge_links",
         "create_charge_price_points",
         "create_energy_results",

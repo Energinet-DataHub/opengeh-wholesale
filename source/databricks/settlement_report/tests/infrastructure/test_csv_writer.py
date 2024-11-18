@@ -86,7 +86,7 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
         if resolution == MeteringPointResolutionDataProductValue.HOUR
         else ReportDataType.TimeSeriesQuarterly
     )
-    test_spec = time_series_points_factory.TimeSeriesCsvTestDataSpec(
+    test_spec = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         grid_area_codes=grid_area_codes,
         resolution=resolution,
@@ -118,7 +118,7 @@ def test_write__when_higher_default_parallelism__number_of_files_is_unchanged(
     spark.conf.set("spark.default.parallelism", "10")
     report_data_type = ReportDataType.TimeSeriesHourly
     expected_file_count = 2
-    test_spec = time_series_points_factory.TimeSeriesCsvTestDataSpec(
+    test_spec = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         grid_area_codes=["804", "805"],
     )
@@ -159,7 +159,7 @@ def test_write__when_prevent_large_files_is_enabled__writes_expected_number_of_f
     # Arrange
     report_data_type = ReportDataType.TimeSeriesHourly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    test_spec = time_series_points_factory.TimeSeriesCsvTestDataSpec(
+    test_spec = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=number_of_rows,
     )
@@ -206,7 +206,7 @@ def test_write__files_have_correct_ordering_for_each_file(
         CsvColumnNames.time,
     ]
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    test_spec = time_series_points_factory.TimeSeriesCsvTestDataSpec(
+    test_spec = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=number_of_metering_points,
         num_days_per_metering_point=number_of_days_for_each_mp,
@@ -258,7 +258,7 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
         CsvColumnNames.time,
     ]
     report_data_type = ReportDataType.TimeSeriesHourly
-    test_spec = time_series_points_factory.TimeSeriesCsvTestDataSpec(
+    test_spec = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         grid_area_codes=grid_area_codes,
         num_metering_points=number_of_rows,
@@ -302,12 +302,12 @@ def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
     ]
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    test_spec_consumption = time_series_points_factory.TimeSeriesCsvTestDataSpec(
+    test_spec_consumption = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=10,
     )
-    test_spec_production = time_series_points_factory.TimeSeriesCsvTestDataSpec(
+    test_spec_production = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.PRODUCTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=20,
@@ -371,7 +371,7 @@ def test_write__files_have_correct_sorting_across_multiple_files(
     ]
     report_data_type = ReportDataType.TimeSeriesHourly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    test_spec = time_series_points_factory.TimeSeriesCsvTestDataSpec(
+    test_spec = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=number_of_rows,
     )
@@ -411,7 +411,7 @@ def test_write__when_prevent_large_files__chunk_index_start_at_1(
     expected_file_count = 3
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    test_spec_consumption = time_series_points_factory.TimeSeriesCsvTestDataSpec(
+    test_spec_consumption = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=30,
@@ -451,7 +451,7 @@ def test_write__when_prevent_large_files_but_too_few_rows__chunk_index_should_be
     expected_file_count = 1
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    test_spec_consumption = time_series_points_factory.TimeSeriesCsvTestDataSpec(
+    test_spec_consumption = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=30,
