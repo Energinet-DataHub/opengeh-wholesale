@@ -27,7 +27,7 @@ module "monitor_action_group_mig" {
         traces
         | where cloud_RoleName in ("${module.func_dropzoneunzipper.name}")
         | where severityLevel == 3
-        | where tostring(customDimensions["EventName"]) !in ("EventReceiveError", "EventProcessorPartitionProcessingError")
+        | where tostring(customDimensions["EventName"]) !in ("EventReceiveError", "EventProcessorPartitionProcessingError", "FunctionCompleted")
         | summarize eventCount = count() by tostring(customDimensions["EventName"])
         | order by eventCount desc
         QUERY
@@ -43,7 +43,8 @@ module "monitor_action_group_mig" {
       query       = <<QUERY
         exceptions
         | where cloud_RoleName in ("${module.func_timeseriesretriever.name}")
-        | where type !in ("Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException", "System.Threading.Tasks.TaskCanceledException")
+        | where type !in ("Microsoft.Azure.WebJobs.Script.Workers.Rpc.RpcException", "System.Threading.Tasks.TaskCanceledException", "Energinet.DataHub.Migrations.TimeSeriesSynchronization.Common.Application.Exceptions.MessageIdDoesNotMatchQueueMessageIdException")
+        | where outerType == "System.Threading.Tasks.TaskCanceledException"
         | where innermostMessage !contains "Non-Deterministic workflow detected: A previous execution of this orchestration scheduled an activity task with sequence ID 0"
         | summarize exceptionCount = count() by type
         | order by exceptionCount desc
@@ -103,6 +104,7 @@ module "monitor_action_group_mig" {
         | where tostring(customDimensions["prop__reason"]) !contains ("DurableTask.Core.Exceptions.OrchestrationFailureException")
         | where tostring(customDimensions["prop__reason"]) !contains ("Microsoft.Azure.WebJobs.Host.FunctionInvocationException")
         | summarize eventCount = count() by tostring(customDimensions["EventName"])
+        | where tostring(customDimensions["ErrorMessage"]) !contains ("The operation was canceled")
         | order by eventCount desc
         QUERY
     }
