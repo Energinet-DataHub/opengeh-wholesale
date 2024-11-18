@@ -242,11 +242,11 @@ def standard_wholesale_fixing_scenario_data_written_to_delta(
         spark, metering_point_periods, input_database_location
     )
 
-    time_series = standard_wholesale_fixing_scenario_data_generator.create_metering_point_time_series(
+    time_series_points = standard_wholesale_fixing_scenario_data_generator.create_metering_point_time_series(
         spark
     )
     write_metering_point_time_series_to_delta_table(
-        spark, time_series, input_database_location
+        spark, time_series_points, input_database_location
     )
 
     charge_link_periods = (

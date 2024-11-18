@@ -11,7 +11,9 @@ import tests.test_factories.default_test_data_spec as default_data
 import tests.test_factories.metering_point_time_series_factory as time_series_factory
 from settlement_report_job.domain.utils.market_role import MarketRole
 
-from settlement_report_job.domain.time_series.prepare_for_csv import prepare_for_csv
+from settlement_report_job.domain.time_series_points.prepare_for_csv import (
+    prepare_for_csv,
+)
 from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )

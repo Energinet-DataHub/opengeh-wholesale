@@ -19,7 +19,7 @@ from pyspark.sql import DataFrame, functions as F
 from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.infrastructure.repository import WholesaleRepository
-from settlement_report_job.domain.time_series.system_operator_filter import (
+from settlement_report_job.domain.time_series_points.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
 from settlement_report_job.infrastructure.wholesale.column_names import (
@@ -96,7 +96,7 @@ def read_and_filter_for_wholesale(
 
     if requesting_actor_market_role is MarketRole.SYSTEM_OPERATOR:
         time_series_points = filter_time_series_on_charge_owner(
-            time_series=time_series_points,
+            time_series_points=time_series_points,
             system_operator_id=requesting_actor_id,
             charge_link_periods=repository.read_charge_link_periods(),
             charge_price_information_periods=repository.read_charge_price_information_periods(),

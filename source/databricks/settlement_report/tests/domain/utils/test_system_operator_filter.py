@@ -6,7 +6,7 @@ import tests.test_factories.metering_point_time_series_factory as time_series_fa
 import tests.test_factories.charge_link_periods_factory as charge_link_periods_factory
 import tests.test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 
-from settlement_report_job.domain.time_series.system_operator_filter import (
+from settlement_report_job.domain.time_series_points.system_operator_filter import (
     filter_time_series_on_charge_owner,
 )
 from settlement_report_job.infrastructure.wholesale.column_names import (
@@ -75,7 +75,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_points_wit
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        time_series=time_series_df,
+        time_series_points=time_series_df,
         system_operator_id=default_data.DEFAULT_CHARGE_OWNER_ID,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
@@ -140,7 +140,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_if_calcula
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        time_series=time_series_df,
+        time_series_points=time_series_df,
         system_operator_id=default_data.DEFAULT_CHARGE_OWNER_ID,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
@@ -183,7 +183,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_where_the_
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        time_series=time_series_df,
+        time_series_points=time_series_df,
         system_operator_id=default_data.DEFAULT_CHARGE_OWNER_ID,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
@@ -235,7 +235,7 @@ def test_filter_time_series_on_charge_owner__when_multiple_links_matches_on_mete
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        time_series=time_series_df,
+        time_series_points=time_series_df,
         system_operator_id=default_data.DEFAULT_CHARGE_OWNER_ID,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
@@ -300,7 +300,7 @@ def test_filter_time_series_on_charge_owner__when_charge_owner_is_not_system_ope
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        time_series=time_series_df,
+        time_series_points=time_series_df,
         system_operator_id=system_operator_id,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,
@@ -348,7 +348,7 @@ def test_filter_time_series_on_charge_owner__returns_only_time_series_from_meter
 
     # Act
     actual = filter_time_series_on_charge_owner(
-        time_series=time_series_df,
+        time_series_points=time_series_df,
         system_operator_id=system_operator_id,
         charge_link_periods=charge_link_periods_df,
         charge_price_information_periods=charge_price_information_periods_df,

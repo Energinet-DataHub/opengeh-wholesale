@@ -50,7 +50,7 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
 )
-import settlement_report_job.domain.time_series.order_by_columns as time_series_order_by_columns
+import settlement_report_job.domain.time_series_points.order_by_columns as time_series_order_by_columns
 import settlement_report_job.domain.energy_results.order_by_columns as energy_order_by_columns
 
 

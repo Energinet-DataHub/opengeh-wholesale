@@ -19,10 +19,10 @@ from pyspark.sql import DataFrame
 from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.infrastructure.repository import WholesaleRepository
-from settlement_report_job.domain.time_series.prepare_for_csv import (
+from settlement_report_job.domain.time_series_points.prepare_for_csv import (
     prepare_for_csv,
 )
-from settlement_report_job.domain.time_series.read_and_filter import (
+from settlement_report_job.domain.time_series_points.read_and_filter import (
     read_and_filter_for_wholesale,
     read_and_filter_for_balance_fixing,
 )

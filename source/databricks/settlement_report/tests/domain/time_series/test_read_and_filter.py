@@ -14,7 +14,7 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
 )
 
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.domain.time_series.read_and_filter import (
+from settlement_report_job.domain.time_series_points.read_and_filter import (
     read_and_filter_for_wholesale,
     read_and_filter_for_balance_fixing,
 )
@@ -417,7 +417,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_balance_fixing_results
         "55555555-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.SECOND_CORRECTION_SETTLEMENT,
         "66666666-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.THIRD_CORRECTION_SETTLEMENT,
     }
-    time_series = reduce(
+    time_series_points = reduce(
         lambda df1, df2: df1.union(df2),
         [
             time_series_factory.create(
@@ -444,7 +444,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_balance_fixing_results
     )
 
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series
+    mock_repository.read_metering_point_time_series.return_value = time_series_points
     mock_repository.read_latest_calculations.return_value = latest_calculations
 
     # Act
@@ -481,7 +481,7 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_with_time_ove
     calculation_id_2 = "22222222-9fc8-409a-a169-fbd49479d718"
     calc_type = CalculationTypeDataProductValue.BALANCE_FIXING
 
-    time_series = reduce(
+    time_series_points = reduce(
         lambda df1, df2: df1.union(df2),
         [
             time_series_factory.create(
@@ -517,7 +517,7 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_with_time_ove
     )
 
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series
+    mock_repository.read_metering_point_time_series.return_value = time_series_points
     mock_repository.read_latest_calculations.return_value = latest_calculations
 
     # Act
@@ -564,7 +564,7 @@ def test_read_and_filter_for_balance_fixing__latest_calculation_for_grid_area(
     calculation_id_2 = "22222222-9fc8-409a-a169-fbd49479d718"
     calc_type = CalculationTypeDataProductValue.BALANCE_FIXING
 
-    time_series = reduce(
+    time_series_points = reduce(
         lambda df1, df2: df1.union(df2),
         [
             time_series_factory.create(
@@ -604,7 +604,7 @@ def test_read_and_filter_for_balance_fixing__latest_calculation_for_grid_area(
     )
 
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series
+    mock_repository.read_metering_point_time_series.return_value = time_series_points
     mock_repository.read_latest_calculations.return_value = latest_calculations
 
     # Act
