@@ -25,7 +25,7 @@ from settlement_report_job.entry_points.tasks.metering_point_periods_task import
     MeteringPointPeriodsTask,
 )
 from settlement_report_job.entry_points.tasks.time_series_points_task import (
-    TimeSeriesTask,
+    TimeSeriesPointsTask,
 )
 from settlement_report_job.entry_points.tasks.wholesale_results_task import (
     WholesaleResultsTask,
@@ -42,14 +42,14 @@ def create(
     if task_type is TaskType.MeteringPointPeriods:
         return MeteringPointPeriodsTask(spark=spark, dbutils=dbutils, args=args)
     elif task_type is TaskType.TimeSeriesQuarterly:
-        return TimeSeriesTask(
+        return TimeSeriesPointsTask(
             spark=spark,
             dbutils=dbutils,
             args=args,
             task_type=TaskType.TimeSeriesQuarterly,
         )
     elif task_type is TaskType.TimeSeriesHourly:
-        return TimeSeriesTask(
+        return TimeSeriesPointsTask(
             spark=spark, dbutils=dbutils, args=args, task_type=TaskType.TimeSeriesHourly
         )
     elif task_type is TaskType.ChargeLinks:

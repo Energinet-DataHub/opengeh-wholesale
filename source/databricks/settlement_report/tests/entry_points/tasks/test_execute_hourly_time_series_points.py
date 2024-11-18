@@ -13,7 +13,7 @@ from settlement_report_job.domain.utils.csv_column_names import (
 )
 from settlement_report_job.entry_points.tasks.task_type import TaskType
 from settlement_report_job.entry_points.tasks.time_series_points_task import (
-    TimeSeriesTask,
+    TimeSeriesPointsTask,
 )
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from utils import cleanup_output_path, get_actual_files
@@ -48,7 +48,7 @@ def test_execute_hourly_time_series_points__when_standard_wholesale_fixing_scena
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 26)]
-    task = TimeSeriesTask(
+    task = TimeSeriesPointsTask(
         spark,
         dbutils,
         standard_wholesale_fixing_scenario_args,

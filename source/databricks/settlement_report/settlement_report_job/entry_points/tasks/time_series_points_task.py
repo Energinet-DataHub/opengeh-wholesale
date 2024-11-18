@@ -24,7 +24,7 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
 )
 
 
-class TimeSeriesTask(TaskBase):
+class TimeSeriesPointsTask(TaskBase):
     def __init__(
         self,
         spark: SparkSession,
