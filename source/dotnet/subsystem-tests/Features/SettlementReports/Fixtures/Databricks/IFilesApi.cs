@@ -27,4 +27,12 @@ public interface IFilesApi : IDisposable
     /// <param name="cancellationToken"></param>
     /// <returns>File information if we can get metadata for the file; otherwise throws an exception.</returns>
     Task<FileInfo> GetFileInfoAsync(string filePath, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Wrapping a call to: https://docs.databricks.com/api/azure/workspace/files/download
+    /// </summary>
+    /// <param name="filePath">The absolute path of the file. Example: "/Volumes/my-catalog/my-schema/my-volume/directory/file.txt"</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns>A stream to the file if it exists; otherwise throws an exception.</returns>
+    Task<Stream> GetFileStreamAsync(string filePath, CancellationToken cancellationToken = default);
 }

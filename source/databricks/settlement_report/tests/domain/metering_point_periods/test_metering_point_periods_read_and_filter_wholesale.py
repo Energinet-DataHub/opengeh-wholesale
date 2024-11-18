@@ -6,7 +6,7 @@ from unittest.mock import Mock
 import pytest
 from pyspark.sql import SparkSession, DataFrame
 import test_factories.default_test_data_spec as default_data
-import test_factories.charge_link_periods_factory as charge_links_factory
+import test_factories.charge_link_periods_factory as charge_link_periods_factory
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
 from settlement_report_job.domain.metering_point_periods.read_and_filter_wholesale import (
@@ -321,7 +321,7 @@ def test_read_and_filter__when_system_operator__returns_expected_metering_points
             is_tax=is_tax,
         ),
     )
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(charge_owner_id=charge_owner_id),
     )
@@ -360,7 +360,7 @@ def test_read_and_filter__when_balance_responsible_party_changes_on_metering_poi
             ),
         ],
     )
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(
             from_date=d.JAN_1ST,
@@ -420,7 +420,7 @@ def test_read_and_filter__when_datahub_user_and_energy_supplier_changes_on_meter
             ),
         ],
     )
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(
             from_date=d.JAN_1ST, to_date=d.JAN_3RD
@@ -466,7 +466,7 @@ def test_read_and_filter__when_duplicate_metering_point_periods__returns_one_per
             default_data.create_metering_point_periods_row(),
         ],
     )
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(),
     )

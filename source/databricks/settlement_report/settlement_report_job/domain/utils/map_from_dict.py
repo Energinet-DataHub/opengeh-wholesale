@@ -11,20 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import itertools
 
-from enum import Enum
+from pyspark.sql import Column
+from pyspark.sql import functions as F
 
 
-class TaskType(Enum):
+def map_from_dict(d: dict) -> Column:
+    """Converts a dictionary to a Spark map column
+
+    Args:
+        d (dict): Dictionary to convert to a Spark map column
+
+    Returns:
+        Column: Spark map column
     """
-    Databricks tasks that can be executed.
-    """
-
-    TimeSeriesHourly = 1
-    TimeSeriesQuarterly = 2
-    MeteringPointPeriods = 3
-    ChargeLinks = 4
-    EnergyResults = 5
-    WholesaleResults = 6
-    MonthlyAmounts = 7
-    Zip = 8
+    return F.create_map([F.lit(x) for x in itertools.chain(*d.items())])

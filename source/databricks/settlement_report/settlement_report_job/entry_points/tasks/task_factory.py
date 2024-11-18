@@ -5,8 +5,13 @@ from pyspark.sql import SparkSession
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
-from settlement_report_job.entry_points.task_type import TaskType
-from settlement_report_job.entry_points.tasks.charge_links_task import ChargeLinksTask
+from settlement_report_job.entry_points.tasks.task_type import TaskType
+from settlement_report_job.entry_points.tasks.charge_price_points_task import (
+    ChargePricePointsTask,
+)
+from settlement_report_job.entry_points.tasks.charge_link_periods_task import (
+    ChargeLinkPeriodsTask,
+)
 from settlement_report_job.entry_points.tasks.energy_resuls_task import (
     EnergyResultsTask,
 )
@@ -46,7 +51,9 @@ def create(
             spark=spark, dbutils=dbutils, args=args, task_type=TaskType.TimeSeriesHourly
         )
     elif task_type is TaskType.ChargeLinks:
-        return ChargeLinksTask(spark=spark, dbutils=dbutils, args=args)
+        return ChargeLinkPeriodsTask(spark=spark, dbutils=dbutils, args=args)
+    elif task_type is TaskType.ChargePricePoints:
+        return ChargePricePointsTask(spark=spark, dbutils=dbutils, args=args)
     elif task_type is TaskType.EnergyResults:
         return EnergyResultsTask(spark=spark, dbutils=dbutils, args=args)
     elif task_type is TaskType.WholesaleResults:

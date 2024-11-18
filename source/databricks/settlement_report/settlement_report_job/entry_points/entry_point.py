@@ -21,8 +21,7 @@ from opentelemetry.trace import SpanKind
 
 import telemetry_logging.logging_configuration as config
 from telemetry_logging.span_recording import span_record_exception
-from settlement_report_job.domain.utils.report_data_type import ReportDataType
-from settlement_report_job.entry_points import task_factory
+from settlement_report_job.entry_points.tasks import task_factory
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
@@ -30,9 +29,9 @@ from settlement_report_job.entry_points.job_args.settlement_report_job_args impo
     parse_job_arguments,
     parse_command_line_arguments,
 )
-from settlement_report_job.entry_points.task_type import TaskType
+from settlement_report_job.entry_points.tasks.task_type import TaskType
+from settlement_report_job.entry_points.utils.get_dbutils import get_dbutils
 from settlement_report_job.infrastructure.spark_initializor import initialize_spark
-from settlement_report_job.infrastructure.utils import get_dbutils
 
 
 # The start_x() methods should only have its name updated in correspondence with the
@@ -50,8 +49,12 @@ def start_metering_point_periods() -> None:
     _start_task(TaskType.MeteringPointPeriods)
 
 
-def start_charge_links() -> None:
+def start_charge_link_periods() -> None:
     _start_task(TaskType.ChargeLinks)
+
+
+def start_charge_price_points() -> None:
+    _start_task(TaskType.ChargePricePoints)
 
 
 def start_energy_results() -> None:

@@ -43,15 +43,14 @@ def read_and_filter_from_view(
 
     total_monthly_amounts = repository.read_total_monthly_amounts_v1()
     total_monthly_amounts = _filter_total_monthly_amounts(total_monthly_amounts, args)
-    total_monthly_amounts = _extend_total_monthly_amounts_columns_for_union(
+    total_monthly_amounts = _prepare_total_monthly_amounts_columns_for_union(
         total_monthly_amounts,
         monthly_amounts_per_charge_column_ordering=monthly_amounts_per_charge.columns,
     )
 
     monthly_amounts = monthly_amounts_per_charge.union(total_monthly_amounts)
-    monthly_amounts = _extend_monthly_amounts_with_resolution(monthly_amounts)
-    monthly_amounts = _drop_columns_based_on_requester(
-        monthly_amounts, args.requesting_actor_market_role
+    monthly_amounts = monthly_amounts.withColumn(
+        DataProductColumnNames.resolution, lit("P1M")
     )
 
     return monthly_amounts
@@ -114,15 +113,7 @@ def _filter_total_monthly_amounts(
     return total_monthly_amounts
 
 
-def _extend_monthly_amounts_with_resolution(
-    monthly_amounts_without_resolution: DataFrame,
-) -> DataFrame:
-    return monthly_amounts_without_resolution.withColumn(
-        DataProductColumnNames.resolution, lit("P1M")
-    )
-
-
-def _extend_total_monthly_amounts_columns_for_union(
+def _prepare_total_monthly_amounts_columns_for_union(
     base_total_monthly_amounts: DataFrame,
     monthly_amounts_per_charge_column_ordering: list[str],
 ) -> DataFrame:
@@ -131,6 +122,8 @@ def _extend_total_monthly_amounts_columns_for_union(
         DataProductColumnNames.charge_type,
         DataProductColumnNames.charge_code,
         DataProductColumnNames.is_tax,
+        DataProductColumnNames.charge_owner_id,
+        # charge_owner_id is not always null, but it should not be part of total_monthly_amounts
     ]:
         base_total_monthly_amounts = base_total_monthly_amounts.withColumn(
             null_column, lit(None)
@@ -139,11 +132,3 @@ def _extend_total_monthly_amounts_columns_for_union(
     return base_total_monthly_amounts.select(
         monthly_amounts_per_charge_column_ordering,
     )
-
-
-def _drop_columns_based_on_requester(
-    monthly_amounts: DataFrame, market_role: MarketRole
-) -> DataFrame:
-    if market_role in [MarketRole.GRID_ACCESS_PROVIDER, MarketRole.SYSTEM_OPERATOR]:
-        monthly_amounts = monthly_amounts.drop(DataProductColumnNames.charge_owner_id)
-    return monthly_amounts

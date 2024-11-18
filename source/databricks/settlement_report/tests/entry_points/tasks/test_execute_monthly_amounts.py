@@ -153,6 +153,7 @@ def test_execute_monthly_amounts__when_grid_access_provider__returns_expected_nu
         CsvColumnNames.amount,
         CsvColumnNames.charge_type,
         CsvColumnNames.charge_code,
+        CsvColumnNames.charge_owner_id,
     ]
 
     expected_file_names = [
@@ -206,6 +207,7 @@ def test_execute_monthly_amounts__when_system_operator__returns_expected_number_
         CsvColumnNames.amount,
         CsvColumnNames.charge_type,
         CsvColumnNames.charge_code,
+        CsvColumnNames.charge_owner_id,
     ]
 
     expected_file_names = [
