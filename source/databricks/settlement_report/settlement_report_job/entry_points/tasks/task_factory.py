@@ -24,7 +24,9 @@ from settlement_report_job.entry_points.tasks.task_base import (
 from settlement_report_job.entry_points.tasks.metering_point_periods_task import (
     MeteringPointPeriodsTask,
 )
-from settlement_report_job.entry_points.tasks.time_series_task import TimeSeriesTask
+from settlement_report_job.entry_points.tasks.time_series_points_task import (
+    TimeSeriesTask,
+)
 from settlement_report_job.entry_points.tasks.wholesale_results_task import (
     WholesaleResultsTask,
 )

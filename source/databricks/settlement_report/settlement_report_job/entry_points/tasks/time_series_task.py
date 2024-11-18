@@ -14,8 +14,8 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
 from settlement_report_job.domain.time_series_points.time_series_points_factory import (
-    create_time_series_for_wholesale,
-    create_time_series_for_balance_fixing,
+    create_time_series_points_for_wholesale,
+    create_time_series_points_for_balance_fixing,
 )
 from settlement_report_job.entry_points.job_args.calculation_type import CalculationType
 from telemetry_logging import use_span
@@ -56,7 +56,7 @@ class TimeSeriesTask(TaskBase):
 
         repository = WholesaleRepository(self.spark, self.args.catalog_name)
         if self.args.calculation_type is CalculationType.BALANCE_FIXING:
-            time_series_points_df = create_time_series_for_balance_fixing(
+            time_series_points_df = create_time_series_points_for_balance_fixing(
                 period_start=self.args.period_start,
                 period_end=self.args.period_end,
                 grid_area_codes=self.args.grid_area_codes,
@@ -67,7 +67,7 @@ class TimeSeriesTask(TaskBase):
                 repository=repository,
             )
         else:
-            time_series_points_df = create_time_series_for_wholesale(
+            time_series_points_df = create_time_series_points_for_wholesale(
                 period_start=self.args.period_start,
                 period_end=self.args.period_end,
                 calculation_id_by_grid_area=self.args.calculation_id_by_grid_area,

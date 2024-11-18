@@ -37,11 +37,11 @@ from settlement_report_job.infrastructure.spark_initializor import initialize_sp
 # The start_x() methods should only have its name updated in correspondence with the
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
-def start_hourly_time_series() -> None:
+def start_hourly_time_series_points() -> None:
     _start_task(TaskType.TimeSeriesHourly)
 
 
-def start_quarterly_time_series() -> None:
+def start_quarterly_time_series_points() -> None:
     _start_task(TaskType.TimeSeriesQuarterly)
 
 

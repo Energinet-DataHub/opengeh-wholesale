@@ -5,7 +5,7 @@ from settlement_report_job.infrastructure.wholesale.column_names import (
 )
 
 
-def filter_time_series_on_charge_owner(
+def filter_time_series_points_on_charge_owner(
     time_series_points: DataFrame,
     system_operator_id: str,
     charge_link_periods: DataFrame,
