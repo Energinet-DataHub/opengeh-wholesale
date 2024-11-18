@@ -18,15 +18,15 @@ from settlement_report_job.infrastructure.repository import WholesaleRepository
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
-from settlement_report_job.domain.charge_links.read_and_filter import (
+from settlement_report_job.domain.charge_link_periods.read_and_filter import (
     read_and_filter,
 )
-from settlement_report_job.domain.charge_links.prepare_for_csv import (
+from settlement_report_job.domain.charge_link_periods.prepare_for_csv import (
     prepare_for_csv,
 )
 
 
-def create_charge_links(
+def create_charge_link_periods(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
 ) -> DataFrame:

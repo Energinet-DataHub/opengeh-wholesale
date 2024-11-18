@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from pyspark.sql import SparkSession, DataFrame
 import test_factories.default_test_data_spec as default_data
-import test_factories.charge_link_periods_factory as input_charge_links_factory
+import test_factories.charge_link_periods_factory as input_charge_link_periods_factory
 import test_factories.metering_point_periods_factory as input_metering_point_periods_factory
 import test_factories.charge_price_information_periods_factory as input_charge_price_information_periods_factory
 from settlement_report_job.domain.metering_point_periods.metering_point_periods_factory import (
@@ -108,7 +108,7 @@ def test_create_metering_point_periods_for_wholesale__when_system_operator__retu
             is_tax=False,
         ),
     )
-    charge_link_periods = input_charge_links_factory.create(
+    charge_link_periods = input_charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(
             charge_owner_id=standard_wholesale_fixing_scenario_system_operator_args.requesting_actor_id
