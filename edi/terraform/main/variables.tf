@@ -106,6 +106,12 @@ variable "feature_management_receive_metered_data_for_measurement_points" {
   default     = false
 }
 
+variable "feature_management_use_new_incoming_message_parser" {
+  type        = bool
+  description = "Used to allow using new incoming message parser."
+  default     = false
+}
+
 variable "apim_maintenance_mode" {
   type        = bool
   description = "Determine if API Management is in maintenance mode. In maintenance mode all requests will return 503 Service Unavailable."
