@@ -67,6 +67,7 @@ def spark(
 ) -> SparkSession:
     warehouse_location = f"{tests_path}/__spark-warehouse__"
     metastore_path = f"{tests_path}/__metastore_db__"
+    checkpoint_path = f"{tests_path}/__checkpoints"
 
     if (
         test_session_configuration.migrations.execute.value
@@ -120,6 +121,7 @@ def spark(
         .config("hive.metastore.schema.verification.record.version", "false")
         .enableHiveSupport()
     ).getOrCreate()
+    session.sparkContext.setCheckpointDir(checkpoint_path)
 
     yield session
     session.stop()
