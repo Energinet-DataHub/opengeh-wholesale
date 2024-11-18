@@ -22,3 +22,8 @@ databricks_contributor_dataplane_group = {
   id   = "1105450622987696"
   name = "SEC-A-Datahub-Dev-003-Contributor-Dataplane"
 }
+apim_address_prefixes                                = ["10.143.126.0/28"]
+privateendpoints_address_prefixes                    = ["10.143.120.0/22"]
+vnetintegrations_address_prefixes                    = ["10.143.124.0/23"]
+apim_next_hop_ip_address                             = "10.142.96.196"
+udr_firewall_next_hop_ip_address                     = "10.142.65.196"

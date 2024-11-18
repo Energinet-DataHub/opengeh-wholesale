@@ -305,3 +305,28 @@ variable "budget_alert_amount" {
   type        = number
   description = "The budget amount for this subproduct"
 }
+
+variable "apim_address_prefixes" {
+  type        = list(string)
+  description = "Address prefixes for the APIM subnet"
+}
+
+variable "privateendpoints_address_prefixes" {
+  type        = list(string)
+  description = "Address prefixes for the private endpoints subnet"
+}
+
+variable "vnetintegrations_address_prefixes" {
+  type        = list(string)
+  description = "Address prefixes for the vnet integrations subnet"
+}
+
+variable "apim_next_hop_ip_address" {
+  type        = string
+  description = "The next hop IP address for the APIM route table"
+}
+
+variable "udr_firewall_next_hop_ip_address" {
+  type        = string
+  description = "The destination address prefix for the DNS rule in the NSG"
+}
