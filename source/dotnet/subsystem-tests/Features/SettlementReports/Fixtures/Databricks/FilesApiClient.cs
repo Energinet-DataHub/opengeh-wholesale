@@ -56,7 +56,6 @@ public sealed class FilesApiClient : ApiClient, IFilesApi
     /// <returns>A stream to the file.</returns>
     public async Task<Stream> GetFileStreamAsync(string filePath, CancellationToken cancellationToken = default)
     {
-
         var request = new HttpRequestMessage(HttpMethod.Get, GetUrl(filePath));
         var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
 
