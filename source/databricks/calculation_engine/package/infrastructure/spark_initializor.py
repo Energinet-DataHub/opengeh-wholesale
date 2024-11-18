@@ -15,6 +15,8 @@
 from pyspark import SparkConf
 from pyspark.sql.session import SparkSession
 
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
+
 
 def initialize_spark() -> SparkSession:
     # Set spark config with the session timezone so that datetimes are displayed consistently (in UTC)
@@ -24,3 +26,11 @@ def initialize_spark() -> SparkSession:
         .set("spark.databricks.io.cache.enabled", "True")
     )
     return SparkSession.builder.config(conf=spark_conf).getOrCreate()
+
+
+def configure_spark(
+    spark: SparkSession, infrastructure_settings: InfrastructureSettings
+) -> None:
+    spark.sparkContext.setCheckpointDir(
+        f"{infrastructure_settings.wholesale_container_path}/checkpoints"
+    )
