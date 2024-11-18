@@ -8,7 +8,8 @@ resource "azurerm_role_definition" "app_config_settings_read_access" {
   permissions {
     actions = [
       "Microsoft.Web/sites/config/list/Action",
-      "Microsoft.Web/sites/config/Read"
+      "Microsoft.Web/sites/config/Read",
+      "Microsoft.Web/sites/extensions/sessions/action"
     ]
   }
 }
