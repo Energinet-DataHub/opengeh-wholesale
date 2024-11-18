@@ -31,6 +31,9 @@ def assert_entry_point_exists(entry_point_name: str) -> Any:
         )
         if not entry_point:
             assert False, f"The {entry_point_name} entry point was not found."
+        # Check if the module exists
+        module_name = entry_point[0].module
+        importlib.import_module(module_name)
     except importlib.metadata.PackageNotFoundError:
         assert False, f"The {entry_point_name} entry point was not found."
 
@@ -41,7 +44,10 @@ def assert_entry_point_exists(entry_point_name: str) -> Any:
         "create_hourly_time_series",
         "create_quarterly_time_series",
         "create_charge_links",
+        "create_charge_price_points",
         "create_energy_results",
+        "create_monthly_amounts",
+        "create_wholesale_results",
         "create_zip",
     ],
 )

@@ -16,14 +16,14 @@ from dependency_injector.wiring import inject, Provide
 from package.calculation.calculation_output import BasisDataOutput
 from package.constants import Colname
 from package.container import Container
-from package.infrastructure import logging_configuration
+from telemetry_logging import use_span, logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     WholesaleBasisDataInternalDatabase,
 )
 
 
-@logging_configuration.use_span("calculation.write.basis_data")
+@use_span("calculation.write.basis_data")
 def write_basis_data(
     basis_data_output: BasisDataOutput,
 ) -> None:

@@ -23,9 +23,6 @@ setup(
     package_data={
         "package": [
             "datamigration/migration_scripts/*.sql",
-            "datamigration_hive/migration_scripts/*.sql",
-            "datamigration_hive/current_state_scripts/schemas/*.sql",
-            "datamigration_hive/current_state_scripts/tables/*.sql",
         ]
     },
     packages=find_packages(exclude=["tests*"]),
@@ -42,6 +39,7 @@ setup(
         "azure-monitor-opentelemetry==1.6.0",
         "azure-core==1.30.0",
         "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@1.9.0#subdirectory=source/spark_sql_migrations",
+        "opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.1.0#subdirectory=source/telemetry",
     ],
     entry_points={
         "console_scripts": [

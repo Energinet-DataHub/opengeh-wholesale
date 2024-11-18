@@ -16,7 +16,7 @@ from unittest.mock import patch
 
 from pyspark.sql import SparkSession
 
-import databases.wholesale_results_internal.calculations_storage_model_test_factory as factory
+import tests.databases.wholesale_results_internal.calculations_storage_model_test_factory as factory
 from package.calculation import PreparedDataReader
 from package.codelists import CalculationType
 from package.databases import wholesale_internal

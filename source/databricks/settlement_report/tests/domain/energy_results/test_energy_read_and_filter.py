@@ -5,19 +5,23 @@ from unittest.mock import Mock
 
 import pytest
 from pyspark.sql import SparkSession, functions as F
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
+from settlement_report_job.infrastructure.wholesale.data_values import (
     CalculationTypeDataProductValue,
 )
-from test_factories import latest_calculations_factory
-import test_factories.default_test_data_spec as default_data
-import test_factories.energy_factory as energy_factory
+from tests.test_factories import latest_calculations_factory
+import tests.test_factories.default_test_data_spec as default_data
+import tests.test_factories.energy_factory as energy_factory
 
-from settlement_report_job.domain.market_role import MarketRole
+from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.domain.energy_results.read_and_filter import (
     read_and_filter_from_view,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
 
 DEFAULT_FROM_DATE = default_data.DEFAULT_FROM_DATE
 DEFAULT_TO_DATE = default_data.DEFAULT_TO_DATE
@@ -28,7 +32,7 @@ DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 DEFAULT_CALCULATION_ID = "12345678-6f20-40c5-9a95-f419a1245d7e"
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def energy_read_and_filter_mock_repository(
     spark: SparkSession,
 ) -> Mock:

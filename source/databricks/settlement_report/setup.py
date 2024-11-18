@@ -29,14 +29,19 @@ setup(
         "python-dateutil==2.8.2",
         "azure-monitor-opentelemetry==1.6.0",
         "azure-core==1.30.0",
+        "opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.1.0#subdirectory=source/telemetry",
     ],
     entry_points={
         "console_scripts": [
-            "create_hourly_time_series    = settlement_report_job.entry_point:start_hourly_time_series",
-            "create_quarterly_time_series = settlement_report_job.entry_point:start_quarterly_time_series",
-            "create_charge_links          = settlement_report_job.entry_point:start_charge_links",
-            "create_energy_results        = settlement_report_job.entry_point:start_energy_results",
-            "create_zip                   = settlement_report_job.entry_point:start_zip",
+            "create_hourly_time_series    = settlement_report_job.entry_points.entry_point:start_hourly_time_series",
+            "create_quarterly_time_series = settlement_report_job.entry_points.entry_point:start_quarterly_time_series",
+            "create_metering_point_periods = settlement_report_job.entry_points.entry_point:start_metering_point_periods",
+            "create_charge_links          = settlement_report_job.entry_points.entry_point:start_charge_links",
+            "create_charge_price_points   = settlement_report_job.entry_points.entry_point:start_charge_price_points",
+            "create_energy_results        = settlement_report_job.entry_points.entry_point:start_energy_results",
+            "create_monthly_amounts       = settlement_report_job.entry_points.entry_point:start_monthly_amounts",
+            "create_wholesale_results     = settlement_report_job.entry_points.entry_point:start_wholesale_results",
+            "create_zip                   = settlement_report_job.entry_points.entry_point:start_zip",
         ]
     },
 )

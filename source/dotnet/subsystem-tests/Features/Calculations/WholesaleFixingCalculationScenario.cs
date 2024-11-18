@@ -64,7 +64,6 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
     [SubsystemFact]
     public void AndGiven_SubscribedIntegrationEvents()
     {
-        Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(GridLossResultProducedV1.EventName);
         Fixture.ScenarioState.SubscribedIntegrationEventNames.Add(CalculationCompletedV1.EventName);
     }
 
@@ -118,14 +117,11 @@ public class WholesaleFixingCalculationScenario : SubsystemTestsBase<Calculation
             Fixture.ScenarioState.SubscribedIntegrationEventNames.AsReadOnly(),
             waitTimeLimit: TimeSpan.FromMinutes(8));
 
-        Fixture.ScenarioState.ReceivedGridLossProducedV1 = actualReceivedIntegrationEvents
-            .OfType<GridLossResultProducedV1>().ToList();
         Fixture.ScenarioState.ReceivedCalculationCompletedV1 = actualReceivedIntegrationEvents
             .OfType<CalculationCompletedV1>().ToList();
 
         // Assert
         using var assertionScope = new AssertionScope();
-        Fixture.ScenarioState.ReceivedGridLossProducedV1.Should().NotBeEmpty();
         Fixture.ScenarioState.ReceivedCalculationCompletedV1.Should().NotBeEmpty();
     }
 
@@ -157,8 +153,8 @@ AppTraces
     {
         var query = $@"
 AppDependencies
-| where Target == ""exchange""
-| where Name == ""exchange""
+| where Target == ""energy""
+| where Name == ""energy""
 | where DependencyType == ""InProc""
 | where Success == true
 | where ResultCode == 0
@@ -175,23 +171,6 @@ AppDependencies
     }
 
     [ScenarioStep(8)]
-    [SubsystemFact]
-    public async Task AndThen_ReceivedGridLossResultProducedV1EventContainsExpectedTimeSeriesPoints()
-    {
-        // Arrange
-        var expectedTimeSeriesPoints = await Fixture.ParseGridLossTimeSeriesPointsFromCsvAsync("Positive_gridLoss 804.csv");
-        var energyResults = Fixture.ScenarioState.ReceivedGridLossProducedV1
-            .Where(x => x.MeteringPointType == GridLossResultProducedV1.Types.MeteringPointType.Consumption)
-            .Where(x => x.MeteringPointId == "571313180400100657")
-            .Select(x => x.TimeSeriesPoints)
-            .ToList();
-
-        // Assert
-        Assert.Single(energyResults);
-        energyResults.First().Should().BeEquivalentTo(expectedTimeSeriesPoints);
-    }
-
-    [ScenarioStep(9)]
     [SubsystemFact]
     public async Task AndThen_OneViewOrTableInEachPublicDataModelMustExistsAndContainData()
     {
@@ -213,7 +192,7 @@ AppDependencies
         }
     }
 
-    [ScenarioStep(10)]
+    [ScenarioStep(9)]
     [SubsystemFact]
     public void AndThen_ReceivedCalculationCompletedV1EventContainsSingleEventWithInstanceId()
     {
@@ -225,7 +204,7 @@ AppDependencies
         Fixture.ScenarioState.OrchestrationInstanceId = receivedCalculationCompletedEvent.InstanceId;
     }
 
-    [ScenarioStep(11)]
+    [ScenarioStep(10)]
     [SubsystemFact]
     public async Task AndThen_CalculationShouldBeInActorMessagesEnqueuingState()
     {
@@ -253,7 +232,7 @@ AppDependencies
             "because calculation should be in ActorMessagesEnqueuing state or later");
     }
 
-    [ScenarioStep(12)]
+    [ScenarioStep(11)]
     [SubsystemFact]
     public async Task AndThen_ActorMessagesEnqueuedMessageIsReceived()
     {
@@ -264,7 +243,7 @@ AppDependencies
             Fixture.ScenarioState.OrchestrationInstanceId);
     }
 
-    [ScenarioStep(13)]
+    [ScenarioStep(12)]
     [SubsystemFact]
     public async Task AndThen_CalculationOrchestrationIsCompleted()
     {
@@ -280,7 +259,7 @@ AppDependencies
         calculation!.OrchestrationState.Should().Be(CalculationOrchestrationState.Completed);
     }
 
-    [ScenarioStep(14)]
+    [ScenarioStep(13)]
     [SubsystemFact]
     public async Task AndThen_CheckThatIdentityColumnOnCalculationsIsWorkingCorrectly()
     {

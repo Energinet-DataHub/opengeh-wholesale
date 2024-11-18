@@ -15,20 +15,24 @@ from collections.abc import Callable
 
 from pyspark.sql import DataFrame, functions as F
 
-from settlement_report_job import logging
-from settlement_report_job.domain.market_role import MarketRole
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
-from settlement_report_job.infrastructure.calculation_type import CalculationType
-from settlement_report_job.domain.dataframe_utils.factory_filters import (
+from telemetry_logging import Logger, use_span
+from settlement_report_job.domain.utils.market_role import MarketRole
+from settlement_report_job.infrastructure.repository import WholesaleRepository
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
+from settlement_report_job.entry_points.job_args.calculation_type import CalculationType
+from settlement_report_job.domain.utils.factory_filters import (
     filter_by_energy_supplier_ids,
     filter_by_grid_area_codes,
     filter_by_calculation_id_by_grid_area,
     read_and_filter_by_latest_calculations,
 )
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
 def _get_view_read_function(
@@ -41,7 +45,7 @@ def _get_view_read_function(
         return repository.read_energy_per_es
 
 
-@logging.use_span()
+@use_span()
 def read_and_filter_from_view(
     args: SettlementReportArgs, repository: WholesaleRepository
 ) -> DataFrame:
@@ -66,7 +70,7 @@ def read_and_filter_from_view(
             period_start=args.period_start,
             period_end=args.period_end,
             time_zone=args.time_zone,
-            observation_time_column=DataProductColumnNames.time,
+            time_column_name=DataProductColumnNames.time,
         )
     elif args.calculation_id_by_grid_area:
         # args.calculation_id_by_grid_area should never be null when not BALANCE_FIXING.

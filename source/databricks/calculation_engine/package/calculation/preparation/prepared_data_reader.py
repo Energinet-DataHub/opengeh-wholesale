@@ -36,7 +36,7 @@ from .data_structures import ChargePrices, ChargePriceInformation
 from ...constants import Colname
 from ...databases import wholesale_internal
 from ...databases.table_column_names import TableColumnNames
-from ...infrastructure import logging_configuration
+from telemetry_logging import use_span
 
 
 class PreparedDataReader:
@@ -48,7 +48,7 @@ class PreparedDataReader:
         self._migrations_wholesale_repository = migrations_wholesale_repository
         self._wholesale_internal_repository = wholesale_internal_repository
 
-    @logging_configuration.use_span("get_metering_point_periods")
+    @use_span("get_metering_point_periods")
     def get_metering_point_periods(
         self,
         period_start_datetime: datetime,
@@ -62,7 +62,7 @@ class PreparedDataReader:
             grid_areas,
         )
 
-    @logging_configuration.use_span("get_grid_loss_metering_point_periods")
+    @use_span("get_grid_loss_metering_point_periods")
     def get_grid_loss_metering_point_periods(
         self, grid_areas: list[str], metering_point_periods_df: DataFrame
     ) -> GridLossMeteringPointPeriods:
@@ -70,7 +70,7 @@ class PreparedDataReader:
             grid_areas, metering_point_periods_df, self._wholesale_internal_repository
         )
 
-    @logging_configuration.use_span("get_metering_point_time_series")
+    @use_span("get_metering_point_time_series")
     def get_metering_point_time_series(
         self,
         period_start_datetime: datetime,
@@ -87,7 +87,7 @@ class PreparedDataReader:
             metering_point_periods_df_without_grid_loss,
         )
 
-    @logging_configuration.use_span("get_input_charges")
+    @use_span("get_input_charges")
     def get_input_charges(
         self,
         period_start_datetime: datetime,

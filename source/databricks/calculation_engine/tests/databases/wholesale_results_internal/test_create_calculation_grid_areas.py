@@ -14,7 +14,7 @@
 
 from pyspark.sql import Row, SparkSession
 
-from helpers.data_frame_utils import assert_dataframes_equal
+from tests.helpers.data_frame_utils import assert_dataframes_equal
 from package.calculation.calculator_args import CalculatorArgs
 from package.databases.wholesale_internal.schemas.calculation_grid_areas_schema import (
     calculation_grid_areas_schema,

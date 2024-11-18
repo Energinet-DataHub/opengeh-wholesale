@@ -10,8 +10,10 @@ $fileList = @()
 # Validate the path before proceeding
 if (Test-Path -Path $targetDirectory)
 {
-    # Get all files in the target directory and its subdirectories
-    $files = Get-ChildItem -Path $targetDirectory -Recurse -File
+    # Get all files in the target directory and its subdirectories, excluding "__pycache__" directories
+    $files = Get-ChildItem -Path $targetDirectory -Recurse -File | Where-Object {
+        $_.DirectoryName -notlike "*__pycache__*"
+    }
 
     # Collect each filename without its extension and its parent directory name
     foreach ($file in $files)

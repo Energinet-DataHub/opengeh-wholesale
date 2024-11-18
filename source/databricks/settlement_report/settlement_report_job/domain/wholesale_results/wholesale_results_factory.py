@@ -13,9 +13,15 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from settlement_report_job.domain.repository import WholesaleRepository
-from settlement_report_job.domain.settlement_report_args import SettlementReportArgs
+from settlement_report_job.infrastructure.repository import WholesaleRepository
+from settlement_report_job.entry_points.job_args.settlement_report_args import (
+    SettlementReportArgs,
+)
+from telemetry_logging import use_span
 
+from settlement_report_job.domain.utils.settlement_report_args_utils import (
+    should_have_result_file_per_grid_area,
+)
 from settlement_report_job.domain.wholesale_results.read_and_filter import (
     read_and_filter_from_view,
 )
@@ -24,6 +30,7 @@ from settlement_report_job.domain.wholesale_results.prepare_for_csv import (
 )
 
 
+@use_span()
 def create_wholesale_results(
     args: SettlementReportArgs,
     repository: WholesaleRepository,
@@ -33,7 +40,12 @@ def create_wholesale_results(
         args.calculation_id_by_grid_area,
         args.period_start,
         args.period_end,
+        args.requesting_actor_market_role,
+        args.requesting_actor_id,
         repository,
     )
 
-    return prepare_for_csv(wholesale)
+    return prepare_for_csv(
+        wholesale,
+        should_have_result_file_per_grid_area(args),
+    )

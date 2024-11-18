@@ -14,22 +14,26 @@
 
 from pyspark.sql import DataFrame, functions as F
 
-from settlement_report_job import logging
-from settlement_report_job.domain.csv_column_names import (
+from telemetry_logging import Logger, use_span
+from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
+    EphemeralColumns,
 )
-from settlement_report_job.utils import (
+from settlement_report_job.domain.utils.map_from_dict import (
     map_from_dict,
 )
-from settlement_report_job.wholesale.column_names import DataProductColumnNames
-import settlement_report_job.domain.report_naming_convention as market_naming
+from settlement_report_job.infrastructure.wholesale.column_names import (
+    DataProductColumnNames,
+)
+import settlement_report_job.domain.utils.map_to_csv_naming as market_naming
 
-log = logging.Logger(__name__)
+log = Logger(__name__)
 
 
-@logging.use_span()
+@use_span()
 def prepare_for_csv(
     wholesale: DataFrame,
+    one_file_per_grid_area: bool = False,
 ) -> DataFrame:
     select_columns = [
         map_from_dict(market_naming.CALCULATION_TYPES_TO_ENERGY_BUSINESS_PROCESS)[
@@ -65,5 +69,12 @@ def prepare_for_csv(
             CsvColumnNames.charge_owner_id
         ),
     ]
+
+    if one_file_per_grid_area:
+        select_columns.append(
+            F.col(DataProductColumnNames.grid_area_code).alias(
+                EphemeralColumns.grid_area_code_partitioning
+            ),
+        )
 
     return wholesale.select(select_columns)

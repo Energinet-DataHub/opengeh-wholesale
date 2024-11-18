@@ -4,7 +4,7 @@ from decimal import Decimal
 
 from pyspark.sql import SparkSession, DataFrame
 
-from settlement_report_job.wholesale.data_values import (
+from settlement_report_job.infrastructure.wholesale.data_values import (
     CalculationTypeDataProductValue,
     ChargeTypeDataProductValue,
     ChargeResolutionDataProductValue,
@@ -15,6 +15,8 @@ from settlement_report_job.wholesale.data_values import (
 from test_factories.default_test_data_spec import (
     create_energy_results_data_spec,
     create_amounts_per_charge_row,
+    create_monthly_amounts_per_charge_row,
+    create_total_monthly_amounts_row,
 )
 from test_factories import (
     metering_point_periods_factory,
@@ -23,6 +25,9 @@ from test_factories import (
     charge_price_information_periods_factory,
     energy_factory,
     amounts_per_charge_factory,
+    monthly_amounts_per_charge_factory,
+    total_monthly_amounts_factory,
+    charge_price_points_factory,
 )
 
 GRID_AREAS = ["804", "805"]
@@ -82,6 +87,7 @@ def create_metering_point_periods(spark: SparkSession) -> DataFrame:
                 grid_area_code=metering_point.grid_area_code,
                 resolution=metering_point.resolution,
                 from_grid_area_code=None,
+                to_grid_area_code=None,
                 parent_metering_point_id=None,
                 energy_supplier_id=metering_point.energy_supplier_id,
                 balance_responsible_party_id=BALANCE_RESPONSIBLE_PARTY_ID,
@@ -152,6 +158,30 @@ def create_charge_link_periods(spark: SparkSession) -> DataFrame:
     return charge_link_periods_factory.create(spark, rows)
 
 
+def create_charge_price_points(spark: SparkSession) -> DataFrame:
+    """
+    Creates a DataFrame with charge prices data for testing purposes.
+    """
+
+    rows = []
+    for charge in _get_all_charges():
+        rows.append(
+            charge_price_points_factory.ChargePricePointsRow(
+                calculation_id=CALCULATION_ID,
+                calculation_type=CALCULATION_TYPE,
+                calculation_version=1,
+                charge_key=charge.charge_key,
+                charge_code=charge.charge_code,
+                charge_type=charge.charge_type,
+                charge_owner_id=charge.charge_owner_id,
+                charge_price=Decimal("10"),
+                charge_time=FROM_DATE,
+            )
+        )
+
+    return charge_price_points_factory.create(spark, rows)
+
+
 def create_charge_price_information_periods(spark: SparkSession) -> DataFrame:
     """
     Creates a DataFrame with charge price information periods data for testing purposes.
@@ -209,22 +239,83 @@ def create_amounts_per_charge(spark: SparkSession) -> DataFrame:
     Mimics the wholesale_results.amounts_per_charge_v1 view.
     """
 
+    rows = []
+    for charge in _get_all_charges():
+        for grid_area_code in GRID_AREAS:
+            rows.append(
+                create_amounts_per_charge_row(
+                    calculation_id=CALCULATION_ID,
+                    calculation_type=CALCULATION_TYPE,
+                    time=FROM_DATE,
+                    grid_area_code=grid_area_code,
+                    metering_point_type=METERING_POINT_TYPES[0],
+                    resolution=ChargeResolutionDataProductValue.HOUR,
+                    energy_supplier_id=ENERGY_SUPPLIER_IDS[0],
+                    is_tax=charge.is_tax,
+                    charge_owner_id=charge.charge_owner_id,
+                )
+            )
+
+    return amounts_per_charge_factory.create(spark, rows)
+
+
+def create_monthly_amounts_per_charge(spark: SparkSession) -> DataFrame:
+    """
+    Creates a DataFrame with amounts per charge data for testing purposes.
+    Mimics the wholesale_results.monthly_amounts_per_charge_v1 view.
+    """
+
     df = None
-    for metering_point in _get_all_metering_points():
-        row = create_amounts_per_charge_row(
-            calculation_id=CALCULATION_ID,
-            calculation_type=CALCULATION_TYPE,
-            time=FROM_DATE,
-            grid_area_code=metering_point.grid_area_code,
-            metering_point_type=metering_point.metering_point_type,
-            resolution=ChargeResolutionDataProductValue.HOUR,
-            energy_supplier_id=metering_point.energy_supplier_id,
-        )
-        next_df = amounts_per_charge_factory.create(spark, row)
-        if df is None:
-            df = next_df
-        else:
-            df = df.union(next_df)
+    for grid_area_code in GRID_AREAS:
+        for energy_supplier_id in ENERGY_SUPPLIER_IDS:
+            for charge_owner_id in [
+                CHARGE_OWNER_ID_WITH_TAX,
+                CHARGE_OWNER_ID_WITHOUT_TAX,
+            ]:
+                row = create_monthly_amounts_per_charge_row(
+                    calculation_id=CALCULATION_ID,
+                    calculation_type=CALCULATION_TYPE,
+                    time=FROM_DATE,
+                    grid_area_code=grid_area_code,
+                    energy_supplier_id=energy_supplier_id,
+                    charge_owner_id=charge_owner_id,
+                )
+                next_df = monthly_amounts_per_charge_factory.create(spark, row)
+                if df is None:
+                    df = next_df
+                else:
+                    df = df.union(next_df)
+
+    return df
+
+
+def create_total_monthly_amounts(spark: SparkSession) -> DataFrame:
+    """
+    Creates a DataFrame with amounts per charge data for testing purposes.
+    Mimics the wholesale_results.monthly_amounts_per_charge_v1 view.
+    """
+
+    df = None
+    for grid_area_code in GRID_AREAS:
+        for energy_supplier_id in ENERGY_SUPPLIER_IDS:
+            for charge_owner_id in [
+                CHARGE_OWNER_ID_WITH_TAX,
+                CHARGE_OWNER_ID_WITHOUT_TAX,
+                None,
+            ]:
+                row = create_total_monthly_amounts_row(
+                    calculation_id=CALCULATION_ID,
+                    calculation_type=CALCULATION_TYPE,
+                    time=FROM_DATE,
+                    grid_area_code=grid_area_code,
+                    energy_supplier_id=energy_supplier_id,
+                    charge_owner_id=charge_owner_id,
+                )
+                next_df = total_monthly_amounts_factory.create(spark, row)
+                if df is None:
+                    df = next_df
+                else:
+                    df = df.union(next_df)
 
     return df
 

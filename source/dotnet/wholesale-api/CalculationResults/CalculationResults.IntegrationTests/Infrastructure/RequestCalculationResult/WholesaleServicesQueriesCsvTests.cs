@@ -469,6 +469,161 @@ public class WholesaleServicesQueriesCsvTests
                     ("804", "5790000701278", "8100000000047", ChargeType.Subscription, "4310", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                     ("804", "5790001687137", "8100000000047", ChargeType.Subscription, "4310", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                     ("804", "5790001687137", "8100000000047", ChargeType.Subscription, "Abb Flex", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    // from previous charge owner
+                    ("804", "5790001687137", "8100000000007", ChargeType.Subscription, "Abb Flex", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ]);
+        }
+
+        [Fact]
+        public async Task
+            Given_GridAreaOwnerRequestsWithoutChargeOwner_WhenGridAreaHasBeenMerged_Then_DataReturnedContainsChargeOwnerChargesAndIsTaxCharges()
+        {
+            var newGridAreaOwner = "8100000000007";
+            var oldGridAreaOwner = "8100000000047";
+            var totalPeriod = new Period(
+                Instant.FromUtc(2021, 12, 31, 23, 0),
+                Instant.FromUtc(2022, 1, 31, 23, 0));
+
+            var parameters = new WholesaleServicesQueryParameters(
+                AmountType: AmountType.MonthlyAmountPerCharge,
+                GridAreaCodes: ["804"],
+                EnergySupplierId: null,
+                ChargeOwnerId: null,
+                ChargeTypes: [],
+                CalculationType: null, // This is how we denote 'latest correction'
+                Period: totalPeriod,
+                RequestedForEnergySupplier: false,
+                RequestedForActorNumber: newGridAreaOwner);
+
+            // Act
+            var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+            using var assertionScope = new AssertionScope();
+            // New charge owner receives all grid area owner charges and taxes
+            actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
+                    ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod, ats.CalculationType,
+                    ats.Version, ats.TimeSeriesPoints.Count))
+                .Should()
+                .BeEquivalentTo([
+                    // Results that is taxes
+                    ("804", "5790001687137", "5790000432752", ChargeType.Tariff, "EA-001", AmountType.MonthlyAmountPerCharge, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    ("804", "5790001687137", "5790000432752", ChargeType.Tariff, "EA-002", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    ("804", "5790001687137", "5790000432752", ChargeType.Tariff, "EA-003", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    // Results for the old grid area owner
+                    ("804", "5790001687137", oldGridAreaOwner, ChargeType.Tariff, "100", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    ("804", "5790000701278", oldGridAreaOwner, ChargeType.Tariff, "4300", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    ("804", "5790001687137", oldGridAreaOwner, ChargeType.Tariff, "4300", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    ("804", "5790001687137", oldGridAreaOwner, ChargeType.Tariff, "Rabat-T", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    ("804", "5790001687137", oldGridAreaOwner, ChargeType.Tariff, "Tarif_Ny", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    ("804", "5790001687137", oldGridAreaOwner, ChargeType.Subscription, "100", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    ("804", "5790000701278", oldGridAreaOwner, ChargeType.Subscription, "4310", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    ("804", "5790001687137", oldGridAreaOwner, ChargeType.Subscription, "4310", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    ("804", "5790001687137", oldGridAreaOwner, ChargeType.Subscription, "Abb Flex", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    // Results for the new grid area owner
+                    ("804", "5790001687137", newGridAreaOwner, ChargeType.Subscription, "Abb Flex", AmountType.MonthlyAmountPerCharge, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ]);
+        }
+
+        [Fact]
+        public async Task
+            Given_SystemOperatorRequestsWithoutChargeOwner_WhenGridAreaHasBeenMerged_Then_DataReturnedContainsSystemOperatorIsChargeOwnerAndIsNotTaxCharges()
+        {
+            var systemOperator = "5790000432752";
+            var totalPeriod = new Period(
+                Instant.FromUtc(2021, 12, 31, 23, 0),
+                Instant.FromUtc(2022, 1, 31, 23, 0));
+
+            var parameters = new WholesaleServicesQueryParameters(
+                AmountType: AmountType.MonthlyAmountPerCharge,
+                GridAreaCodes: ["804"],
+                EnergySupplierId: null,
+                ChargeOwnerId: null,
+                ChargeTypes: [],
+                CalculationType: null, // This is how we denote 'latest correction'
+                Period: totalPeriod,
+                RequestedForEnergySupplier: false,
+                RequestedForActorNumber: systemOperator);
+
+            // Act
+            var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+            using var assertionScope = new AssertionScope();
+            actual.Count.Should().Be(6);
+            actual.All(x => x.ChargeOwnerId == systemOperator).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task
+            Given_GridAreaOwnerRequestsWithTotalMonthlyAndWithoutChargeOwner_WhenGridAreaHasBeenMerged_Then_DataReturnedContainsChargeOwnerCharges()
+        {
+            var newGridAreaOwner = "8100000000007";
+            var oldGridAreaOwner = "8100000000047";
+            var totalPeriod = new Period(
+                Instant.FromUtc(2021, 12, 31, 23, 0),
+                Instant.FromUtc(2022, 1, 31, 23, 0));
+
+            var parameters = new WholesaleServicesQueryParameters(
+                AmountType: AmountType.TotalMonthlyAmount,
+                GridAreaCodes: ["804"],
+                EnergySupplierId: null,
+                ChargeOwnerId: null,
+                ChargeTypes: [],
+                CalculationType: null, // This is how we denote 'latest correction'
+                Period: totalPeriod,
+                RequestedForEnergySupplier: false,
+                RequestedForActorNumber: newGridAreaOwner);
+
+            // Act
+            var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+            using var assertionScope = new AssertionScope();
+            // New charge owner receives all grid area owner charges
+            actual.All(x => x.ChargeOwnerId == oldGridAreaOwner || x.ChargeOwnerId == newGridAreaOwner).Should().BeTrue();
+            actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
+                    ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod, ats.CalculationType,
+                    ats.Version, ats.TimeSeriesPoints.Count))
+                .Should()
+                .BeEquivalentTo([
+                    // Results for the old grid area owner
+                    ("804", "5790001687137", oldGridAreaOwner, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    ("804", "5790000701278", oldGridAreaOwner, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                    // Results for the new grid area owner
+                    ("804", "5790000701278", newGridAreaOwner, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, null, null, CalculationType.ThirdCorrectionSettlement, 2, 1),
+                ]);
+        }
+
+        [Fact]
+        public async Task
+            Given_SystemOperatorRequestsWithTotalMonthlyAndWithoutChargeOwner_WhenGridAreaHasBeenMerged_Then_DataReturnedContainsSyoAsChargeOwner()
+        {
+            var syoChargeOwner = "5790000432752";
+            var totalPeriod = new Period(
+                Instant.FromUtc(2021, 12, 31, 23, 0),
+                Instant.FromUtc(2022, 1, 31, 23, 0));
+
+            var parameters = new WholesaleServicesQueryParameters(
+                AmountType: AmountType.TotalMonthlyAmount,
+                GridAreaCodes: ["804"],
+                EnergySupplierId: null,
+                ChargeOwnerId: null,
+                ChargeTypes: [],
+                CalculationType: null,
+                Period: totalPeriod,
+                RequestedForEnergySupplier: false,
+                RequestedForActorNumber: syoChargeOwner);
+
+            // Act
+            var actual = await Sut.GetAsync(parameters).ToListAsync();
+
+            using var assertionScope = new AssertionScope();
+            // All result to System operator where system operator is charge owner
+            actual.All(x => x.ChargeOwnerId == syoChargeOwner).Should().BeTrue();
+            actual.Select(ats => (ats.GridArea, ats.EnergySupplierId, ats.ChargeOwnerId, ats.ChargeType, ats.ChargeCode,
+                    ats.AmountType, ats.Resolution, ats.MeteringPointType, ats.SettlementMethod, ats.CalculationType,
+                    ats.Version, ats.TimeSeriesPoints.Count))
+                .Should()
+                .BeEquivalentTo([
+                    ("804", "5790001687137", syoChargeOwner, (ChargeType?)null, (string?)null, AmountType.TotalMonthlyAmount, Resolution.Month, (MeteringPointType?)null, (SettlementMethod?)null, CalculationType.ThirdCorrectionSettlement, 2, 1),
                 ]);
         }
     }

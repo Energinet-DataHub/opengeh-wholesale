@@ -21,13 +21,15 @@ namespace Energinet.DataHub.Wholesale.Edi.Validation.AggregatedTimeSeriesRequest
 public class PeriodValidationRule(PeriodValidationHelper periodValidationHelper)
     : IValidationRule<DataHub.Edi.Requests.AggregatedTimeSeriesRequest>
 {
-    private readonly int _maxAllowedPeriodSizeInMonths = 1;
-    private readonly int _allowedTimeFrameInYearsFromNow = 3;
+    private const int MaxAllowedPeriodSizeInMonths = 1;
+    private const int AllowedTimeFrameYearsFromNow = 3;
+    private const int AllowedTimeFrameMonthsFromNow = 6;
+    private readonly PeriodValidationHelper _periodValidationHelper = periodValidationHelper;
 
     private static readonly ValidationError _invalidDateFormat = new("Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z eller YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z or YYYY-MM-DDT23:00:00Z", "D66");
     private static readonly ValidationError _invalidWinterMidnightFormat = new("Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT23:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT23:00:00Z", "D66");
     private static readonly ValidationError _invalidSummerMidnightFormat = new("Forkert dato format for {PropertyName}, skal være YYYY-MM-DDT22:00:00Z / Wrong date format for {PropertyName}, must be YYYY-MM-DDT22:00:00Z", "D66");
-    private static readonly ValidationError _startDateMustBeLessThen3Years = new("Dato må max være 3 år tilbage i tid / Can maximum be 3 years back in time", "E17");
+    private static readonly ValidationError _startDateMustBeLessThen3Years = new($"Dato må max være {AllowedTimeFrameYearsFromNow} år og {AllowedTimeFrameMonthsFromNow} måneder tilbage i tid / Can maximum be {AllowedTimeFrameYearsFromNow} years and {AllowedTimeFrameMonthsFromNow} months back in time", "E17");
     private static readonly ValidationError _periodIsGreaterThenAllowedPeriodSize = new("Dato må kun være for 1 måned af gangen / Can maximum be for a 1 month period", "E17");
     private static readonly ValidationError _missingStartOrAndEndDate = new("Start og slut dato skal udfyldes / Start and end date must be present in request", "E50");
 
@@ -71,14 +73,16 @@ public class PeriodValidationRule(PeriodValidationHelper periodValidationHelper)
 
     private void IntervalMustBeWithinAllowedPeriodSize(Instant start, Instant end, IList<ValidationError> errors)
     {
-        if (periodValidationHelper.IntervalMustBeLessThanAllowedPeriodSize(start, end, _maxAllowedPeriodSizeInMonths))
+        if (_periodValidationHelper.IntervalMustBeLessThanAllowedPeriodSize(start, end, MaxAllowedPeriodSizeInMonths))
             errors.Add(_periodIsGreaterThenAllowedPeriodSize);
     }
 
     private void StartDateMustBeGreaterThenAllowedYears(Instant start, IList<ValidationError> errors)
     {
-        if (periodValidationHelper.IsDateOlderThanAllowed(start, maxYears: _allowedTimeFrameInYearsFromNow, maxMonths: 0))
+        if (_periodValidationHelper.IsMonthOfDateOlderThanXYearsAndYMonths(start, AllowedTimeFrameYearsFromNow, AllowedTimeFrameMonthsFromNow))
+        {
             errors.Add(_startDateMustBeLessThen3Years);
+        }
     }
 
     private Instant? ParseToInstant(string dateTimeString, string propertyName, IList<ValidationError> errors)
@@ -93,7 +97,7 @@ public class PeriodValidationRule(PeriodValidationHelper periodValidationHelper)
 
     private void MustBeMidnight(Instant instant, string propertyName, IList<ValidationError> errors)
     {
-        if (periodValidationHelper.IsMidnight(instant, out var zonedDateTime))
+        if (_periodValidationHelper.IsMidnight(instant, out var zonedDateTime))
             return;
 
         errors.Add(zonedDateTime.IsDaylightSavingTime()
