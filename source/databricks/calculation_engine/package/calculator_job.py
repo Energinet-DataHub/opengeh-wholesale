@@ -33,7 +33,7 @@ from package.calculator_job_args import (
 )
 from package.container import create_and_configure_container
 from package.databases import migrations_wholesale, wholesale_internal
-from package.infrastructure import initialize_spark, configure_spark
+from package.infrastructure.spark_initializor import initialize_spark, configure_spark
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
