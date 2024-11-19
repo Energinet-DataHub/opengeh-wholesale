@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from delta.tables import DeltaTable
-from package.optimize_job.delta_optimization import (
-    _optimize_table,
-)
+import os
+from package.optimize_job.delta_optimization import _optimize_table, optimize_tables
 from pyspark.sql import SparkSession
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from pyspark.sql.types import StructType, StructField, StringType
 import pytest
 from telemetry_logging import Logger
+from package.infrastructure.paths import (
+    WholesaleResultsInternalDatabase,
+)
 
 
 def test__optimize_table__optimize_is_in_history_of_delta_table(
@@ -63,6 +65,53 @@ def test__optimize_table__optimize_is_in_history_of_delta_table(
 
     # Act
     _optimize_table(spark, database_name, table_name, logger)
+
+    # Assert
+    delta_table = DeltaTable.forName(spark, full_table_name)
+    assert delta_table.history().filter("operation == 'OPTIMIZE'").count() > 0
+
+
+def test__optimize_tables__optimize_is_in_history_of_delta_table(
+    spark: SparkSession,
+) -> None:
+    # Arrange
+    os.environ["CATALOG_NAME"] = "test_catalog"
+    database_name = WholesaleResultsInternalDatabase.DATABASE_NAME
+    table_name = WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME
+    table_location = "/tmp/test"
+    full_table_name = f"{database_name}.{table_name}"
+
+    schema = StructType(
+        [
+            StructField("name", StringType(), False),
+            StructField("row", StringType(), False),
+        ]
+    )
+    df = spark.createDataFrame(
+        [("1", "foo"), ("2", "bar"), ("3", "test")], schema=schema
+    )
+
+    write_dataframe_to_table(
+        spark,
+        df,
+        database_name,
+        table_name,
+        table_location,
+        schema,
+    )
+
+    write_dataframe_to_table(
+        spark,
+        df,
+        database_name,
+        table_name,
+        table_location,
+        schema,
+        mode="append",
+    )
+
+    # Act
+    optimize_tables()
 
     # Assert
     delta_table = DeltaTable.forName(spark, full_table_name)
