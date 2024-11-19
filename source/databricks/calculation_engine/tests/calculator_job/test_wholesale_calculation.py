@@ -29,7 +29,7 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     charge_price_points_schema,
     grid_loss_metering_point_ids_schema,
     time_series_points_schema,
-    metering_point_periods_schema_uc,
+    metering_point_periods_schema,
 )
 from package.infrastructure import paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
@@ -333,8 +333,8 @@ def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
     "basis_data_table_name, expected_schema",
     [
         (
-            paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-            metering_point_periods_schema_uc,
+                paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+                metering_point_periods_schema,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
