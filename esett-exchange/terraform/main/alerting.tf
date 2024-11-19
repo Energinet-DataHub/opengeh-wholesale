@@ -23,7 +23,6 @@ module "monitor_action_group_esett" {
                       | where timestamp > ago(10m)
                         and (cloud_RoleName == 'func-ecp-inbox-${local.NAME_SUFFIX}'
                           or cloud_RoleName == 'func-ecp-outbox-${local.NAME_SUFFIX}'
-                          or cloud_RoleName == 'func-peek-${local.NAME_SUFFIX}'
                           or cloud_RoleName == 'func-exchange-event-receiver-${local.NAME_SUFFIX}'
                           or cloud_RoleName == 'app-webapi-${local.NAME_SUFFIX}')
                         and (operation_Name == "GET /monitor/ready")
