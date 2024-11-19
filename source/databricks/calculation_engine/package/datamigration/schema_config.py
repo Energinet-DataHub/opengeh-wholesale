@@ -81,7 +81,7 @@ schema_config = [
         tables=[
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-                schema=basis_data_schemas.metering_point_periods_schema_uc,
+                schema=basis_data_schemas.metering_point_periods_schema,
             ),
             Table(
                 name=paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,

@@ -13,12 +13,14 @@ from settlement_report_job.entry_points.job_args.settlement_report_args import (
 from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )
-from settlement_report_job.entry_points.tasks.charge_links_task import ChargeLinksTask
+from settlement_report_job.entry_points.tasks.charge_link_periods_task import (
+    ChargeLinkPeriodsTask,
+)
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from utils import get_actual_files
 
 
-def test_execute_charge_links__when_energy_supplier__returns_expected(
+def test_execute_charge_link_periods__when_energy_supplier__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_energy_supplier_args: SettlementReportArgs,
@@ -39,7 +41,7 @@ def test_execute_charge_links__when_energy_supplier__returns_expected(
         CsvColumnNames.charge_link_from_date,
         CsvColumnNames.charge_link_to_date,
     ]
-    task = ChargeLinksTask(
+    task = ChargeLinkPeriodsTask(
         spark, dbutils, standard_wholesale_fixing_scenario_energy_supplier_args
     )
 
@@ -62,7 +64,7 @@ def test_execute_charge_links__when_energy_supplier__returns_expected(
     )
 
 
-def test_execute_charge_links__when_grid_access_provider__returns_expected(
+def test_execute_charge_link_periods__when_grid_access_provider__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_grid_access_provider_args: SettlementReportArgs,
@@ -83,7 +85,7 @@ def test_execute_charge_links__when_grid_access_provider__returns_expected(
         CsvColumnNames.charge_link_from_date,
         CsvColumnNames.charge_link_to_date,
     ]
-    task = ChargeLinksTask(
+    task = ChargeLinkPeriodsTask(
         spark, dbutils, standard_wholesale_fixing_scenario_grid_access_provider_args
     )
 
@@ -110,7 +112,7 @@ def test_execute_charge_links__when_grid_access_provider__returns_expected(
     "market_role",
     [MarketRole.SYSTEM_OPERATOR, MarketRole.DATAHUB_ADMINISTRATOR],
 )
-def test_execute_charge_links__when_system_operator_or_datahub_admin_with_one_energy_supplier_id__returns_expected(
+def test_execute_charge_link_periods__when_system_operator_or_datahub_admin_with_one_energy_supplier_id__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -139,7 +141,7 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_one_en
         CsvColumnNames.charge_link_to_date,
         CsvColumnNames.energy_supplier_id,
     ]
-    task = ChargeLinksTask(spark, dbutils, args)
+    task = ChargeLinkPeriodsTask(spark, dbutils, args)
 
     # Act
     task.execute()
@@ -162,7 +164,7 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_one_en
     "market_role",
     [MarketRole.SYSTEM_OPERATOR, MarketRole.DATAHUB_ADMINISTRATOR],
 )
-def test_execute_charge_links__when_system_operator_or_datahub_admin_with_none_energy_supplier_id__returns_expected(
+def test_execute_charge_link_periods__when_system_operator_or_datahub_admin_with_none_energy_supplier_id__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -188,7 +190,7 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_none_e
         CsvColumnNames.charge_link_to_date,
         CsvColumnNames.energy_supplier_id,
     ]
-    task = ChargeLinksTask(spark, dbutils, args)
+    task = ChargeLinkPeriodsTask(spark, dbutils, args)
 
     # Act
     task.execute()
@@ -207,7 +209,7 @@ def test_execute_charge_links__when_system_operator_or_datahub_admin_with_none_e
     )
 
 
-def test_execute_charge_links__when_include_basis_data_false__returns_no_file_paths(
+def test_execute_charge_link_periods__when_include_basis_data_false__returns_no_file_paths(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -216,7 +218,7 @@ def test_execute_charge_links__when_include_basis_data_false__returns_no_file_pa
     # Arrange
     args = standard_wholesale_fixing_scenario_args
     args.include_basis_data = False
-    task = ChargeLinksTask(spark, dbutils, args)
+    task = ChargeLinkPeriodsTask(spark, dbutils, args)
 
     # Act
     task.execute()

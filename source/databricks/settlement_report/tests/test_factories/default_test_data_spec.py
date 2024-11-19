@@ -173,7 +173,7 @@ def create_metering_point_periods_row(
     )
 
 
-def create_time_series_data_spec(
+def create_time_series_points_data_spec(
     calculation_id: str = DEFAULT_CALCULATION_ID,
     calculation_type: CalculationTypeDataProductValue = CalculationTypeDataProductValue.WHOLESALE_FIXING,
     calculation_version: int = DEFAULT_CALCULATION_VERSION,
