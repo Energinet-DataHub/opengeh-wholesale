@@ -87,9 +87,9 @@ def write(
 
 def _get_folder_name(report_data_type: ReportDataType) -> str:
     if report_data_type == ReportDataType.TimeSeriesHourly:
-        return "time_series_hourly"
+        return "time_series_points_hourly"
     elif report_data_type == ReportDataType.TimeSeriesQuarterly:
-        return "time_series_quarterly"
+        return "time_series_points_quarterly"
     elif report_data_type == ReportDataType.MeteringPointPeriods:
         return "metering_point_periods"
     elif report_data_type == ReportDataType.ChargeLinks:
