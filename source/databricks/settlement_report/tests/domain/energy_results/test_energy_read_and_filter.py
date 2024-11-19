@@ -281,7 +281,7 @@ def test_read_and_filter_from_view__when_balance_fixing_with_two_calculations_wi
     calculation_id_2 = "22222222-9fc8-409a-a169-fbd49479d718"
     calc_type = CalculationTypeDataProductValue.BALANCE_FIXING
 
-    time_series = reduce(
+    time_series_points = reduce(
         lambda df1, df2: df1.union(df2),
         [
             energy_factory.create_energy_per_es_v1(
@@ -317,7 +317,7 @@ def test_read_and_filter_from_view__when_balance_fixing_with_two_calculations_wi
     )
 
     mock_repository = Mock()
-    mock_repository.read_energy_per_es.return_value = time_series
+    mock_repository.read_energy_per_es.return_value = time_series_points
     mock_repository.read_latest_calculations.return_value = latest_calculations
 
     standard_balance_fixing_scenario_args.period_start = day_1

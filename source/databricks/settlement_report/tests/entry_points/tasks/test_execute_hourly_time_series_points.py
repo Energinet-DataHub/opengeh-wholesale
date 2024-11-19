@@ -12,12 +12,14 @@ from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.entry_points.tasks.task_type import TaskType
-from settlement_report_job.entry_points.tasks.time_series_task import TimeSeriesTask
+from settlement_report_job.entry_points.tasks.time_series_points_task import (
+    TimeSeriesPointsTask,
+)
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from utils import cleanup_output_path, get_actual_files
 
 
-# NOTE: The tests in test_execute_quarterly_time_series.py should cover execute_hourly also, so we don't need to test
+# NOTE: The tests in test_execute_quarterly_time_series_points.py should cover execute_hourly also, so we don't need to test
 # all the same things again here also.
 
 
@@ -29,7 +31,7 @@ def reset_task_values(settlement_reports_output_path: str):
     )
 
 
-def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__returns_expected_number_of_files_and_content(
+def test_execute_hourly_time_series_points__when_standard_wholesale_fixing_scenario__returns_expected_number_of_files_and_content(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -46,7 +48,7 @@ def test_execute_hourly_time_series__when_standard_wholesale_fixing_scenario__re
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 26)]
-    task = TimeSeriesTask(
+    task = TimeSeriesPointsTask(
         spark,
         dbutils,
         standard_wholesale_fixing_scenario_args,

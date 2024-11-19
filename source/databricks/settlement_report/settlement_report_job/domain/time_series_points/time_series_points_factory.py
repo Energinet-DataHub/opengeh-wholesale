@@ -19,10 +19,10 @@ from pyspark.sql import DataFrame
 from telemetry_logging import Logger, use_span
 from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.infrastructure.repository import WholesaleRepository
-from settlement_report_job.domain.time_series.prepare_for_csv import (
+from settlement_report_job.domain.time_series_points.prepare_for_csv import (
     prepare_for_csv,
 )
-from settlement_report_job.domain.time_series.read_and_filter import (
+from settlement_report_job.domain.time_series_points.read_and_filter import (
     read_and_filter_for_wholesale,
     read_and_filter_for_balance_fixing,
 )
@@ -34,7 +34,7 @@ log = Logger(__name__)
 
 
 @use_span()
-def create_time_series_for_balance_fixing(
+def create_time_series_points_for_balance_fixing(
     period_start: datetime,
     period_end: datetime,
     grid_area_codes: list[str],
@@ -56,17 +56,17 @@ def create_time_series_for_balance_fixing(
         repository=repository,
     )
 
-    prepared_time_series = prepare_for_csv(
+    prepared_time_series_points = prepare_for_csv(
         filtered_time_series_points=time_series_points,
         metering_point_resolution=metering_point_resolution,
         time_zone=time_zone,
         requesting_actor_market_role=requesting_market_role,
     )
-    return prepared_time_series
+    return prepared_time_series_points
 
 
 @use_span()
-def create_time_series_for_wholesale(
+def create_time_series_points_for_wholesale(
     period_start: datetime,
     period_end: datetime,
     calculation_id_by_grid_area: dict[str, UUID],
@@ -90,10 +90,10 @@ def create_time_series_for_wholesale(
         repository=repository,
     )
 
-    prepared_time_series = prepare_for_csv(
+    prepared_time_series_points = prepare_for_csv(
         filtered_time_series_points=time_series_points,
         metering_point_resolution=metering_point_resolution,
         time_zone=time_zone,
         requesting_actor_market_role=requesting_actor_market_role,
     )
-    return prepared_time_series
+    return prepared_time_series_points
