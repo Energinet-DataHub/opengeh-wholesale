@@ -64,6 +64,7 @@ class TestWhenInvokedWithArguments:
             "sys.argv",
             _prepare_command_line_arguments(standard_wholesale_fixing_scenario_args),
         ):
+            print(sys.argv)
             # Act
             with patch(
                 "settlement_report_job.entry_points.tasks.task_factory.create",
