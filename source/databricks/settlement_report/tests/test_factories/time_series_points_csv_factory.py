@@ -22,7 +22,7 @@ DEFAULT_NUM_DAYS_PER_METERING_POINT = 1
 
 
 @dataclass
-class TimeSeriesCsvTestDataSpec:
+class TimeSeriesPointsCsvTestDataSpec:
     metering_point_type: MeteringPointTypeDataProductValue = DEFAULT_METERING_POINT_TYPE
     start_of_day: datetime = DEFAULT_START_OF_DAY
     grid_area_codes: list = field(default_factory=lambda: DEFAULT_GRID_AREA_CODES)
@@ -32,7 +32,9 @@ class TimeSeriesCsvTestDataSpec:
     num_days_per_metering_point: int = DEFAULT_NUM_DAYS_PER_METERING_POINT
 
 
-def create(spark: SparkSession, data_spec: TimeSeriesCsvTestDataSpec) -> DataFrame:
+def create(
+    spark: SparkSession, data_spec: TimeSeriesPointsCsvTestDataSpec
+) -> DataFrame:
     rows = []
     counter = 0
     for grid_area_code in data_spec.grid_area_codes:
