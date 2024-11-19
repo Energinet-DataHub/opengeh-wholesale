@@ -29,7 +29,7 @@ from settlement_report_job.entry_points.entry_point import (
     start_task_with_deps,
 )
 from settlement_report_job.entry_points.tasks.task_type import TaskType
-from tests.integration_test_configuration import IntegrationTestConfiguration
+from integration_test_configuration import IntegrationTestConfiguration
 
 
 class TestWhenInvokedWithArguments:
@@ -67,7 +67,7 @@ class TestWhenInvokedWithArguments:
             task_factory_mock,
         ):
             with patch(
-                "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
+                "settlement_report_job.entry_points.tasks.time_series_points_task.TimeSeriesTask.execute",
                 return_value=None,
             ):
                 start_task_with_deps(
@@ -145,7 +145,7 @@ class TestWhenInvokedWithArguments:
                 task_factory_mock,
             ):
                 with patch(
-                    "settlement_report_job.entry_points.tasks.time_series_task.TimeSeriesTask.execute",
+                    "settlement_report_job.entry_points.tasks.time_series_points_task.TimeSeriesTask.execute",
                     return_value=None,
                 ):
                     start_task_with_deps(
