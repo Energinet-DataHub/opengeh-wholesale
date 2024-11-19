@@ -100,6 +100,7 @@ module "monitor_action_group_mig" {
         traces
         | where cloud_RoleName in ("${module.func_timeseriesprocessor.name}")
         | where severityLevel == 3
+        | where message !contains (".json to dh2-timeseries-synchronization: The operation was canceled")
         | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "HealthCheckEnd", "PartitionManagerError")
         | where tostring(customDimensions["prop__reason"]) !contains ("DurableTask.Core.Exceptions.OrchestrationFailureException")
         | where tostring(customDimensions["prop__reason"]) !contains ("Microsoft.Azure.WebJobs.Host.FunctionInvocationException")
