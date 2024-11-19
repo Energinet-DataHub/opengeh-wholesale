@@ -488,6 +488,52 @@ def test_write__when_prevent_large_files_but_too_few_rows__chunk_index_should_be
         pass
 
 
+def test_write__when_prevent_large_files_and_multiplie_grid_areas_but_too_few_rows__chunk_index_should_be_excluded(
+    dbutils: DBUtilsFixture,
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+):
+    # Arrange
+    expected_file_count = 1
+    report_data_type = ReportDataType.TimeSeriesQuarterly
+    standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
+    test_spec_consumption = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
+        metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
+        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
+        num_metering_points=30,
+    )
+    df_prepared_time_series_points = time_series_points_factory.create(
+        spark, test_spec_consumption, add_grid_area_code_partitioning_column=True
+    )
+
+    # Act
+    result_files = csv_writer.write(
+        dbutils=dbutils,
+        args=standard_wholesale_fixing_scenario_args,
+        df=df_prepared_time_series_points,
+        report_data_type=report_data_type,
+        order_by_columns=time_series_points_order_by_columns.order_by_columns(
+            requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        ),
+        rows_per_file=31,
+    )
+
+    # Assert
+    assert len(result_files) == expected_file_count
+    file_name = result_files[0]
+    file_name = file_name[:-4]
+    file_name_components = file_name.split("_")
+
+    chunk_id_if_present = file_name_components[-1]
+    try:
+        int(chunk_id_if_present)
+        assert (
+            False
+        ), "A valid integer indicating a present chunk index was found when not expected!"
+    except ValueError:
+        pass
+
+
 def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expected_number_of_files_and_content(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
