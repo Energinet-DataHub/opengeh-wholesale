@@ -14,6 +14,7 @@
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
+from telemetry_logging import use_span
 
 from package.calculation.preparation.data_structures import InputChargesContainer
 from package.calculation.preparation.data_structures.grid_loss_metering_point_ids import (
@@ -24,7 +25,6 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 )
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
-from telemetry_logging import use_span
 
 
 @use_span("get_metering_point_periods_basis_data")
