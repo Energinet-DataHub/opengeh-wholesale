@@ -49,7 +49,7 @@ def start_metering_point_periods() -> None:
     _start_task(TaskType.MeteringPointPeriods)
 
 
-def start_charge_links() -> None:
+def start_charge_link_periods() -> None:
     _start_task(TaskType.ChargeLinks)
 
 

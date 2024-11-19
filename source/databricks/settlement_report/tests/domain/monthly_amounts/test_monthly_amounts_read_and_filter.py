@@ -111,8 +111,8 @@ def monthly_amounts_read_and_filter_mock_repository(
     return mock_repository
 
 
-def get_expected_unordered_columns(include_charge_owner=True) -> list[str]:
-    expected_unordered_columns = [
+def get_expected_unordered_columns() -> list[str]:
+    return [
         DataProductColumnNames.calculation_id,
         DataProductColumnNames.calculation_type,
         DataProductColumnNames.calculation_version,
@@ -127,12 +127,8 @@ def get_expected_unordered_columns(include_charge_owner=True) -> list[str]:
         DataProductColumnNames.charge_code,
         DataProductColumnNames.is_tax,
         DataProductColumnNames.result_id,
+        DataProductColumnNames.charge_owner_id,
     ]
-
-    if include_charge_owner:
-        expected_unordered_columns.append(DataProductColumnNames.charge_owner_id)
-
-    return expected_unordered_columns
 
 
 def test_read_and_filter_from_view__returns_expected_columns(
@@ -254,9 +250,7 @@ def test_read_and_filter_from_view__when_grid_or_system_operator__returns_multip
         standard_wholesale_fixing_scenario_args.calculation_id_by_grid_area
     )[0]
 
-    expected_unordered_columns = get_expected_unordered_columns(
-        include_charge_owner=False
-    )
+    expected_unordered_columns = get_expected_unordered_columns()
 
     # Act
     actual_df = read_and_filter_from_view(

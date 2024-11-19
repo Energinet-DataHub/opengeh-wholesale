@@ -7,7 +7,7 @@ import pytest
 from pyspark.sql import SparkSession, functions as F
 import tests.test_factories.default_test_data_spec as default_data
 import tests.test_factories.metering_point_time_series_factory as time_series_factory
-import tests.test_factories.charge_link_periods_factory as charge_links_factory
+import tests.test_factories.charge_link_periods_factory as charge_link_periods_factory
 import tests.test_factories.charge_price_information_periods_factory as charge_price_information_periods
 from settlement_report_job.infrastructure.wholesale.data_values import (
     CalculationTypeDataProductValue,
@@ -322,7 +322,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_
             charge_owner_id=SYSTEM_OPERATOR_ID
         ),
     )
-    charge_link_periods_df = charge_links_factory.create(
+    charge_link_periods_df = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(charge_owner_id=SYSTEM_OPERATOR_ID),
     )
