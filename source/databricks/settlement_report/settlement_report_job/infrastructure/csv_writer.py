@@ -191,7 +191,7 @@ def _get_new_files(
 
 def _get_file_info_list(
     spark_output_path: str, partition_columns: list[str]
-) -> list[tuple[Path, str, str]]:
+) -> list[tuple[Path, str | None, str | None]]:
     file_info_list = []
 
     files = [f for f in Path(spark_output_path).rglob("*.csv")]
