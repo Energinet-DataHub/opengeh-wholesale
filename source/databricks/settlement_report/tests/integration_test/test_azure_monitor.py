@@ -60,7 +60,10 @@ class TestWhenInvokedWithArguments:
         os.environ["CATALOG_NAME"] = "test_catalog"
         task_factory_mock = Mock()
 
-        with patch("sys.argv", standard_wholesale_fixing_scenario_args):
+        with patch(
+            "sys.argv",
+            _prepare_command_line_arguments(standard_wholesale_fixing_scenario_args),
+        ):
             # Act
             with patch(
                 "settlement_report_job.entry_points.tasks.task_factory.create",
@@ -137,7 +140,10 @@ class TestWhenInvokedWithArguments:
         os.environ["CATALOG_NAME"] = "test_catalog"
         task_factory_mock = Mock()
 
-        with patch("sys.argv", standard_wholesale_fixing_scenario_args):
+        with patch(
+            "sys.argv",
+            _prepare_command_line_arguments(standard_wholesale_fixing_scenario_args),
+        ):
             # Act
             with pytest.raises(SystemExit):
                 with patch(
@@ -183,37 +189,16 @@ class TestWhenInvokedWithArguments:
             assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
 
-    @staticmethod
-    def prepare_command_line_arguments(
-        standard_wholesale_fixing_scenario_args: SettlementReportArgs,
-    ) -> None:
-        standard_wholesale_fixing_scenario_args.report_id = str(
-            uuid.uuid4()
-        )  # Ensure unique report id
-        sys.argv = []
-        sys.argv.append(
-            "--entry-point=execute_wholesale_results"
-        )  # Workaround as the parse command line arguments starts with the second argument
-        sys.argv.append(
-            f"--report-id={str(standard_wholesale_fixing_scenario_args.report_id)}"
-        )
-        sys.argv.append(
-            f"--period-start={str(standard_wholesale_fixing_scenario_args.period_start.strftime('%Y-%m-%dT%H:%M:%SZ'))}"
-        )
-        sys.argv.append(
-            f"--period-end={str(standard_wholesale_fixing_scenario_args.period_end.strftime('%Y-%m-%dT%H:%M:%SZ'))}"
-        )
-        sys.argv.append(
-            f"--calculation-type={str(standard_wholesale_fixing_scenario_args.calculation_type.value)}"
-        )
-        sys.argv.append("--requesting-actor-market-role=datahub_administrator")
-        sys.argv.append("--requesting-actor-id=1234567890123")
-        sys.argv.append(
-            f"--grid-area-codes={str(standard_wholesale_fixing_scenario_args.grid_area_codes)}"
-        )
-        sys.argv.append(
-            '--calculation-id-by-grid-area={"804": "bf6e1249-d4c2-4ec2-8ce5-4c7fe8756253"}'
-        )
+
+def _prepare_command_line_arguments(
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+) -> list[str]:
+    return [
+        str(attr)
+        for attr in dir(standard_wholesale_fixing_scenario_args)
+        if not callable(getattr(standard_wholesale_fixing_scenario_args, attr))
+        and not attr.startswith("__")
+    ]
 
 
 def wait_for_condition(callback: Callable, *, timeout: timedelta, step: timedelta):
