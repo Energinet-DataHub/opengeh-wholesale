@@ -103,8 +103,8 @@ module "monitor_action_group_mig" {
         | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "HealthCheckEnd", "PartitionManagerError")
         | where tostring(customDimensions["prop__reason"]) !contains ("DurableTask.Core.Exceptions.OrchestrationFailureException")
         | where tostring(customDimensions["prop__reason"]) !contains ("Microsoft.Azure.WebJobs.Host.FunctionInvocationException")
-        | summarize eventCount = count() by tostring(customDimensions["EventName"])
         | where tostring(customDimensions["ErrorMessage"]) !contains ("The operation was canceled")
+        | summarize eventCount = count() by tostring(customDimensions["EventName"])
         | order by eventCount desc
         QUERY
     }
