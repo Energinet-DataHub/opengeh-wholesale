@@ -175,15 +175,12 @@ def _get_new_files(
     )
 
     distinct_chunk_indices = set([chunk_index for _, _, chunk_index in file_info_list])
-    exclude_chunk_index = len(distinct_chunk_indices) == 1
+    include_chunk_index = len(distinct_chunk_indices) > 1
 
     for f, grid_area, chunk_index in file_info_list:
-        if exclude_chunk_index:
-            chunk_index = None
-
         file_name = file_name_factory.create(
             grid_area_code=grid_area,
-            chunk_index=chunk_index,
+            chunk_index=chunk_index if include_chunk_index else None,
         )
         new_name = Path(report_output_path) / file_name
         tmp_dst = Path("/tmp") / file_name
