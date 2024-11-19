@@ -16,6 +16,7 @@ import importlib.metadata
 from typing import Any
 
 import pytest
+from settlement_report_job.entry_points import entry_point as module
 
 
 # IMPORTANT:
@@ -33,6 +34,15 @@ def assert_entry_point_exists(entry_point_name: str) -> Any:
             assert False, f"The {entry_point_name} entry point was not found."
         # Check if the module exists
         module_name = entry_point[0].module
+        function_name = entry_point[0].value.split(":")[1]
+        if not hasattr(
+            module,
+            function_name,
+        ):
+            assert (
+                False
+            ), f"The entry point module function {function_name} does not exist in entry_point.py."
+
         importlib.import_module(module_name)
     except importlib.metadata.PackageNotFoundError:
         assert False, f"The {entry_point_name} entry point was not found."
