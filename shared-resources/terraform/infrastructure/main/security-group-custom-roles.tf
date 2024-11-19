@@ -53,7 +53,9 @@ resource "azurerm_role_definition" "contributor_app_developers" {
       "Microsoft.Web/sites/slots/start/Action",
       "Microsoft.Web/sites/slots/stop/Action",
       "Microsoft.Web/sites/config/list/Action",
-      "Microsoft.Web/sites/config/Read"
+      "Microsoft.Web/sites/config/Read",
+      "microsoft.web/sites/extensions/*",
+      "microsoft.web/sites/slots/extensions/*"
     ]
   }
 }
