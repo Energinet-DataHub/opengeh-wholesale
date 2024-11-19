@@ -333,8 +333,8 @@ def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
     "basis_data_table_name, expected_schema",
     [
         (
-                paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-                metering_point_periods_schema,
+            paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+            metering_point_periods_schema,
         ),
         (
             paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
