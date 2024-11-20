@@ -20,6 +20,11 @@ module "dbw" {
   catalog_name                             = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
   enable_verbose_audit_logs                = var.databricks_enable_verbose_audit_logs
 
+  scim_databrick_group_ids = [
+    var.databricks_readers_group.id,
+    var.databricks_contributor_dataplane_group.id
+  ]
+
   public_network_service_endpoints = [
     "Microsoft.EventHub"
   ]
