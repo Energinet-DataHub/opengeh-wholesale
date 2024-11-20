@@ -38,6 +38,12 @@ time_series_points.csv and the desired result output files to create the scenari
 - Elements in lists are separated with “,” fx. ['measured', 'calculated']
 - Decimal number are with 3 decimals in the results
 
+## Skipping Expected Columns
+
+Currently, the framework only supports skipping the column 'calculation_result_id'. 
+If you want to skip this column in leave ALL column cells empty in the expected result file.
+If any cell in the column is filled, the column will be checked.
+
 ## Coverage - all_test_cases.py and Coverage.py
 
 The class coverage/all_test_cases.py contains all test-cases that we want to test in the feature tests.
