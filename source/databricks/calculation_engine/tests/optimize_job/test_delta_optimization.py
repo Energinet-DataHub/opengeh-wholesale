@@ -12,16 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from delta.tables import DeltaTable
-from package.optimize_job.delta_optimization import _optimize_table, optimize_tables
+from package.optimize_job.delta_optimization import _optimize_table
 from pyspark.sql import SparkSession
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from pyspark.sql.types import StructType, StructField, StringType
 import pytest
-import os
 from telemetry_logging import Logger
-from package.infrastructure.paths import (
-    WholesaleResultsInternalDatabase,
-)
 
 
 def test__optimize_table__optimize_is_in_history_of_delta_table(
