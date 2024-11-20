@@ -93,17 +93,15 @@ def _calculate_fees(
         monthly_amounts_per_charge_factory.create(args, monthly_fee_per_co_es)
     )
 
-    monthly_fee_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
-        monthly_fee_per_co_es.df
-    )
+    monthly_fee_per_co_es = MonthlyAmountPerCharge(monthly_fee_per_co_es.df)
 
-    wholesale_results_output.monthly_fee_per_co_es_as_monthly_amount = (
+    wholesale_results_output.monthly_fee_per_co_es = (
         monthly_amounts_per_charge_factory.create(
             args,
-            monthly_fee_per_co_es_as_monthly_amount,
+            monthly_fee_per_co_es,
         )
     )
-    return monthly_fee_per_co_es_as_monthly_amount
+    return monthly_fee_per_co_es
 
 
 @use_span("calculate_subscriptions")
@@ -134,18 +132,18 @@ def _calculate_subscriptions(
         )
     )
 
-    monthly_subscription_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
+    monthly_subscription_per_co_es = MonthlyAmountPerCharge(
         monthly_subscription_per_co_es.df
     )
 
-    wholesale_results_output.monthly_subscription_per_co_es_as_monthly_amount = (
+    wholesale_results_output.monthly_subscription_per_co_es = (
         monthly_amounts_per_charge_factory.create(
             args,
-            monthly_subscription_per_co_es_as_monthly_amount,
+            monthly_subscription_per_co_es,
         )
     )
 
-    return monthly_subscription_per_co_es_as_monthly_amount
+    return monthly_subscription_per_co_es
 
 
 @use_span("calculate_hourly_tariffs")
@@ -179,18 +177,18 @@ def _calculate_hourly_tariffs(
         )
     )
 
-    monthly_tariff_from_hourly_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
+    monthly_tariff_from_hourly_per_co_es = MonthlyAmountPerCharge(
         monthly_tariff_from_hourly_per_co_es.df
     )
 
-    wholesale_results_output.monthly_tariff_from_hourly_per_co_es_as_monthly_amount = (
+    wholesale_results_output.monthly_tariff_from_hourly_per_co_es = (
         monthly_amounts_per_charge_factory.create(
             args,
-            monthly_tariff_from_hourly_per_co_es_as_monthly_amount,
+            monthly_tariff_from_hourly_per_co_es,
         )
     )
 
-    return monthly_tariff_from_hourly_per_co_es_as_monthly_amount
+    return monthly_tariff_from_hourly_per_co_es
 
 
 @use_span("calculate_daily_tariffs")
@@ -222,18 +220,18 @@ def _calculate_daily_tariffs(
         )
     )
 
-    monthly_tariff_from_daily_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
+    monthly_tariff_from_daily_per_co_es = MonthlyAmountPerCharge(
         monthly_tariff_from_daily_per_co_es.df
     )
 
-    wholesale_results_output.monthly_tariff_from_daily_per_co_es_as_monthly_amount = (
+    wholesale_results_output.monthly_tariff_from_daily_per_co_es = (
         monthly_amounts_per_charge_factory.create(
             args,
-            monthly_tariff_from_daily_per_co_es_as_monthly_amount,
+            monthly_tariff_from_daily_per_co_es,
         )
     )
 
-    return monthly_tariff_from_daily_per_co_es_as_monthly_amount
+    return monthly_tariff_from_daily_per_co_es
 
 
 @use_span("calculate_total_monthly_amount")
