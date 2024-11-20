@@ -52,19 +52,21 @@ def test__optimize_tables__optimize_is_in_history_of_delta_table(
         schema,
     )
 
-    write_dataframe_to_table(
-        spark,
-        df,
-        database_name,
-        table_name,
-        table_location,
-        schema,
-        mode="append",
-    )
+    # Generate more history to the table and files to optimize
+    for _ in range(5):
+        write_dataframe_to_table(
+            spark,
+            df,
+            database_name,
+            table_name,
+            table_location,
+            schema,
+            mode="append",
+        )
 
     # Act
     optimize_tables(catalog_name)
 
     # Assert
     delta_table = DeltaTable.forName(spark, full_table_name)
-    assert delta_table.history().filter("operation == 'OPTIMIZE'").count() > 0
+    assert delta_table.history().filter("operation == 'OPTIMIZE'").count() == 1
