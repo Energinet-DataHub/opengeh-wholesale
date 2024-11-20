@@ -27,7 +27,7 @@ def test__optimize_tables__optimize_is_in_history_of_delta_table(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    catalog_name = "test_catalog"
+    catalog_name = spark.catalog.currentCatalog()
     database_name = WholesaleResultsInternalDatabase.DATABASE_NAME
     table_name = WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME
     table_location = "/tmp/test"
