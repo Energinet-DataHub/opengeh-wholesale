@@ -40,7 +40,7 @@ time_series_points.csv and the desired result output files to create the scenari
 
 ## Skipping Expected Columns
 
-Currently, the framework only supports skipping the column 'calculation_result_id'. 
+Currently, the framework only supports skipping the column 'calculation_result_id'.
 If you want to skip this column in leave ALL column cells empty in the expected result file.
 If any cell in the column is filled, the column will be checked.
 
