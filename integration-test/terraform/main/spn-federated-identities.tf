@@ -11,7 +11,7 @@ locals {
   }
 }
 
-resource "azuread_application_federated_identity_credential" "geh-electricity-market" {
+resource "azuread_application_federated_identity_credential" "geh_electricity_market" {
   application_id = azuread_application.app_ci.id
 
   display_name = "geh-electricity-market-azureauth"
@@ -114,7 +114,7 @@ resource "azuread_application_federated_identity_credential" "geh_settlement_rep
 resource "azuread_application_federated_identity_credential" "dh2_bridge" {
   application_id = azuread_application.app_ci.id
 
-  display_name = "dh2-bridge"
+  display_name = "dh2-bridge-azureauth"
   subject      = "repo:Energinet-DataHub/dh2-bridge:environment:AzureAuth"
 
   audiences = [local.federated_identity_credential.audience_azuread]
@@ -124,10 +124,19 @@ resource "azuread_application_federated_identity_credential" "dh2_bridge" {
 resource "azuread_application_federated_identity_credential" "opengeh_notifications" {
   application_id = azuread_application.app_ci.id
 
-  display_name = "opengeh-notifications"
+  display_name = "opengeh-notifications-azureauth"
   subject      = "repo:Energinet-DataHub/opengeh-notifications:environment:AzureAuth"
 
   audiences = [local.federated_identity_credential.audience_azuread]
   issuer    = local.federated_identity_credential.issuer_github
 }
 
+resource "azuread_application_federated_identity_credential" "opengeh_process_manager" {
+  application_id = azuread_application.app_ci.id
+
+  display_name = "opengeh-process-manager-azureauth"
+  subject      = "repo:Energinet-DataHub/opengeh-process-manager:environment:AzureAuth"
+
+  audiences = [local.federated_identity_credential.audience_azuread]
+  issuer    = local.federated_identity_credential.issuer_github
+}
