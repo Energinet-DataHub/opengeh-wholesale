@@ -23,53 +23,6 @@ from package.infrastructure.paths import (
 )
 
 
-def test__optimize_table__optimize_is_in_history_of_delta_table(
-    spark: SparkSession,
-) -> None:
-    # Arrange
-    database_name = "test_database"
-    table_name = "test_table"
-    table_location = "/tmp/test"
-    full_table_name = f"{database_name}.{table_name}"
-    logger = Logger("test_logger")
-
-    schema = StructType(
-        [
-            StructField("name", StringType(), False),
-            StructField("row", StringType(), False),
-        ]
-    )
-    df = spark.createDataFrame(
-        [("1", "foo"), ("2", "bar"), ("3", "test")], schema=schema
-    )
-
-    write_dataframe_to_table(
-        spark,
-        df,
-        database_name,
-        table_name,
-        table_location,
-        schema,
-    )
-
-    write_dataframe_to_table(
-        spark,
-        df,
-        database_name,
-        table_name,
-        table_location,
-        schema,
-        mode="append",
-    )
-
-    # Act
-    _optimize_table(spark, database_name, table_name, logger)
-
-    # Assert
-    delta_table = DeltaTable.forName(spark, full_table_name)
-    assert delta_table.history().filter("operation == 'OPTIMIZE'").count() > 0
-
-
 def test__optimize_tables__optimize_is_in_history_of_delta_table(
     spark: SparkSession,
 ) -> None:
