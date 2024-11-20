@@ -20,8 +20,7 @@ resource "databricks_job" "migrations_job" {
         "fs.azure.account.oauth.provider.type.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
         "fs.azure.account.oauth2.client.id.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : databricks_secret.spn_app_id.config_reference
         "fs.azure.account.oauth2.client.secret.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : databricks_secret.spn_app_secret.config_reference
-        # TODO JMG: Set Unity Catalog as the default catalog (data.azurerm_key_vault_secret.shared_unity_catalog_name.value) when hive migration scripts are removed from the wholesale repo
-        "spark.databricks.sql.initial.catalog.name" : "hive_metastore"
+        "spark.databricks.sql.initial.catalog.name" : data.azurerm_key_vault_secret.shared_unity_catalog_name.value
       }
       spark_env_vars = {
         "TENANT_ID"                       = var.tenant_id,
