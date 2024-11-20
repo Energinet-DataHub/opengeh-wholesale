@@ -26,6 +26,34 @@ module "st_settlement_report" {
   ]
 }
 
+
+# Automatically delete storage account blobs and snapshots after 7 days according to the retention policy
+# The prefix filter ensures we only delete old reports and their related files.
+resource "azurerm_storage_management_policy" "retention_settlement_reports" {
+  storage_account_id = module.st_settlement_report.id
+
+  rule {
+    name    = "retention_settlement_reports"
+    enabled = true
+    filters {
+      prefix_match = ["settlement-reports/reports"]
+      blob_types = ["blockBlob"]
+    }
+    actions {
+      base_blob {
+        delete_after_days_since_creation_greater_than = 7
+      }
+      snapshot {
+        delete_after_days_since_creation_greater_than = 7
+      }
+      version {
+        delete_after_days_since_creation = 7
+      }
+    }
+  }
+}
+
+
 module "kvs_st_settlement_report_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
