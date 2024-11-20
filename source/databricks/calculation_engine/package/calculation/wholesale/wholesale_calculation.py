@@ -12,20 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from telemetry_logging import use_span
+
 import package.calculation.preparation.data_structures as d
 import package.calculation.wholesale.fee_calculators as fee_calculator
 import package.calculation.wholesale.subscription_calculators as subscription_calculator
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.wholesale.total_monthly_amount_calculator as total_monthly_amount_calculator
 import package.databases.wholesale_results_internal.amounts_per_charge_storage_model_factory as amounts_per_charge_factory
-import package.databases.wholesale_results_internal.monthly_amounts_per_charge_storage_model_factory as monthly_amounts_factory
 import package.databases.wholesale_results_internal.total_monthly_amounts_storage_model_factory as total_monthly_amounts_factory
 from .data_structures import MonthlyAmountPerCharge
 from .sum_within_month import sum_within_month
 from ..calculation_output import WholesaleResultsOutput
 from ..calculator_args import CalculatorArgs
 from ...codelists import AmountType
-from telemetry_logging import use_span
 
 
 @use_span("calculation.wholesale.execute")
@@ -99,12 +99,6 @@ def _calculate_fees(
         monthly_fee_per_co_es.df
     )
 
-    wholesale_results_output.monthly_fee_per_co_es_as_monthly_amount = (
-        monthly_amounts_factory.create(
-            args,
-            monthly_fee_per_co_es_as_monthly_amount,
-        )
-    )
     return monthly_fee_per_co_es_as_monthly_amount
 
 
@@ -140,13 +134,6 @@ def _calculate_subscriptions(
 
     monthly_subscription_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
         monthly_subscription_per_co_es.df
-    )
-
-    wholesale_results_output.monthly_subscription_per_co_es_as_monthly_amount = (
-        monthly_amounts_factory.create(
-            args,
-            monthly_subscription_per_co_es_as_monthly_amount,
-        )
     )
 
     return monthly_subscription_per_co_es_as_monthly_amount
@@ -189,13 +176,6 @@ def _calculate_hourly_tariffs(
         monthly_tariff_from_hourly_per_co_es.df
     )
 
-    wholesale_results_output.monthly_tariff_from_hourly_per_co_es_as_monthly_amount = (
-        monthly_amounts_factory.create(
-            args,
-            monthly_tariff_from_hourly_per_co_es_as_monthly_amount,
-        )
-    )
-
     return monthly_tariff_from_hourly_per_co_es_as_monthly_amount
 
 
@@ -232,13 +212,6 @@ def _calculate_daily_tariffs(
 
     monthly_tariff_from_daily_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
         monthly_tariff_from_daily_per_co_es.df
-    )
-
-    wholesale_results_output.monthly_tariff_from_daily_per_co_es_as_monthly_amount = (
-        monthly_amounts_factory.create(
-            args,
-            monthly_tariff_from_daily_per_co_es_as_monthly_amount,
-        )
     )
 
     return monthly_tariff_from_daily_per_co_es_as_monthly_amount
