@@ -16,13 +16,13 @@ from datetime import datetime
 from decimal import Decimal
 
 from pyspark.sql import SparkSession
+
+import tests.calculation.wholesale.factories.wholesale_results_factory as wholesale_results_factory
 from package.calculation.wholesale.sum_within_month import sum_within_month
 from package.codelists import (
     ChargeQuality,
 )
 from package.constants import Colname
-import tests.calculation.wholesale.factories.wholesale_results_factory as wholesale_results_factory
-
 
 PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 
