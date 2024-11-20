@@ -3,9 +3,6 @@
 apim_b2c_tenant_id                       = "4b8c3f88-6cca-480c-af02-b2d2f220913f"
 virtual_network_resource_group_name      = "rg-network-online-prod-we-001"
 virtual_network_name                     = "vnet-datahub-online-prod-we-001"
-apim_address_space                       = "10.141.1.128/28"
-private_endpoint_address_space           = "10.141.0.0/25"
-vnet_integration_address_space           = "10.141.0.128/25"
 biztalk_hybrid_connection_hostname       = "datahub.biztalk.energinet.local:443"
 apim_url                                 = "https://b2b.datahub3.dk"
 enable_audit_logs                        = true

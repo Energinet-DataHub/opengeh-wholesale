@@ -140,21 +140,6 @@ variable "virtual_network_name" {
   description = "Name of the virtual network"
 }
 
-variable "apim_address_space" {
-  type        = string
-  description = "Address space of the APIM subnet"
-}
-
-variable "private_endpoint_address_space" {
-  type        = string
-  description = "Address space of the private endpoint subnet"
-}
-
-variable "vnet_integration_address_space" {
-  type        = string
-  description = "Address space of the vnet integration subnet"
-}
-
 variable "log_retention_in_days" {
   type        = number
   description = "Number of days logs are retained in log analytics workspace"

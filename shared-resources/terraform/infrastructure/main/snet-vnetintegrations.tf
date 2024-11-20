@@ -100,7 +100,7 @@ resource "azurerm_network_security_group" "vnetintegrations" {
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "1443"
+    destination_port_range     = "1433"
     source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "VirtualNetwork"
   }
