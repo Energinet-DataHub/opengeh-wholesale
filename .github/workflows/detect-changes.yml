@@ -12,6 +12,8 @@ on:
         value: ${{ jobs.changes.outputs.edi_ci }}
       market_participant_ci:
         value: ${{ jobs.changes.outputs.market_participant_ci }}
+      electricity_market_ci:
+        value: ${{ jobs.changes.outputs.electricity_market_ci }}
       settlement_report_ci:
         value: ${{ jobs.changes.outputs.settlement_report_ci }}
       notifications_ci:
@@ -52,6 +54,7 @@ jobs:
     outputs:
       edi_ci: ${{ steps.filter.outputs.edi_ci }}
       market_participant_ci: ${{ steps.filter.outputs.market_participant_ci }}
+      electricity_market_ci: ${{ steps.filter.outputs.electricity_market_ci }}
       settlement_report_ci: ${{ steps.filter.outputs.settlement_report_ci }}
       notifications_ci: ${{ steps.filter.outputs.notifications_ci }}
       revision_log_ci: ${{ steps.filter.outputs.revision_log_ci }}
@@ -87,6 +90,12 @@ jobs:
             market_participant_ci:
               - market-participant/**
               - .github/workflows/market-participant-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            electricity_market_ci:
+              - electricity-market/**
+              - .github/workflows/electricity-market-*.yml
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*

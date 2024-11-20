@@ -1,0 +1,20 @@
+name: Electricity Market Infrastructure CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - electricity-market/**
+      - .github/workflows/electricity-market-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
+      - .github/workflows/infrastructure-validate.yml
+
+jobs:
+  reusable_cd:
+    uses: ./.github/workflows/reusable-cd.yml
+    with:
+      release_name_prefix: electricity_market_infrastructure
+      event_type: electricity-market-deployment-request-infrastructure
+      team_name: Raccoons
+    secrets: inherit

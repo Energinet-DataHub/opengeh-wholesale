@@ -53,3 +53,8 @@ settlement-report/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-ra
 notifications/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
 notifications/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
 notifications/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+
+# electricity-market
+electricity-market/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+electricity-market/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+electricity-market/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
