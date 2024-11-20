@@ -163,7 +163,6 @@ def _calculate_hourly_tariffs(
         args.calculation_period_start_datetime,
     )
 
-    # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
     wholesale_results_output.monthly_tariff_from_hourly_per_co_es = (
         amounts_per_charge_factory.create(
             args,
