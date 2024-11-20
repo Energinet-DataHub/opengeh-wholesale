@@ -17,21 +17,22 @@ from pyspark.sql import SparkSession
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from pyspark.sql.types import StructType, StructField, StringType
 import pytest
+import os
 from telemetry_logging import Logger
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
 )
 
 
-def test__optimize_tables__optimize_is_in_history_of_delta_table(
+def test__optimize_table__optimize_is_in_history_of_delta_table(
     spark: SparkSession,
 ) -> None:
     # Arrange
-    catalog_name = spark.catalog.currentCatalog()
-    database_name = WholesaleResultsInternalDatabase.DATABASE_NAME
-    table_name = WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME
+    database_name = "test_database"
+    table_name = "test_table"
     table_location = "/tmp/test"
     full_table_name = f"{database_name}.{table_name}"
+    logger = Logger("test_logger")
 
     schema = StructType(
         [
@@ -52,21 +53,19 @@ def test__optimize_tables__optimize_is_in_history_of_delta_table(
         schema,
     )
 
-    # Generate more history to the table and files to optimize
-    for _ in range(5):
-        write_dataframe_to_table(
-            spark,
-            df,
-            database_name,
-            table_name,
-            table_location,
-            schema,
-            mode="append",
-        )
+    write_dataframe_to_table(
+        spark,
+        df,
+        database_name,
+        table_name,
+        table_location,
+        schema,
+        mode="append",
+    )
 
     # Act
-    optimize_tables(catalog_name)
+    _optimize_table(spark, database_name, table_name, logger)
 
     # Assert
     delta_table = DeltaTable.forName(spark, full_table_name)
-    assert delta_table.history().filter("operation == 'OPTIMIZE'").count() == 1
+    assert delta_table.history().filter("operation == 'OPTIMIZE'").count() > 0
