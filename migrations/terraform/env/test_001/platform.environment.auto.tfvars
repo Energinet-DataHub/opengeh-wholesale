@@ -10,3 +10,11 @@ developer_security_group_reader_access             = true
 function_app_sku_name                              = "EP3"
 enable_audit_logs                                  = false
 developer_security_group_name                      = "SEC-G-Datahub-DevelopersAzure"
+databricks_readers_group = {
+  id   = "729028915538231"
+  name = "SEC-G-Datahub-DevelopersAzure"
+}
+databricks_contributor_dataplane_group = {
+  id   = "318888432738283"
+  name = "SEC-A-Datahub-Test-001-Contributor-Dataplane"
+}

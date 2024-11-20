@@ -9,3 +9,11 @@ pim_contributor_control_plane_group_name           = "SEC-A-Datahub-Prod-001-Con
 pim_reader_group_name                              = "SEC-A-Datahub-Prod-001-Reader"
 function_app_sku_name                              = "EP3"
 enable_audit_logs                                  = true
+databricks_readers_group = {
+  id   = "726131153567802"
+  name = "SEC-A-Datahub-Prod-001-Reader"
+}
+databricks_contributor_dataplane_group = {
+  id   = "504707241967571"
+  name = "SEC-A-Datahub-Prod-001-Contributor-Dataplane"
+}

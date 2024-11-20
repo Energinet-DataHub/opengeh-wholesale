@@ -29,4 +29,25 @@ locals {
     "BusinessServiceName"   = "Datahub",
     "BusinessServiceNumber" = "BSN10136"
   }
+
+  # Databricks permissions
+  # Local readers determines if the provided reader security group should be assigned permissions or grants.
+  # This is necessary as reader and contributor groups may be the same on the development and test environments. In Databricks, the grants and permissions of a security group can't be be managed by multiple resources.
+  readers = var.databricks_readers_group.name == var.databricks_contributor_dataplane_group.name ? {} : { "${var.databricks_readers_group.name}" = "${var.databricks_readers_group.id}" }
+
+  backup_access_control = local.readers == {} ? [
+    {
+      group_name         = var.databricks_contributor_dataplane_group.name
+      contributor_access = true
+    }] : [
+    {
+      group_name         = var.databricks_contributor_dataplane_group.name
+      contributor_access = true
+    },
+    {
+      group_name         = var.databricks_readers_group.name
+      contributor_access = false
+  }]
+  backup_warehouse_key = "backup_warehouse"
+  backup_warehouse_set = var.setup_backup_sql_warehouse == true ? toset([local.backup_warehouse_key]) : toset([])
 }

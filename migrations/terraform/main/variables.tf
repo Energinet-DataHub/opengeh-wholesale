@@ -215,3 +215,24 @@ variable "budget_alert_amount" {
   description = "The budget amount for this subproduct"
 }
 
+variable "setup_backup_sql_warehouse" {
+  type        = bool
+  description = "Flag to determine if a SQL warehouse for executing Databricks back ups should be created."
+  default     = true
+}
+
+variable "databricks_readers_group" {
+  type = object({
+    id   = string
+    name = string
+  })
+  description = "The Databricks group containing users with read permissions."
+}
+
+variable "databricks_contributor_dataplane_group" {
+  type = object({
+    id   = string
+    name = string
+  })
+  description = "The Databricks group containing users with contributor permissions to the data plane."
+}

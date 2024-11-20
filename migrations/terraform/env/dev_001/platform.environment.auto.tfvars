@@ -9,3 +9,11 @@ pim_contributor_control_plane_group_name           = "SEC-A-Datahub-Dev-001-Cont
 developer_security_group_reader_access             = true
 enable_audit_logs                                  = false
 developer_security_group_name                      = "SEC-G-Datahub-DevelopersAzure"
+databricks_readers_group = {
+  id   = "729028915538231"
+  name = "SEC-G-Datahub-DevelopersAzure"
+}
+databricks_contributor_dataplane_group = {
+  id   = "284159814927462"
+  name = "SEC-A-Datahub-Dev-001-Contributor-Dataplane"
+}

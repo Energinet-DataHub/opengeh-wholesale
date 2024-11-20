@@ -27,3 +27,36 @@ resource "databricks_permissions" "endpoint_permissions" {
   }
   depends_on = [module.dbw, null_resource.scim_developers]
 }
+
+resource "databricks_sql_endpoint" "backup_warehouse" {
+  for_each             = local.backup_warehouse_set
+  provider             = databricks.dbw
+  name                 = "SQL Endpoint for running Deep Clone backups"
+  cluster_size         = "Small"
+  max_num_clusters     = 2
+  auto_stop_mins       = 15
+  warehouse_type       = "PRO"
+  spot_instance_policy = "RELIABILITY_OPTIMIZED"
+
+  depends_on = [module.dbw]
+}
+
+resource "databricks_permissions" "backup_endpoint" {
+  for_each        = local.backup_warehouse_set
+  provider        = databricks.dbw
+  sql_endpoint_id = databricks_sql_endpoint.backup_warehouse[each.key].id
+
+  access_control {
+    group_name       = var.databricks_contributor_dataplane_group.name
+    permission_level = "CAN_MANAGE"
+  }
+  dynamic "access_control" {
+    for_each = local.readers
+    content {
+      group_name       = access_control.key
+      permission_level = "CAN_MONITOR"
+    }
+  }
+
+  depends_on = [module.dbw]
+}

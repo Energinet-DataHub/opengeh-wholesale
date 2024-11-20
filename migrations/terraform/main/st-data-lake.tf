@@ -30,11 +30,6 @@ module "kvs_st_migrations_data_lake_name" {
   key_vault_id = module.kv_internal.id
 }
 
-data "azurerm_key_vault_secret" "shared_access_connector_principal_id" {
-  name         = "shared-access-connector-principal-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 #---- System Topic for all storage account events
 
 resource "azurerm_eventgrid_system_topic" "st_migrations" {
