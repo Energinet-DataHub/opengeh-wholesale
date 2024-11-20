@@ -33,7 +33,7 @@ setup(
         "azure-identity==1.19.0",
         "dependency_injector==4.43.0",
         "urllib3==2.2.*",
-        "delta-spark==3.1.0",
+        "delta-spark==3.2.1",
         "python-dateutil==2.9.0",
         "azure-monitor-opentelemetry==1.6.4",
         "azure-core==1.32.0",
