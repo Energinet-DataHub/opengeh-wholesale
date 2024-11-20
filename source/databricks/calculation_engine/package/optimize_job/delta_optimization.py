@@ -24,7 +24,6 @@ from telemetry_logging import Logger, use_span
 import package.infrastructure.environment_variables as env_vars
 
 
-@use_span()
 def optimize_tables(catalog_name: str | None = None) -> None:
     """
     Optimize all tables in the internal databases.

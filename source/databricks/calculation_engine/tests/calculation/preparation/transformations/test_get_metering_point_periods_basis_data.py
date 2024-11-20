@@ -14,20 +14,19 @@
 
 from pyspark.sql import SparkSession, Row
 
-from tests.calculation.preparation.transformations import metering_point_periods_factory
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_basis_data_internal import (
-    get_metering_point_periods_basis_data,
-)
-
-from package.databases.wholesale_basis_data_internal.schemas import (
-    hive_metering_point_period_schema,
-)
 from package.codelists import (
     MeteringPointResolution,
 )
 from package.common import assert_schema
 from package.constants import Colname
+from package.databases.table_column_names import TableColumnNames
+from package.databases.wholesale_basis_data_internal import (
+    get_metering_point_periods_basis_data,
+)
+from package.databases.wholesale_basis_data_internal.schemas.metering_point_periods_schema import (
+    metering_point_periods_schema_basis_data,
+)
+from tests.calculation.preparation.transformations import metering_point_periods_factory
 
 
 def test__when_valid_input__returns_df_with_expected_schema(
@@ -42,7 +41,7 @@ def test__when_valid_input__returns_df_with_expected_schema(
     )
 
     # Assert
-    assert_schema(actual.schema, hive_metering_point_period_schema)
+    assert_schema(actual.schema, metering_point_periods_schema_basis_data)
 
 
 def test__each_metering_point_has_a_row(spark: SparkSession) -> None:

@@ -24,30 +24,33 @@ from settlement_report_job.entry_points.tasks.task_base import (
 from settlement_report_job.entry_points.tasks.metering_point_periods_task import (
     MeteringPointPeriodsTask,
 )
-from settlement_report_job.entry_points.tasks.time_series_task import TimeSeriesTask
+from settlement_report_job.entry_points.tasks.time_series_points_task import (
+    TimeSeriesPointsTask,
+)
 from settlement_report_job.entry_points.tasks.wholesale_results_task import (
     WholesaleResultsTask,
 )
 from settlement_report_job.entry_points.tasks.zip_task import ZipTask
+from settlement_report_job.entry_points.utils.get_dbutils import get_dbutils
 
 
 def create(
     task_type: TaskType,
     spark: SparkSession,
-    dbutils: Any,
     args: SettlementReportArgs,
 ) -> TaskBase:
+    dbutils = get_dbutils(spark)
     if task_type is TaskType.MeteringPointPeriods:
         return MeteringPointPeriodsTask(spark=spark, dbutils=dbutils, args=args)
     elif task_type is TaskType.TimeSeriesQuarterly:
-        return TimeSeriesTask(
+        return TimeSeriesPointsTask(
             spark=spark,
             dbutils=dbutils,
             args=args,
             task_type=TaskType.TimeSeriesQuarterly,
         )
     elif task_type is TaskType.TimeSeriesHourly:
-        return TimeSeriesTask(
+        return TimeSeriesPointsTask(
             spark=spark, dbutils=dbutils, args=args, task_type=TaskType.TimeSeriesHourly
         )
     elif task_type is TaskType.ChargeLinks:
