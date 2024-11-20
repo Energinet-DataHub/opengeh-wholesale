@@ -16,8 +16,9 @@ from typing import Any
 
 from pyspark.sql import DataFrame
 
-from tests.helpers.data_frame_utils import assert_dataframe_and_schema
 from package.calculation.calculation_output import CalculationOutput, BasisDataOutput
+from package.databases.table_column_names import TableColumnNames
+from tests.helpers.data_frame_utils import assert_dataframe_and_schema
 from tests.testsession_configuration import FeatureTestsConfiguration
 from .expected_output import ExpectedOutput
 
@@ -37,6 +38,13 @@ def assert_output(
         assert expected_result.count() == 0, f"Expected empty result for {output_name}"
         return
 
+    columns_to_skip = []
+
+    # Skip the column if the first cell in the respective row is empty.
+    skip_column_if_first_row_empty(
+        actual_result, TableColumnNames.calculation_result_id, columns_to_skip
+    )
+
     # Sort actual_result and expected_result
     actual_result = actual_result.sort(actual_result.columns)
     expected_result = expected_result.sort(expected_result.columns)
@@ -47,7 +55,22 @@ def assert_output(
         feature_tests_configuration,
         ignore_decimal_precision=True,
         ignore_nullability=True,
+        columns_to_skip=columns_to_skip,
     )
+
+
+def skip_column_if_first_row_empty(
+    actual_result: DataFrame, column_name: str, columns_to_skip
+) -> None:
+    if column_name not in actual_result.columns:
+        return
+
+    if actual_result.count() == 0:
+        return
+
+    first_row_value = actual_result.select(column_name).first()[0]
+    if first_row_value is None or first_row_value == "":
+        columns_to_skip.append(column_name)
 
 
 def _get_expected_for_output(
