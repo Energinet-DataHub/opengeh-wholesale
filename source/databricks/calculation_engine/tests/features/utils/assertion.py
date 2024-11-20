@@ -38,11 +38,11 @@ def assert_output(
         assert expected_result.count() == 0, f"Expected empty result for {output_name}"
         return
 
-    columns_to_skip = []
+    columns_to_skip: list[str] = []
 
     # Skip the column if the first cell in the respective row is empty.
     skip_column_if_first_row_empty(
-        actual_result, TableColumnNames.calculation_result_id, columns_to_skip
+        expected_result, TableColumnNames.calculation_result_id, columns_to_skip
     )
 
     # Sort actual_result and expected_result
@@ -60,16 +60,15 @@ def assert_output(
 
 
 def skip_column_if_first_row_empty(
-    actual_result: DataFrame, column_name: str, columns_to_skip
+    expected_result: DataFrame, column_name: str, columns_to_skip
 ) -> None:
-    if column_name not in actual_result.columns:
+    if column_name not in expected_result.columns:
         return
 
-    if actual_result.count() == 0:
-        return
-
-    first_row_value = actual_result.select(column_name).first()[0]
-    if first_row_value is None or first_row_value == "":
+    non_empty_count = expected_result.filter(
+        expected_result[column_name].isNotNull()
+    ).count()
+    if non_empty_count == 0:
         columns_to_skip.append(column_name)
 
 
