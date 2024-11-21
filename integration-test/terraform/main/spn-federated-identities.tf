@@ -140,3 +140,13 @@ resource "azuread_application_federated_identity_credential" "opengeh_process_ma
   audiences = [local.federated_identity_credential.audience_azuread]
   issuer    = local.federated_identity_credential.issuer_github
 }
+
+resource "azuread_application_federated_identity_credential" "opengeh_python_packages" {
+  application_id = azuread_application.app_ci.id
+
+  display_name = "opengeh-python-packages-azureauth"
+  subject      = "repo:Energinet-DataHub/opengeh-python-packages:environment:AzureAuth"
+
+  audiences = [local.federated_identity_credential.audience_azuread]
+  issuer    = local.federated_identity_credential.issuer_github
+}
