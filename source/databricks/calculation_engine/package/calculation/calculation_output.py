@@ -48,14 +48,19 @@ class WholesaleResultsOutput:
     Contains all wholesale results from a calculation.
     """
 
+    # Delta table name: amounts_per_charge
     hourly_tariff_per_co_es: DataFrame | None = None
-    monthly_tariff_from_hourly_per_co_es: DataFrame | None = None
     daily_tariff_per_co_es: DataFrame | None = None
-    monthly_tariff_from_daily_per_co_es: DataFrame | None = None
     subscription_per_co_es: DataFrame | None = None
-    monthly_subscription_per_co_es: DataFrame | None = None
     fee_per_co_es: DataFrame | None = None
+
+    # Delta table name: monthly_amounts_per_charge
+    monthly_tariff_from_hourly_per_co_es: DataFrame | None = None
+    monthly_tariff_from_daily_per_co_es: DataFrame | None = None
+    monthly_subscription_per_co_es: DataFrame | None = None
     monthly_fee_per_co_es: DataFrame | None = None
+
+    # Delta table name: total_monthly_amounts
     total_monthly_amounts_per_co_es: DataFrame | None = None
     total_monthly_amounts_per_es: DataFrame | None = None
 

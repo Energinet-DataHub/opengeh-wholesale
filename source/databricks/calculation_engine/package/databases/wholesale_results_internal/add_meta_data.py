@@ -90,4 +90,10 @@ def _add_calculation_result_id(
         uuid5_udf(col(concatenated_column)),
     )
 
+    for column in columns_for_uuid_generation:
+        print(column)
+
+    selected_df = df.select(concatenated_column, TableColumnNames.calculation_result_id)
+    selected_df.show(truncate=False)
+
     return df.drop(concatenated_column).drop(table_name_column)
