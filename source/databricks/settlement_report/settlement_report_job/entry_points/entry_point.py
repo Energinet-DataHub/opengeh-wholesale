@@ -117,9 +117,8 @@ def start_task_with_deps(
             span.set_attributes(config.get_extras())
             args = parse_job_args(command_line_args)
             spark = initialize_spark()
-            dbutils = get_dbutils(spark)
 
-            task = task_factory.create(task_type, spark, dbutils, args)
+            task = task_factory.create(task_type, spark, args)
             task.execute()
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions

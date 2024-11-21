@@ -31,14 +31,15 @@ from settlement_report_job.entry_points.tasks.wholesale_results_task import (
     WholesaleResultsTask,
 )
 from settlement_report_job.entry_points.tasks.zip_task import ZipTask
+from settlement_report_job.entry_points.utils.get_dbutils import get_dbutils
 
 
 def create(
     task_type: TaskType,
     spark: SparkSession,
-    dbutils: Any,
     args: SettlementReportArgs,
 ) -> TaskBase:
+    dbutils = get_dbutils(spark)
     if task_type is TaskType.MeteringPointPeriods:
         return MeteringPointPeriodsTask(spark=spark, dbutils=dbutils, args=args)
     elif task_type is TaskType.TimeSeriesQuarterly:

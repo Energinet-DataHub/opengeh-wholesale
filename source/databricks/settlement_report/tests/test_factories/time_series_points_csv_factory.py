@@ -33,7 +33,9 @@ class TimeSeriesPointsCsvTestDataSpec:
 
 
 def create(
-    spark: SparkSession, data_spec: TimeSeriesPointsCsvTestDataSpec
+    spark: SparkSession,
+    data_spec: TimeSeriesPointsCsvTestDataSpec,
+    add_grid_area_code_partitioning_column: bool = False,
 ) -> DataFrame:
     rows = []
     counter = 0
@@ -48,6 +50,9 @@ def create(
                     EphemeralColumns.grid_area_code_partitioning: grid_area_code,
                     CsvColumnNames.time: data_spec.start_of_day + timedelta(days=i),
                 }
+                if add_grid_area_code_partitioning_column:
+                    row[EphemeralColumns.grid_area_code_partitioning] = grid_area_code
+
                 for j in range(
                     25
                     if data_spec.resolution.value
