@@ -3,6 +3,12 @@ from spark_sql_migrations import Schema, Table, View
 import package.databases.wholesale_basis_data_internal.schemas as basis_data_schemas
 import package.databases.wholesale_internal.schemas as internal_schemas
 import package.infrastructure.paths as paths
+from contracts.data_products import (
+    wholesale_sap,
+    wholesale_results,
+    wholesale_basis_data,
+    wholesale_settlement_reports,
+)
 from package.databases.wholesale_results_internal.schemas import (
     energy_schema,
     energy_per_brp_schema,
@@ -108,27 +114,35 @@ schema_config = [
         views=[
             View(
                 name=paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
+                schema=wholesale_results.energy_v1,
             ),
             View(
                 name=paths.WholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME,
+                schema=wholesale_results.energy_per_brp_v1,
             ),
             View(
                 name=paths.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME,
+                schema=wholesale_results.energy_per_es_v1,
             ),
             View(
                 name=paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME,
+                schema=wholesale_results.exchange_per_neighbor_v1,
             ),
             View(
                 name=paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME,
+                schema=wholesale_results.grid_loss_metering_point_time_series_v1,
             ),
             View(
                 name=paths.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+                schema=wholesale_results.amounts_per_charge_v1,
             ),
             View(
                 name=paths.WholesaleResultsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+                schema=wholesale_results.monthly_amounts_per_charge_v1,
             ),
             View(
                 name=paths.WholesaleResultsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
+                schema=wholesale_results.total_monthly_amounts_v1,
             ),
         ],
     ),
@@ -137,29 +151,37 @@ schema_config = [
         tables=[],
         views=[
             View(
-                name=paths.WholesaleSettlementReportsDatabase.METERING_POINT_PERIODS_VIEW_NAME_V1
+                name=paths.WholesaleSettlementReportsDatabase.METERING_POINT_PERIODS_VIEW_NAME_V1,
+                schema=wholesale_settlement_reports.metering_point_periods_v1,
             ),
             View(
-                name=paths.WholesaleSettlementReportsDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME_V1
+                name=paths.WholesaleSettlementReportsDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME_V1,
+                schema=wholesale_settlement_reports.metering_point_time_series_v1,
             ),
             View(
-                name=paths.WholesaleSettlementReportsDatabase.CHARGE_PRICES_VIEW_NAME_V1
+                name=paths.WholesaleSettlementReportsDatabase.CHARGE_PRICES_VIEW_NAME_V1,
+                schema=wholesale_settlement_reports.charge_prices_v1,
             ),
             View(
-                name=paths.WholesaleSettlementReportsDatabase.CHARGE_LINK_PERIODS_VIEW_NAME_V1
+                name=paths.WholesaleSettlementReportsDatabase.CHARGE_LINK_PERIODS_VIEW_NAME_V1,
+                schema=wholesale_settlement_reports.charge_link_periods_v1,
             ),
             View(
                 name=paths.WholesaleSettlementReportsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+                schema=wholesale_settlement_reports.amounts_per_charge_v1,
             ),
             View(
                 name=paths.WholesaleSettlementReportsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+                schema=wholesale_settlement_reports.monthly_amounts_per_charge_v1,
             ),
             View(
                 name=paths.WholesaleSettlementReportsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
+                schema=wholesale_settlement_reports.total_monthly_amounts_v1,
             ),
             View(
                 # ToDo JMG: Remove when settlement report subsystem uses monthly_amounts_per_charge_v1/total_monthly_amounts_v1
                 name=paths.WholesaleSettlementReportsDatabase.MONTHLY_AMOUNTS_V1_VIEW_NAME,
+                schema=wholesale_settlement_reports.monthly_amounts_v1,
             ),
         ],
     ),
@@ -169,12 +191,15 @@ schema_config = [
         views=[
             View(
                 name=paths.WholesaleSapDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME,
+                schema=wholesale_sap.latest_calculations_history_v1,
             ),
             View(
                 name=paths.WholesaleSapDatabase.ENERGY_V1_VIEW_NAME,
+                schema=wholesale_sap.energy_v1,
             ),
             View(
                 name=paths.WholesaleSapDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+                schema=wholesale_sap.amounts_per_charge_v1,
             ),
         ],
     ),
