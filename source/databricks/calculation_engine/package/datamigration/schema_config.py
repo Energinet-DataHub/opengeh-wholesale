@@ -6,8 +6,10 @@ import package.infrastructure.paths as paths
 from contracts.data_products import (
     wholesale_sap,
     wholesale_results,
-    wholesale_basis_data,
     wholesale_settlement_reports,
+)
+from contracts.wholesale_internal.succeeded_external_calculations_v1 import (
+    succeeded_external_calculations_v1,
 )
 from package.databases.wholesale_results_internal.schemas import (
     energy_schema,
@@ -41,6 +43,7 @@ schema_config = [
         views=[
             View(
                 name=paths.WholesaleInternalDatabase.SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME,
+                schema=succeeded_external_calculations_v1,
             ),
         ],
     ),
