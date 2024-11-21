@@ -1,6 +1,6 @@
 module "func_service_plan" {
   sku_name                     = "EP3"
-  maximum_elastic_worker_count = 4
+  maximum_elastic_worker_count = 1
 }
 
 module "message_retriever_service_plan" {
@@ -10,7 +10,7 @@ module "message_retriever_service_plan" {
 
 module "message_processor_service_plan" {
   sku_name                     = "EP3"
-  maximum_elastic_worker_count = 4
+  maximum_elastic_worker_count = 1
 }
 
 module "webapp_service_plan" {
