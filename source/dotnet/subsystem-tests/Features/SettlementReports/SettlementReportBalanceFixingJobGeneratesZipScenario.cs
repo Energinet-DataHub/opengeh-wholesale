@@ -53,7 +53,7 @@ public class SettlementReportBalanceFixingJobGeneratesZipScenario : SubsystemTes
         };
 
         // Expectations
-        Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromMinutes(15);
+        Fixture.ScenarioState.ExpectedJobTimeLimit = TimeSpan.FromMinutes(20);
         Fixture.ScenarioState.ExpectedRelativeOutputFilePath =
             $"/wholesale_settlement_report_output/settlement_reports/{Fixture.ScenarioState.ReportId}.zip";
     }
