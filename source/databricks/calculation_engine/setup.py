@@ -30,15 +30,15 @@ setup(
     install_requires=[
         "ConfigArgParse==1.5.3",
         "pyspark==3.5.3",
-        "azure-identity==1.17.0",
+        "azure-identity==1.19.0",
         "dependency_injector==4.43.0",
         "urllib3==2.2.*",
         "delta-spark==3.2.1",
         "python-dateutil==2.9.0",
-        "azure-monitor-opentelemetry==1.6.0",
-        "azure-core==1.30.0",
-        "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.2.1#subdirectory=source/spark_sql_migrations",
-        "opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.1.0#subdirectory=source/telemetry",
+        "azure-monitor-opentelemetry==1.6.3",
+        "azure-core==1.32.0",
+        "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.3.1#subdirectory=source/spark_sql_migrations",
+        "opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.3.1#subdirectory=source/telemetry",
     ],
     entry_points={
         "console_scripts": [
