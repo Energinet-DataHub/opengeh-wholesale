@@ -89,10 +89,6 @@ def _calculate_fees(
         args.calculation_period_start_datetime,
     )
 
-    wholesale_results_output.monthly_fee_per_co_es = (
-        monthly_amounts_per_charge_factory.create(args, monthly_fee_per_co_es)
-    )
-
     monthly_fee_per_co_es = MonthlyAmountPerCharge(monthly_fee_per_co_es.df)
 
     wholesale_results_output.monthly_fee_per_co_es = (
@@ -123,13 +119,6 @@ def _calculate_subscriptions(
     monthly_subscription_per_co_es = sum_within_month(
         subscription_per_co_es,
         args.calculation_period_start_datetime,
-    )
-
-    wholesale_results_output.monthly_subscription_per_co_es = (
-        monthly_amounts_per_charge_factory.create(
-            args,
-            monthly_subscription_per_co_es,
-        )
     )
 
     monthly_subscription_per_co_es = MonthlyAmountPerCharge(
@@ -170,13 +159,6 @@ def _calculate_hourly_tariffs(
         args.calculation_period_start_datetime,
     )
 
-    wholesale_results_output.monthly_tariff_from_hourly_per_co_es = (
-        monthly_amounts_per_charge_factory.create(
-            args,
-            monthly_tariff_from_hourly_per_co_es,
-        )
-    )
-
     monthly_tariff_from_hourly_per_co_es = MonthlyAmountPerCharge(
         monthly_tariff_from_hourly_per_co_es.df
     )
@@ -211,13 +193,6 @@ def _calculate_daily_tariffs(
     monthly_tariff_from_daily_per_co_es = sum_within_month(
         daily_tariff_per_co_es,
         args.calculation_period_start_datetime,
-    )
-
-    wholesale_results_output.monthly_tariff_from_daily_per_co_es = (
-        monthly_amounts_per_charge_factory.create(
-            args,
-            monthly_tariff_from_daily_per_co_es,
-        )
     )
 
     monthly_tariff_from_daily_per_co_es = MonthlyAmountPerCharge(
