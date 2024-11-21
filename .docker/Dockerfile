@@ -14,7 +14,7 @@
 
 # The spark version should follow the spark version in databricks.
 # The databricks version of spark is controlled from dh3-infrastructure and uses latest LTS (ATTOW - Spark v3.5.0)
-FROM ghcr.io/energinet-datahub/pyspark-slim:3.5.1-3
+FROM ghcr.io/energinet-datahub/pyspark-slim:3.5.3-1
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -36,8 +36,8 @@ RUN apt-get update; \
 COPY spark-defaults.conf $SPARK_HOME/conf/
 
 # Install spark packages with mamba (packages has to be updated according to spark version)
-COPY mamba_requirements.txt mamba_requirements.txt
-RUN mamba install --quiet --yes --satisfied-skip-solve --file mamba_requirements.txt
+#COPY mamba_requirements.txt mamba_requirements.txt
+#RUN mamba install --quiet --yes --satisfied-skip-solve --file mamba_requirements.txt
 
 # Install python packages used in pyspark development (keep spark dependent packages alligned)
 # delta-spark version has to have compatibility with spark version (https://docs.delta.io/latest/releases.html)
