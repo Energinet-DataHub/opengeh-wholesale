@@ -2,18 +2,17 @@
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-
 ## Overview
 
 The `settlement_report` folder contains all the relevant code for creating and testing the python wheel, which is used in the Databricks Job(s) for creating settlement reports.
 
-The wheel's responsibility is to 
-- Create a csv files with results (and optionally basis data) from wholesale calculations or balance fixing calculations. 
+The wheel's responsibility is to:
+- Create a csv files with results (and optionally basis data) from wholesale calculations or balance fixing calculations.
 - Zip the csv files mentioned above
 
 The wheel exposes a set of entry points that are used in the Databricks for creating the settlement reports.
 
-## Project Structure 
+## Project Structure
 
 The `settlement_report_job` contains the required code for creating the python wheel. The code is structured as follows:
 
@@ -28,8 +27,8 @@ Contains the core business logic and rules. This folder is divided into subfolde
 * filter input data based on the given parameters
 * transform the input data into the desired format for csv: columns, data types, ordering etc.
 
-**infrastructure/**: 
- 
+**infrastructure/**:
+
 Implementations for accessing and storing data for settlement reports. This means things like accessing delta tables/view (repository), writing csv and generating the zip file.
 
 ## Using the wheel in Databricks
