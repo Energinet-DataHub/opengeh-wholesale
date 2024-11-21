@@ -168,8 +168,33 @@ def _get_new_files(
         list[dict[str, Path]]: List of dictionaries with the source and destination
             paths for the new files.
     """
-    files = [f for f in Path(spark_output_path).rglob("*.csv")]
     new_files = []
+
+    file_info_list = _get_file_info_list(
+        spark_output_path=spark_output_path, partition_columns=partition_columns
+    )
+
+    distinct_chunk_indices = set([chunk_index for _, _, chunk_index in file_info_list])
+    include_chunk_index = len(distinct_chunk_indices) > 1
+
+    for f, grid_area, chunk_index in file_info_list:
+        file_name = file_name_factory.create(
+            grid_area_code=grid_area,
+            chunk_index=chunk_index if include_chunk_index else None,
+        )
+        new_name = Path(report_output_path) / file_name
+        tmp_dst = Path("/tmp") / file_name
+        new_files.append(TmpFile(f, new_name, tmp_dst))
+
+    return new_files
+
+
+def _get_file_info_list(
+    spark_output_path: str, partition_columns: list[str]
+) -> list[tuple[Path, str | None, str | None]]:
+    file_info_list = []
+
+    files = [f for f in Path(spark_output_path).rglob("*.csv")]
 
     partition_by_grid_area = (
         EphemeralColumns.grid_area_code_partitioning in partition_columns
@@ -203,15 +228,9 @@ def _get_new_files(
         else:
             chunk_index = None
 
-        file_name = file_name_factory.create(
-            grid_area_code=grid_area,
-            chunk_index=chunk_index,
-        )
-        new_name = Path(report_output_path) / file_name
-        tmp_dst = Path("/tmp") / file_name
-        new_files.append(TmpFile(f, new_name, tmp_dst))
+        file_info_list.append((f, grid_area, chunk_index))
 
-    return new_files
+    return file_info_list
 
 
 @use_span()

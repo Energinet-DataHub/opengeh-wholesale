@@ -474,18 +474,54 @@ def test_write__when_prevent_large_files_but_too_few_rows__chunk_index_should_be
 
     # Assert
     assert len(result_files) == expected_file_count
-    file_name = result_files[0]
-    file_name = file_name[:-4]
-    file_name_components = file_name.split("_")
+    file_name_components = result_files[0][:-4].split("_")
 
-    chunk_id_if_present = file_name_components[-1]
-    try:
-        int(chunk_id_if_present)
+    assert not file_name_components[
+        -1
+    ].isdigit(), (
+        "A valid integer indicating a present chunk index was found when not expected!"
+    )
+
+
+def test_write__when_prevent_large_files_and_multiple_grid_areas_but_too_few_rows__chunk_index_should_be_excluded(
+    dbutils: DBUtilsFixture,
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+):
+    # Arrange
+    expected_file_count = 2
+    report_data_type = ReportDataType.TimeSeriesQuarterly
+    standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
+    test_spec_consumption = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
+        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
+        num_metering_points=10,
+        grid_area_codes=["804", "805"],
+    )
+    prepared_time_series_point = time_series_points_factory.create(
+        spark, test_spec_consumption, add_grid_area_code_partitioning_column=True
+    )
+
+    # Act
+    result_files = csv_writer.write(
+        dbutils=dbutils,
+        args=standard_wholesale_fixing_scenario_args,
+        df=prepared_time_series_point,
+        report_data_type=report_data_type,
+        order_by_columns=time_series_points_order_by_columns.order_by_columns(
+            requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        ),
+        rows_per_file=31,
+    )
+
+    # Assert
+    assert len(result_files) == expected_file_count
+    for result_file in result_files:
+        file_name_components = result_file[:-4].split("_")
+        chunk_id_if_present = file_name_components[-1]
+
         assert (
-            False
+            not chunk_id_if_present.isdigit()
         ), "A valid integer indicating a present chunk index was found when not expected!"
-    except ValueError:
-        pass
 
 
 def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expected_number_of_files_and_content(
