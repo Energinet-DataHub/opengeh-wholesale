@@ -37,11 +37,11 @@ from settlement_report_job.infrastructure.spark_initializor import initialize_sp
 # The start_x() methods should only have its name updated in correspondence with the
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
-def start_hourly_time_series() -> None:
+def start_hourly_time_series_points() -> None:
     _start_task(TaskType.TimeSeriesHourly)
 
 
-def start_quarterly_time_series() -> None:
+def start_quarterly_time_series_points() -> None:
     _start_task(TaskType.TimeSeriesQuarterly)
 
 
@@ -49,7 +49,7 @@ def start_metering_point_periods() -> None:
     _start_task(TaskType.MeteringPointPeriods)
 
 
-def start_charge_links() -> None:
+def start_charge_link_periods() -> None:
     _start_task(TaskType.ChargeLinks)
 
 
@@ -117,9 +117,8 @@ def start_task_with_deps(
             span.set_attributes(config.get_extras())
             args = parse_job_args(command_line_args)
             spark = initialize_spark()
-            dbutils = get_dbutils(spark)
 
-            task = task_factory.create(task_type, spark, dbutils, args)
+            task = task_factory.create(task_type, spark, args)
             task.execute()
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions

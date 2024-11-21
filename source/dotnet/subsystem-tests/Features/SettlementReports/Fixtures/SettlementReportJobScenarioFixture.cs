@@ -182,12 +182,29 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
     {
         try
         {
-            var absoluteFilePath = $"{Configuration.DatabricksCatalogRoot}{relativeFilePath}";
-            return await FilesDatabricksClient.Files.GetFileInfoAsync(absoluteFilePath);
+            return await FilesDatabricksClient.Files.GetFileInfoAsync(GetAbsolutePath(relativeFilePath));
         }
         catch (Exception ex)
         {
             DiagnosticMessageSink.WriteDiagnosticMessage($"File exists failed with exception: {ex}.");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Get a file stream for a file in the Databricks Catalogue.
+    /// </summary>
+    /// <param name="relativeFilePath">File path relative to the Databricks Catalogue root configured per environment.</param>
+    /// <returns>A stream to the file if it exists; otherwise null.</returns>
+    public async Task<Stream?> GetFileStreamAsync(string relativeFilePath)
+    {
+        try
+        {
+            return await FilesDatabricksClient.Files.GetFileStreamAsync(GetAbsolutePath(relativeFilePath));
+        }
+        catch (Exception ex)
+        {
+            DiagnosticMessageSink.WriteDiagnosticMessage($"Get file stream failed with exception: {ex}.");
             return null;
         }
     }
@@ -228,5 +245,10 @@ public sealed class SettlementReportJobScenarioFixture<TScenarioState> : LazyFix
             },
             _ => throw new ArgumentOutOfRangeException(nameof(run.State)),
         };
+    }
+
+    private string GetAbsolutePath(string relativeFilePath)
+    {
+        return $"{Configuration.DatabricksCatalogRoot}{relativeFilePath}";
     }
 }
