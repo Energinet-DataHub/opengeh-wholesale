@@ -8,9 +8,6 @@ from contracts.data_products import (
     wholesale_results,
     wholesale_settlement_reports,
 )
-from contracts.data_products.wholesale_results.amounts_per_charge_v1 import (
-    amounts_per_charge_v1,
-)
 from contracts.wholesale_internal.succeeded_external_calculations_v1 import (
     succeeded_external_calculations_v1,
 )
@@ -140,7 +137,7 @@ schema_config = [
             ),
             View(
                 name=paths.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
-                schema=amounts_per_charge_v1,
+                schema=wholesale_results.amounts_per_charge_v1,
             ),
             View(
                 name=paths.WholesaleResultsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
