@@ -71,6 +71,7 @@ def assert_dataframe_and_schema(
     ignore_column_order: bool = False,
     ignore_decimal_scale: bool = False,
     ignore_decimal_precision: bool = False,
+    columns_to_skip: list[str] = None,
 ) -> None:
     assert actual is not None, "Actual data frame is None"
     assert expected is not None, "Expected data frame is None"
@@ -79,6 +80,10 @@ def assert_dataframe_and_schema(
         print("\n")
         print(f"Number of rows in actual: {actual.count()}")
         print(f"Number of rows in expected: {expected.count()}")
+
+    if columns_to_skip is not None and len(columns_to_skip) > 0:
+        actual = actual.drop(*columns_to_skip)
+        expected = expected.drop(*columns_to_skip)
 
     try:
         assert_schema(
