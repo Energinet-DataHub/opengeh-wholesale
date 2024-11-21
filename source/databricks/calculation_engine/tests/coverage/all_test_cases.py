@@ -11,7 +11,6 @@ class Cases:
         Typical_wholesale_scenario: str
         Calculation_results_are_hourly_when_calculation_period_is_before_result_resolution_change: str
         Calculation_input_data_includes_other_ga: str
-        Aggregations_do_not_generate_basis_data: str
 
         class MeteringPointMasterDataUpdates:
             Change_of_settlement_method_on_an_MP: str
