@@ -1,0 +1,1995 @@
+{
+    "annotations": {
+        "list": [
+            {
+                "builtIn": 1,
+                "datasource": {
+                    "type": "grafana",
+                    "uid": "-- Grafana --"
+                },
+                "enable": true,
+                "hide": true,
+                "iconColor": "rgba(0, 211, 255, 1)",
+                "name": "Annotations & Alerts",
+                "type": "dashboard"
+            }
+        ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 18,
+    "links": [],
+    "panels": [
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 0,
+                "y": 0
+            },
+            "id": 13,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "archive-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "archive-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 12,
+                "y": 0
+            },
+            "id": 15,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "notifications-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "notifications-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 0,
+                "y": 4
+            },
+            "id": 4,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "dh2-bridge-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "dh2-bridge-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 12,
+                "y": 4
+            },
+            "id": 11,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "revision-log-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "revision-log-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 0,
+                "y": 8
+            },
+            "id": 2,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "edi-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "edi-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 12,
+                "y": 8
+            },
+            "id": 12,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "sauron-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "sauron-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 0,
+                "y": 12
+            },
+            "id": 5,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "electricity-market-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "electricity-market-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 12,
+                "y": 12
+            },
+            "id": 17,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "sauron-healthchecks-api-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "sauron-healthchecks-api-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 0,
+                "y": 16
+            },
+            "id": 6,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "esett-exchange-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "esett-exchange-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 12,
+                "y": 16
+            },
+            "id": 14,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "settlement-report-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "settlement-report-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 0,
+                "y": 20
+            },
+            "id": 7,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "grid-loss-imbalance-prices-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "grid-loss-imbalance-prices-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 12,
+                "y": 20
+            },
+            "id": 10,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "shared-resources-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "shared-resources-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 0,
+                "y": 24
+            },
+            "id": 8,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "integration-test-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "integration-test-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 12,
+                "y": 24
+            },
+            "id": 18,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "ui-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "ui-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 0,
+                "y": 28
+            },
+            "id": 9,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "market-participant-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "market-participant-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 12,
+                "y": 28
+            },
+            "id": 19,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "wholesale-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "wholesale-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        },
+        {
+            "datasource": {
+                "type": "grafana-github-datasource",
+                "uid": "be4i299f8mmm8c"
+            },
+            "fieldConfig": {
+                "defaults": {
+                    "color": {
+                        "mode": "thresholds"
+                    },
+                    "custom": {
+                        "align": "auto",
+                        "cellOptions": {
+                            "type": "auto"
+                        },
+                        "inspect": false
+                    },
+                    "mappings": [],
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "red",
+                                "value": 80
+                            }
+                        ]
+                    }
+                },
+                "overrides": [
+                    {
+                        "matcher": {
+                            "id": "byName",
+                            "options": "total run duration (approx.)"
+                        },
+                        "properties": [
+                            {
+                                "id": "custom.width",
+                                "value": 209
+                            }
+                        ]
+                    }
+                ]
+            },
+            "gridPos": {
+                "h": 4,
+                "w": 12,
+                "x": 0,
+                "y": 32
+            },
+            "id": 3,
+            "options": {
+                "cellHeight": "sm",
+                "footer": {
+                    "countRows": false,
+                    "fields": "",
+                    "reducer": [
+                        "sum"
+                    ],
+                    "show": false
+                },
+                "showHeader": true,
+                "sortBy": []
+            },
+            "pluginVersion": "10.4.7",
+            "targets": [
+                {
+                    "datasource": {
+                        "type": "grafana-github-datasource",
+                        "uid": "be4i299f8mmm8c"
+                    },
+                    "options": {
+                        "workflow": "migrations-cd.yml"
+                    },
+                    "owner": "Energinet-DataHub",
+                    "queryType": "Workflow_Usage",
+                    "refId": "A",
+                    "repository": "dh3-environments"
+                }
+            ],
+            "title": "migrations-cd.yml",
+            "transformations": [
+                {
+                    "id": "organize",
+                    "options": {
+                        "excludeByName": {
+                            "average run duration (approx.)": false,
+                            "current billing cycle cost (approx.)": true,
+                            "longest run duration (approx.)": false,
+                            "name": true,
+                            "p95 run duration (approx.)": false,
+                            "runs": true,
+                            "runs on Friday": true,
+                            "runs on Monday": true,
+                            "runs on Saturday": true,
+                            "runs on Sunday": true,
+                            "runs on Thursday": true,
+                            "runs on Tuesday": true,
+                            "runs on Wednesday": true,
+                            "total run duration (approx.)": false,
+                            "unique triggering actors": true
+                        },
+                        "includeByName": {},
+                        "indexByName": {},
+                        "renameByName": {
+                            "name": ""
+                        }
+                    }
+                }
+            ],
+            "type": "table"
+        }
+    ],
+    "schemaVersion": 39,
+    "tags": [],
+    "templating": {
+        "list": []
+    },
+    "time": {
+        "from": "now-7d",
+        "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "Github CD Overview",
+    "uid": "fe4ld85ctnpxcf",
+    "version": 5,
+    "weekStart": ""
+}

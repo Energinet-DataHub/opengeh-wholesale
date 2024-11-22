@@ -315,3 +315,25 @@ variable "udr_firewall_next_hop_ip_address" {
   type        = string
   description = "The destination address prefix for the DNS rule in the NSG"
 }
+
+variable "dh_grafana_datasource_privatekey_base64" {
+  type        = string
+  description = "The base64 encoded private key for the github app 'Datahub - Grafana datasource'"
+  sensitive   = true
+}
+
+variable "dh_grafana_datasource_app_id" {
+  type        = string
+  description = "App id for 'Datahub - Grafana Datasource app'"
+}
+
+variable "dh_grafana_datasource_installation_id" {
+  type        = string
+  description = "Installation id for 'Datahub - Grafana Datasource app'"
+}
+
+variable "dh_grafana_datasource_personal_access_token" {
+  type        = string
+  description = "The personal access token used to authenticate the grafana datasource"
+  sensitive   = true
+}
