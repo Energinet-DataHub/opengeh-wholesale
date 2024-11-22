@@ -5,11 +5,13 @@ from unittest.mock import Mock
 
 import pytest
 from pyspark.sql import SparkSession, DataFrame
-import tests.test_factories.default_test_data_spec as default_data
-import tests.test_factories.charge_link_periods_factory as charge_links_factory
-import tests.test_factories.metering_point_periods_factory as metering_point_periods_factory
-import tests.test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
-from settlement_report_job.domain.charge_links.read_and_filter import read_and_filter
+import test_factories.default_test_data_spec as default_data
+import test_factories.charge_link_periods_factory as charge_link_periods_factory
+import test_factories.metering_point_periods_factory as metering_point_periods_factory
+import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
+from settlement_report_job.domain.charge_link_periods.read_and_filter import (
+    read_and_filter,
+)
 from settlement_report_job.domain.utils.market_role import MarketRole
 from settlement_report_job.infrastructure.wholesale.column_names import (
     DataProductColumnNames,
@@ -102,7 +104,7 @@ def test_read_and_filter__returns_charge_link_periods_that_overlap_with_selected
         ),
     )
 
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(
             from_date=charge_link_from_date, to_date=charge_link_to_date
@@ -149,13 +151,13 @@ def test_read_and_filter__returns_only_selected_grid_area(
             ),
         )
     )
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(
             metering_point_id=selected_metering_point,
         ),
     ).union(
-        charge_links_factory.create(
+        charge_link_periods_factory.create(
             spark,
             default_data.create_charge_link_periods_row(
                 metering_point_id=not_selected_metering_point,
@@ -193,14 +195,14 @@ def test_read_and_filter__returns_only_rows_from_selected_calculation_id(
     not_selected_calculation_id = "22222222-9fc8-409a-a169-fbd49479d718"
     expected_metering_point_id = "123456789012345678901234567"
     other_metering_point_id = "765432109876543210987654321"
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(
             calculation_id=selected_calculation_id,
             metering_point_id=expected_metering_point_id,
         ),
     ).union(
-        charge_links_factory.create(
+        charge_link_periods_factory.create(
             spark,
             default_data.create_charge_link_periods_row(
                 calculation_id=not_selected_calculation_id,
@@ -292,7 +294,7 @@ def test_read_and_filter__returns_data_for_expected_energy_suppliers(
     charge_link_periods = reduce(
         lambda df1, df2: df1.union(df2),
         [
-            charge_links_factory.create(
+            charge_link_periods_factory.create(
                 spark,
                 default_data.create_charge_link_periods_row(
                     metering_point_id=metering_point_id,
@@ -335,7 +337,7 @@ def test_read_and_filter__returns_data_for_expected_energy_suppliers(
         pytest.param(OTHER_ID, True, False, id="other charge owner with tax: exclude"),
     ],
 )
-def test_read_and_filter__when_system_operator__returns_expected_charge_links(
+def test_read_and_filter__when_system_operator__returns_expected_charge_link_periods(
     spark: SparkSession,
     charge_owner_id: str,
     is_tax: bool,
@@ -353,7 +355,7 @@ def test_read_and_filter__when_system_operator__returns_expected_charge_links(
             is_tax=is_tax,
         ),
     )
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(charge_owner_id=charge_owner_id),
     )
@@ -391,7 +393,7 @@ def test_read_and_filter__when_system_operator__returns_expected_charge_links(
         pytest.param(OTHER_ID, True, True, id="other charge owner with tax: include"),
     ],
 )
-def test_read_and_filter__when_grid_access_provider__returns_expected_charge_links(
+def test_read_and_filter__when_grid_access_provider__returns_expected_charge_link_periods(
     spark: SparkSession,
     charge_owner_id: str,
     is_tax: bool,
@@ -409,7 +411,7 @@ def test_read_and_filter__when_grid_access_provider__returns_expected_charge_lin
             is_tax=is_tax,
         ),
     )
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(charge_owner_id=charge_owner_id),
     )
@@ -447,7 +449,7 @@ def test_read_and_filter__when_energy_supplier_changes_on_metering_point__return
             ),
         ],
     )
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(
             from_date=JAN_1ST, to_date=JAN_3RD, charge_owner_id=GRID_ACCESS_PROVIDER_ID
@@ -504,7 +506,7 @@ def test_read_and_filter__when_datahub_user_and_energy_supplier_changes_on_meter
             ),
         ],
     )
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(from_date=JAN_1ST, to_date=JAN_3RD),
     )
@@ -547,7 +549,7 @@ def test_read_and_filter__when_duplicate_metering_point_periods__returns_one_lin
             default_data.create_metering_point_periods_row(),
         ],
     )
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(),
     )

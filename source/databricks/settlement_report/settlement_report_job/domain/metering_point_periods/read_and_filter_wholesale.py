@@ -18,8 +18,8 @@ from pyspark.sql import DataFrame
 
 from telemetry_logging import Logger, use_span
 
-from settlement_report_job.domain.utils.join_metering_points_periods_and_charge_links_periods import (
-    join_metering_points_periods_and_charge_links_periods,
+from settlement_report_job.domain.utils.join_metering_points_periods_and_charge_link_periods import (
+    join_metering_points_periods_and_charge_link_periods,
 )
 from settlement_report_job.domain.utils.merge_periods import (
     merge_connected_periods,
@@ -93,7 +93,7 @@ def _filter_by_charge_owner(
         charge_owner_id=requesting_actor_id,
         requesting_actor_market_role=requesting_actor_market_role,
     )
-    metering_point_periods = join_metering_points_periods_and_charge_links_periods(
+    metering_point_periods = join_metering_points_periods_and_charge_link_periods(
         charge_link_periods=charge_link_periods,
         metering_point_periods=metering_point_periods,
     )

@@ -35,14 +35,14 @@ class MeteringPointPeriodsTask(TaskBase):
             return
 
         repository = WholesaleRepository(self.spark, self.args.catalog_name)
-        charge_links = create_metering_point_periods(
+        charge_link_periods = create_metering_point_periods(
             args=self.args, repository=repository
         )
 
         csv_writer.write(
             dbutils=self.dbutils,
             args=self.args,
-            df=charge_links,
+            df=charge_link_periods,
             report_data_type=ReportDataType.MeteringPointPeriods,
             order_by_columns=order_by_columns(self.args.requesting_actor_market_role),
         )

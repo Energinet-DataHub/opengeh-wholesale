@@ -2,7 +2,9 @@ from typing import Any
 
 from pyspark.sql import SparkSession
 
-from settlement_report_job.domain.time_series.order_by_columns import order_by_columns
+from settlement_report_job.domain.time_series_points.order_by_columns import (
+    order_by_columns,
+)
 from settlement_report_job.entry_points.tasks.task_type import TaskType
 from settlement_report_job.entry_points.tasks.task_base import TaskBase
 from settlement_report_job.infrastructure import csv_writer
@@ -11,9 +13,9 @@ from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
-from settlement_report_job.domain.time_series.time_series_factory import (
-    create_time_series_for_wholesale,
-    create_time_series_for_balance_fixing,
+from settlement_report_job.domain.time_series_points.time_series_points_factory import (
+    create_time_series_points_for_wholesale,
+    create_time_series_points_for_balance_fixing,
 )
 from settlement_report_job.entry_points.job_args.calculation_type import CalculationType
 from telemetry_logging import use_span
@@ -22,7 +24,7 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
 )
 
 
-class TimeSeriesTask(TaskBase):
+class TimeSeriesPointsTask(TaskBase):
     def __init__(
         self,
         spark: SparkSession,
@@ -54,7 +56,7 @@ class TimeSeriesTask(TaskBase):
 
         repository = WholesaleRepository(self.spark, self.args.catalog_name)
         if self.args.calculation_type is CalculationType.BALANCE_FIXING:
-            time_series_df = create_time_series_for_balance_fixing(
+            time_series_points_df = create_time_series_points_for_balance_fixing(
                 period_start=self.args.period_start,
                 period_end=self.args.period_end,
                 grid_area_codes=self.args.grid_area_codes,
@@ -65,7 +67,7 @@ class TimeSeriesTask(TaskBase):
                 repository=repository,
             )
         else:
-            time_series_df = create_time_series_for_wholesale(
+            time_series_points_df = create_time_series_points_for_wholesale(
                 period_start=self.args.period_start,
                 period_end=self.args.period_end,
                 calculation_id_by_grid_area=self.args.calculation_id_by_grid_area,
@@ -80,7 +82,7 @@ class TimeSeriesTask(TaskBase):
         csv_writer.write(
             dbutils=self.dbutils,
             args=self.args,
-            df=time_series_df,
+            df=time_series_points_df,
             report_data_type=report_type,
             order_by_columns=order_by_columns(self.args.requesting_actor_market_role),
         )

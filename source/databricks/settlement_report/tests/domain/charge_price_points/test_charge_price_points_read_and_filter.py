@@ -6,7 +6,7 @@ from uuid import UUID
 import pytest
 from pyspark.sql import SparkSession, DataFrame
 import test_factories.default_test_data_spec as default_data
-import test_factories.charge_link_periods_factory as charge_links_factory
+import test_factories.charge_link_periods_factory as charge_link_periods_factory
 import test_factories.metering_point_periods_factory as metering_point_periods_factory
 import test_factories.charge_price_points_factory as charge_price_points_factory
 import test_factories.charge_price_information_periods_factory as charge_price_information_periods_factory
@@ -100,7 +100,7 @@ def test_when_energy_supplier_ids_contain_only_one_energy_supplier_id(
         ],
     )
 
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         [
             default_data.create_charge_link_periods_row(
@@ -199,7 +199,7 @@ def test_when_two_energy_suppliers_ids_with_different_periods(
         ],
     )
 
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         [
             default_data.create_charge_link_periods_row(
@@ -281,7 +281,7 @@ def test_time_within_and_outside_of_date_range_scenarios(
         ),
     )
 
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(from_date=JAN_1ST, to_date=JAN_4TH),
     )
@@ -353,7 +353,7 @@ def test_energy_supplier_ids_scenarios(
         ),
     )
 
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark, default_data.create_charge_link_periods_row()
     )
 
@@ -427,7 +427,7 @@ def test_calculation_id_by_grid_area_scenarios(
         ),
     )
 
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(
             calculation_id=default_data.DEFAULT_CALCULATION_ID
@@ -516,7 +516,7 @@ def test_grid_access_provider_and_system_operator_scenarios(
         default_data.create_metering_point_periods_row(),
     )
 
-    charge_link_periods = charge_links_factory.create(
+    charge_link_periods = charge_link_periods_factory.create(
         spark,
         default_data.create_charge_link_periods_row(),
     )

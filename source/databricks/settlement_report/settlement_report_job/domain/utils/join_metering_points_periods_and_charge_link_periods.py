@@ -5,7 +5,7 @@ from settlement_report_job.infrastructure.wholesale.column_names import (
 )
 
 
-def join_metering_points_periods_and_charge_links_periods(
+def join_metering_points_periods_and_charge_link_periods(
     charge_link_periods: DataFrame,
     metering_point_periods: DataFrame,
 ) -> DataFrame:
