@@ -1,5 +1,5 @@
 calculation_id;calculation_type;calculation_execution_time_start;calculation_result_id;grid_area_code;energy_supplier_id;quantity_unit;time;amount;is_tax;charge_code;charge_type;charge_owner_id
-0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;94d95b8c-2fed-5c6b-9e1a-62eddca39dfe;800;1000000000000;pcs;2023-01-31 23:00:00;1.817202;False;subscription-1;subscription;0000000000800
-0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;e4b330d2-0437-52d8-a32b-fbd432927d44;800;2000000000000;pcs;2023-01-31 23:00:00;3.000000;False;subscription-2;subscription;0000000000800
-0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;4ad5300d-c3d5-5994-a070-c68165d8cf09;800;2000000000000;pcs;2023-01-31 23:00:00;1.000000;False;subscription-3;subscription;0000000000800
-0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;a9c994d1-0930-5d0d-817c-b18a5c9a925c;800;3000000000000;pcs;2023-01-31 23:00:00;7.000000;False;subscription-2;subscription;0000000000800
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;0af1c061-be60-54bb-84b7-85cc2ef38b28;800;1000000000000;pcs;2023-01-31 23:00:00;1.817202;False;subscription-1;subscription;0000000000800
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;75fa2e48-6f90-5f03-be1c-2ced872129eb;800;2000000000000;pcs;2023-01-31 23:00:00;3.000000;False;subscription-2;subscription;0000000000800
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;ceb6ab79-105b-522c-bd65-f5ecc5aa7612;800;2000000000000;pcs;2023-01-31 23:00:00;1.000000;False;subscription-3;subscription;0000000000800
+0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;84317d44-67f5-5137-beeb-2ee022b5ac39;800;3000000000000;pcs;2023-01-31 23:00:00;7.000000;False;subscription-2;subscription;0000000000800
