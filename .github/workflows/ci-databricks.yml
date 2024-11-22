@@ -47,8 +47,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Echo Hello World
-        run: echo "Hello World!"
-          
+        run:
+          echo "Hello World!"
+          echo wheel_working_directory
+
   migration_scripts_verification:
     if: ${{ inputs.has_delta_migration_changes }}
     runs-on: ubuntu-latest
