@@ -46,11 +46,20 @@ jobs:
   hello_world:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo Hello World and List Folders
+      - name: Echo Hello World and Check Directory
         run: |
           echo "Hello World!"
-          echo "Listing all folders in './source/databricks/calculation_engine/tests/features':"
-          ls -d ./source/databricks/calculation_engine/tests/features/*/
+          echo "Checking and listing all folders in './source/databricks/calculation_engine/tests/features':"
+          DIRECTORY_PATH="./source/databricks/calculation_engine/tests/features"
+          if [ -d "$DIRECTORY_PATH" ]; then
+            echo "Directory exists. Listing all subdirectories:"
+            ls -d $DIRECTORY_PATH/*/
+          else
+            echo "Directory '$DIRECTORY_PATH' does not exist."
+            mkdir -p $DIRECTORY_PATH
+            echo "Directory created. No subdirectories to list."
+          fi
+        shell: /usr/bin/bash -e {0}
 
   migration_scripts_verification:
     if: ${{ inputs.has_delta_migration_changes }}
