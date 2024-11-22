@@ -46,10 +46,11 @@ jobs:
   hello_world:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo Hello World
-        run:
+      - name: Echo Hello World and List Folders
+        run: |
           echo "Hello World!"
-          echo "::wheel_working_directory"
+          echo "Listing all folders in './source/databricks/calculation_engine/tests/features':"
+          ls -d ./source/databricks/calculation_engine/tests/features/*/
 
   migration_scripts_verification:
     if: ${{ inputs.has_delta_migration_changes }}
