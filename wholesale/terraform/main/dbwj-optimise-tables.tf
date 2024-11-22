@@ -52,5 +52,6 @@ resource "databricks_job" "optimise_tables_job" {
 
   email_notifications {
     no_alert_for_skipped_runs = true
+    on_failure = var.alert_email_address != null ? [var.alert_email_address] : []
   }
 }
