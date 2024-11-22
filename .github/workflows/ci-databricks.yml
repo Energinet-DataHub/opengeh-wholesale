@@ -43,6 +43,12 @@ jobs:
       multiple_wheels: true
       should_include_assets: true
 
+  hello_world:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Hello World
+        run: echo "Hello World!"
+          
   migration_scripts_verification:
     if: ${{ inputs.has_delta_migration_changes }}
     runs-on: ubuntu-latest
