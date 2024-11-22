@@ -40,13 +40,12 @@ def write_energy_results(
 
     print("Writing energy results to Unity Catalog")
 
-    # Checkpoint all calculations pre-writing, as autoscaling during this step leads to
+    # Checkpoint all calculations pre-writing, as down-scaling during this step leads to
     # the "indeterminate result" issue from incident INC0409592.
     for field in fields(energy_results_output):
         field_value = getattr(energy_results_output, field.name)
         if field_value is not None:
-            field_value.cache()
-            setattr(energy_results_output, field.name, field_value.checkpoint())
+            setattr(energy_results_output, field.name, field_value.cache().checkpoint())
 
     # Write exchange per neighbor grid area
     _write(

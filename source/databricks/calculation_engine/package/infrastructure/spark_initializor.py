@@ -31,6 +31,7 @@ def initialize_spark() -> SparkSession:
 def configure_spark(
     spark: SparkSession, infrastructure_settings: InfrastructureSettings
 ) -> None:
+    # This specific directory has a retention policy to delete checkpoints older than 2 days.
     spark.sparkContext.setCheckpointDir(
-        f"{infrastructure_settings.wholesale_container_path}/checkpoints"
+        f"{infrastructure_settings.wholesale_container_path}/checkpoints/calculator_job"
     )
