@@ -42,7 +42,7 @@ from settlement_report_job.domain.utils.report_data_type import ReportDataType
 from settlement_report_job.entry_points.job_args.settlement_report_args import (
     SettlementReportArgs,
 )
-import test_factories.time_series_csv_factory as time_series_factory
+import test_factories.time_series_points_csv_factory as time_series_points_factory
 import test_factories.energy_factory as energy_factory
 from settlement_report_job.domain.utils.csv_column_names import CsvColumnNames
 from settlement_report_job.infrastructure.paths import get_report_output_path
@@ -50,7 +50,7 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
     MeteringPointResolutionDataProductValue,
     MeteringPointTypeDataProductValue,
 )
-import settlement_report_job.domain.time_series.order_by_columns as time_series_order_by_columns
+import settlement_report_job.domain.time_series_points.order_by_columns as time_series_points_order_by_columns
 import settlement_report_job.domain.energy_results.order_by_columns as energy_order_by_columns
 
 
@@ -86,20 +86,20 @@ def test_write__returns_files_corresponding_to_grid_area_codes(
         if resolution == MeteringPointResolutionDataProductValue.HOUR
         else ReportDataType.TimeSeriesQuarterly
     )
-    test_spec = time_series_factory.TimeSeriesCsvTestDataSpec(
+    test_spec = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         grid_area_codes=grid_area_codes,
         resolution=resolution,
     )
-    df_prepared_time_series = time_series_factory.create(spark, test_spec)
+    df_prepared_time_series_points = time_series_points_factory.create(spark, test_spec)
 
     # Act
     result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        df=df_prepared_time_series,
+        df=df_prepared_time_series_points,
         report_data_type=report_data_type,
-        order_by_columns=time_series_order_by_columns.order_by_columns(
+        order_by_columns=time_series_points_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
     )
@@ -118,19 +118,19 @@ def test_write__when_higher_default_parallelism__number_of_files_is_unchanged(
     spark.conf.set("spark.default.parallelism", "10")
     report_data_type = ReportDataType.TimeSeriesHourly
     expected_file_count = 2
-    test_spec = time_series_factory.TimeSeriesCsvTestDataSpec(
+    test_spec = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         grid_area_codes=["804", "805"],
     )
-    df_prepared_time_series = time_series_factory.create(spark, test_spec)
+    df_prepared_time_series_points = time_series_points_factory.create(spark, test_spec)
 
     # Act
     result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        df=df_prepared_time_series,
+        df=df_prepared_time_series_points,
         report_data_type=report_data_type,
-        order_by_columns=time_series_order_by_columns.order_by_columns(
+        order_by_columns=time_series_points_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
     )
@@ -159,26 +159,26 @@ def test_write__when_prevent_large_files_is_enabled__writes_expected_number_of_f
     # Arrange
     report_data_type = ReportDataType.TimeSeriesHourly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    test_spec = time_series_factory.TimeSeriesCsvTestDataSpec(
+    test_spec = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=number_of_rows,
     )
-    df_prepared_time_series = time_series_factory.create(spark, test_spec)
+    df_prepared_time_series_points = time_series_points_factory.create(spark, test_spec)
 
     # Act
     result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        df=df_prepared_time_series,
+        df=df_prepared_time_series_points,
         report_data_type=report_data_type,
-        order_by_columns=time_series_order_by_columns.order_by_columns(
+        order_by_columns=time_series_points_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
         rows_per_file=rows_per_file,
     )
 
     # Assert
-    assert df_prepared_time_series.count() == number_of_rows
+    assert df_prepared_time_series_points.count() == number_of_rows
     assert len(result_files) == expected_file_count
 
 
@@ -206,19 +206,19 @@ def test_write__files_have_correct_ordering_for_each_file(
         CsvColumnNames.time,
     ]
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    test_spec = time_series_factory.TimeSeriesCsvTestDataSpec(
+    test_spec = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=number_of_metering_points,
         num_days_per_metering_point=number_of_days_for_each_mp,
     )
-    df_prepared_time_series = time_series_factory.create(spark, test_spec)
-    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
+    df_prepared_time_series_points = time_series_points_factory.create(spark, test_spec)
+    df_prepared_time_series_points = df_prepared_time_series_points.orderBy(F.rand())
 
     # Act
     result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        df=df_prepared_time_series,
+        df=df_prepared_time_series_points,
         report_data_type=ReportDataType.TimeSeriesHourly,
         order_by_columns=expected_order_by,
         rows_per_file=rows_per_file,
@@ -258,19 +258,19 @@ def test_write__files_have_correct_ordering_for_each_grid_area_code_file(
         CsvColumnNames.time,
     ]
     report_data_type = ReportDataType.TimeSeriesHourly
-    test_spec = time_series_factory.TimeSeriesCsvTestDataSpec(
+    test_spec = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         grid_area_codes=grid_area_codes,
         num_metering_points=number_of_rows,
     )
-    df_prepared_time_series = time_series_factory.create(spark, test_spec)
-    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
+    df_prepared_time_series_points = time_series_points_factory.create(spark, test_spec)
+    df_prepared_time_series_points = df_prepared_time_series_points.orderBy(F.rand())
 
     # Act
     result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        df=df_prepared_time_series,
+        df=df_prepared_time_series_points,
         report_data_type=report_data_type,
         order_by_columns=expected_order_by,
     )
@@ -302,31 +302,31 @@ def test_write__files_have_correct_ordering_for_multiple_metering_point_types(
     ]
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    test_spec_consumption = time_series_factory.TimeSeriesCsvTestDataSpec(
+    test_spec_consumption = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=10,
     )
-    test_spec_production = time_series_factory.TimeSeriesCsvTestDataSpec(
+    test_spec_production = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.PRODUCTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=20,
     )
-    df_prepared_time_series_consumption = time_series_factory.create(
+    df_prepared_time_series_points_consumption = time_series_points_factory.create(
         spark, test_spec_consumption
     )
-    df_prepared_time_series_production = time_series_factory.create(
+    df_prepared_time_series_points_production = time_series_points_factory.create(
         spark, test_spec_production
     )
-    df_prepared_time_series = df_prepared_time_series_consumption.union(
-        df_prepared_time_series_production
+    df_prepared_time_series_points = df_prepared_time_series_points_consumption.union(
+        df_prepared_time_series_points_production
     ).orderBy(F.rand())
 
     # Act
     result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        df=df_prepared_time_series,
+        df=df_prepared_time_series_points,
         report_data_type=report_data_type,
         order_by_columns=expected_order_by,
         rows_per_file=10,
@@ -371,18 +371,18 @@ def test_write__files_have_correct_sorting_across_multiple_files(
     ]
     report_data_type = ReportDataType.TimeSeriesHourly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    test_spec = time_series_factory.TimeSeriesCsvTestDataSpec(
+    test_spec = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=number_of_rows,
     )
-    df_prepared_time_series = time_series_factory.create(spark, test_spec)
-    df_prepared_time_series = df_prepared_time_series.orderBy(F.rand())
+    df_prepared_time_series_points = time_series_points_factory.create(spark, test_spec)
+    df_prepared_time_series_points = df_prepared_time_series_points.orderBy(F.rand())
 
     # Act
     result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        df=df_prepared_time_series,
+        df=df_prepared_time_series_points,
         report_data_type=report_data_type,
         order_by_columns=expected_order_by,
         rows_per_file=rows_per_file,
@@ -411,20 +411,22 @@ def test_write__when_prevent_large_files__chunk_index_start_at_1(
     expected_file_count = 3
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    test_spec_consumption = time_series_factory.TimeSeriesCsvTestDataSpec(
+    test_spec_consumption = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=30,
     )
-    df_prepared_time_series = time_series_factory.create(spark, test_spec_consumption)
+    df_prepared_time_series_points = time_series_points_factory.create(
+        spark, test_spec_consumption
+    )
 
     # Act
     result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        df=df_prepared_time_series,
+        df=df_prepared_time_series_points,
         report_data_type=report_data_type,
-        order_by_columns=time_series_order_by_columns.order_by_columns(
+        order_by_columns=time_series_points_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
         rows_per_file=10,
@@ -449,20 +451,22 @@ def test_write__when_prevent_large_files_but_too_few_rows__chunk_index_should_be
     expected_file_count = 1
     report_data_type = ReportDataType.TimeSeriesQuarterly
     standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
-    test_spec_consumption = time_series_factory.TimeSeriesCsvTestDataSpec(
+    test_spec_consumption = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
         metering_point_type=MeteringPointTypeDataProductValue.CONSUMPTION,
         start_of_day=standard_wholesale_fixing_scenario_args.period_start,
         num_metering_points=30,
     )
-    df_prepared_time_series = time_series_factory.create(spark, test_spec_consumption)
+    df_prepared_time_series_points = time_series_points_factory.create(
+        spark, test_spec_consumption
+    )
 
     # Act
     result_files = csv_writer.write(
         dbutils=dbutils,
         args=standard_wholesale_fixing_scenario_args,
-        df=df_prepared_time_series,
+        df=df_prepared_time_series_points,
         report_data_type=report_data_type,
-        order_by_columns=time_series_order_by_columns.order_by_columns(
+        order_by_columns=time_series_points_order_by_columns.order_by_columns(
             requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
         ),
         rows_per_file=31,
@@ -470,18 +474,54 @@ def test_write__when_prevent_large_files_but_too_few_rows__chunk_index_should_be
 
     # Assert
     assert len(result_files) == expected_file_count
-    file_name = result_files[0]
-    file_name = file_name[:-4]
-    file_name_components = file_name.split("_")
+    file_name_components = result_files[0][:-4].split("_")
 
-    chunk_id_if_present = file_name_components[-1]
-    try:
-        int(chunk_id_if_present)
+    assert not file_name_components[
+        -1
+    ].isdigit(), (
+        "A valid integer indicating a present chunk index was found when not expected!"
+    )
+
+
+def test_write__when_prevent_large_files_and_multiple_grid_areas_but_too_few_rows__chunk_index_should_be_excluded(
+    dbutils: DBUtilsFixture,
+    spark: SparkSession,
+    standard_wholesale_fixing_scenario_args: SettlementReportArgs,
+):
+    # Arrange
+    expected_file_count = 2
+    report_data_type = ReportDataType.TimeSeriesQuarterly
+    standard_wholesale_fixing_scenario_args.prevent_large_text_files = True
+    test_spec_consumption = time_series_points_factory.TimeSeriesPointsCsvTestDataSpec(
+        start_of_day=standard_wholesale_fixing_scenario_args.period_start,
+        num_metering_points=10,
+        grid_area_codes=["804", "805"],
+    )
+    prepared_time_series_point = time_series_points_factory.create(
+        spark, test_spec_consumption, add_grid_area_code_partitioning_column=True
+    )
+
+    # Act
+    result_files = csv_writer.write(
+        dbutils=dbutils,
+        args=standard_wholesale_fixing_scenario_args,
+        df=prepared_time_series_point,
+        report_data_type=report_data_type,
+        order_by_columns=time_series_points_order_by_columns.order_by_columns(
+            requesting_actor_market_role=standard_wholesale_fixing_scenario_args.requesting_actor_market_role,
+        ),
+        rows_per_file=31,
+    )
+
+    # Assert
+    assert len(result_files) == expected_file_count
+    for result_file in result_files:
+        file_name_components = result_file[:-4].split("_")
+        chunk_id_if_present = file_name_components[-1]
+
         assert (
-            False
+            not chunk_id_if_present.isdigit()
         ), "A valid integer indicating a present chunk index was found when not expected!"
-    except ValueError:
-        pass
 
 
 def test_write__when_energy_and_split_report_by_grid_area_is_false__returns_expected_number_of_files_and_content(

@@ -18,7 +18,9 @@ from settlement_report_job.domain.utils.csv_column_names import (
     CsvColumnNames,
 )
 from settlement_report_job.entry_points.tasks.task_type import TaskType
-from settlement_report_job.entry_points.tasks.time_series_task import TimeSeriesTask
+from settlement_report_job.entry_points.tasks.time_series_points_task import (
+    TimeSeriesPointsTask,
+)
 from settlement_report_job.infrastructure.paths import get_report_output_path
 from utils import cleanup_output_path, get_actual_files
 
@@ -31,7 +33,7 @@ def reset_task_values(settlement_reports_output_path: str):
     )
 
 
-def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
+def test_execute_quarterly_time_series_points__when_energy_supplier__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -54,7 +56,7 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
-    task = TimeSeriesTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
+    task = TimeSeriesPointsTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
 
     # Act
     task.execute()
@@ -73,7 +75,7 @@ def test_execute_quarterly_time_series__when_energy_supplier__returns_expected(
     )
 
 
-def test_execute_quarterly_time_series__when_grid_access_provider__returns_expected(
+def test_execute_quarterly_time_series_points__when_grid_access_provider__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -92,7 +94,7 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
-    task = TimeSeriesTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
+    task = TimeSeriesPointsTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
 
     # Act
     task.execute()
@@ -115,7 +117,7 @@ def test_execute_quarterly_time_series__when_grid_access_provider__returns_expec
     "market_role",
     [MarketRole.SYSTEM_OPERATOR, MarketRole.DATAHUB_ADMINISTRATOR],
 )
-def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_with_one_energy_supplier_id__returns_expected(
+def test_execute_quarterly_time_series_points__when_system_operator_or_datahub_admin_with_one_energy_supplier_id__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -139,7 +141,7 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
-    task = TimeSeriesTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
+    task = TimeSeriesPointsTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
 
     # Act
     task.execute()
@@ -162,7 +164,7 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     "market_role",
     [MarketRole.SYSTEM_OPERATOR, MarketRole.DATAHUB_ADMINISTRATOR],
 )
-def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_with_none_energy_supplier_id__returns_expected(
+def test_execute_quarterly_time_series_points__when_system_operator_or_datahub_admin_with_none_energy_supplier_id__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -183,7 +185,7 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
-    task = TimeSeriesTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
+    task = TimeSeriesPointsTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
 
     # Act
     task.execute()
@@ -202,7 +204,7 @@ def test_execute_quarterly_time_series__when_system_operator_or_datahub_admin_wi
     )
 
 
-def test_execute_quarterly_time_series__when_include_basis_data_false__returns_no_file_paths(
+def test_execute_quarterly_time_series_points__when_include_basis_data_false__returns_no_file_paths(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_wholesale_fixing_scenario_args: SettlementReportArgs,
@@ -211,7 +213,7 @@ def test_execute_quarterly_time_series__when_include_basis_data_false__returns_n
     # Arrange
     args = standard_wholesale_fixing_scenario_args
     args.include_basis_data = False
-    task = TimeSeriesTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
+    task = TimeSeriesPointsTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
 
     # Act
     task.execute()
@@ -224,7 +226,7 @@ def test_execute_quarterly_time_series__when_include_basis_data_false__returns_n
     assert actual_files is None or len(actual_files) == 0
 
 
-def test_execute_quarterly_time_series__when_energy_supplier_and_balance_fixing__returns_expected(
+def test_execute_quarterly_time_series_points__when_energy_supplier_and_balance_fixing__returns_expected(
     spark: SparkSession,
     dbutils: DBUtilsFixture,
     standard_balance_fixing_scenario_args: SettlementReportArgs,
@@ -247,7 +249,7 @@ def test_execute_quarterly_time_series__when_energy_supplier_and_balance_fixing_
         CsvColumnNames.metering_point_type,
         CsvColumnNames.time,
     ] + [f"ENERGYQUANTITY{i}" for i in range(1, 101)]
-    task = TimeSeriesTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
+    task = TimeSeriesPointsTask(spark, dbutils, args, TaskType.TimeSeriesQuarterly)
 
     # Act
     task.execute()

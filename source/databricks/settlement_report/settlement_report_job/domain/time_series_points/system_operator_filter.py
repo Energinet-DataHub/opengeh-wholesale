@@ -5,8 +5,8 @@ from settlement_report_job.infrastructure.wholesale.column_names import (
 )
 
 
-def filter_time_series_on_charge_owner(
-    time_series: DataFrame,
+def filter_time_series_points_on_charge_owner(
+    time_series_points: DataFrame,
     system_operator_id: str,
     charge_link_periods: DataFrame,
     charge_price_information_periods: DataFrame,
@@ -31,12 +31,12 @@ def filter_time_series_on_charge_owner(
         charge_link_periods[DataProductColumnNames.to_date],
     )
 
-    filtered_df = time_series.join(
+    filtered_df = time_series_points.join(
         filtered_charge_link_periods,
         on=[
-            time_series[DataProductColumnNames.calculation_id]
+            time_series_points[DataProductColumnNames.calculation_id]
             == filtered_charge_link_periods[DataProductColumnNames.calculation_id],
-            time_series[DataProductColumnNames.metering_point_id]
+            time_series_points[DataProductColumnNames.metering_point_id]
             == filtered_charge_link_periods[DataProductColumnNames.metering_point_id],
             F.col(DataProductColumnNames.observation_time)
             >= F.col(DataProductColumnNames.from_date),
