@@ -18,6 +18,7 @@ from pyspark.sql.session import SparkSession
 
 def initialize_spark() -> SparkSession:
     # Set spark config with the session timezone so that datetimes are displayed consistently (in UTC)
+    # Cool!
     spark_conf = (
         SparkConf(loadDefaults=True)
         .set("spark.sql.session.timeZone", "UTC")
