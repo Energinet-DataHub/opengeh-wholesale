@@ -49,7 +49,7 @@ jobs:
       - name: Echo Hello World
         run:
           echo "Hello World!"
-          echo wheel_working_directory
+          echo "::wheel_working_directory"
 
   migration_scripts_verification:
     if: ${{ inputs.has_delta_migration_changes }}
