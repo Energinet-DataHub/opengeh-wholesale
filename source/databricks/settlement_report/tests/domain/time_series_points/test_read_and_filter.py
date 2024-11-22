@@ -6,7 +6,7 @@ from unittest.mock import Mock
 import pytest
 from pyspark.sql import SparkSession, functions as F
 import tests.test_factories.default_test_data_spec as default_data
-import tests.test_factories.metering_point_time_series_factory as time_series_factory
+import tests.test_factories.metering_point_time_series_factory as time_series_points_factory
 import tests.test_factories.charge_link_periods_factory as charge_link_periods_factory
 import tests.test_factories.charge_price_information_periods_factory as charge_price_information_periods
 from settlement_report_job.infrastructure.wholesale.data_values import (
@@ -14,7 +14,7 @@ from settlement_report_job.infrastructure.wholesale.data_values import (
 )
 
 from settlement_report_job.domain.utils.market_role import MarketRole
-from settlement_report_job.domain.time_series.read_and_filter import (
+from settlement_report_job.domain.time_series_points.read_and_filter import (
     read_and_filter_for_wholesale,
     read_and_filter_for_balance_fixing,
 )
@@ -53,16 +53,16 @@ def test_read_and_filter_for_wholesale__when_input_has_both_resolution_types__re
         if resolution == MeteringPointResolutionDataProductValue.HOUR
         else quarterly_metering_point_id
     )
-    spec_hour = default_data.create_time_series_data_spec(
+    spec_hour = default_data.create_time_series_points_data_spec(
         metering_point_id=hourly_metering_point_id,
         resolution=MeteringPointResolutionDataProductValue.HOUR,
     )
-    spec_quarter = default_data.create_time_series_data_spec(
+    spec_quarter = default_data.create_time_series_points_data_spec(
         metering_point_id=quarterly_metering_point_id,
         resolution=MeteringPointResolutionDataProductValue.QUARTER,
     )
-    df = time_series_factory.create(spark, spec_hour).union(
-        time_series_factory.create(spark, spec_quarter)
+    df = time_series_points_factory.create(spark, spec_hour).union(
+        time_series_points_factory.create(spark, spec_quarter)
     )
 
     mock_repository = Mock()
@@ -106,9 +106,9 @@ def test_read_and_filter_for_wholesale__returns_only_days_within_selected_period
     period_start = datetime(2024, 1, 10, 23)
     period_end = period_start + timedelta(days=number_of_days_in_period)
 
-    df = time_series_factory.create(
+    df = time_series_points_factory.create(
         spark,
-        default_data.create_time_series_data_spec(
+        default_data.create_time_series_points_data_spec(
             from_date=data_from_date, to_date=data_to_date
         ),
     )
@@ -149,15 +149,15 @@ def test_read_and_filter_for_wholesale__returns_only_selected_grid_area(
     # Arrange
     selected_grid_area_code = "805"
     not_selected_grid_area_code = "806"
-    df = time_series_factory.create(
+    df = time_series_points_factory.create(
         spark,
-        default_data.create_time_series_data_spec(
+        default_data.create_time_series_points_data_spec(
             grid_area_code=selected_grid_area_code,
         ),
     ).union(
-        time_series_factory.create(
+        time_series_points_factory.create(
             spark,
-            default_data.create_time_series_data_spec(
+            default_data.create_time_series_points_data_spec(
                 grid_area_code=not_selected_grid_area_code,
             ),
         )
@@ -195,16 +195,16 @@ def test_read_and_filter_for_wholesale__returns_only_metering_points_from_select
     not_selected_calculation_id = "22222222-9fc8-409a-a169-fbd49479d718"
     expected_metering_point_id = "123456789012345678901234567"
     other_metering_point_id = "765432109876543210987654321"
-    df = time_series_factory.create(
+    df = time_series_points_factory.create(
         spark,
-        default_data.create_time_series_data_spec(
+        default_data.create_time_series_points_data_spec(
             calculation_id=selected_calculation_id,
             metering_point_id=expected_metering_point_id,
         ),
     ).union(
-        time_series_factory.create(
+        time_series_points_factory.create(
             spark,
-            default_data.create_time_series_data_spec(
+            default_data.create_time_series_points_data_spec(
                 calculation_id=not_selected_calculation_id,
                 metering_point_id=other_metering_point_id,
             ),
@@ -265,9 +265,9 @@ def test_read_and_filter_for_wholesale__returns_data_for_expected_energy_supplie
     df = reduce(
         lambda df1, df2: df1.union(df2),
         [
-            time_series_factory.create(
+            time_series_points_factory.create(
                 spark,
-                default_data.create_time_series_data_spec(
+                default_data.create_time_series_points_data_spec(
                     energy_supplier_id=energy_supplier_id,
                 ),
             )
@@ -306,15 +306,15 @@ def test_read_and_filter_for_wholesale__returns_data_for_expected_energy_supplie
         (NOT_SYSTEM_OPERATOR_ID, False),
     ],
 )
-def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_series_with_system_operator_as_charge_owner(
+def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_series_points_with_system_operator_as_charge_owner(
     spark: SparkSession,
     charge_owner_id: str,
     return_rows: bool,
 ) -> None:
     # Arrange
-    time_series_df = time_series_factory.create(
+    time_series_points_df = time_series_points_factory.create(
         spark,
-        default_data.create_time_series_data_spec(),
+        default_data.create_time_series_points_data_spec(),
     )
     charge_price_information_period_df = charge_price_information_periods.create(
         spark,
@@ -327,7 +327,7 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_
         default_data.create_charge_link_periods_row(charge_owner_id=SYSTEM_OPERATOR_ID),
     )
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series_df
+    mock_repository.read_metering_point_time_series.return_value = time_series_points_df
     mock_repository.read_charge_price_information_periods.return_value = (
         charge_price_information_period_df
     )
@@ -353,18 +353,18 @@ def test_read_and_filter_for_wholesale__when_system_operator__returns_only_time_
     assert (actual.count() > 0) == return_rows
 
 
-def test_read_and_filter_for_balance_fixing__returns_only_time_series_from_latest_calculations(
+def test_read_and_filter_for_balance_fixing__returns_only_time_series_points_from_latest_calculations(
     spark: SparkSession,
 ) -> None:
     # Arrange
     not_latest_calculation_id = "11111111-9fc8-409a-a169-fbd49479d718"
     latest_calculation_id = "22222222-9fc8-409a-a169-fbd49479d718"
-    time_series_df = reduce(
+    time_series_points_df = reduce(
         lambda df1, df2: df1.union(df2),
         [
-            time_series_factory.create(
+            time_series_points_factory.create(
                 spark,
-                default_data.create_time_series_data_spec(
+                default_data.create_time_series_points_data_spec(
                     calculation_id=calculation_id
                 ),
             )
@@ -380,7 +380,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_time_series_from_lates
     )
 
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series_df
+    mock_repository.read_metering_point_time_series.return_value = time_series_points_df
     mock_repository.read_latest_calculations.return_value = latest_calculations
 
     # Act
@@ -417,12 +417,12 @@ def test_read_and_filter_for_balance_fixing__returns_only_balance_fixing_results
         "55555555-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.SECOND_CORRECTION_SETTLEMENT,
         "66666666-9fc8-409a-a169-fbd49479d718": CalculationTypeDataProductValue.THIRD_CORRECTION_SETTLEMENT,
     }
-    time_series = reduce(
+    time_series_points = reduce(
         lambda df1, df2: df1.union(df2),
         [
-            time_series_factory.create(
+            time_series_points_factory.create(
                 spark,
-                default_data.create_time_series_data_spec(
+                default_data.create_time_series_points_data_spec(
                     calculation_id=calc_id, calculation_type=calc_type
                 ),
             )
@@ -444,7 +444,7 @@ def test_read_and_filter_for_balance_fixing__returns_only_balance_fixing_results
     )
 
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series
+    mock_repository.read_metering_point_time_series.return_value = time_series_points
     mock_repository.read_latest_calculations.return_value = latest_calculations
 
     # Act
@@ -481,12 +481,12 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_with_time_ove
     calculation_id_2 = "22222222-9fc8-409a-a169-fbd49479d718"
     calc_type = CalculationTypeDataProductValue.BALANCE_FIXING
 
-    time_series = reduce(
+    time_series_points = reduce(
         lambda df1, df2: df1.union(df2),
         [
-            time_series_factory.create(
+            time_series_points_factory.create(
                 spark,
-                default_data.create_time_series_data_spec(
+                default_data.create_time_series_points_data_spec(
                     calculation_id=calc_id,
                     calculation_type=calc_type,
                     from_date=from_date,
@@ -517,7 +517,7 @@ def test_read_and_filter_for_balance_fixing__when_two_calculations_with_time_ove
     )
 
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series
+    mock_repository.read_metering_point_time_series.return_value = time_series_points
     mock_repository.read_latest_calculations.return_value = latest_calculations
 
     # Act
@@ -564,12 +564,12 @@ def test_read_and_filter_for_balance_fixing__latest_calculation_for_grid_area(
     calculation_id_2 = "22222222-9fc8-409a-a169-fbd49479d718"
     calc_type = CalculationTypeDataProductValue.BALANCE_FIXING
 
-    time_series = reduce(
+    time_series_points = reduce(
         lambda df1, df2: df1.union(df2),
         [
-            time_series_factory.create(
+            time_series_points_factory.create(
                 spark,
-                default_data.create_time_series_data_spec(
+                default_data.create_time_series_points_data_spec(
                     calculation_id=calc_id,
                     calculation_type=calc_type,
                     grid_area_code=grid_area,
@@ -604,7 +604,7 @@ def test_read_and_filter_for_balance_fixing__latest_calculation_for_grid_area(
     )
 
     mock_repository = Mock()
-    mock_repository.read_metering_point_time_series.return_value = time_series
+    mock_repository.read_metering_point_time_series.return_value = time_series_points
     mock_repository.read_latest_calculations.return_value = latest_calculations
 
     # Act
