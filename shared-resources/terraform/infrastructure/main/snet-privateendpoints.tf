@@ -1,8 +1,9 @@
 resource "azurerm_subnet" "privateendpoints" {
-  name                 = "snet-privateendpoints"
-  resource_group_name  = var.virtual_network_resource_group_name
-  virtual_network_name = var.virtual_network_name
-  address_prefixes     = var.privateendpoints_address_prefixes
+  name                              = "snet-privateendpoints"
+  resource_group_name               = var.virtual_network_resource_group_name
+  virtual_network_name              = var.virtual_network_name
+  address_prefixes                  = var.privateendpoints_address_prefixes
+  private_endpoint_network_policies = "Enabled"
 }
 
 resource "azurerm_route_table" "privateendpoints" {
