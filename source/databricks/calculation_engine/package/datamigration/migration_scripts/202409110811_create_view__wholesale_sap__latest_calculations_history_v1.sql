@@ -14,7 +14,7 @@ WITH calculations_by_day_and_grid_area_local_time AS (
                from_utc_timestamp(calculation_period_end, 'Europe/Copenhagen') - interval 1 day,
                interval 1 day
            )) AS from_date_local,
-            DATE_ADD(from_date_local, 1) AS to_date_local,
+           --from_date_local + interval 1 day AS to_date_local,
             calculation_succeeded_time as latest_from_time
     FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
     JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas g
@@ -48,7 +48,7 @@ SELECT
   calculation_version,
   grid_area_code,
   TO_UTC_TIMESTAMP(from_date_local, 'Europe/Copenhagen') AS from_date,
-  TO_UTC_TIMESTAMP(to_date_local, 'Europe/Copenhagen') AS to_date,
+  TO_UTC_TIMESTAMP(from_date_local + interval 1 day, 'Europe/Copenhagen') AS to_date,
   from_date_local,
   LEAD(latest_from_time) OVER (PARTITION BY calculation_type, grid_area_code, from_date_local ORDER BY calculation_version ASC) AS latest_to_time
 FROM calculations_by_day_and_grid_area_local_time
