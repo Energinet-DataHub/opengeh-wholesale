@@ -18,20 +18,19 @@ from pyspark.sql.session import SparkSession
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
-def initialize_spark() -> SparkSession:
+def initialize_spark(
+    infrastructure_settings: InfrastructureSettings | None = None,
+) -> SparkSession:
     # Set spark config with the session timezone so that datetimes are displayed consistently (in UTC)
     spark_conf = (
         SparkConf(loadDefaults=True)
         .set("spark.sql.session.timeZone", "UTC")
         .set("spark.databricks.io.cache.enabled", "True")
     )
-    return SparkSession.builder.config(conf=spark_conf).getOrCreate()
+    spark_session = SparkSession.builder.config(conf=spark_conf).getOrCreate()
+    if infrastructure_settings:
+        spark_session.sparkContext.setCheckpointDir(
+            f"{infrastructure_settings.wholesale_container_path}/checkpoints/calculator_job"
+        )
 
-
-def configure_spark(
-    spark: SparkSession, infrastructure_settings: InfrastructureSettings
-) -> None:
-    # This specific directory has a retention policy to delete checkpoints older than 2 days.
-    spark.sparkContext.setCheckpointDir(
-        f"{infrastructure_settings.wholesale_container_path}/checkpoints/calculator_job"
-    )
+    return spark_session
