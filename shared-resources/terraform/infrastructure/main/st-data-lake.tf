@@ -29,6 +29,30 @@ module "st_data_lake" {
   ]
 }
 
+resource "azurerm_storage_management_policy" "retention_checkpoints" {
+  storage_account_id = module.st_data_lake.id
+
+  rule {
+    name    = "calculator_job_checkpoint_retention"
+    enabled = true
+    filters {
+      prefix_match = ["wholesale/checkpoints/calculator_job"]
+      blob_types = ["blockBlob"]
+    }
+    actions {
+      base_blob {
+        delete_after_days_since_creation_greater_than = 3
+      }
+      snapshot {
+        delete_after_days_since_creation_greater_than = 3
+      }
+      version {
+        delete_after_days_since_creation = 3
+      }
+    }
+  }
+}
+
 module "kvs_st_data_lake_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
