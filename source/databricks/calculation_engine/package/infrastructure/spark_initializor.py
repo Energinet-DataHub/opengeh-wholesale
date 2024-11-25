@@ -30,7 +30,7 @@ def initialize_spark(
     spark_session = SparkSession.builder.config(conf=spark_conf).getOrCreate()
     if infrastructure_settings:
         spark_session.sparkContext.setCheckpointDir(
-            f"{infrastructure_settings.wholesale_container_path}/checkpoints/calculator_job"
+            f"{infrastructure_settings.wholesale_container_path}checkpoints/calculator_job"
         )
 
     return spark_session
