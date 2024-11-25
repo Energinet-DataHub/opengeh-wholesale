@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 from delta.tables import DeltaTable
 from package.infrastructure import initialize_spark
 from pyspark.sql import SparkSession
@@ -20,7 +21,8 @@ from package.infrastructure.paths import (
     WholesaleBasisDataInternalDatabase,
     WholesaleInternalDatabase,
 )
-from telemetry_logging import Logger, use_span
+import telemetry_logging.logging_configuration as config
+from telemetry_logging import Logger
 import package.infrastructure.environment_variables as env_vars
 
 
@@ -29,6 +31,14 @@ def optimize_tables(catalog_name: str | None = None) -> None:
     Optimize all tables in the internal databases.
     OPTIMIZE documentation: https://docs.delta.io/latest/optimizations-oss.html
     """
+    applicationinsights_connection_string = os.getenv(
+        "APPLICATIONINSIGHTS_CONNECTION_STRING"
+    )
+    config.configure_logging(
+        cloud_role_name="dbr-optimize-tables",
+        tracer_name="optimize-tables-job",
+        applicationinsights_connection_string=applicationinsights_connection_string,
+    )
     logger = Logger(__name__)
 
     spark = initialize_spark()
@@ -44,20 +54,23 @@ def optimize_tables(catalog_name: str | None = None) -> None:
         len(table_names) for table_names in database_table_dicts.values()
     )
     logger.info(f"Total number of tables to optimize: {total_tables}")
-    for database_name, table_names in database_table_dicts.items():
-        logger.info(f"Running optimize for tables in database: {database_name}")
-        for table_name in table_names:
-            _optimize_table(spark, database_name, table_name, logger)
+
+    with config.start_span(__name__):
+        for database_name, table_names in database_table_dicts.items():
+            logger.info(f"Running optimize for tables in database: {database_name}")
+            for table_name in table_names:
+                _optimize_table(spark, database_name, table_name, logger)
 
 
 def _optimize_table(
     spark: SparkSession, database_name: str, table_name: str, logger: Logger
 ) -> None:
     full_table_name = f"{database_name}.{table_name}"
-    try:
-        logger.info(f"Starting to optimize table: {full_table_name}")
-        delta_table = DeltaTable.forName(spark, f"{full_table_name}")
-        delta_table.optimize().executeCompaction()
-        logger.info(f"Finished optimizing table: {full_table_name}")
-    except Exception as e:
-        logger.error(f"Failed to optimize table: {full_table_name}. Error: {e}")
+    with config.start_span(full_table_name):
+        try:
+            logger.info(f"Starting to optimize table: {full_table_name}")
+            delta_table = DeltaTable.forName(spark, f"{full_table_name}")
+            delta_table.optimize().executeCompaction()
+            logger.info(f"Finished optimizing table: {full_table_name}")
+        except Exception as e:
+            logger.error(f"Failed to optimize table: {full_table_name}. Error: {e}")
