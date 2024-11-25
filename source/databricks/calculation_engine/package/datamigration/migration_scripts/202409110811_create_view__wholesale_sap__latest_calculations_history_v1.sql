@@ -13,30 +13,30 @@ WITH calculations_by_day AS (
     calculation_type,
     calculation_version,
     cga.grid_area_code,
-    -- Explode calculation period into daily intervals.
-    -- The end date is exclusive, and the period is therefore subtracted by one day.
-    -- The calculation period is in UTC, so we convert it to local time.
     explode(sequence(
       DATE(FROM_UTC_TIMESTAMP(calculation_period_start, 'Europe/Copenhagen')),
       DATE_SUB(DATE(FROM_UTC_TIMESTAMP(calculation_period_end, 'Europe/Copenhagen')), 1),
       interval 1 day
     )) AS from_date_local,
-    -- All rows should represent a full day, so the to_date is the day after the from_date
-    DATE_ADD(from_date_local, 1) AS to_date_local,
-    calculation_succeeded_time as latest_from_time
+    DATE_ADD(DATE(FROM_UTC_TIMESTAMP(calculation_period_start, 'Europe/Copenhagen')), 1) AS to_date_local,
+    calculation_succeeded_time as latest_from_time,
+    ROW_NUMBER() OVER (PARTITION BY calculation_type, grid_area_code, DATE(FROM_UTC_TIMESTAMP(calculation_period_start, 'Europe/Copenhagen')) ORDER BY calculation_version ASC) AS row_num
   FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
   INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas cga ON c.calculation_id = cga.calculation_id
   WHERE calculation_succeeded_time IS NOT NULL
 )
 SELECT
-  calculation_id,
-  calculation_type,
-  calculation_version,
-  grid_area_code,
-  TO_UTC_TIMESTAMP(from_date_local, 'Europe/Copenhagen') AS from_date,
-  TO_UTC_TIMESTAMP(to_date_local, 'Europe/Copenhagen') AS to_date,
-  latest_from_time,
-  -- The latest_to_time is the latest_from_time of the next calculation that has been calculated (with the same, calc. type, grid are and from date).
-  LEAD(latest_from_time) OVER (PARTITION BY calculation_type, grid_area_code, from_date_local ORDER BY calculation_version ASC) AS latest_to_time
-FROM calculations_by_day
-
+  a.calculation_id,
+  a.calculation_type,
+  a.calculation_version,
+  a.grid_area_code,
+  TO_UTC_TIMESTAMP(a.from_date_local, 'Europe/Copenhagen') AS from_date,
+  TO_UTC_TIMESTAMP(a.to_date_local, 'Europe/Copenhagen') AS to_date,
+  a.latest_from_time,
+  b.latest_from_time AS latest_to_time
+FROM calculations_by_day a
+LEFT JOIN calculations_by_day b
+ON a.calculation_type = b.calculation_type
+AND a.grid_area_code = b.grid_area_code
+AND a.from_date_local = b.from_date_local
+AND a.row_num = b.row_num - 1
