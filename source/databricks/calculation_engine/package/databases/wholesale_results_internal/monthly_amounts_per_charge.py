@@ -13,11 +13,11 @@
 # limitations under the License.
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
+from telemetry_logging import use_span, logging_configuration
 
 from package.calculation.calculation_output import WholesaleResultsOutput
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
-from telemetry_logging import use_span, logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
@@ -57,19 +57,11 @@ def _write(
 ) -> None:
 
     with logging_configuration.start_span(name):
-        df.drop(
-            # ToDo JMG: Remove when we are on Unity Catalog.
-            TableColumnNames.calculation_type,
-            TableColumnNames.calculation_execution_time_start,
-        ).withColumnRenamed(
+        df.withColumnRenamed(
             # ToDo JMG: Remove when we are on Unity Catalog.
             TableColumnNames.calculation_result_id,
             TableColumnNames.result_id,
-        ).write.format(
-            "delta"
-        ).mode(
-            "append"
-        ).option(
+        ).write.format("delta").mode("append").option(
             "mergeSchema", "false"
         ).insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
