@@ -51,8 +51,10 @@ def _write(
         Container.infrastructure_settings
     ],
 ) -> None:
-    with logging_configuration.start_span(name):
-        df.withColumnRenamed(
+    with (logging_configuration.start_span(name)):
+        df.drop(
+            TableColumnNames.amount_type,
+        ).withColumnRenamed(
             # ToDo JMG: Remove when we are on Unity Catalog
             TableColumnNames.calculation_result_id,
             TableColumnNames.result_id,
