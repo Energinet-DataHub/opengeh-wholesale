@@ -190,10 +190,6 @@ class CalculationCore:
             grid_loss_metering_point_periods,
         )
 
-        # Do not generate basis data for aggregation calculations
-        if args.calculation_type.value == CalculationType.AGGREGATION.value:
-            return calculation_output
-
         # This extends the content of metering_point_time_series with calculated grid loss,
         # which is used in the wholesale calculation and the basis data
         parent_metering_point_time_series__including_grid_loss = (
