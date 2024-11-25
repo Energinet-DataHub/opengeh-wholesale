@@ -8,3 +8,11 @@ pim_contributor_data_plane_group_name              = "SEC-A-Datahub-Dev-003-Cont
 pim_contributor_control_plane_group_name           = "SEC-A-Datahub-Dev-003-Contributor-Controlplane"
 pim_reader_group_name                              = "SEC-A-Datahub-Dev-003-Reader"
 enable_audit_logs                                  = false
+databricks_readers_group = {
+  id   = "629664400987703"
+  name = "SEC-A-Datahub-Dev-003-Reader"
+}
+databricks_contributor_dataplane_group = {
+  id   = "1105450622987696"
+  name = "SEC-A-Datahub-Dev-003-Contributor-Dataplane"
+}

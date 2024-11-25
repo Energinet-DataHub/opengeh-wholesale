@@ -160,16 +160,6 @@ variable "ip_restrictions" {
   default     = []
 }
 
-variable "databricks_developers_group_id" {
-  type        = string
-  description = "The ID of the Databricks group containing Databricks users synced from the OMADA group."
-}
-
-variable "databricks_migrations_group_id" {
-  type        = string
-  description = "The ID of the Databricks group containing Databricks users synced from the OMADA group for people with unrestricted data access."
-}
-
 variable "pim_reader_group_name" {
   type        = string
   description = "Name of the AD group with db_datareader permissions on the SQL database."
@@ -192,11 +182,6 @@ variable "alert_email_address" {
   type        = string
   description = "(Optional) The email address to which alerts are sent."
   default     = null
-}
-
-variable "migration_group_name" {
-  type        = string
-  description = "Name of the AD group with elevated access."
 }
 
 variable "function_app_sku_name" {
