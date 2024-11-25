@@ -20,7 +20,7 @@ module "monitor_action_group_elmk" {
       description = "Alert on healthcheck failure"
       query       = <<-QUERY
                       exceptions
-                      | where timestamp > ago(10m)
+                      | where (timestamp > ago(10m)
                           or cloud_RoleName == 'app-api-${local.NAME_SUFFIX}')
                         and (operation_Name == "GET /monitor/ready")
                     QUERY
