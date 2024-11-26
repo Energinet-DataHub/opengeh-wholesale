@@ -42,9 +42,6 @@ from package.databases.wholesale_results_internal import (
 from package.databases.wholesale_results_internal.schemas import (
     hive_wholesale_results_schema,
 )
-from package.infrastructure.paths import WholesaleResultsInternalDatabase
-
-TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
 
 # Writer constructor parameters
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
