@@ -41,6 +41,7 @@ def create(
 
     return wholesale_results
 
+
 def _select_output_columns(df: DataFrame) -> DataFrame:
     # Map column names to the Delta table field names
     # Note: The order of the columns must match the order of the columns in the Delta table

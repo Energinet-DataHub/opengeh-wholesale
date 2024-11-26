@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .amounts_per_charge_schema import amounts_per_charge_schema
+
 from .amounts_per_charge_schema import (
     amounts_per_charge_schema,
 )

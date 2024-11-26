@@ -203,6 +203,7 @@ def test__create__returns_dataframe_with_calculation_result_id(
     # Assert
     assert actual_df.distinct().count() == expected_number_of_calculation_result_ids
 
+
 def test__get_column_group_for_calculation_result_id__returns_expected_column_names(
     args: CalculatorArgs,
 ) -> None:
