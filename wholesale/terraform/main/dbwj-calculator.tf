@@ -24,8 +24,11 @@ resource "databricks_job" "calculator_job" {
         "fs.azure.account.oauth.provider.type.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider"
         "fs.azure.account.oauth2.client.id.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : databricks_secret.spn_app_id.config_reference
         "fs.azure.account.oauth2.client.secret.${data.azurerm_key_vault_secret.st_data_lake_name.value}.dfs.core.windows.net" : databricks_secret.spn_app_secret.config_reference
-        # aggressiveWindowDownS specifies in seconds how often a cluster makes down-scaling decisions. Adjusted from 40 (default), to keep more machines running for longer, even in periods of low CPU-usage, such as when writes are happening.
-        "spark.databricks.aggressiveWindowDownS" : 300
+
+        # aggressiveWindowDownS specifies in seconds how often a cluster makes down-scaling decisions.
+        # Adjusted from 40 (default), to keep more machines running for longer, even in periods of low CPU-usage, such as when writes are happening.
+        # 600 is the maximum allowed value.
+        "spark.databricks.aggressiveWindowDownS" : 600
       }
       spark_env_vars = {
         "TENANT_ID"                                = var.tenant_id,
