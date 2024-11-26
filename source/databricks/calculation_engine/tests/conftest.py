@@ -67,7 +67,6 @@ def spark(
 ) -> SparkSession:
     warehouse_location = f"{tests_path}/__spark-warehouse__"
     metastore_path = f"{tests_path}/__metastore_db__"
-    checkpoint_path = f"{tests_path}/__checkpoints__"
 
     if (
         test_session_configuration.migrations.execute.value
@@ -79,9 +78,6 @@ def spark(
         if os.path.exists(metastore_path):
             print(f"Removing metastore before clean run (path={metastore_path})")
             shutil.rmtree(metastore_path)
-        if os.path.exists(checkpoint_path):
-            print(f"Removing checkpoints before clean run (path={checkpoint_path})")
-            shutil.rmtree(checkpoint_path)
 
     session = configure_spark_with_delta_pip(
         SparkSession.builder.config("spark.sql.warehouse.dir", warehouse_location)
@@ -124,7 +120,6 @@ def spark(
         .config("hive.metastore.schema.verification.record.version", "false")
         .enableHiveSupport()
     ).getOrCreate()
-    session.sparkContext.setCheckpointDir(checkpoint_path)
 
     yield session
     session.stop()
