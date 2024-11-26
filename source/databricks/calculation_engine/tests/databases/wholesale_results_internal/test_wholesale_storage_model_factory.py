@@ -148,11 +148,6 @@ def _create_result_df_corresponding_to_multiple_calculation_results(
     "column_name, column_value",
     [
         (TableColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
-        (TableColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
-        (
-            TableColumnNames.calculation_execution_time_start,
-            DEFAULT_CALCULATION_EXECUTION_START,
-        ),
         (TableColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
         (TableColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (TableColumnNames.quantity, DEFAULT_TOTAL_QUANTITY),

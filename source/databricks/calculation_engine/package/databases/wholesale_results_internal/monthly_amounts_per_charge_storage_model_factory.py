@@ -40,12 +40,6 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
     # Note: The order of the columns must match the order of the columns in the Delta table
     return df.select(
         col(Colname.calculation_id).alias(TableColumnNames.calculation_id),
-        # AJW: Remove when we are on Unity Catalog.
-        col(Colname.calculation_type).alias(TableColumnNames.calculation_type),
-        # AJW: Remove when we are on Unity Catalog.
-        col(Colname.calculation_execution_time_start).alias(
-            TableColumnNames.calculation_execution_time_start
-        ),
         # AJW: Rename to result_id when we are on Unity Catalog.
         col(TableColumnNames.calculation_result_id),
         col(Colname.grid_area_code).alias(TableColumnNames.grid_area_code),
