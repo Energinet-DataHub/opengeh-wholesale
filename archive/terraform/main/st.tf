@@ -30,11 +30,4 @@ module "st_this" {
   audit_storage_account = var.enable_audit_logs ? {
     id = data.azurerm_key_vault_secret.st_audit_shres_id.value
   } : null
-
-  blob_storage_backup_policy = {
-    backup_policy_id          = data.azurerm_key_vault_secret.bvault_vaulted_policy_id.value
-    backup_vault_id           = data.azurerm_key_vault_secret.bvault_vault_id.value
-    backup_vault_location     = data.azurerm_key_vault_secret.bvault_vault_location.value
-    backup_vault_principal_id = data.azurerm_key_vault_secret.bvault_vault_principal_id.value
-  }
 }
