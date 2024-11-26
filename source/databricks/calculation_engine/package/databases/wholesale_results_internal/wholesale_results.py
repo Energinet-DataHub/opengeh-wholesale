@@ -51,7 +51,7 @@ def _write(
         Container.infrastructure_settings
     ],
 ) -> None:
-    with (logging_configuration.start_span(name)):
+    with logging_configuration.start_span(name):
         df.drop(
             TableColumnNames.amount_type,
         ).withColumnRenamed(
