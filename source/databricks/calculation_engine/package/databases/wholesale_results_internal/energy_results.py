@@ -34,7 +34,6 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     """Write each energy result to the output table."""
 
     print("Writing energy results to Unity Catalog")
-
     # Write exchange per neighbor grid area
     _write(
         "exchange_per_neighbor",
