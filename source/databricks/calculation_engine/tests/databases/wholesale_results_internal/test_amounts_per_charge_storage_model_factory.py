@@ -40,7 +40,7 @@ from package.databases.wholesale_results_internal import (
     amounts_per_charge_storage_model_factory as sut,
 )
 from package.databases.wholesale_results_internal.schemas import (
-    hive_wholesale_results_schema,
+    amounts_per_charge_schema,
 )
 
 # Writer constructor parameters
@@ -203,22 +203,6 @@ def test__create__returns_dataframe_with_calculation_result_id(
     # Assert
     assert actual_df.distinct().count() == expected_number_of_calculation_result_ids
 
-
-def test__create__returns_dataframe_with_amount_type(
-    spark: SparkSession,
-    args: CalculatorArgs,
-) -> None:
-    # Arrange
-    result_df = _create_default_result(spark)
-
-    # Act
-    actual_df = sut.create(args, result_df, DEFAULT_AMOUNT_TYPE)
-
-    # Assert
-    actual_row = actual_df.collect()[0]
-    assert actual_row[TableColumnNames.amount_type] == DEFAULT_AMOUNT_TYPE.value
-
-
 def test__get_column_group_for_calculation_result_id__returns_expected_column_names(
     args: CalculatorArgs,
 ) -> None:
@@ -250,10 +234,6 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
     # Arrange
     expected_excluded_columns = [
-        TableColumnNames.calculation_type,
-        TableColumnNames.calculation_execution_time_start,
-        TableColumnNames.calculation_result_id,
-        TableColumnNames.amount_type,
         TableColumnNames.quantity,
         TableColumnNames.quantity_unit,
         TableColumnNames.quantity_qualities,
@@ -261,8 +241,9 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         TableColumnNames.price,
         TableColumnNames.amount,
         TableColumnNames.is_tax,
+        TableColumnNames.result_id,
     ]
-    all_columns = [f.name for f in hive_wholesale_results_schema.fields]
+    all_columns = [f.name for f in amounts_per_charge_schema.fields]
 
     all_columns = _map_metering_point_type_column_name(all_columns)
 

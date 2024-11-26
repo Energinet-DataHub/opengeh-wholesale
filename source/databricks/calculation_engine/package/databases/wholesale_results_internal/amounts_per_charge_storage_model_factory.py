@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, lit
+from pyspark.sql.functions import col
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.wholesale.data_structures.wholesale_results import (
@@ -37,15 +37,9 @@ def create(
         wholesale_results.df,
         WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
     )
-    wholesale_results = _add_amount_type(wholesale_results, amount_type)
     wholesale_results = _select_output_columns(wholesale_results)
 
     return wholesale_results
-
-
-def _add_amount_type(df: DataFrame, amount_type: AmountType) -> DataFrame:
-    return df.withColumn(TableColumnNames.amount_type, lit(amount_type.value))
-
 
 def _select_output_columns(df: DataFrame) -> DataFrame:
     # Map column names to the Delta table field names
@@ -68,7 +62,6 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
         col(Colname.charge_code).alias(TableColumnNames.charge_code),
         col(Colname.charge_type).alias(TableColumnNames.charge_type),
         col(Colname.charge_owner).alias(TableColumnNames.charge_owner_id),
-        col(TableColumnNames.amount_type),
     )
 
 
