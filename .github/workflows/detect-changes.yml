@@ -26,6 +26,8 @@ on:
         value: ${{ jobs.changes.outputs.grid_loss_imbalance_prices_ci }}
       esett_exchange_ci:
         value: ${{ jobs.changes.outputs.esett_exchange_ci }}
+      measurements_ci:
+        value: ${{ jobs.changes.outputs.measurements_ci }}
       migrations_ci:
         value: ${{ jobs.changes.outputs.migrations_ci }}
       shared_resources_infrastructure_ci:
@@ -61,6 +63,7 @@ jobs:
       dh2_bridge_ci: ${{ steps.filter.outputs.dh2_bridge_ci }}
       grid_loss_imbalance_prices_ci: ${{ steps.filter.outputs.grid_loss_imbalance_prices_ci }}
       esett_exchange_ci: ${{ steps.filter.outputs.esett_exchange_ci }}
+      measurements_ci: ${{ steps.filter.outputs.measurements_ci }}
       migrations_ci: ${{ steps.filter.outputs.migrations_ci }}
       shared_resources_infrastructure_ci: ${{ steps.filter.outputs.shared_resources_infrastructure_ci }}
       shared_resources_b2c_ci: ${{ steps.filter.outputs.shared_resources_b2c_ci }}
@@ -132,6 +135,12 @@ jobs:
             esett_exchange_ci:
               - esett-exchange/**
               - .github/workflows/esett-exchange-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            measurements_ci:
+              - measurements/**
+              - .github/workflows/measurements-*.yml
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
