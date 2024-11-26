@@ -17,6 +17,7 @@ from datetime import datetime
 import pyspark.sql.functions as f
 from pyspark.sql.types import StringType, DecimalType, ArrayType
 
+from package.calculation.wholesale.data_structures import MonthlyAmountPerCharge
 from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
 )
@@ -24,11 +25,10 @@ from package.codelists import WholesaleResultResolution
 from package.constants import Colname
 
 
-# TODO JVM:This function should return MonthlyAmountsPerCharge, when monthly amounts is fully implemented
 def sum_within_month(
     wholesale_results: WholesaleResults,
     period_start_datetime: datetime,
-) -> WholesaleResults:
+) -> MonthlyAmountPerCharge:
     agg_df = (
         wholesale_results.df.groupBy(
             Colname.energy_supplier_id,
@@ -63,4 +63,4 @@ def sum_within_month(
         )
     )
 
-    return WholesaleResults(agg_df)
+    return MonthlyAmountPerCharge(agg_df)
