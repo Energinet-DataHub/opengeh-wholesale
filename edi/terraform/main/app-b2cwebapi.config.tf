@@ -4,6 +4,9 @@ locals {
       DB_CONNECTION_STRING      = local.CONNECTION_STRING
       AZURE_STORAGE_ACCOUNT_URL = local.AZURE_STORAGE_ACCOUNT_URL
 
+      # File storage
+      FileStorage__StorageAccountUrl = local.AZURE_STORAGE_ACCOUNT_URL
+
       # Authentication
       UserAuthentication__ExternalMetadataAddress      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
       UserAuthentication__InternalMetadataAddress      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=api-backend-open-id-url)"

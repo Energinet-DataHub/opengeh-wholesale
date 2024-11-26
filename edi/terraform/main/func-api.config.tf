@@ -7,8 +7,11 @@ locals {
       B2C_TENANT_ID                              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=b2c-tenant-id)",
       BACKEND_SERVICE_APP_ID                     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-id)",
       # Endregion: Default Values
-      DB_CONNECTION_STRING      = local.CONNECTION_STRING
-      AZURE_STORAGE_ACCOUNT_URL = local.AZURE_STORAGE_ACCOUNT_URL
+      DB_CONNECTION_STRING           = local.CONNECTION_STRING
+      AZURE_STORAGE_ACCOUNT_URL      = local.AZURE_STORAGE_ACCOUNT_URL
+
+      # File storage
+      FileStorage__StorageAccountUrl = local.AZURE_STORAGE_ACCOUNT_URL
 
       # Logging
       "Logging__ApplicationInsights__LogLevel__Default"                = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
