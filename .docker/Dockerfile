@@ -45,7 +45,7 @@ RUN pip --no-cache-dir install -r requirements.txt
 # note the amount of memory used on the driver is adjusted here
 ENV PATH=$SPARK_HOME/bin:$HADOOP_HOME/bin:$PATH \
     PYTHONPATH="${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.9-src.zip" \
-    SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx8192M --driver-java-options=-Dlog4j.logLevel=info"
+    SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info"
 
 # Dynamically downloading spark dependencies from conf/spark-defaults.conf. This is done to save time in the build pipeline so that we don't need to download on every build.
 RUN spark-shell
