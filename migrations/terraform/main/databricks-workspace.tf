@@ -113,6 +113,13 @@ module "dbw" {
   ]
 }
 
+resource "databricks_entitlements" "pim_contributor_dataplane_group_entitlement" {
+  provider = databricks.dbw
+
+  group_id             = var.databricks_contributor_dataplane_group.id
+  allow_cluster_create = true
+}
+
 resource "databricks_default_namespace_setting" "this" {
   provider = databricks.dbw
 
