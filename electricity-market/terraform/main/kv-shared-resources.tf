@@ -23,32 +23,22 @@ data "azurerm_key_vault_secret" "mssql_data_resource_group_name" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "mssql_data_elastic_pool_name" {
-  name         = "mssql-data-elastic-pool-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "mssql_data_elastic_pool_resource_group_name" {
-  name         = "mssql-data-elastic-pool-resource-group-name"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "mssql_data_url" {
   name         = "mssql-data-url"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "snet_private_endpoints_id" {
-  name         = "snet-private-endpoints-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "snet_vnet_integration_id" {
-  name         = "snet-vnet-integration-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "st_audit_shres_id" {
   name         = "st-audit-shres-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "kvs_snet_privateendpoints_id" {
+  name         = "snet-privateendpoints-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "kvs_snet_vnetintegrations_id" {
+  name         = "snet-vnetintegrations-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

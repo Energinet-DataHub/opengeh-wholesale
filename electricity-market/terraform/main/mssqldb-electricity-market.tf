@@ -12,9 +12,15 @@ module "mssqldb_electricity_market" {
     resource_group_name = data.azurerm_key_vault_secret.mssql_data_resource_group_name.value
   }
 
-  elastic_pool = {
-    name                = data.azurerm_key_vault_secret.mssql_data_elastic_pool_name.value
-    resource_group_name = data.azurerm_key_vault_secret.mssql_data_elastic_pool_resource_group_name.value
+  # Find available SKU's for "single database" (not pooled) here: https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql
+  sku_name                    = "HS_Gen5_4" # General Purpose (GP) - standard series (Gen5) - max vCores (<number>) : https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql#gen5-hardware-part-1-1
+  min_capacity                = 1.5
+  max_size_gb                 = 10
+  auto_pause_delay_in_minutes = -1
+
+  monitor_action_group = length(module.monitor_action_group_elmk) != 1 ? null : {
+    id                  = module.monitor_action_group_elmk[0].id
+    resource_group_name = azurerm_resource_group.this.name
   }
 }
 
