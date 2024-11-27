@@ -41,7 +41,7 @@ DEFAULT_GRID_AREA_CODE = "105"
 DEFAULT_FROM_GRID_AREA_CODE = "106"
 DEFAULT_TO_GRID_AREA_CODE = "107"
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
-DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
+DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123"
 DEFAULT_CALCULATION_TYPE = e.CalculationType.BALANCE_FIXING
 DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_QUANTITY = "1.1"
@@ -83,7 +83,7 @@ def _create_result_row(
     to_grid_area_code: str = DEFAULT_TO_GRID_AREA_CODE,
     from_grid_area_code: str = DEFAULT_FROM_GRID_AREA_CODE,
     energy_supplier_id: str = DEFAULT_ENERGY_SUPPLIER_ID,
-    balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_ID,
+    balance_responsible_id: str = DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
     quantity: str = DEFAULT_QUANTITY,
     quality: e.QuantityQuality = DEFAULT_QUALITY,
     observation_time: datetime = DEFAULT_OBSERVATION_TIME,
@@ -183,8 +183,8 @@ def test__create__with_correct_aggregation_level(
         (TableColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
         (TableColumnNames.neighbor_grid_area_code, DEFAULT_FROM_GRID_AREA_CODE),
         (
-            TableColumnNames.balance_responsible_id,
-            DEFAULT_BALANCE_RESPONSIBLE_ID,
+                TableColumnNames.balance_responsible_party_id,
+                DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
         ),
         (TableColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (TableColumnNames.time, datetime(2020, 1, 1, 0, 0)),
@@ -252,9 +252,9 @@ def test__create__with_correct_number_of_calculation_result_ids(
             OTHER_FROM_GRID_AREA_CODE,
         ),
         (
-            Colname.balance_responsible_party_id,
-            DEFAULT_BALANCE_RESPONSIBLE_ID,
-            OTHER_BALANCE_RESPONSIBLE_ID,
+                Colname.balance_responsible_party_id,
+                DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
+                OTHER_BALANCE_RESPONSIBLE_ID,
         ),
         (
             Colname.energy_supplier_id,
