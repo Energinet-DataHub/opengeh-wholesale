@@ -25,9 +25,7 @@ from package.databases.wholesale_results_internal.add_meta_data import add_metad
 from package.infrastructure.paths import WholesaleResultsInternalDatabase
 
 
-def create(
-    args: CalculatorArgs, wholesale_results: WholesaleResults
-) -> DataFrame:
+def create(args: CalculatorArgs, wholesale_results: WholesaleResults) -> DataFrame:
     wholesale_results = add_metadata(
         args,
         _get_column_group_for_calculation_result_id(),
