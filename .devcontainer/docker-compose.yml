@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   python-unit-test:
     image: ghcr.io/energinet-datahub/opengeh-wholesale/python-unit-test:${IMAGE_TAG:-latest}

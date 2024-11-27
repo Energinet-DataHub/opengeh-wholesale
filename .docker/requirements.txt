@@ -31,3 +31,9 @@ opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/open
 python-dateutil==2.8.2
 types-python-dateutil==2.8.19
 opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.1.0#subdirectory=source/telemetry
+
+coverage==7.6.8
+pytest==8.3.3
+configargparse==1.7.0
+pytest-mock==3.14.0
+virtualenv==20.28.0
