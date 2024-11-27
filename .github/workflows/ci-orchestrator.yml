@@ -31,7 +31,7 @@ jobs:
   #
   ci_codeql:
     needs: changes
-    if: ${{ needs.changes.outputs.dotnet == 'true' }}
+    if: ${{ needs.changes.outputs.shared_resources_healthcheck_app_ci == 'true' }}
     uses: ./.github/workflows/codeql.yml
 
   #
