@@ -8,7 +8,7 @@ from contracts.data_products import (
     wholesale_results,
     wholesale_settlement_reports,
 )
-from contracts.wholesale_internal.succeeded_external_calculations_v1 import (
+from contracts.wholesale_internal import (
     succeeded_external_calculations_v1,
 )
 from package.databases.wholesale_results_internal.schemas import (
