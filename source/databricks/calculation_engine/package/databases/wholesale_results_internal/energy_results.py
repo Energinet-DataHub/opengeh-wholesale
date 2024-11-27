@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from dataclasses import fields
 import pyspark.sql.functions as f
 from dependency_injector.wiring import inject, Provide
-from pyspark.sql import DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
 import package.databases.wholesale_results_internal.schemas as schemas
@@ -30,10 +31,22 @@ from package.infrastructure.paths import (
 
 
 @use_span("calculation.write.energy")
-def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
+@inject
+def write_energy_results(
+    energy_results_output: EnergyResultsOutput,
+    spark: SparkSession = Provide[Container.spark],
+) -> None:
     """Write each energy result to the output table."""
 
     print("Writing energy results to Unity Catalog")
+
+    # Checkpoint all calculations pre-writing, as down-scaling during this step leads to
+    # the "indeterminate result" issue from incident INC0409592.
+    for field in fields(energy_results_output):
+        field_value = getattr(energy_results_output, field.name)
+        if field_value is not None:
+            setattr(energy_results_output, field.name, field_value.cache().checkpoint())
+
     # Write exchange per neighbor grid area
     _write(
         "exchange_per_neighbor",

@@ -33,7 +33,7 @@ from package.calculator_job_args import (
 )
 from package.container import create_and_configure_container
 from package.databases import migrations_wholesale, wholesale_internal
-from package.infrastructure import initialize_spark
+from package.infrastructure.spark_initializor import initialize_spark
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
@@ -84,7 +84,7 @@ def start_with_deps(
 
             args, infrastructure_settings = parse_job_args(command_line_args)
 
-            spark = initialize_spark()
+            spark = initialize_spark(infrastructure_settings)
             create_and_configure_container(spark, infrastructure_settings)
 
             prepared_data_reader = create_prepared_data_reader(
