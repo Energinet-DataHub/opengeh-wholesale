@@ -5,3 +5,9 @@ module "app_ui" {
     "NEXT_PUBLIC_ENTRA_AUTH_TENANT_ID" = data.azuread_client_config.current.tenant_id
   }
 }
+
+resource "azuread_application" "sauron" {
+  single_page_application {
+    redirect_uris = ["https://sauron.datahub3.dk/"]
+  }
+}

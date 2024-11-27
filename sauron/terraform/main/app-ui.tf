@@ -10,6 +10,7 @@ module "app_ui" {
   app_service_plan_id                    = module.webapp_linux_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   app_command_line                       = "node standalone/server.js"
+
   // app_settings is set in overrrides
 }
 
@@ -20,7 +21,5 @@ resource "azuread_application" "sauron" {
     data.azuread_client_config.current.object_id
   ]
 
-  single_page_application {
-    redirect_uris = ["https://app-ui-${local.name_suffix}.azurewebsites.net/"]
-  }
+  // single_page_application is set in overrrides
 }
