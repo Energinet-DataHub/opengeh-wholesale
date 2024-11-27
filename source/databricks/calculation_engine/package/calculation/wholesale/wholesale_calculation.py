@@ -26,7 +26,6 @@ from .data_structures import MonthlyAmountPerCharge
 from .sum_within_month import sum_within_month
 from ..calculation_output import WholesaleResultsOutput
 from ..calculator_args import CalculatorArgs
-from ...codelists import AmountType
 
 
 @use_span("calculation.wholesale.execute")
@@ -82,7 +81,7 @@ def _calculate_fees(
         prepared_fees,
     )
     wholesale_results_output.fee_per_co_es = amounts_per_charge_factory.create(
-        args, fee_per_co_es, AmountType.AMOUNT_PER_CHARGE
+        args, fee_per_co_es
     )
     monthly_fee_per_co_es = sum_within_month(
         fee_per_co_es,
@@ -111,7 +110,7 @@ def _calculate_subscriptions(
         args.time_zone,
     )
     wholesale_results_output.subscription_per_co_es = amounts_per_charge_factory.create(
-        args, subscription_per_co_es, AmountType.AMOUNT_PER_CHARGE
+        args, subscription_per_co_es
     )
 
     monthly_subscription_per_co_es = sum_within_month(
@@ -144,7 +143,6 @@ def _calculate_hourly_tariffs(
         amounts_per_charge_factory.create(
             args,
             hourly_tariff_per_co_es,
-            AmountType.AMOUNT_PER_CHARGE,
         )
     )
 
@@ -177,7 +175,6 @@ def _calculate_daily_tariffs(
     wholesale_results_output.daily_tariff_per_co_es = amounts_per_charge_factory.create(
         args,
         daily_tariff_per_co_es,
-        AmountType.AMOUNT_PER_CHARGE,
     )
 
     monthly_tariff_from_daily_per_co_es = sum_within_month(
