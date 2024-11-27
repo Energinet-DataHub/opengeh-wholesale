@@ -19,9 +19,6 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
 )
-from package.codelists import (
-    AmountType,
-)
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.add_meta_data import add_metadata
@@ -29,7 +26,7 @@ from package.infrastructure.paths import WholesaleResultsInternalDatabase
 
 
 def create(
-    args: CalculatorArgs, wholesale_results: WholesaleResults, amount_type: AmountType
+    args: CalculatorArgs, wholesale_results: WholesaleResults
 ) -> DataFrame:
     wholesale_results = add_metadata(
         args,
