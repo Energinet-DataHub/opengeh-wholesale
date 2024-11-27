@@ -12,7 +12,6 @@ module "st_this" {
   access_tier                = "Cool"
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_002_id.value
   ip_rules                   = local.ip_restrictions_as_string
-  prevent_deletion           = false
   role_assignments = [
     {
       principal_id         = data.azurerm_client_config.this.object_id
@@ -31,4 +30,11 @@ module "st_this" {
   audit_storage_account = var.enable_audit_logs ? {
     id = data.azurerm_key_vault_secret.st_audit_shres_id.value
   } : null
+
+  blob_storage_backup_policy = {
+      backup_policy_id          = data.azurerm_key_vault_secret.bvault_vaulted_policy_id.value
+      backup_vault_id           = data.azurerm_key_vault_secret.bvault_vault_id.value
+      backup_vault_location     = data.azurerm_key_vault_secret.bvault_vault_location.value
+      backup_vault_principal_id = data.azurerm_key_vault_secret.bvault_vault_principal_id.value
+  }
 }
