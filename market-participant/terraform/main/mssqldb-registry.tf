@@ -1,11 +1,12 @@
 module "mssqldb_market_participant" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.0.2"
 
   name                 = "registry"
   location             = azurerm_resource_group.this.location
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
+  enclave_type         = null # Necessary when running elastic pool
 
   server = {
     name                = data.azurerm_key_vault_secret.mssql_data_name.value

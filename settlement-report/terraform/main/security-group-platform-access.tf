@@ -14,7 +14,9 @@ module "platform_security_group_permissions_contributor" {
     data.azurerm_role_definition.locks_contributor_access.name,
   ]
 
-  depends_on = [azurerm_resource_group.this]
+  depends_on = [
+    azurerm_resource_group.this
+  ]
 }
 
 module "platform_security_group_permissions_reader" {
@@ -29,5 +31,7 @@ module "platform_security_group_permissions_reader" {
     data.azurerm_role_definition.app_config_settings_read_access.name
   ]
 
-  depends_on = [azurerm_resource_group.this]
+  depends_on = [
+    azurerm_resource_group.this
+  ]
 }

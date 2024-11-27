@@ -17,6 +17,10 @@ module "platform_security_group_permissions_contributor" {
     azurerm_role_definition.apim_groups_contributor_access.name,
     azurerm_role_definition.locks_contributor_access.name,
   ]
+
+  depends_on = [
+    azurerm_resource_group.this
+  ]
 }
 
 module "platform_security_group_permissions_reader" {
@@ -29,6 +33,10 @@ module "platform_security_group_permissions_reader" {
   role_level          = "Reader"
   custom_roles_reader = [
     azurerm_role_definition.app_config_settings_read_access.name
+  ]
+
+  depends_on = [
+    azurerm_resource_group.this
   ]
 }
 

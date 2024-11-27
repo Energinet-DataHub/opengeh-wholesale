@@ -109,3 +109,9 @@ variable "developer_security_group_reader_access" {
   description = "Flag to determine if the developers should have reader access to the resource group."
   default     = false
 }
+
+variable "budget_alert_amount" {
+  type        = number
+  description = "The budget amount for this subproduct"
+}
+

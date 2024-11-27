@@ -5,7 +5,8 @@ resource "azurerm_consumption_budget_subscription" "budget_alert_default" {
   time_grain      = "Monthly"
 
   time_period {
-    start_date = "2024-09-01T00:00:00Z"
+    # The value of time_rotating.this is known before apply meaning that we won't spam our CD pipeline with changes which we did when using timestamp() function
+    start_date = "${formatdate("YYYY", time_rotating.cost.rfc3339)}-${formatdate("MM", time_rotating.cost.rfc3339)}-01T00:00:00Z"
   }
 
   filter {
@@ -27,4 +28,8 @@ resource "azurerm_consumption_budget_subscription" "budget_alert_default" {
       "3efe72c1.energinet.onmicrosoft.com@emea.teams.ms"
     ]
   }
+}
+
+resource "time_rotating" "cost" {
+  rotation_months = 1
 }

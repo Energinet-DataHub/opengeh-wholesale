@@ -10,6 +10,10 @@ module "platform_security_group_permissions_contributor" {
   resource_group_name = azurerm_resource_group.this.name
   security_group_name = var.platform_security_group_name
   role_level          = "Contributor"
+
+  depends_on = [
+    azurerm_resource_group.this
+  ]
 }
 
 module "platform_security_group_permissions_reader" {
@@ -20,4 +24,8 @@ module "platform_security_group_permissions_reader" {
   resource_group_name = azurerm_resource_group.this.name
   security_group_name = var.platform_security_group_name
   role_level          = "Reader"
+
+  depends_on = [
+    azurerm_resource_group.this
+  ]
 }
