@@ -25,7 +25,7 @@ from package.databases.wholesale_results_internal.schemas import (
     total_monthly_amounts_schema_uc,
 )
 
-# TODO BJM: Remove when we only use Unity Catalog
+# TODO AJW talk to Morten about this schema_config
 schema_config = [
     Schema(
         name=paths.WholesaleInternalDatabase.DATABASE_NAME,

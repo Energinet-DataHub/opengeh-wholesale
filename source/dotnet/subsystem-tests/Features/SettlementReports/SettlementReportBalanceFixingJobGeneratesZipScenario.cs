@@ -43,13 +43,13 @@ public class SettlementReportBalanceFixingJobGeneratesZipScenario : SubsystemTes
         Fixture.ScenarioState.JobParameters = new[]
         {
             $"--report-id={Fixture.ScenarioState.ReportId}",
-            "--period-start=2023-01-31T23:00:00Z",
-            "--period-end=2023-02-28T23:00:00Z",
+            "--period-start=2022-01-11T23:00:00Z",
+            "--period-end=2022-01-12T23:00:00Z",
             "--calculation-type=balance_fixing",
             "--requesting-actor-market-role=datahub_administrator",
             "--requesting-actor-id=1234567890123",
             "--include-basis-data",
-            "--grid-area-codes=[804]",
+            "--grid-area-codes=[543]",
         };
 
         // Expectations
