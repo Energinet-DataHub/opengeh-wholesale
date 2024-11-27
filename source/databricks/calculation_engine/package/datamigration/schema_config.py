@@ -3,14 +3,17 @@ from spark_sql_migrations import Schema, Table, View
 import package.databases.wholesale_basis_data_internal.schemas as basis_data_schemas
 import package.databases.wholesale_internal.schemas as internal_schemas
 import package.infrastructure.paths as paths
+
 from contracts.data_products import (
     wholesale_sap,
     wholesale_results,
     wholesale_settlement_reports,
 )
+
 from contracts.wholesale_internal import (
     succeeded_external_calculations_v1,
 )
+
 from package.databases.wholesale_results_internal.schemas import (
     energy_schema,
     energy_per_brp_schema,
