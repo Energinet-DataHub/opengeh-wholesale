@@ -20,10 +20,6 @@ import pytest
 from pyspark.sql import SparkSession
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal import (
-    total_monthly_amounts_storage_model_factory as sut,
-)
 from package.calculation.wholesale.data_structures import TotalMonthlyAmount
 from package.calculation.wholesale.data_structures.total_monthly_amount import (
     total_monthly_amount_schema,
@@ -32,6 +28,10 @@ from package.codelists import (
     CalculationType,
 )
 from package.constants import Colname
+from package.databases.table_column_names import TableColumnNames
+from package.databases.wholesale_results_internal import (
+    total_monthly_amounts_storage_model_factory as sut,
+)
 from package.databases.wholesale_results_internal.schemas import (
     total_monthly_amounts_schema_uc,
 )
@@ -107,14 +107,6 @@ def _create_multiple_total_monthly_amounts(
     "column_name, column_value",
     [
         (TableColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
-        (
-            TableColumnNames.calculation_type,
-            DEFAULT_CALCULATION_TYPE.value,
-        ),
-        (
-            TableColumnNames.calculation_execution_time_start,
-            DEFAULT_CALCULATION_EXECUTION_START,
-        ),
         (TableColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
         (TableColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (TableColumnNames.time, DEFAULT_CHARGE_TIME),

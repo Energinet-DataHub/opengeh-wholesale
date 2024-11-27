@@ -15,14 +15,13 @@
 
 class TableColumnNames:
     """
-    Class containing all the names of the columns in the Delta tables that are owned my the Wholesale subsystem.
+    This class contains all the names of the columns in the Delta tables owned my the Wholesale subsystem.
     Different tables should use the same names to ensure consistency across the subsystem.
     """
 
     aggregation_level = (
         "aggregation_level"  # TODO JVM: Remove when only using Unity Catalog
     )
-    amount_type = "amount_type"  # TODO JVM: Remove when only using Unity Catalog
     amount = "amount"
     balance_responsible_id = (
         "balance_responsible_id"  # TODO JVM: Remove when only using Unity Catalog

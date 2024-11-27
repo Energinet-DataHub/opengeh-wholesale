@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .amounts_per_charge_schema import amounts_per_charge_schema
+
+from .amounts_per_charge_schema import (
+    amounts_per_charge_schema,
+)
 from .energy_per_brp_schema import energy_per_brp_schema
 from .energy_per_es_schema import energy_per_es_schema
 from .energy_schema import energy_schema
@@ -20,7 +23,6 @@ from .exchange_per_neighbor_schema import exchange_per_neighbor_schema
 from .grid_loss_metering_point_time_series_schema import (
     grid_loss_metering_point_time_series_schema,
 )
-from .hive_wholesale_results_schema import hive_wholesale_results_schema
 from .monthly_amounts_schema import (
     monthly_amounts_schema_uc,
 )

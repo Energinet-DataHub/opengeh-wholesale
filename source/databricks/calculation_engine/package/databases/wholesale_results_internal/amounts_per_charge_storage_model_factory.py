@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, lit
+from pyspark.sql.functions import col
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculation.wholesale.data_structures.wholesale_results import (
@@ -37,14 +37,9 @@ def create(
         wholesale_results.df,
         WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
     )
-    wholesale_results = _add_amount_type(wholesale_results, amount_type)
     wholesale_results = _select_output_columns(wholesale_results)
 
     return wholesale_results
-
-
-def _add_amount_type(df: DataFrame, amount_type: AmountType) -> DataFrame:
-    return df.withColumn(TableColumnNames.amount_type, lit(amount_type.value))
 
 
 def _select_output_columns(df: DataFrame) -> DataFrame:
@@ -52,10 +47,6 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
     # Note: The order of the columns must match the order of the columns in the Delta table
     return df.select(
         col(Colname.calculation_id).alias(TableColumnNames.calculation_id),
-        col(Colname.calculation_type).alias(TableColumnNames.calculation_type),
-        col(Colname.calculation_execution_time_start).alias(
-            TableColumnNames.calculation_execution_time_start
-        ),
         col(TableColumnNames.calculation_result_id),
         col(Colname.grid_area_code).alias(TableColumnNames.grid_area_code),
         col(Colname.energy_supplier_id).alias(TableColumnNames.energy_supplier_id),
@@ -72,7 +63,6 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
         col(Colname.charge_code).alias(TableColumnNames.charge_code),
         col(Colname.charge_type).alias(TableColumnNames.charge_type),
         col(Colname.charge_owner).alias(TableColumnNames.charge_owner_id),
-        col(TableColumnNames.amount_type),
     )
 
 
