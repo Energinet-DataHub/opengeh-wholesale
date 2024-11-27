@@ -225,11 +225,6 @@ variable "front_door_id" {
   description = "ID of the Front Door to use for ensuring calls are made through the Front Door"
 }
 
-variable "databricks_developers_group_id" {
-  type        = string
-  description = "The ID of the Databricks group containing Databricks users synced from the OMADA group."
-}
-
 variable "pim_contributor_data_plane_group_name" {
   type        = string
   description = "Name of the PIM controlled security group with contributors permissions."

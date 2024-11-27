@@ -13,4 +13,3 @@ ip_restrictions = [{
   name       = "github_largerunner"
 }]
 front_door_id                  = "fd2f4c53-e2e3-4bcf-85cf-11bcafa9220b"
-databricks_developers_group_id = "729028915538231"
