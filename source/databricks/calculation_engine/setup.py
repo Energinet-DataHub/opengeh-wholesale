@@ -34,7 +34,7 @@ setup(
         "dependency_injector==4.43.0",
         "urllib3==2.2.*",
         "delta-spark==3.2.1",
-        "python-dateutil==2.9.0",
+        "python-dateutil==2.9.0.post0",
         "azure-monitor-opentelemetry==1.6.4",
         "azure-core==1.32.0",
         "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.3.1#subdirectory=source/spark_sql_migrations",
