@@ -182,7 +182,10 @@ def test__create__with_correct_aggregation_level(
         (TableColumnNames.time_series_type, DEFAULT_TIME_SERIES_TYPE.value),
         (TableColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
         (TableColumnNames.neighbor_grid_area_code, DEFAULT_FROM_GRID_AREA_CODE),
-        (TableColumnNames.balance_responsible_party_id, DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID),
+        (
+            TableColumnNames.balance_responsible_party_id,
+            DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
+        ),
         (TableColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (TableColumnNames.time, datetime(2020, 1, 1, 0, 0)),
         (TableColumnNames.quantity, Decimal("1.100")),
