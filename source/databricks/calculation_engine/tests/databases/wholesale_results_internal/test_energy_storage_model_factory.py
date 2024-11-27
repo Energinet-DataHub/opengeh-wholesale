@@ -249,9 +249,9 @@ def test__create__with_correct_number_of_calculation_result_ids(
             OTHER_FROM_GRID_AREA_CODE,
         ),
         (
-                Colname.balance_responsible_party_id,
-                DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
-                OTHER_BALANCE_RESPONSIBLE_ID,
+            Colname.balance_responsible_party_id,
+            DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
+            OTHER_BALANCE_RESPONSIBLE_ID,
         ),
         (
             Colname.energy_supplier_id,
