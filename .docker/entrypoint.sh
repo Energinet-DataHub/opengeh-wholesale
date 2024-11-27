@@ -34,7 +34,7 @@ set -e
 shopt -s extglob
 
 cd $1
-coverage run --branch -m pytest --durations=0 --junitxml=pytest-results.xml $2
+coverage run --branch -m pytest -vv --junitxml=pytest-results.xml $2
 
 # Create data for threshold evaluation
 coverage json

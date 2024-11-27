@@ -34,7 +34,7 @@ def get_expected_schemas(folder: str) -> dict:
     for root, _, files in os.walk(schemas_folder):
         database_name = Path(root).name
         for file_name in files:
-            if file_name.endswith(".py") and not file_name.startswith("__init__"):
+            if file_name.endswith(".py"):
                 # Remove the file extension
                 schema_name = file_name[:-3]
 
