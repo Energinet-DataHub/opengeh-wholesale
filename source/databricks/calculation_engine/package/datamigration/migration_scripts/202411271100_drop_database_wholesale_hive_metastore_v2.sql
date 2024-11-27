@@ -1,25 +1,33 @@
 -- This script is used to drop the hive_metastore database if it exists.
 -- The CASCADE option is used to drop all objects in the database before dropping the database.
-DROP DATABASE IF EXISTS hive_metastore.basis_data CASCADE
+USE basis_data
+DROP DATABASE IF EXISTS basis_data CASCADE
 GO
 
-DROP DATABASE IF EXISTS hive_metastore.schema_migration CASCADE
+USE schema_migration
+DROP DATABASE IF EXISTS schema_migration CASCADE
 GO
 
-DROP DATABASE IF EXISTS hive_metastore.settlement_report CASCADE
+USE settlement_report
+DROP DATABASE IF EXISTS settlement_report CASCADE
 GO
 
-DROP DATABASE IF EXISTS hive_metastore.wholesale_calculation_results CASCADE
+USE wholesale_calculation_results
+DROP DATABASE IF EXISTS wholesale_calculation_results CASCADE
 GO
 
-DROP DATABASE IF EXISTS hive_metastore.wholesale_input CASCADE
-GO
-     
-DROP DATABASE IF EXISTS hive_metastore.wholesale_internal CASCADE
+USE wholesale_input
+DROP DATABASE IF EXISTS wholesale_input CASCADE
 GO
 
-DROP DATABASE IF EXISTS hive_metastore.wholesale_output CASCADE
+USE wholesale_internal
+DROP DATABASE IF EXISTS wholesale_internal CASCADE
 GO
 
-DROP DATABASE IF EXISTS hive_metastore.wholesale_output_anonymised CASCADE
+USE wholesale_output
+DROP DATABASE IF EXISTS wholesale_output CASCADE
+GO
+
+USE wholesale_output_anonymised
+DROP DATABASE IF EXISTS wholesale_output_anonymised CASCADE
 GO
