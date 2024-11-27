@@ -18,19 +18,19 @@ pytest-xdist
 #  - Make sure any packages specified in setup.py are pinned to the same version here
 #
 databricks-cli==0.18
-dataclasses-json==0.6.4
+dataclasses-json==0.6.7
 delta-spark==3.1.0
 dependency_injector==4.41.0
-azure-identity==1.12.0
-azure-keyvault-secrets==4.7.0
-azure-monitor-opentelemetry==1.6.0
-azure-core==1.30.0
-azure-monitor-query==1.2.0
+azure-identity==1.19.0
+azure-keyvault-secrets==4.9.0
+azure-monitor-opentelemetry==1.6.4
+azure-core==1.32.0
+azure-monitor-query==1.4.0
 azure-storage-file-datalake==12.11.0
 opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@1.9.0#subdirectory=source/spark_sql_migrations
-python-dateutil==2.8.2
-types-python-dateutil==2.8.19
-opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.1.0#subdirectory=source/telemetry
+python-dateutil==2.9.0.post0
+types-python-dateutil==2.9.0.20241003
+opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.3.1#subdirectory=source/telemetry
 
 coverage==7.6.8
 pytest==8.3.3
