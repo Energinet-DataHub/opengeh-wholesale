@@ -32,7 +32,6 @@ from package.codelists import (
     MeteringPointType,
     CalculationType,
     SettlementMethod,
-    AmountType,
 )
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
@@ -49,7 +48,6 @@ DEFAULT_CALCULATION_TYPE = CalculationType.FIRST_CORRECTION_SETTLEMENT
 DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 
 # Input dataframe parameters
-DEFAULT_AMOUNT_TYPE = AmountType.AMOUNT_PER_CHARGE
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_GRID_AREA_CODE = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
@@ -180,7 +178,7 @@ def test__create__returns_dataframe_with_column(
     result_df = _create_default_result(spark)
 
     # Act
-    actual_df = sut.create(args, result_df, DEFAULT_AMOUNT_TYPE)
+    actual_df = sut.create(args, result_df)
 
     # Assert
     actual_row = actual_df.collect()[0]
@@ -198,7 +196,7 @@ def test__create__returns_dataframe_with_calculation_result_id(
     expected_number_of_calculation_result_ids = 3
 
     # Act
-    actual_df = sut.create(args, result_df, DEFAULT_AMOUNT_TYPE)
+    actual_df = sut.create(args, result_df)
 
     # Assert
     assert actual_df.distinct().count() == expected_number_of_calculation_result_ids

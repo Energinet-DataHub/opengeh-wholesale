@@ -83,7 +83,6 @@ jobs:
             settlement_report_job:
               - 'source/databricks/settlement_report/**'
             delta_migrations:
-              - 'source/databricks/calculation_engine/package/datamigration_hive/**'
               - 'source/databricks/calculation_engine/package/datamigration/**'
               - 'source/databricks/calculation_engine/tests/datamigration/**'
               - 'source/databricks/calculation_engine/tests/helpers/spark_sql_migration_helper.py'
