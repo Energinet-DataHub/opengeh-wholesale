@@ -143,10 +143,9 @@ def _write(
 
         # Adjust to match the schema
         df = df.withColumnRenamed(
-                TableColumnNames.calculation_result_id,
-                TableColumnNames.result_id,
-            ).select(schema.fieldNames())
-
+            TableColumnNames.calculation_result_id,
+            TableColumnNames.result_id,
+        ).select(schema.fieldNames())
 
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
