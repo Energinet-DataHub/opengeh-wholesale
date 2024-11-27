@@ -13,19 +13,21 @@ module "mssqldb_electricity_market" {
   }
 
   # Find available SKU's for "single database" (not pooled) here: https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql
-  sku_name                    = "HS_S_Gen5_4" # General Purpose (GP) - serverless - standard series (Gen5) - max vCores (<number>) : https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql#gen5-hardware-part-1-1
+  sku_name                    = "HS_S_Gen5_4" # Hyperscale (HS) - serverless - standard series (Gen5) - max vCores (<number>) : https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-vcore-single-databases?view=azuresql#gen5-hardware-part-1-1
   max_size_gb                 = null          # Auto scaling by hyperscale (between 10GB and 128TB)
-  min_capacity                = null          # Auto scaling by hyperscale
-  auto_pause_delay_in_minutes = null          # Auto-pause is not supported for hyperscale
+  auto_pause_delay_in_minutes = -1            # Auto-pause is not supported for hyperscale
+  min_capacity                = 1.5
   short_term_retention_policy = {
     retention_days           = 22
     backup_interval_in_hours = null # Managed by Hyperscale, see https://learn.microsoft.com/en-us/azure/azure-sql/database/hyperscale-automated-backups-overview?view=azuresql#backup-scheduling
   }
 
-  monitor_action_group = length(module.monitor_action_group_elmk) != 1 ? null : {
-    id                  = module.monitor_action_group_elmk[0].id
-    resource_group_name = azurerm_resource_group.this.name
-  }
+  # Storage metric doesn't exist for hyperscale, so the module is not ready to support metrics for hyperscale
+  # Issue at Outlaws: https://app.zenhub.com/workspaces/the-outlaws-6193fe815d79fc0011e741b1/issues/gh/energinet-datahub/team-the-outlaws/2581
+  # monitor_action_group = length(module.monitor_action_group_elmk) != 1 ? null : {
+  #   id                  = module.monitor_action_group_elmk[0].id
+  #   resource_group_name = azurerm_resource_group.this.name
+  # }
 }
 
 module "kvs_sql_ms_electricity_market_database_name" {
