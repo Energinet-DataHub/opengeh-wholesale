@@ -22,7 +22,6 @@ class TableColumnNames:
     aggregation_level = (
         "aggregation_level"  # TODO JVM: Remove when only using Unity Catalog
     )
-    amount_type = "amount_type"  # TODO JVM: Remove when only using Unity Catalog
     amount = "amount"
     balance_responsible_id = (
         "balance_responsible_id"  # TODO JVM: Remove when only using Unity Catalog
