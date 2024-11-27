@@ -14,6 +14,7 @@
 
 from .aggregation_level import AggregationLevel
 from .basis_data_type import BasisDataType
+from .calculation_type import CalculationType
 from .charge_quality import ChargeQuality
 from .charge_resolution import ChargeResolution
 from .charge_type import ChargeType
@@ -22,9 +23,7 @@ from .input_metering_point_type import InputMeteringPointType
 from .input_settlement_method import InputSettlementMethod
 from .metering_point_resolution import MeteringPointResolution
 from .metering_point_type import MeteringPointType
-from .calculation_type import CalculationType
-from .settlement_method import SettlementMethod
 from .quantity_quality import QuantityQuality
+from .settlement_method import SettlementMethod
 from .time_series_type import TimeSeriesType
-from .amount_type import AmountType
 from .wholesale_result_resolution import WholesaleResultResolution
