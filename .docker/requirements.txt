@@ -10,7 +10,6 @@ coverage-threshold
 flake8
 mypy
 pyspelling
-pytest-asyncio
 pytest-xdist
 
 #
