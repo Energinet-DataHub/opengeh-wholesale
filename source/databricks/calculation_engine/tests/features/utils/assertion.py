@@ -31,8 +31,10 @@ def assert_output(
     actual_results, expected_results = actual_and_expected
 
     actual_result = _get_actual_for_output(actual_results, output_name)
+    actual_result = actual_result.cache()
 
     expected_result = _get_expected_for_output(expected_results, output_name)
+    expected_result = expected_result.cache()
 
     if actual_result is None:
         assert expected_result.count() == 0, f"Expected empty result for {output_name}"
