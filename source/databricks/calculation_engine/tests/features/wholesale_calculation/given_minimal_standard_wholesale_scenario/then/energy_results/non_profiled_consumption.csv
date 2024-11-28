@@ -1,4 +1,4 @@
-grid_area_code;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;calculation_result_id;metering_point_id;resolution
+grid_area_code;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;result_id;metering_point_id;resolution
 800;;;0.000;['missing'];2023-01-31 23:00:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;;f6f573c0-2a14-53a3-a92b-9189bd84953d;;PT15M
 800;;;0.000;['missing'];2023-01-31 23:15:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;;f6f573c0-2a14-53a3-a92b-9189bd84953d;;PT15M
 800;;;0.000;['missing'];2023-01-31 23:30:00;total_ga;non_profiled_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;wholesale_fixing;2024-01-01 23:00:00;;f6f573c0-2a14-53a3-a92b-9189bd84953d;;PT15M

@@ -28,7 +28,7 @@ def test__added_calculation_result_id_is_correct(
     spark: SparkSession,
 ) -> None:
     """
-    Test that the generated calculation_result_id is the same every time given the same input.
+    Test that the generated result_id is the same every time given the same input.
     """
     # Arrange
     result_id = "c2853ac9-632e-5bef-864b-5468a7000ca2"
