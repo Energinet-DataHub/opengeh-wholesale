@@ -3,4 +3,3 @@
 alert_email_address                                                 = "3679b895.energinet.onmicrosoft.com@emea.teams.ms"
 create_azure_load_testing_resource                                  = true
 feature_management_receive_metered_data_for_measurement_points      = true
-feature_management_use_new_incoming_message_parser                  = true

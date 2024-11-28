@@ -2,4 +2,3 @@
 # For values that persist across all environments, refer to /main/terraform.tfvars
 create_azure_load_testing_resource                                  = true
 feature_management_receive_metered_data_for_measurement_points      = true
-feature_management_use_new_incoming_message_parser                  = true
