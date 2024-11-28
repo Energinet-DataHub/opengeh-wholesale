@@ -167,6 +167,35 @@ module "wholesale_backup" {
   depends_on = [module.dbw]
 }
 
+module "shared_wholesale_input_backup" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_3.0.0"
+  providers = {
+    databricks = databricks.dbw
+  }
+
+  backup_storage_account_name   = module.st_migrations_backup.name
+  backup_container_name         = azurerm_storage_container.shared_wholesale_input_backup.name
+  unity_storage_credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
+  shared_unity_catalog_name     = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  backup_schema_name            = "${databricks_schema.shared_wholesale_input.name}_backup"
+  backup_schema_comment         = databricks_schema.shared_wholesale_input.comment
+  tables = {
+    SharedWholesaleMeteringPoints = {
+      table_name = "metering_point_periods"
+    }
+    SharedWholesaleTimeSeries = {
+      table_name = "time_series_points"
+    }
+  }
+  source_schema_name                     = databricks_schema.shared_wholesale_input.name
+  backup_sql_endpoint_id                 = databricks_sql_endpoint.backup_warehouse[local.backup_warehouse_key].id
+  access_control                         = local.backup_access_control
+  backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
+  backup_schedule_quartz_cron_expression = "0 0 0/12 ? * *"
+
+  depends_on = [module.dbw]
+}
+
 module "eloverblik_backup" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_3.0.0"
   providers = {

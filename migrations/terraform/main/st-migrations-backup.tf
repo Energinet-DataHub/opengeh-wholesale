@@ -67,6 +67,12 @@ resource "azurerm_storage_container" "wholesale_backup" {
   container_access_type = "private"
 }
 
+resource "azurerm_storage_container" "shared_wholesale_input_backup" {
+  name                  = "shared-wholesale-input-backup"
+  storage_account_name  = module.st_migrations_backup.name
+  container_access_type = "private"
+}
+
 #---- Role assignments
 
 resource "azurerm_role_assignment" "ra_migrations_backup_contributor" {
