@@ -97,7 +97,7 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(Colname.grid_area_code).alias(TableColumnNames.grid_area_code),
         f.col(Colname.energy_supplier_id).alias(TableColumnNames.energy_supplier_id),
         f.col(Colname.balance_responsible_party_id).alias(
-            TableColumnNames.balance_responsible_id
+            TableColumnNames.balance_responsible_party_id
         ),
         f.col(Colname.quantity)
         .alias(TableColumnNames.quantity)

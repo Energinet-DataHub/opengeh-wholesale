@@ -78,7 +78,7 @@ def test__columns_have_expected_values(spark: SparkSession) -> None:
         TableColumnNames.to_grid_area_code: metering_point_periods_factory.DEFAULT_TO_GRID_AREA,
         TableColumnNames.parent_metering_point_id: metering_point_periods_factory.DEFAULT_PARENT_METERING_POINT_ID,
         TableColumnNames.energy_supplier_id: metering_point_periods_factory.DEFAULT_ENERGY_SUPPLIER_ID,
-        TableColumnNames.balance_responsible_id: metering_point_periods_factory.DEFAULT_BALANCE_RESPONSIBLE_ID,
+        TableColumnNames.balance_responsible_party_id: metering_point_periods_factory.DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
         TableColumnNames.from_date: metering_point_periods_factory.DEFAULT_FROM_DATE,
         TableColumnNames.to_date: metering_point_periods_factory.DEFAULT_TO_DATE,
     }

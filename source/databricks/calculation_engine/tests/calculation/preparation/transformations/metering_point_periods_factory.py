@@ -17,15 +17,15 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession
 
-from package.databases.migrations_wholesale.schemas import (
-    metering_point_periods_schema,
-)
 from package.codelists import (
     MeteringPointType,
     SettlementMethod,
     MeteringPointResolution,
 )
 from package.constants import Colname
+from package.databases.migrations_wholesale.schemas import (
+    metering_point_periods_schema,
+)
 
 DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.PRODUCTION
@@ -36,7 +36,7 @@ DEFAULT_FROM_GRID_AREA = None
 DEFAULT_TO_GRID_AREA = None
 DEFAULT_PARENT_METERING_POINT_ID = None
 DEFAULT_ENERGY_SUPPLIER_ID = "9999999999999"
-DEFAULT_BALANCE_RESPONSIBLE_ID = "1234567890123"
+DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123"
 DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
 DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
 
@@ -51,7 +51,7 @@ def create_row(
     to_grid_area: str | None = DEFAULT_TO_GRID_AREA,
     parent_metering_point_id: str | None = DEFAULT_PARENT_METERING_POINT_ID,
     energy_supplier_id: str | None = DEFAULT_ENERGY_SUPPLIER_ID,
-    balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_ID,
+    balance_responsible_id: str | None = DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID,
     from_date: datetime = DEFAULT_FROM_DATE,
     to_date: datetime | None = DEFAULT_TO_DATE,
 ) -> Row:
