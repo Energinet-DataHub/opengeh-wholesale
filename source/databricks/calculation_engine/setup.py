@@ -29,7 +29,7 @@ setup(
     # Make sure these packages are added to the docker container and pinned to the same versions
     install_requires=[
         "ConfigArgParse==1.7.0",
-        "pyspark==3.5.3",
+        "pyspark==3.5.1",
         "azure-identity==1.19.0",
         "azure-storage-file-datalake==12.18.0",
         "dependency_injector==4.43.0",
