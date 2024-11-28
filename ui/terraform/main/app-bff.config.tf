@@ -6,13 +6,9 @@ locals {
       "Logging__ApplicationInsights__LogLevel__Energinet.DataHub.Core" = "Information"
 
       # Process Manager
-      FeatureManagement__UseProcessManager = var.feature_management_use_process_manager
-      # => Old section name, will be removed in a separate PR
-      ProcessManagerClient__GeneralApiBaseAddress        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-pm-api-edi-base-url)"
-      ProcessManagerClient__OrchestrationsApiBaseAddress = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-pm-orchestrations-edi-base-url)"
-      # => New section name
-      ProcessManagerHttpClients__GeneralApiBaseAddress        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-pm-api-edi-base-url)"
-      ProcessManagerHttpClients__OrchestrationsApiBaseAddress = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-pm-orchestrations-edi-base-url)"
+      FeatureManagement__UseProcessManager                    = var.feature_management_use_process_manager
+      ProcessManagerHttpClients__GeneralApiBaseAddress        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-api-pm-base-url)"
+      ProcessManagerHttpClients__OrchestrationsApiBaseAddress = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-orchestrations-pm-base-url)"
 
       ApiClientSettings__MarketParticipantBaseUrl                            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-markpart-api-base-url)"
       ApiClientSettings__WholesaleBaseUrl                                    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-wholesale-webapi-base-url)"
