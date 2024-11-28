@@ -85,6 +85,15 @@ jobs:
       infrastructure_path: ./notifications/terraform
     secrets: inherit
 
+  process_manager_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.process_manager_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: process_manager_infrastructure
+      infrastructure_path: ./process-manager/terraform
+    secrets: inherit
+
   revision_log_ci:
     needs: changes
     if: ${{ needs.changes.outputs.revision_log_ci == 'true' }}
@@ -221,8 +230,10 @@ jobs:
         ci_base,
         edi_ci,
         market_participant_ci,
+        electricity_market_ci,
         settlement_report_ci,
         notifications_ci,
+        process_manager_ci,
         revision_log_ci,
         dh2_bridge_ci,
         grid_loss_imbalance_prices_ci,
@@ -233,8 +244,8 @@ jobs:
         ui_ci,
         wholesale_ci,
         integration_test_ci,
-        sauron_ci,
         integration_test_terraform_ci,
+        sauron_ci,
         sauron_healthchecks_api_ci,
         archive_ci,
       ]

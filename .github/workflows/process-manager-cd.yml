@@ -1,0 +1,21 @@
+name: Process Manager Infrastructure CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - process-manager/**
+      - .github/workflows/process-manager-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
+      - .github/workflows/infrastructure-validate.yml
+
+jobs:
+  reusable_cd:
+    uses: ./.github/workflows/reusable-cd.yml
+    with:
+      release_name_prefix: process_manager_infrastructure
+      event_type: process-manager-deployment-request-infrastructure
+      team_name: Mosaic
+      email: 65256dce.energinet.onmicrosoft.com@emea.teams.ms
+    secrets: inherit
