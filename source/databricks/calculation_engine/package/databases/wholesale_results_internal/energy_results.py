@@ -16,13 +16,13 @@ import pyspark.sql.functions as f
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType
+from telemetry_logging import use_span, logging_configuration
 
 import package.databases.wholesale_results_internal.schemas as schemas
 from package.calculation.calculation_output import EnergyResultsOutput
 from package.codelists import MeteringPointType
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
-from telemetry_logging import use_span, logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
@@ -146,12 +146,7 @@ def _write(
             df.withColumnRenamed(
                 TableColumnNames.balance_responsible_id,
                 TableColumnNames.balance_responsible_party_id,
-            )
-            .withColumnRenamed(
-                TableColumnNames.calculation_result_id,
-                TableColumnNames.result_id,
-            )
-            .select(schema.fieldNames())
+            ).select(schema.fieldNames())
         )
 
         df.write.format("delta").mode("append").option(

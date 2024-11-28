@@ -36,9 +36,6 @@ class TableColumnNames:
     calculation_execution_time_start = "calculation_execution_time_start"
     calculation_succeeded_time = "calculation_succeeded_time"
     calculation_id = "calculation_id"
-    calculation_result_id = (
-        "calculation_result_id"  # TODO JVM: Remove when only using Unity Catalog
-    )
     calculation_period_start = "calculation_period_start"
     calculation_period_end = "calculation_period_end"
     calculation_type = "calculation_type"

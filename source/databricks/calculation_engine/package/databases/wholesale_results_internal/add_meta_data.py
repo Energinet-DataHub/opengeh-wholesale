@@ -56,7 +56,6 @@ def _add_calculation_result_id(
 
     # The imports must be added locally in order to be imported correctly.
     import uuid
-    from package.databases.table_column_names import TableColumnNames
     import pyspark.sql.functions as f
 
     namespace = uuid.UUID("681fd884-0a2e-4dc2-96ea-c61c3683449c")
@@ -85,8 +84,7 @@ def _add_calculation_result_id(
     )
 
     df = df.withColumn(
-        # TODO AJW: Rename to result_id when we are on Unity Catalog.
-        TableColumnNames.calculation_result_id,
+        Colname.result_id,
         uuid5_udf(col(concatenated_column)),
     )
 
