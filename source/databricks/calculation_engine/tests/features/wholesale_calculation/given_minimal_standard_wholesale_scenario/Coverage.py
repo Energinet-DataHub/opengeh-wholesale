@@ -57,7 +57,7 @@ Daily Tariffs
     - 4 tariffs, 2 of which has charge owner System Operator, 1 of these is_tax = true and 1 of these is_tax = false.
     - All start dates before calculation period, no end date.
 
-- Charge Link Periods
+- Charge Link Periods.
     - Both a parent and a child MP has a tariff.
     - Grid Loss MP has has a tariff.
     - System Correction MP has a tariff.
