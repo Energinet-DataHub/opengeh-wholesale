@@ -142,10 +142,7 @@ def _write(
             return None
 
         # Adjust to match the schema
-        df = df.withColumnRenamed(
-            TableColumnNames.balance_responsible_id,
-            TableColumnNames.balance_responsible_party_id,
-        ).select(schema.fieldNames())
+        df.select(schema.fieldNames())
 
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"
