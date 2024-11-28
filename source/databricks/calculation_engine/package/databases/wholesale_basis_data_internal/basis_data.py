@@ -46,7 +46,7 @@ def get_metering_point_periods_basis_data(
         ),
         f.col(Colname.energy_supplier_id).alias(TableColumnNames.energy_supplier_id),
         f.col(Colname.balance_responsible_party_id).alias(
-            TableColumnNames.balance_responsible_id
+            TableColumnNames.balance_responsible_party_id
         ),
         f.col(Colname.from_date).alias(TableColumnNames.from_date),
         f.col(Colname.to_date).alias(TableColumnNames.to_date),
