@@ -287,10 +287,7 @@ def test__create__when_rows_belong_to_different_results__adds_different_calculat
 
     # Assert
     rows = actual.collect()
-    assert (
-        rows[0][TableColumnNames.result_id]
-        != rows[1][TableColumnNames.result_id]
-    )
+    assert rows[0][TableColumnNames.result_id] != rows[1][TableColumnNames.result_id]
 
 
 @pytest.mark.parametrize(
@@ -340,10 +337,7 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
 
     # Assert
     rows = actual.collect()
-    assert (
-        rows[0][TableColumnNames.result_id]
-        != rows[1][TableColumnNames.result_id]
-    )
+    assert rows[0][TableColumnNames.result_id] != rows[1][TableColumnNames.result_id]
 
 
 def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names(
