@@ -14,6 +14,7 @@
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
+from pyspark.testing import assertDataFrameEqual
 
 from package.common import assert_schema
 from tests.testsession_configuration import FeatureTestsConfiguration
@@ -140,7 +141,7 @@ def assert_dataframe_and_schema(
             raise
 
     try:
-        assert_dataframes_equal(actual, expected)
+        assertDataFrameEqual(actual, expected)
     except AssertionError:
 
         if (
@@ -153,20 +154,6 @@ def assert_dataframe_and_schema(
         actual.subtract(expected).show(3000, False)
         print("IN EXPECTED BUT NOT IN ACTUAL:")
         expected.subtract(actual).show(3000, False)
-        raise
-
-    try:
-        assert actual.count() == expected.count()
-    except AssertionError:
-
-        if (
-            not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal
-        ):
-            actual, expected = drop_columns_if_the_same(actual, expected)
-
-        print(
-            f"NUMBER OF ROWS MISMATCH: Actual: {actual.count()}, Expected: {expected.count()}"
-        )
         raise
 
 
