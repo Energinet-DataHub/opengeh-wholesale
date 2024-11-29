@@ -40,24 +40,28 @@ def execute(
         prepared_charges.fees,
         wholesale_results_output,
     )
+    monthly_fees.cache_internal()
 
     monthly_subscriptions = _calculate_subscriptions(
         args,
         prepared_charges.subscriptions,
         wholesale_results_output,
     )
+    monthly_subscriptions.cache_internal()
 
     monthly_hourly_tariffs = _calculate_hourly_tariffs(
         args,
         prepared_charges.hourly_tariffs,
         wholesale_results_output,
     )
+    monthly_hourly_tariffs.cache_internal()
 
     monthly_daily_tariffs = _calculate_daily_tariffs(
         args,
         prepared_charges.daily_tariffs,
         wholesale_results_output,
     )
+    monthly_daily_tariffs.cache_internal()
 
     _calculate_total_monthly_amount(
         args,
