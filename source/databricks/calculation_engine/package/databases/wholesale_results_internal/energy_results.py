@@ -53,6 +53,7 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
         energy_results_output.temporary_flex_consumption,
         energy_results_output.grid_loss,
     )
+
     _write(
         "energy",
         energy,
@@ -142,10 +143,7 @@ def _write(
             return None
 
         # Adjust to match the schema
-        df = df.withColumnRenamed(
-            TableColumnNames.calculation_result_id,
-            TableColumnNames.result_id,
-        ).select(schema.fieldNames())
+        df = df.select(schema.fieldNames())
 
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"

@@ -46,6 +46,7 @@ class Colname:
     quality = "quality"
     quantity = "quantity"
     resolution = "resolution"
+    result_id = "result_id"
     settlement_method = "settlement_method"
     start_date_time = "start_date_time"
     time_series_type = "time_series_type"
