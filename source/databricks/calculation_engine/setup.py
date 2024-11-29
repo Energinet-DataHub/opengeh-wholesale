@@ -30,7 +30,7 @@ setup(
     install_requires=[
         "ConfigArgParse==1.7.0",
         "pyspark==3.5.1",
-        "azure-identity==1.19.0",
+        "azure-identity==1.17.1",
         "dependency_injector==4.43.0",
         "urllib3==2.2.*",
         "delta-spark==3.2.0",
