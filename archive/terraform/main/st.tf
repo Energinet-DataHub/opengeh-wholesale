@@ -1,7 +1,7 @@
 data "azurerm_client_config" "this" {}
 
 module "st_this" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_6.2.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.0"
 
   name                       = "docs"
   project_name               = var.domain_name_short
@@ -10,7 +10,7 @@ module "st_this" {
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
   access_tier                = "Cool"
-  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_002_id.value
+  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
   prevent_deletion           = false
   role_assignments = [

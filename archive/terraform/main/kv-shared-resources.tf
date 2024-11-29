@@ -8,8 +8,8 @@ data "azurerm_key_vault_secret" "appi_shared_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "snet_private_endpoints_002_id" {
-  name         = "snet-private-endpoints-002-id"
+data "azurerm_key_vault_secret" "snet_privateendpoints_id" {
+  name         = "snet-privateendpoints-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
