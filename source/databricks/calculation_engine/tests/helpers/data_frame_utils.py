@@ -112,31 +112,32 @@ def assert_dataframe_and_schema(
         print("EXPECTED:")
         expected.show(3000, False)
 
-    # try:
-    #     _assert_no_duplicates(actual)
-    # except AssertionError:
-    #
-    #     if (
-    #         not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal
-    #     ):
-    #         actual, expected = drop_columns_if_the_same(actual, expected)
-    #
-    #     print("DUPLICATED ROWS IN ACTUAL:")
-    #     _show_duplicates(actual).show(3000, False)
-    #     raise
-    #
-    # try:
-    #     _assert_no_duplicates(expected)
-    # except AssertionError:
-    #
-    #     if (
-    #         not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal
-    #     ):
-    #         actual, expected = drop_columns_if_the_same(actual, expected)
-    #
-    #     print("DUPLICATED ROWS IN EXPECTED:")
-    #     _show_duplicates(expected).show(3000, False)
-    #     raise
+    if feature_tests_configuration.assert_no_duplicate_rows:
+        try:
+            _assert_no_duplicates(actual)
+        except AssertionError:
+
+            if (
+                not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal
+            ):
+                actual, expected = drop_columns_if_the_same(actual, expected)
+
+            print("DUPLICATED ROWS IN ACTUAL:")
+            _show_duplicates(actual).show(3000, False)
+            raise
+
+        try:
+            _assert_no_duplicates(expected)
+        except AssertionError:
+
+            if (
+                not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal
+            ):
+                actual, expected = drop_columns_if_the_same(actual, expected)
+
+            print("DUPLICATED ROWS IN EXPECTED:")
+            _show_duplicates(expected).show(3000, False)
+            raise
 
     try:
         assert_dataframes_equal(actual, expected)
@@ -154,19 +155,19 @@ def assert_dataframe_and_schema(
         expected.subtract(actual).show(3000, False)
         raise
 
-    try:
-        assert actual.count() == expected.count()
-    except AssertionError:
-
-        if (
-            not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal
-        ):
-            actual, expected = drop_columns_if_the_same(actual, expected)
-
-        print(
-            f"NUMBER OF ROWS MISMATCH: Actual: {actual.count()}, Expected: {expected.count()}"
-        )
-        raise
+    # try:
+    #     assert actual.count() == expected.count()
+    # except AssertionError:
+    #
+    #     if (
+    #         not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal
+    #     ):
+    #         actual, expected = drop_columns_if_the_same(actual, expected)
+    #
+    #     print(
+    #         f"NUMBER OF ROWS MISMATCH: Actual: {actual.count()}, Expected: {expected.count()}"
+    #     )
+    #     raise
 
 
 def drop_columns_if_the_same(df1: DataFrame, df2: DataFrame) -> (DataFrame, DataFrame):
