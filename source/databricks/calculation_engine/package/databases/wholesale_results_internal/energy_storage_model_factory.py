@@ -101,7 +101,7 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(Colname.from_grid_area_code).alias(
             TableColumnNames.neighbor_grid_area_code
         ),
-        f.col(TableColumnNames.calculation_result_id),
+        f.col(TableColumnNames.result_id),
         f.col(TableColumnNames.metering_point_id),
         f.col(TableColumnNames.resolution),
     )
