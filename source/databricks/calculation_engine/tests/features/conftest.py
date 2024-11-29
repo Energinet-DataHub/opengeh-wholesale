@@ -24,6 +24,12 @@ from tests.features.utils.views.view_scenario_executor import ViewScenarioExecut
 from package.calculation.calculation_output import CalculationOutput
 
 
+@pytest.fixture(scope="function", autouse=True)
+def reset_task_values(spark: SparkSession) -> None:
+    yield
+    spark.catalog.clearCache()
+
+
 @pytest.fixture(scope="module")
 def actual_and_expected(
     request: FixtureRequest,
