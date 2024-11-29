@@ -35,7 +35,7 @@ jobs:
   cd_docker:
     needs: changes
     if: ${{ needs.changes.outputs.docker == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/python-build-and-push-docker-image.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/python-build-and-push-docker-image.yml@v14
     with:
       docker_changed: ${{ needs.changes.outputs.docker == 'true' }}
       # 'docker_changed_in_commit' value is same as 'docker_changed' because we want to build and push docker image when docker changed
@@ -48,7 +48,7 @@ jobs:
   databricks_promote_prerelease:
     needs: changes
     if: ${{ needs.changes.outputs.any_databricks == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v14
     with:
       release_name_prefix: databricks
 
@@ -59,7 +59,7 @@ jobs:
   dotnet_promote_prerelease:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' || needs.changes.outputs.db_migrations == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v14
     with:
       release_name_prefix: dotnet
 
@@ -79,10 +79,10 @@ jobs:
       - run: echo "${{ toJSON(needs) }}"
 
       - name: Find associated pull request
-        uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v13
+        uses: Energinet-DataHub/.github/.github/actions/find-related-pr-number@v14
         id: find_pull_request
 
-      - uses: Energinet-DataHub/.github/.github/actions/github-create-token@v13
+      - uses: Energinet-DataHub/.github/.github/actions/github-create-token@v14
         name: Generate Github token
         id: generate_token
         with:
@@ -113,7 +113,7 @@ jobs:
     if: |
       always() &&
       contains(needs.*.result, 'failure')
-    uses: Energinet-DataHub/.github/.github/workflows/notify-team.yml@v13
+    uses: Energinet-DataHub/.github/.github/workflows/notify-team.yml@v14
     with:
       team_name: Mandalorian
       subject: "Deployment dispatch failed: Wholesale"
