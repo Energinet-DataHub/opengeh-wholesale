@@ -12,7 +12,6 @@ module "st_this" {
   access_tier                = "Cool"
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
-  prevent_deletion           = false
   role_assignments = [
     {
       principal_id         = data.azurerm_client_config.this.object_id
