@@ -25,4 +25,6 @@ module "storage_dh2_bridge_documents" {
     backup_vault_location     = data.azurerm_key_vault_secret.bvault_vault_location.value
     backup_vault_principal_id = data.azurerm_key_vault_secret.bvault_vault_principal_id.value
   }
+
+  prevent_deletion = false
 }
