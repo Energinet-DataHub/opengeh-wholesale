@@ -31,7 +31,6 @@ setup(
         "ConfigArgParse==1.7.0",
         "pyspark==3.5.1",
         "azure-identity==1.19.0",
-        "azure-storage-file-datalake==12.18.0",
         "dependency_injector==4.43.0",
         "urllib3==2.2.*",
         "delta-spark==3.2.0",
