@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .aggregation_level import AggregationLevel
 from .basis_data_type import BasisDataType
 from .calculation_type import CalculationType
 from .charge_quality import ChargeQuality

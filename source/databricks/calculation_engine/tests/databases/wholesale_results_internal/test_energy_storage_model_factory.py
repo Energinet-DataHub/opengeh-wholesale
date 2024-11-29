@@ -143,34 +143,6 @@ def _create_energy_results_corresponding_to_four_calculation_results(
 
 
 @pytest.mark.parametrize(
-    "aggregation_level",
-    e.AggregationLevel,
-)
-def test__create__with_correct_aggregation_level(
-    spark: SparkSession,
-    aggregation_level: e.AggregationLevel,
-    args: CalculatorArgs,
-) -> None:
-    # Arrange
-    row = [_create_result_row()]
-    result_df = _create_energy_results(spark, row)
-
-    # Act
-    actual = sut.create(
-        args,
-        result_df,
-        e.TimeSeriesType.PRODUCTION,
-        aggregation_level,
-    )
-
-    # Assert
-    assert (
-        actual.collect()[0][TableColumnNames.aggregation_level]
-        == aggregation_level.value
-    )
-
-
-@pytest.mark.parametrize(
     "column_name, column_value",
     [
         (TableColumnNames.calculation_id, DEFAULT_CALCULATION_ID),

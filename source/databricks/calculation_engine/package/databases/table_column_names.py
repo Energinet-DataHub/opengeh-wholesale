@@ -19,9 +19,6 @@ class TableColumnNames:
     Different tables should use the same names to ensure consistency across the subsystem.
     """
 
-    aggregation_level = (
-        "aggregation_level"  # TODO JVM: Remove when only using Unity Catalog
-    )
     amount = "amount"
     balance_responsible_party_id = "balance_responsible_party_id"
     charge_code = "charge_code"
