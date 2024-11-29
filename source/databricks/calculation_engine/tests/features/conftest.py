@@ -25,8 +25,9 @@ from package.calculation.calculation_output import CalculationOutput
 
 
 @pytest.fixture(scope="module", autouse=True)
-def reset_task_values(spark: SparkSession) -> None:
+def clear_cache(spark: SparkSession) -> None:
     yield
+    # Clear the cache after each test module to avoid memory issues
     spark.catalog.clearCache()
 
 
