@@ -4,15 +4,15 @@ databricks_vnet_address_space                      = "10.140.100.0/22"
 databricks_private_subnet_address_prefix           = "10.140.100.0/24"
 databricks_public_subnet_address_prefix            = "10.140.101.0/24"
 databricks_private_endpoints_subnet_address_prefix = "10.140.102.0/24"
-pim_contributor_data_plane_group_name              = "SEC-A-Datahub-Dev-003-Contributor-Dataplane"
-pim_contributor_control_plane_group_name           = "SEC-A-Datahub-Dev-003-Contributor-Controlplane"
-pim_reader_group_name                              = "SEC-A-Datahub-Dev-003-Reader"
 enable_audit_logs                                  = false
+developer_security_group_name                      = "SEC-G-Datahub-DevelopersAzure"
+developer_security_group_contributor_access        = true
+developer_security_group_reader_access             = true
 databricks_readers_group = {
-  id   = "629664400987703"
-  name = "SEC-A-Datahub-Dev-003-Reader"
+  id   = "729028915538231"
+  name = "SEC-G-Datahub-DevelopersAzure"
 }
 databricks_contributor_dataplane_group = {
-  id   = "1105450622987696"
-  name = "SEC-A-Datahub-Dev-003-Contributor-Dataplane"
+  id   = "729028915538231"
+  name = "SEC-G-Datahub-DevelopersAzure"
 }
