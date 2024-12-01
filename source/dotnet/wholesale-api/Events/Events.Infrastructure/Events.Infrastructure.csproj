@@ -4,7 +4,7 @@
     <RootNamespace>Energinet.DataHub.Wholesale.Events.Infrastructure</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="13.2.0" />
+    <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="13.3.2" />
     <PackageReference Include="Energinet.DataHub.Core.Messaging" Version="6.1.0" />
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.20.1" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="8.0.8" />
