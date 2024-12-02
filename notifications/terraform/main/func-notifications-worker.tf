@@ -1,5 +1,5 @@
 module "func_notifications_worker" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_7.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_9.4.0"
 
   name                                   = "notifications-worker"
   project_name                           = var.domain_name_short
@@ -7,8 +7,8 @@ module "func_notifications_worker" {
   environment_instance                   = var.environment_instance
   resource_group_name                    = azurerm_resource_group.this.name
   location                               = azurerm_resource_group.this.location
-  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
-  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_002_id.value
+  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnetintegrations_id.value
+  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   app_service_plan_id                    = module.func_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   health_check_path                      = "/api/monitor/ready"
@@ -37,7 +37,7 @@ module "func_notifications_worker" {
 }
 
 module "kvs_func_notifications_worker_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "func-notifications-worker-base-url"
   value        = "https://${module.func_notifications_worker.default_hostname}"

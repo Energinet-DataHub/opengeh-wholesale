@@ -1,5 +1,5 @@
 module "mssqldb_notifications" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.0.2"
 
   name                 = "notifications"
   location             = azurerm_resource_group.this.location
@@ -25,7 +25,7 @@ module "mssqldb_notifications" {
 }
 
 module "kvs_sql_ms_notifications_database_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "mssql-notifications-database-name"
   value        = module.mssqldb_notifications.name
@@ -33,7 +33,7 @@ module "kvs_sql_ms_notifications_database_name" {
 }
 
 module "kvs_mssql_notifications_connection_string" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "mssql-notifications-connection-string"
   value        = local.CONNECTION_STRING_DB_MIGRATIONS
