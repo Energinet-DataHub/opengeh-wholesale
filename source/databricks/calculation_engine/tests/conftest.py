@@ -25,20 +25,18 @@ from pathlib import Path
 from typing import Generator, Callable, Optional
 
 import pytest
+import telemetry_logging.logging_configuration as config
 import yaml
 from azure.identity import ClientSecretCredential
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
-import telemetry_logging.logging_configuration as config
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists import CalculationType
 from package.container import create_and_configure_container, Container
 from package.databases.migrations_wholesale.schemas import (
-    time_series_points_schema,
-    metering_point_periods_schema,
     charge_price_information_periods_schema,
     charge_price_points_schema,
     charge_link_periods_schema,
@@ -236,7 +234,6 @@ def calculation_input_path(data_lake_path: str, calculation_input_folder: str) -
 @pytest.fixture(scope="session")
 def migrations_executed(
     spark: SparkSession,
-    energy_input_data_written_to_delta: None,  # TODO JVM: can be removed when all migrations are on unity catalog
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
     # Execute all migrations
@@ -435,60 +432,6 @@ def configure_logging() -> None:
     config.configure_logging(
         cloud_role_name="dbr-calculation-engine-tests",
         tracer_name="unit-tests",
-    )
-
-
-@pytest.fixture(scope="session")
-def energy_input_data_written_to_delta(
-    spark: SparkSession,
-    test_files_folder_path: str,
-    calculation_input_path: str,
-    test_session_configuration: TestSessionConfiguration,
-    calculation_input_database: str,
-) -> None:
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-        schema=metering_point_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME}",
-    )
-
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/TimeSeriesPoints.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
-        schema=time_series_points_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME}",
-    )
-
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/ChargePriceInformationPeriods.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-        schema=charge_price_information_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}",
-    )
-
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-        schema=charge_link_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}",
-    )
-
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
-        schema=charge_price_points_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}",
     )
 
 

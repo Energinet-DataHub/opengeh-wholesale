@@ -68,7 +68,6 @@ def executed_balance_fixing(
     spark: SparkSession,
     calculator_args_balance_fixing: CalculatorArgs,
     migrations_executed: None,
-    energy_input_data_written_to_delta: None,
     grid_loss_metering_point_ids_input_data_written_to_delta,
     calculation_input_database: str,
 ) -> None:
@@ -103,7 +102,6 @@ def executed_wholesale_fixing(
     spark: SparkSession,
     calculator_args_wholesale_fixing: CalculatorArgs,
     migrations_executed: None,
-    energy_input_data_written_to_delta: None,
     price_input_data_written_to_delta: None,
     grid_loss_metering_point_ids_input_data_written_to_delta,
     calculation_input_database: str,
