@@ -1,7 +1,7 @@
 data "azurerm_client_config" "this" {}
 
 module "st_this" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.1"
 
   name                       = "docs"
   project_name               = var.domain_name_short
