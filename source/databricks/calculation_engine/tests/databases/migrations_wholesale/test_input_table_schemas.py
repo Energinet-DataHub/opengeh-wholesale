@@ -28,7 +28,6 @@ from package.infrastructure import paths
 
 def test__input_time_series_point_schema__matches_published_contract(
     spark: SparkSession,
-    energy_input_data_written_to_delta: None,
     calculation_input_database: str,
 ) -> None:
     # Act: Calculator job is executed just once per session. See the fixture `executed_balance_fixing`
@@ -49,7 +48,6 @@ def test__input_time_series_point_schema__matches_published_contract(
 
 def test__input_metering_point_period_schema__matches_published_contract(
     spark: SparkSession,
-    energy_input_data_written_to_delta: None,
     calculation_input_database: str,
 ) -> None:
     # Assert
