@@ -29,7 +29,7 @@ setup(
     # Make sure these packages are added to the docker container and pinned to the same versions
     install_requires=[
         "ConfigArgParse==1.7.0",
-        "pyspark==3.5.1",
+        "pyspark==3.5.1",  # This needs to be same version pyspark-slim in docker file
         "azure-identity==1.17.1",
         "dependency_injector==4.43.0",
         "urllib3==2.2.*",
