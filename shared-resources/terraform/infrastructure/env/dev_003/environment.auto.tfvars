@@ -12,12 +12,12 @@ developer_security_group_reader_access      = true
 platform_security_group_contributor_access  = true
 developer_security_group_contributor_access = true
 databricks_readers_group = {
-  id   = "629664400987703"
-  name = "SEC-A-Datahub-Dev-003-Reader"
+  id   = "729028915538231"
+  name = "SEC-G-Datahub-DevelopersAzure"
 }
 databricks_contributor_dataplane_group = {
-  id   = "1105450622987696"
-  name = "SEC-A-Datahub-Dev-003-Contributor-Dataplane"
+  id   = "729028915538231"
+  name = "SEC-G-Datahub-DevelopersAzure"
 }
 apim_address_prefixes                                = ["10.143.126.0/28"]
 privateendpoints_address_prefixes                    = ["10.143.120.0/22"]
