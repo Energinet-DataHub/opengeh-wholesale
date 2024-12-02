@@ -13,7 +13,6 @@ updates:
       prefix: "dh2-bridge"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -33,7 +32,6 @@ updates:
       prefix: "edi"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -53,7 +51,6 @@ updates:
       prefix: "grid-loss-imbalance-prices"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -73,7 +70,6 @@ updates:
       prefix: "esett-exchange"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -93,7 +89,6 @@ updates:
       prefix: "integration-test"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -113,7 +108,6 @@ updates:
       prefix: "market-participant"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -133,7 +127,6 @@ updates:
       prefix: "migrations"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -153,7 +146,6 @@ updates:
       prefix: "revision-log"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -173,7 +165,6 @@ updates:
       prefix: "sauron"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -193,7 +184,6 @@ updates:
       prefix: "sauron-healthchecks-api"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -213,7 +203,6 @@ updates:
       prefix: "settlement-report"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -234,7 +223,6 @@ updates:
       prefix: "shared-resources"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -254,7 +242,6 @@ updates:
       prefix: "ui"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"
@@ -274,7 +261,6 @@ updates:
       prefix: "wholesale"
     assignees:
       - "NicolajAaH"
-      - "renenielsendk"
       - "kerbou"
       - "djorgensendk"
       - "lanni-energinet"

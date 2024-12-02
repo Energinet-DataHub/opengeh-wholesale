@@ -91,21 +91,6 @@ resource "azuread_invitation" "dbj" {
   redirect_url       = "https://portal.azure.com"
 }
 
-
-#XRTNI
-resource "azuread_directory_role_assignment" "xrtni" {
-  count               = 1
-  role_id             = azuread_directory_role.global_reader.template_id
-  principal_object_id = azuread_invitation.xrtni[0].user_id
-}
-
-resource "azuread_invitation" "xrtni" {
-  count              = 1
-  user_email_address = "xrtni@energinet.dk"
-  user_display_name  = "SEC-G-Datahub-PlatformDevelopersAzure member"
-  redirect_url       = "https://portal.azure.com"
-}
-
 #LANNI
 resource "azuread_directory_role_assignment" "lanni" {
   count               = 1
