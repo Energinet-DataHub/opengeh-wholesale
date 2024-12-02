@@ -32,3 +32,11 @@ feature_tests:
   # `False` is the default.
   # Recommendation: Keep it as False.
   show_actual_and_expected_count: False
+
+
+  # Use this setting to control whether the test framework should check for duplicate rows in the dataframes being compared.
+  # Options: True | False
+  # `False` is the default.
+  # Recommendation: Keep it as False if you want faster test execution times. Set it to True when running locally and you
+  # want a more specific error message when you have duplicate rows.
+  assert_no_duplicate_rows: False
