@@ -23,7 +23,7 @@ dependency_injector==4.41.0
 azure-identity==1.17.1
 azure-keyvault-secrets==4.8.0
 azure-monitor-opentelemetry==1.6.4
-azure-core==1.30.0
+azure-core==1.30.2
 azure-monitor-query==1.4.0
 azure-storage-file-datalake==12.11.0
 opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@1.9.0#subdirectory=source/spark_sql_migrations
