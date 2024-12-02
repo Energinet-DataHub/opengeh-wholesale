@@ -47,7 +47,6 @@ DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 DEFAULT_QUANTITY = "1.1"
 DEFAULT_QUALITY = e.QuantityQuality.MEASURED
 DEFAULT_TIME_SERIES_TYPE = e.TimeSeriesType.PRODUCTION
-DEFAULT_AGGREGATION_LEVEL = e.AggregationLevel.GRID_AREA
 DEFAULT_OBSERVATION_TIME = datetime(2020, 1, 1, 0, 0)
 DEFAULT_METERING_POINT_TYPE = e.MeteringPointType.PRODUCTION
 DEFAULT_SETTLEMENT_METHOD = e.SettlementMethod.FLEX
@@ -143,34 +142,6 @@ def _create_energy_results_corresponding_to_four_calculation_results(
 
 
 @pytest.mark.parametrize(
-    "aggregation_level",
-    e.AggregationLevel,
-)
-def test__create__with_correct_aggregation_level(
-    spark: SparkSession,
-    aggregation_level: e.AggregationLevel,
-    args: CalculatorArgs,
-) -> None:
-    # Arrange
-    row = [_create_result_row()]
-    result_df = _create_energy_results(spark, row)
-
-    # Act
-    actual = sut.create(
-        args,
-        result_df,
-        e.TimeSeriesType.PRODUCTION,
-        aggregation_level,
-    )
-
-    # Assert
-    assert (
-        actual.collect()[0][TableColumnNames.aggregation_level]
-        == aggregation_level.value
-    )
-
-
-@pytest.mark.parametrize(
     "column_name, column_value",
     [
         (TableColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
@@ -208,7 +179,6 @@ def test__create__with_correct_row_values(
         args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
-        DEFAULT_AGGREGATION_LEVEL,
     )
 
     # Assert
@@ -229,13 +199,12 @@ def test__create__with_correct_number_of_calculation_result_ids(
         args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
-        DEFAULT_AGGREGATION_LEVEL,
     )
 
     # Assert
     distinct_calculation_result_ids = (
         actual.where(col(TableColumnNames.calculation_id) == args.calculation_id)
-        .select(col(TableColumnNames.calculation_result_id))
+        .select(col(TableColumnNames.result_id))
         .distinct()
         .count()
     )
@@ -282,15 +251,11 @@ def test__create__when_rows_belong_to_different_results__adds_different_calculat
         args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
-        DEFAULT_AGGREGATION_LEVEL,
     )
 
     # Assert
     rows = actual.collect()
-    assert (
-        rows[0][TableColumnNames.calculation_result_id]
-        != rows[1][TableColumnNames.calculation_result_id]
-    )
+    assert rows[0][TableColumnNames.result_id] != rows[1][TableColumnNames.result_id]
 
 
 @pytest.mark.parametrize(
@@ -335,15 +300,11 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
         args,
         result_df,
         DEFAULT_TIME_SERIES_TYPE,
-        DEFAULT_AGGREGATION_LEVEL,
     )
 
     # Assert
     rows = actual.collect()
-    assert (
-        rows[0][TableColumnNames.calculation_result_id]
-        != rows[1][TableColumnNames.calculation_result_id]
-    )
+    assert rows[0][TableColumnNames.result_id] != rows[1][TableColumnNames.result_id]
 
 
 def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names(

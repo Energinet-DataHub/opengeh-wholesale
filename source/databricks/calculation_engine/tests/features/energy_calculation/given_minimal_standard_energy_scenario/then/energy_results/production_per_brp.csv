@@ -1,9 +1,9 @@
-grid_area_code;energy_supplier_id;balance_responsible_party_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;calculation_result_id;metering_point_id;resolution
-800;;1100000000000;7.000;['measured'];2023-07-02 02:00:00;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;db25dd05-321e-5fd0-96e2-8f6680ae0ab7;;PT15M
-800;;1100000000000;1.000;['missing', 'measured'];2023-07-02 02:15:00;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;db25dd05-321e-5fd0-96e2-8f6680ae0ab7;;PT15M
-800;;1100000000000;1.000;['missing', 'measured'];2023-07-02 02:30:00;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;db25dd05-321e-5fd0-96e2-8f6680ae0ab7;;PT15M
-800;;1100000000000;1.000;['missing', 'measured'];2023-07-02 02:45:00;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;db25dd05-321e-5fd0-96e2-8f6680ae0ab7;;PT15M
-800;;2200000000000;3.043;['measured', 'calculated'];2023-07-02 02:00:00;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;4ce39679-a31a-5389-a87f-9323394762c0;;PT15M
-800;;2200000000000;0.501;['measured', 'calculated'];2023-07-02 02:15:00;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;4ce39679-a31a-5389-a87f-9323394762c0;;PT15M
-800;;2200000000000;0.500;['measured', 'calculated'];2023-07-02 02:30:00;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;4ce39679-a31a-5389-a87f-9323394762c0;;PT15M
-800;;2200000000000;0.501;['measured', 'calculated'];2023-07-02 02:45:00;brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;4ce39679-a31a-5389-a87f-9323394762c0;;PT15M
+grid_area_code;energy_supplier_id;balance_responsible_party_id;quantity;quantity_qualities;time;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;result_id;metering_point_id;resolution
+800;;1100000000000;7.000;['measured'];2023-07-02 02:00:00;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;d6ee1555-e365-56fa-b66d-f304a6a16648;;PT15M
+800;;1100000000000;1.000;['missing', 'measured'];2023-07-02 02:15:00;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;d6ee1555-e365-56fa-b66d-f304a6a16648;;PT15M
+800;;1100000000000;1.000;['missing', 'measured'];2023-07-02 02:30:00;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;d6ee1555-e365-56fa-b66d-f304a6a16648;;PT15M
+800;;1100000000000;1.000;['missing', 'measured'];2023-07-02 02:45:00;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;d6ee1555-e365-56fa-b66d-f304a6a16648;;PT15M
+800;;2200000000000;3.043;['measured', 'calculated'];2023-07-02 02:00:00;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;7f614695-777c-56b3-a110-41770f0d0d38;;PT15M
+800;;2200000000000;0.501;['measured', 'calculated'];2023-07-02 02:15:00;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;7f614695-777c-56b3-a110-41770f0d0d38;;PT15M
+800;;2200000000000;0.500;['measured', 'calculated'];2023-07-02 02:30:00;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;7f614695-777c-56b3-a110-41770f0d0d38;;PT15M
+800;;2200000000000;0.501;['measured', 'calculated'];2023-07-02 02:45:00;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;7f614695-777c-56b3-a110-41770f0d0d38;;PT15M

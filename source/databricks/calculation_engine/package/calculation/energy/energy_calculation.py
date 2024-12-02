@@ -13,6 +13,8 @@
 # limitations under the License.
 from typing import Tuple
 
+from telemetry_logging import use_span, logging_configuration
+
 import package.calculation.energy.aggregators.exchange_aggregators as exchange_aggr
 import package.calculation.energy.aggregators.grid_loss_aggregators as grid_loss_aggr
 import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
@@ -38,10 +40,8 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
 from package.codelists import (
     CalculationType,
     MeteringPointType,
-    AggregationLevel,
     TimeSeriesType,
 )
-from telemetry_logging import use_span, logging_configuration
 
 
 @use_span("calculation.execute.energy")
@@ -152,7 +152,6 @@ def _calculate_exchange(
             args,
             exchange_per_neighbor,
             TimeSeriesType.EXCHANGE_PER_NEIGHBOR,
-            AggregationLevel.GRID_AREA,
         )
 
     exchange = exchange_aggr.aggregate_exchange(exchange_per_neighbor)
@@ -161,7 +160,6 @@ def _calculate_exchange(
         args,
         exchange,
         TimeSeriesType.EXCHANGE,
-        AggregationLevel.GRID_AREA,
     )
 
     return exchange
@@ -196,7 +194,6 @@ def _calculate_temporary_production_per_es(
         args,
         temporary_production,
         TimeSeriesType.TEMP_PRODUCTION,
-        AggregationLevel.GRID_AREA,
     )
 
     return temporary_production_per_es
@@ -221,7 +218,6 @@ def _calculate_temporary_flex_consumption_per_es(
         args,
         temporary_flex_consumption,
         TimeSeriesType.TEMP_FLEX_CONSUMPTION,
-        AggregationLevel.GRID_AREA,
     )
 
     return temporary_flex_consumption_per_es
@@ -246,7 +242,7 @@ def _calculate_grid_loss(
     grid_loss.cache_internal()
 
     energy_results_output.grid_loss = factory.create(
-        args, grid_loss, TimeSeriesType.GRID_LOSS, AggregationLevel.GRID_AREA
+        args, grid_loss, TimeSeriesType.GRID_LOSS
     )
 
     positive_grid_loss = grid_loss_aggr.calculate_positive_grid_loss(
@@ -257,7 +253,6 @@ def _calculate_grid_loss(
         args,
         positive_grid_loss,
         TimeSeriesType.POSITIVE_GRID_LOSS,
-        AggregationLevel.GRID_AREA,
     )
 
     negative_grid_loss = grid_loss_aggr.calculate_negative_grid_loss(
@@ -268,7 +263,6 @@ def _calculate_grid_loss(
         args,
         negative_grid_loss,
         TimeSeriesType.NEGATIVE_GRID_LOSS,
-        AggregationLevel.GRID_AREA,
     )
 
     return positive_grid_loss, negative_grid_loss
@@ -317,7 +311,6 @@ def _calculate_production(
         args,
         production_per_es,
         TimeSeriesType.PRODUCTION,
-        AggregationLevel.ENERGY_SUPPLIER,
     )
 
     if _is_aggregation_or_balance_fixing(args.calculation_type):
@@ -326,7 +319,6 @@ def _calculate_production(
             args,
             grouping_aggr.aggregate_per_brp(production_per_es),
             TimeSeriesType.PRODUCTION,
-            AggregationLevel.BALANCE_RESPONSIBLE_PARTY,
         )
 
     # production per grid area
@@ -335,7 +327,6 @@ def _calculate_production(
         args,
         aggregate,
         TimeSeriesType.PRODUCTION,
-        AggregationLevel.GRID_AREA,
     )
 
     return aggregate
@@ -352,7 +343,6 @@ def _calculate_flex_consumption(
         args,
         grouping_aggr.aggregate(flex_consumption_per_es),
         TimeSeriesType.FLEX_CONSUMPTION,
-        AggregationLevel.GRID_AREA,
     )
 
     # flex consumption per energy supplier
@@ -360,7 +350,6 @@ def _calculate_flex_consumption(
         args,
         flex_consumption_per_es,
         TimeSeriesType.FLEX_CONSUMPTION,
-        AggregationLevel.ENERGY_SUPPLIER,
     )
 
     if _is_aggregation_or_balance_fixing(args.calculation_type):
@@ -369,7 +358,6 @@ def _calculate_flex_consumption(
             args,
             grouping_aggr.aggregate_per_brp(flex_consumption_per_es),
             TimeSeriesType.FLEX_CONSUMPTION,
-            AggregationLevel.BALANCE_RESPONSIBLE_PARTY,
         )
 
 
@@ -384,7 +372,6 @@ def _calculate_non_profiled_consumption(
         args,
         non_profiled_consumption_per_es,
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.ENERGY_SUPPLIER,
     )
 
     if _is_aggregation_or_balance_fixing(args.calculation_type):
@@ -393,7 +380,6 @@ def _calculate_non_profiled_consumption(
             args,
             grouping_aggr.aggregate_per_brp(non_profiled_consumption_per_es),
             TimeSeriesType.NON_PROFILED_CONSUMPTION,
-            AggregationLevel.BALANCE_RESPONSIBLE_PARTY,
         )
 
     # Non-profiled consumption per grid area
@@ -401,7 +387,6 @@ def _calculate_non_profiled_consumption(
         args,
         grouping_aggr.aggregate(non_profiled_consumption_per_es),
         TimeSeriesType.NON_PROFILED_CONSUMPTION,
-        AggregationLevel.GRID_AREA,
     )
 
 
@@ -416,7 +401,6 @@ def _calculate_total_consumption(
         args,
         grid_loss_aggr.calculate_total_consumption(production, exchange),
         TimeSeriesType.TOTAL_CONSUMPTION,
-        AggregationLevel.GRID_AREA,
     )
 
 
