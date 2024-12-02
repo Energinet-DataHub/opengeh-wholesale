@@ -1,5 +1,5 @@
-grid_area_code;energy_supplier_id;balance_responsible_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;calculation_result_id;metering_point_id;resolution
-800;;;12.563;['measured', 'calculated'];2023-07-02 02:00:00;total_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;12e29351-9a44-5021-8ba2-d3f4c70934d0;;PT15M
-800;;;4.020;['measured', 'missing', 'calculated'];2023-07-02 02:15:00;total_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;12e29351-9a44-5021-8ba2-d3f4c70934d0;;PT15M
-800;;;4.020;['measured', 'missing', 'calculated'];2023-07-02 02:30:00;total_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;12e29351-9a44-5021-8ba2-d3f4c70934d0;;PT15M
-800;;;4.021;['measured', 'missing', 'calculated'];2023-07-02 02:45:00;total_ga;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;12e29351-9a44-5021-8ba2-d3f4c70934d0;;PT15M
+grid_area_code;energy_supplier_id;balance_responsible_party_id;quantity;quantity_qualities;time;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;result_id;metering_point_id;resolution
+800;;;12.563;['measured', 'calculated'];2023-07-02 02:00:00;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;855dc0a9-2d1d-5e64-b8a1-f384014035bf;;PT15M
+800;;;4.020;['measured', 'missing', 'calculated'];2023-07-02 02:15:00;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;855dc0a9-2d1d-5e64-b8a1-f384014035bf;;PT15M
+800;;;4.020;['measured', 'missing', 'calculated'];2023-07-02 02:30:00;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;855dc0a9-2d1d-5e64-b8a1-f384014035bf;;PT15M
+800;;;4.021;['measured', 'missing', 'calculated'];2023-07-02 02:45:00;flex_consumption;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;855dc0a9-2d1d-5e64-b8a1-f384014035bf;;PT15M

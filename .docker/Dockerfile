@@ -35,10 +35,6 @@ RUN apt-get update; \
 # This replaces the default spark configuration in the docker image with the ones defined in the sibling file
 COPY spark-defaults.conf $SPARK_HOME/conf/
 
-# Install spark packages with mamba (packages has to be updated according to spark version)
-COPY mamba_requirements.txt mamba_requirements.txt
-RUN mamba install --quiet --yes --satisfied-skip-solve --file mamba_requirements.txt
-
 # Install python packages used in pyspark development (keep spark dependent packages alligned)
 # delta-spark version has to have compatibility with spark version (https://docs.delta.io/latest/releases.html)
 # example (delta 2.2.x = spark 3.3.x)

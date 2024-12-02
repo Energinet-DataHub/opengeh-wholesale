@@ -42,11 +42,7 @@ def _select_output_columns(df: DataFrame) -> DataFrame:
     # Note: The order of the columns must match the order of the columns in the Delta table
     return df.select(
         col(Colname.calculation_id).alias(TableColumnNames.calculation_id),
-        col(Colname.calculation_type).alias(TableColumnNames.calculation_type),
-        col(Colname.calculation_execution_time_start).alias(
-            TableColumnNames.calculation_execution_time_start
-        ),
-        col(TableColumnNames.calculation_result_id),
+        col(Colname.result_id).alias(TableColumnNames.result_id),
         col(Colname.grid_area_code).alias(TableColumnNames.grid_area_code),
         col(Colname.energy_supplier_id).alias(TableColumnNames.energy_supplier_id),
         col(Colname.charge_time).alias(TableColumnNames.time),

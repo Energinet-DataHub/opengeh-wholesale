@@ -12,20 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from telemetry_logging import use_span
+
 import package.calculation.preparation.data_structures as d
 import package.calculation.wholesale.fee_calculators as fee_calculator
 import package.calculation.wholesale.subscription_calculators as subscription_calculator
 import package.calculation.wholesale.tariff_calculators as tariff_calculator
 import package.calculation.wholesale.total_monthly_amount_calculator as total_monthly_amount_calculator
 import package.databases.wholesale_results_internal.amounts_per_charge_storage_model_factory as amounts_per_charge_factory
-import package.databases.wholesale_results_internal.monthly_amounts_per_charge_storage_model_factory as monthly_amounts_factory
+import package.databases.wholesale_results_internal.monthly_amounts_per_charge_storage_model_factory as monthly_amounts_per_charge_factory
 import package.databases.wholesale_results_internal.total_monthly_amounts_storage_model_factory as total_monthly_amounts_factory
 from .data_structures import MonthlyAmountPerCharge
 from .sum_within_month import sum_within_month
 from ..calculation_output import WholesaleResultsOutput
 from ..calculator_args import CalculatorArgs
-from ...codelists import AmountType
-from telemetry_logging import use_span
 
 
 @use_span("calculation.wholesale.execute")
@@ -40,24 +40,28 @@ def execute(
         prepared_charges.fees,
         wholesale_results_output,
     )
+    monthly_fees.cache_internal()
 
     monthly_subscriptions = _calculate_subscriptions(
         args,
         prepared_charges.subscriptions,
         wholesale_results_output,
     )
+    monthly_subscriptions.cache_internal()
 
     monthly_hourly_tariffs = _calculate_hourly_tariffs(
         args,
         prepared_charges.hourly_tariffs,
         wholesale_results_output,
     )
+    monthly_hourly_tariffs.cache_internal()
 
     monthly_daily_tariffs = _calculate_daily_tariffs(
         args,
         prepared_charges.daily_tariffs,
         wholesale_results_output,
     )
+    monthly_daily_tariffs.cache_internal()
 
     _calculate_total_monthly_amount(
         args,
@@ -81,31 +85,20 @@ def _calculate_fees(
         prepared_fees,
     )
     wholesale_results_output.fee_per_co_es = amounts_per_charge_factory.create(
-        args, fee_per_co_es, AmountType.AMOUNT_PER_CHARGE
+        args, fee_per_co_es
     )
     monthly_fee_per_co_es = sum_within_month(
         fee_per_co_es,
         args.calculation_period_start_datetime,
     )
 
-    # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
-    wholesale_results_output.monthly_fee_per_co_es = amounts_per_charge_factory.create(
-        args,
-        monthly_fee_per_co_es,
-        AmountType.MONTHLY_AMOUNT_PER_CHARGE,
-    )
-
-    monthly_fee_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
-        monthly_fee_per_co_es.df
-    )
-
-    wholesale_results_output.monthly_fee_per_co_es_as_monthly_amount = (
-        monthly_amounts_factory.create(
+    wholesale_results_output.monthly_fee_per_co_es = (
+        monthly_amounts_per_charge_factory.create(
             args,
-            monthly_fee_per_co_es_as_monthly_amount,
+            monthly_fee_per_co_es,
         )
     )
-    return monthly_fee_per_co_es_as_monthly_amount
+    return monthly_fee_per_co_es
 
 
 @use_span("calculate_subscriptions")
@@ -121,7 +114,7 @@ def _calculate_subscriptions(
         args.time_zone,
     )
     wholesale_results_output.subscription_per_co_es = amounts_per_charge_factory.create(
-        args, subscription_per_co_es, AmountType.AMOUNT_PER_CHARGE
+        args, subscription_per_co_es
     )
 
     monthly_subscription_per_co_es = sum_within_month(
@@ -129,27 +122,14 @@ def _calculate_subscriptions(
         args.calculation_period_start_datetime,
     )
 
-    # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
     wholesale_results_output.monthly_subscription_per_co_es = (
-        amounts_per_charge_factory.create(
+        monthly_amounts_per_charge_factory.create(
             args,
             monthly_subscription_per_co_es,
-            AmountType.MONTHLY_AMOUNT_PER_CHARGE,
         )
     )
 
-    monthly_subscription_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
-        monthly_subscription_per_co_es.df
-    )
-
-    wholesale_results_output.monthly_subscription_per_co_es_as_monthly_amount = (
-        monthly_amounts_factory.create(
-            args,
-            monthly_subscription_per_co_es_as_monthly_amount,
-        )
-    )
-
-    return monthly_subscription_per_co_es_as_monthly_amount
+    return monthly_subscription_per_co_es
 
 
 @use_span("calculate_hourly_tariffs")
@@ -167,7 +147,6 @@ def _calculate_hourly_tariffs(
         amounts_per_charge_factory.create(
             args,
             hourly_tariff_per_co_es,
-            AmountType.AMOUNT_PER_CHARGE,
         )
     )
 
@@ -176,27 +155,14 @@ def _calculate_hourly_tariffs(
         args.calculation_period_start_datetime,
     )
 
-    # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
     wholesale_results_output.monthly_tariff_from_hourly_per_co_es = (
-        amounts_per_charge_factory.create(
+        monthly_amounts_per_charge_factory.create(
             args,
             monthly_tariff_from_hourly_per_co_es,
-            AmountType.MONTHLY_AMOUNT_PER_CHARGE,
         )
     )
 
-    monthly_tariff_from_hourly_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
-        monthly_tariff_from_hourly_per_co_es.df
-    )
-
-    wholesale_results_output.monthly_tariff_from_hourly_per_co_es_as_monthly_amount = (
-        monthly_amounts_factory.create(
-            args,
-            monthly_tariff_from_hourly_per_co_es_as_monthly_amount,
-        )
-    )
-
-    return monthly_tariff_from_hourly_per_co_es_as_monthly_amount
+    return monthly_tariff_from_hourly_per_co_es
 
 
 @use_span("calculate_daily_tariffs")
@@ -213,7 +179,6 @@ def _calculate_daily_tariffs(
     wholesale_results_output.daily_tariff_per_co_es = amounts_per_charge_factory.create(
         args,
         daily_tariff_per_co_es,
-        AmountType.AMOUNT_PER_CHARGE,
     )
 
     monthly_tariff_from_daily_per_co_es = sum_within_month(
@@ -221,27 +186,14 @@ def _calculate_daily_tariffs(
         args.calculation_period_start_datetime,
     )
 
-    # TODO JVM: Change to only monthly_amounts_factory.create when monthly amounts is fully implemented
     wholesale_results_output.monthly_tariff_from_daily_per_co_es = (
-        amounts_per_charge_factory.create(
+        monthly_amounts_per_charge_factory.create(
             args,
             monthly_tariff_from_daily_per_co_es,
-            AmountType.MONTHLY_AMOUNT_PER_CHARGE,
         )
     )
 
-    monthly_tariff_from_daily_per_co_es_as_monthly_amount = MonthlyAmountPerCharge(
-        monthly_tariff_from_daily_per_co_es.df
-    )
-
-    wholesale_results_output.monthly_tariff_from_daily_per_co_es_as_monthly_amount = (
-        monthly_amounts_factory.create(
-            args,
-            monthly_tariff_from_daily_per_co_es_as_monthly_amount,
-        )
-    )
-
-    return monthly_tariff_from_daily_per_co_es_as_monthly_amount
+    return monthly_tariff_from_daily_per_co_es
 
 
 @use_span("calculate_total_monthly_amount")

@@ -2,7 +2,7 @@ from test_coverage.all_test_cases import Cases
 
 """
 ## PURPOSE
-This is a simple check of adding 10 extra fees and subscriptions to an MP in a calculation period.
+This is a simple check of adding 10 extra fees and subscriptions to a metering point in a calculation period.
 
 ## CASES TESTED
 """

@@ -16,13 +16,13 @@ import pyspark.sql.functions as f
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType
+from telemetry_logging import use_span, logging_configuration
 
 import package.databases.wholesale_results_internal.schemas as schemas
 from package.calculation.calculation_output import EnergyResultsOutput
 from package.codelists import MeteringPointType
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
-from telemetry_logging import use_span, logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
@@ -34,7 +34,6 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     """Write each energy result to the output table."""
 
     print("Writing energy results to Unity Catalog")
-
     # Write exchange per neighbor grid area
     _write(
         "exchange_per_neighbor",
@@ -54,6 +53,7 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
         energy_results_output.temporary_flex_consumption,
         energy_results_output.grid_loss,
     )
+
     _write(
         "energy",
         energy,
@@ -143,17 +143,7 @@ def _write(
             return None
 
         # Adjust to match the schema
-        df = (
-            df.withColumnRenamed(
-                TableColumnNames.balance_responsible_id,
-                TableColumnNames.balance_responsible_party_id,
-            )
-            .withColumnRenamed(
-                TableColumnNames.calculation_result_id,
-                TableColumnNames.result_id,
-            )
-            .select(schema.fieldNames())
-        )
+        df = df.select(schema.fieldNames())
 
         df.write.format("delta").mode("append").option(
             "mergeSchema", "false"

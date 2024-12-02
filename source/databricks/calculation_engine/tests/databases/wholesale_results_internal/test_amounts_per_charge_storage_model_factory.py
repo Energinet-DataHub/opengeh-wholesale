@@ -32,7 +32,6 @@ from package.codelists import (
     MeteringPointType,
     CalculationType,
     SettlementMethod,
-    AmountType,
 )
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
@@ -40,11 +39,8 @@ from package.databases.wholesale_results_internal import (
     amounts_per_charge_storage_model_factory as sut,
 )
 from package.databases.wholesale_results_internal.schemas import (
-    hive_wholesale_results_schema,
+    amounts_per_charge_schema,
 )
-from package.infrastructure.paths import WholesaleResultsInternalDatabase
-
-TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
 
 # Writer constructor parameters
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"
@@ -52,7 +48,6 @@ DEFAULT_CALCULATION_TYPE = CalculationType.FIRST_CORRECTION_SETTLEMENT
 DEFAULT_CALCULATION_EXECUTION_START = datetime(2022, 6, 10, 13, 15)
 
 # Input dataframe parameters
-DEFAULT_AMOUNT_TYPE = AmountType.AMOUNT_PER_CHARGE
 DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_GRID_AREA_CODE = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
@@ -151,11 +146,6 @@ def _create_result_df_corresponding_to_multiple_calculation_results(
     "column_name, column_value",
     [
         (TableColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
-        (TableColumnNames.calculation_type, DEFAULT_CALCULATION_TYPE.value),
-        (
-            TableColumnNames.calculation_execution_time_start,
-            DEFAULT_CALCULATION_EXECUTION_START,
-        ),
         (TableColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),
         (TableColumnNames.energy_supplier_id, DEFAULT_ENERGY_SUPPLIER_ID),
         (TableColumnNames.quantity, DEFAULT_TOTAL_QUANTITY),
@@ -188,7 +178,7 @@ def test__create__returns_dataframe_with_column(
     result_df = _create_default_result(spark)
 
     # Act
-    actual_df = sut.create(args, result_df, DEFAULT_AMOUNT_TYPE)
+    actual_df = sut.create(args, result_df)
 
     # Assert
     actual_row = actual_df.collect()[0]
@@ -206,25 +196,10 @@ def test__create__returns_dataframe_with_calculation_result_id(
     expected_number_of_calculation_result_ids = 3
 
     # Act
-    actual_df = sut.create(args, result_df, DEFAULT_AMOUNT_TYPE)
+    actual_df = sut.create(args, result_df)
 
     # Assert
     assert actual_df.distinct().count() == expected_number_of_calculation_result_ids
-
-
-def test__create__returns_dataframe_with_amount_type(
-    spark: SparkSession,
-    args: CalculatorArgs,
-) -> None:
-    # Arrange
-    result_df = _create_default_result(spark)
-
-    # Act
-    actual_df = sut.create(args, result_df, DEFAULT_AMOUNT_TYPE)
-
-    # Assert
-    actual_row = actual_df.collect()[0]
-    assert actual_row[TableColumnNames.amount_type] == DEFAULT_AMOUNT_TYPE.value
 
 
 def test__get_column_group_for_calculation_result_id__returns_expected_column_names(
@@ -258,10 +233,6 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
 
     # Arrange
     expected_excluded_columns = [
-        TableColumnNames.calculation_type,
-        TableColumnNames.calculation_execution_time_start,
-        TableColumnNames.calculation_result_id,
-        TableColumnNames.amount_type,
         TableColumnNames.quantity,
         TableColumnNames.quantity_unit,
         TableColumnNames.quantity_qualities,
@@ -269,8 +240,9 @@ def test__get_column_group_for_calculation_result_id__excludes_expected_other_co
         TableColumnNames.price,
         TableColumnNames.amount,
         TableColumnNames.is_tax,
+        TableColumnNames.result_id,
     ]
-    all_columns = [f.name for f in hive_wholesale_results_schema.fields]
+    all_columns = [f.name for f in amounts_per_charge_schema.fields]
 
     all_columns = _map_metering_point_type_column_name(all_columns)
 

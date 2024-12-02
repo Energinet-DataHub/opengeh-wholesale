@@ -53,7 +53,7 @@ metering_point_periods_schema_basis_data = StructType(
         StructField(TableColumnNames.to_grid_area_code, StringType(), True),
         StructField(TableColumnNames.parent_metering_point_id, StringType(), True),
         StructField(TableColumnNames.energy_supplier_id, StringType(), True),
-        StructField(TableColumnNames.balance_responsible_id, StringType(), True),
+        StructField(TableColumnNames.balance_responsible_party_id, StringType(), True),
         StructField(TableColumnNames.from_date, TimestampType(), False),
         StructField(TableColumnNames.to_date, TimestampType(), True),
     ]
