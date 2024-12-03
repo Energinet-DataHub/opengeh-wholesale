@@ -36,6 +36,8 @@ class TableColumnNames:
     calculation_version = "calculation_version"
     is_internal_calculation = "is_internal_calculation"
     """True if the calculation is an internal calculation, False otherwise."""
+    calculation_version_dh3 = "calculation_version_dh3"
+    calculation_version_dh2 = "calculation_version_dh2"
     created_by_user_id = "created_by_user_id"
     energy_supplier_id = "energy_supplier_id"
     from_date = "from_date"
