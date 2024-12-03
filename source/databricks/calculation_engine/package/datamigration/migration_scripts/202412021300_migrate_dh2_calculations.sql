@@ -1,18 +1,21 @@
--- -- Reusable migration script for DH2 calculations in Wholesale.
--- -- It works in three general steps:
--- -- * 1: Delete all rows from all tables with calculation version = 0 in calculations.
--- -- * 2: Remove the calculations from our main table
--- -- * 3: Re-insert the new calculations from DH2 into the main table with version = 0
--- -- * 3: Re-migrate everything from the DH2 calculations input.
--- --
--- -- Currently implemented tables: 
--- -- * wholesale_results_internal
--- --   * energy_per_brp
--- --   * energy_per_es
--- --   * energy
--- -- * wholesale_internal
--- --   * calculation_grid_areas
--- --
+-- Reusable migration script for DH2 calculations in Wholesale.
+-- It works in three general steps:
+-- * 1: Delete all rows from all tables with calculation version = 0 in calculations.
+-- * 2: Remove the calculations from our main table
+-- * 3: Re-insert the new calculations from DH2 into the main table with version = 0
+-- * 3: Re-migrate everything from the DH2 calculations input.
+--
+-- Currently implemented tables: 
+-- * wholesale_results_internal
+--   * energy_per_brp
+--   * energy_per_es
+--   * energy
+-- * wholesale_internal
+--   * calculation_grid_areas
+--
+
+SELECT * FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
+GO
 
 -- -- STEP 1: Delete existing rows across Wholesale's domain
 -- DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy as e1
