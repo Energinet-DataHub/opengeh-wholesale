@@ -60,7 +60,7 @@ module "bronze_backup" {
   backup_sql_endpoint_id                 = databricks_sql_endpoint.backup_warehouse[local.backup_warehouse_key].id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
-  backup_schedule_quartz_cron_expression = "0 0 * ? * *"
+  backup_schedule_quartz_cron_expression = "0 0/15 * ? * *"
 
   depends_on = [module.dbw]
 }
