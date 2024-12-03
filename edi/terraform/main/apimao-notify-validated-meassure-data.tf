@@ -24,7 +24,7 @@ module "apimao_notify_validated_meassure_data" {
                 </required-claims>
             </validate-jwt>
             <set-backend-service backend-id="${azurerm_api_management_backend.edi.name}" />
-            <rewrite-uri template="/api/incomingMessages/MeteredDataForMeasurementPoint" />
+            <rewrite-uri template="/api/incomingMessages/NotifyValidatedMeasureData" />
           </inbound>
         </policies>
       XML

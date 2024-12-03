@@ -562,6 +562,28 @@
                         "metricVisualization": {
                           "displayName": "RejectRequestWholesaleSettlementJson"
                         }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyValidatedMeasureDataJson",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyValidatedMeasureDataJson"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyValidatedMeasureDataResponseJson",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyValidatedMeasureDataResponseJson"
+                        }
                       }
                     ],
                     "title": "Number of new JSON messages",
@@ -972,6 +994,28 @@
                         "namespace": "azure.applicationinsights",
                         "metricVisualization": {
                           "displayName": "RejectRequestWholesaleSettlementXml"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyValidatedMeasureDataXml",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyValidatedMeasureDataXml"
+                        }
+                      },
+                      {
+                        "resourceMetadata": {
+                          "id": "${appi_sharedres_id}"
+                        },
+                        "name": "NotifyValidatedMeasureDataResponseXml",
+                        "aggregationType": 7,
+                        "namespace": "azure.applicationinsights",
+                        "metricVisualization": {
+                          "displayName": "NotifyValidatedMeasureDataResponseXml"
                         }
                       }
                     ],
