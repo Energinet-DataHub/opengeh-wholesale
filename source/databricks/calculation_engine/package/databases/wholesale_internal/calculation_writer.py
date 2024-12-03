@@ -61,6 +61,8 @@ def write_calculation(
         f" VALUES ('{args.calculation_id}', '{args.calculation_type.value}', '{calculation_period_start_datetime}', '{calculation_period_end_datetime}', '{calculation_execution_time_start}', NULL, '{args.is_internal_calculation}', NULL, NULL);",
         table_targeted_by_query,
     )
+
+    # And since the combination with DH2 calculations requires the identity column to decide the calculation_version, we also
     execute_spark_sql_in_retry_loop(
         spark,
         METADATA_CHANGED_RETRIES,
