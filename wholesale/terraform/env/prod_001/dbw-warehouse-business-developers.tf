@@ -14,7 +14,7 @@ resource "databricks_sql_endpoint" "business_developers_access" {
 
 resource "databricks_permissions" "business_developers_access" {
   provider        = databricks.dbw
-  sql_endpoint_id = databricks_sql_endpoint.this.id
+  sql_endpoint_id = databricks_sql_endpoint.business_developers_access.id
 
   access_control {
     group_name       = "SEC-G-DataHub-BusinessDevelopers"
