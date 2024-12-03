@@ -14,7 +14,11 @@
 --   * calculation_grid_areas
 --
 
-CREATE OR REPLACE TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 AS (
+
+DROP TABLE IF EXISTS {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2
+GO
+
+CREATE TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 AS (
     SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE calculation_version_dh2 is not null
 )
 GO
@@ -44,7 +48,7 @@ DELETE FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
 WHERE calculation_version_dh2 is not null
 GO 
 
-DROP TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2
+DROP TABLE IF EXISTS {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2
 GO
 
 -- STEP 3: Re-migrate each of the tables with calculations from DH2.
