@@ -27,6 +27,7 @@ class FeatureTestsConfiguration:
             "show_columns_when_actual_and_expected_are_equal", False
         )
         configuration.setdefault("show_actual_and_expected_count", False)
+        configuration.setdefault("assert_no_duplicate_rows", False)
         self.show_actual_and_expected = configuration["show_actual_and_expected"]
         self.show_columns_when_actual_and_expected_are_equal = configuration[
             "show_columns_when_actual_and_expected_are_equal"
@@ -34,6 +35,7 @@ class FeatureTestsConfiguration:
         self.show_actual_and_expected_count = configuration[
             "show_actual_and_expected_count"
         ]
+        self.assert_no_duplicate_rows = configuration["assert_no_duplicate_rows"]
 
 
 class TestSessionConfiguration:
