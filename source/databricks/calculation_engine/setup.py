@@ -29,16 +29,16 @@ setup(
     # Make sure these packages are added to the docker container and pinned to the same versions
     install_requires=[
         "ConfigArgParse==1.7.0",
-        "pyspark==3.5.1",
-        "azure-identity==1.19.0",
-        "dependency_injector==4.41.0",
+        "pyspark==3.5.1",  # This needs to be same version pyspark-slim in docker file
+        "azure-identity==1.17.1",
+        "dependency_injector==4.43.0",
         "urllib3==2.2.*",
-        "delta-spark==3.1.0",
-        "python-dateutil==2.9.0.post0",
+        "delta-spark==3.2.0",
+        "python-dateutil==2.8.2",
         "azure-monitor-opentelemetry==1.6.4",
         "azure-core==1.32.0",
-        "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@1.9.0#subdirectory=source/spark_sql_migrations",
-        "opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.3.1#subdirectory=source/telemetry",
+        "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.4.1#subdirectory=source/spark_sql_migrations",
+        "opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.4.1#subdirectory=source/telemetry",
     ],
     entry_points={
         "console_scripts": [

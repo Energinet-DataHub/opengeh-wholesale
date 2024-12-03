@@ -12,11 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from dependency_injector.wiring import inject, Provide
+from telemetry_logging import use_span, logging_configuration
 
 from package.calculation.calculation_output import BasisDataOutput
-from package.constants import Colname
 from package.container import Container
-from telemetry_logging import use_span, logging_configuration
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     WholesaleBasisDataInternalDatabase,
@@ -38,15 +37,9 @@ def _write_basis_data(
     ],
 ) -> None:
     with logging_configuration.start_span("metering_point_periods"):
-        basis_data_output.metering_point_periods.withColumnRenamed(  # ToDO JMG: rename to "balance_responsible_party_id" earlier (TableReader?)
-            Colname.balance_responsible_party_id, Colname.balance_responsible_party_id
-        ).write.format(
-            "delta"
-        ).mode(
+        basis_data_output.metering_point_periods.write.format("delta").mode(
             "append"
-        ).option(
-            "mergeSchema", "false"
-        ).insertInto(
+        ).option("mergeSchema", "false").insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME}"
         )
 
