@@ -20,10 +20,19 @@ from pyspark.sql import SparkSession
 
 
 def get_views_from_database(database_name: str, spark: SparkSession) -> list:
+    return _get_from_database(database_name, spark, "VIEW")
+
+
+def get_tables_from_database(database_name: str, spark: SparkSession) -> list:
+    return _get_from_database(database_name, spark, "TABLE")
+
+
+def _get_from_database(
+    database_name: str, spark: SparkSession, table_type: str
+) -> list:
     tables = spark.catalog.listTables(database_name)
-    views = [table for table in tables if table.tableType == "VIEW"]
-    assert views, f"No views found in database {database_name}."
-    return views
+    tables = [table for table in tables if table.tableType == table_type]
+    return tables
 
 
 def get_expected_schemas(folder: str) -> dict:
