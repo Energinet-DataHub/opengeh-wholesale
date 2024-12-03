@@ -15,20 +15,20 @@
 --
 
 -- STEP 1: Delete existing rows across Wholesale's domain
-DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy 
-WHERE calculation_id in (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE calculation_version_dh2 is not null)
+DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy as e1
+WHERE EXISTS (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE e1.calculation_id = calculation_id and calculation_version = 0)
 GO
 
-DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_brp
-WHERE calculation_id in (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE calculation_version_dh2 is not null)
+DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_b as e2
+WHERE EXISTS (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE e2.calculation_id = calculation_id and calculation_version = 0)
 GO
 
-DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_es
-WHERE calculation_id in (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE calculation_version_dh2 is not null)
+DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_es as e3
+WHERE EXISTS (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE e3.calculation_id = calculation_id and calculation_version = 0)
 GO
 
-DELETE FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas
-WHERE calculation_id in (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE calculation_version_dh2 is not null)
+DELETE FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas as g1
+WHERE EXISTS (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE g1.calculation_id = calculation_id and calculation_version = 0)
 GO
 
 -- STEP 2: Remove the DH2 calculations from the main table
