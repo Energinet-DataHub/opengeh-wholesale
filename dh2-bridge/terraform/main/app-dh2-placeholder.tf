@@ -1,5 +1,5 @@
 module "app_dh2_placeholder" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_7.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_7.1.0"
 
   name                                   = "dh2-placeholder"
   project_name                           = var.domain_name_short
@@ -7,8 +7,8 @@ module "app_dh2_placeholder" {
   environment_instance                   = var.environment_instance
   resource_group_name                    = azurerm_resource_group.this.name
   location                               = azurerm_resource_group.this.location
-  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
-  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnetintegrations_id.value
+  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   app_service_plan_id                    = module.webapp_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   health_check_path                      = "/monitor/ready"
