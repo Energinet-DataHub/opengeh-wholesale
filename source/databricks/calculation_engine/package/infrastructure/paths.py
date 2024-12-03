@@ -64,7 +64,6 @@ class WholesaleInternalDatabase:
         CALCULATION_GRID_AREAS_TABLE_NAME,
     ]
 
-    CALCULATIONS_VIEW_NAME = "calculations_v1"
     SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME = "succeeded_external_calculations_v1"
 
 
@@ -159,7 +158,7 @@ class WholesaleBasisDataInternalDatabase:
 class SharedWholesaleInputDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.SHARED_WHOLESALE_INPUT
     CALCULATIONS_TABLE_NAME = "calculations"
-    CALCULATIONS_VIEW_NAME = "calculations_view_v1"
+    CALCULATIONS_TABLE_NAME = "calculations_view_v1"
     CALCULATION_GRID_AREAS_TABLE_NAME = "calculation_grid_areas"
     CALCULATION_GRID_AREAS_VIEW_NAME = "calculation_grid_areas_view_v1"
     CALCULATION_RESULTS_TABLE_NAME = "calculation_results"
@@ -198,7 +197,7 @@ class SharedWholesaleInputDatabase:
     ]
 
     VIEW_NAMES = [
-        CALCULATIONS_VIEW_NAME,
+        CALCULATIONS_TABLE_NAME,
         CALCULATION_GRID_AREAS_VIEW_NAME,
         CALCULATION_RESULTS_ENERGY_PER_BRP_VIEW_NAME,
         CALCULATION_RESULTS_ENERGY_PER_ES_VIEW_NAME,

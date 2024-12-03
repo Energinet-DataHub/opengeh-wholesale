@@ -12,7 +12,6 @@ from contracts.data_products import (
 
 from contracts.wholesale_internal import (
     succeeded_external_calculations_v1,
-    calculations_v1,
 )
 
 from package.databases.wholesale_results_internal.schemas import (
@@ -48,10 +47,6 @@ schema_config = [
             View(
                 name=paths.WholesaleInternalDatabase.SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME,
                 schema=succeeded_external_calculations_v1,
-            ),
-            View(
-                name=paths.WholesaleInternalDatabase.CALCULATIONS_VIEW_NAME,
-                schema=calculations_v1,
             ),
         ],
     ),
