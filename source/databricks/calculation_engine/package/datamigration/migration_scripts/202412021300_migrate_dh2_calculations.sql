@@ -14,9 +14,6 @@
 --   * calculation_grid_areas
 --
 
-DROP TABLE IF EXISTS {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2
-GO
-
 -- STEP 1: Delete existing rows across Wholesale's domain
 MERGE INTO {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy e1
 USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
