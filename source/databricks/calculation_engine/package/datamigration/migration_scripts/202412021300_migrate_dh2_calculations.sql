@@ -24,7 +24,7 @@ ON c.calculation_id <=> e1.calculation_id and c.calculation_version_dh2 is not n
 WHEN MATCHED THEN DELETE 
 GO 
 
-MERGE INTO {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_b e2
+MERGE INTO {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_brp e2
 USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
 ON c.calculation_id <=> e2.calculation_id and c.calculation_version_dh2 is not null
 WHEN MATCHED THEN DELETE 
