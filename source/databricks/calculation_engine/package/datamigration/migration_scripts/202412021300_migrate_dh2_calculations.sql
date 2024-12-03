@@ -24,19 +24,19 @@ ON c.calculation_id <=> e1.calculation_id and c.calculation_version_dh2 is not n
 WHEN MATCHED THEN DELETE 
 GO 
 
-DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_b e2
+MERGE INTO {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_b e2
 USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
 ON c.calculation_id <=> e2.calculation_id and c.calculation_version_dh2 is not null
 WHEN MATCHED THEN DELETE 
 GO
 
-DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_es e3
+MERGE INTO {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_es e3
 USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
 ON c.calculation_id <=> e3.calculation_id and c.calculation_version_dh2 is not null
 WHEN MATCHED THEN DELETE 
 GO
 
-DELETE FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas g1
+MERGE INTO {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas g1
 USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
 ON c.calculation_id <=> g1.calculation_id and c.calculation_version_dh2 is not null
 WHEN MATCHED THEN DELETE 
