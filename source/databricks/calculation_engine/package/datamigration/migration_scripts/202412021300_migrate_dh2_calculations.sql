@@ -14,29 +14,28 @@
 --   * calculation_grid_areas
 --
 
-CREATE OR REPLACE VIEW calculation_ids_from_dh2 AS (
+CREATE OR REPLACE TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 AS (
     SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE calculation_version_dh2 is not null
 )
 GO
 
-
 -- STEP 1: Delete existing rows across Wholesale's domain
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy as e1
-WHERE e1.calculation_id IN (SELECT c.calculation_id FROM calculation_ids_from_dh2 c)
+WHERE e1.calculation_id IN (SELECT c.calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 c)
 GO
 
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_b as e2
-WHERE e2.calculation_id IN (SELECT c.calculation_id FROM calculation_ids_from_dh2 c)
+WHERE e2.calculation_id IN (SELECT c.calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 c)
 -- WHERE EXISTS (SELECT c.calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c WHERE e2.calculation_id = c.calculation_id and c.calculation_version = 0)
 GO
 
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_es as e3
-WHERE e3.calculation_id IN (SELECT c.calculation_id FROM calculation_ids_from_dh2 c)
+WHERE e3.calculation_id IN (SELECT c.calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 c)
 -- WHERE EXISTS (SELECT c.calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c WHERE e3.calculation_id = c.calculation_id and c.calculation_version = 0)
 GO
 
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas as g1
-WHERE g1.calculation_id IN (SELECT c.calculation_id FROM calculation_ids_from_dh2 c)
+WHERE g1.calculation_id IN (SELECT c.calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 c)
 -- WHERE EXISTS (SELECT c.calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c WHERE g1.calculation_id = c.calculation_id and c.calculation_version = 0)
 GO
 
@@ -44,6 +43,9 @@ GO
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
 WHERE calculation_version_dh2 is not null
 GO 
+
+DROP TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2
+GO
 
 -- STEP 3: Re-migrate each of the tables with calculations from DH2.
 INSERT INTO {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations 
