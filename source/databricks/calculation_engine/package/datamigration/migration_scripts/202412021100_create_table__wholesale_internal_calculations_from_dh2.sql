@@ -5,8 +5,8 @@ RENAME COLUMN calculation_version TO calculation_version_dh3
 GO 
 
 ALTER TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
-ADD COLUMNS (calculation_version_dh2 bigint)
+ADD COLUMNS (calculation_version_dh2 BIGINT)
 GO 
 
 ALTER TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
-ADD COLUMNS (calculation_version bigint GENERATED ALWAYS AS (CASE WHEN calculation_version_dh2 IS NOT NULL THEN 0 ELSE calculation_version_dh3 END))
+ADD COLUMN calculation_version BIGINT GENERATED ALWAYS AS (CASE WHEN calculation_version_dh2 IS NOT NULL THEN 0 ELSE calculation_version_dh3 END)
