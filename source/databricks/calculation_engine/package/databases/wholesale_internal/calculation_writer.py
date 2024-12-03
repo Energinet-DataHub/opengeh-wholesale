@@ -113,7 +113,7 @@ def execute_spark_sql_in_retry_loop(
     num_retries: int,
     query: str,
     table_to_uncache_on_failure: Optional[str],
-):
+) -> None:
     for attempt in range(num_retries):
         try:
             spark.sql(query)

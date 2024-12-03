@@ -1,7 +1,8 @@
 -- Reusable migration script for DH2 calculations in Wholesale.
 -- It works in three general steps:
--- * 1: Delete all rows from all tables with calculation ID in calculations_from_dh2.
--- * 2: Truncate calculations_from_dh2
+-- * 1: Delete all rows from all tables with calculation version = 0 in calculations.
+-- * 2: Remove the calculations from our main table
+-- * 3: Re-insert the new calculations from DH2 into the main table with version = 0
 -- * 3: Re-migrate everything from the DH2 calculations input.
 --
 -- Currently implemented tables: 
@@ -15,15 +16,15 @@
 
 -- STEP 1: Delete existing rows across Wholesale's domain
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy 
-WHERE calculation_id in (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_from_dh2 WHERE calculation_version_dh2 is not null)
+WHERE calculation_id in (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE calculation_version_dh2 is not null)
 GO
 
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_brp
-WHERE calculation_id in (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_from_dh2 WHERE calculation_version_dh2 is not null)
+WHERE calculation_id in (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE calculation_version_dh2 is not null)
 GO
 
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_es
-WHERE calculation_id in (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations_from_dh2 WHERE calculation_version_dh2 is not null)
+WHERE calculation_id in (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE calculation_version_dh2 is not null)
 GO
 
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas
@@ -37,8 +38,8 @@ GO
 
 -- STEP 3: Re-migrate each of the tables with calculations from DH2.
 INSERT INTO {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations 
-(calculation_id, calculation_type, calculation_period_start, calculation_period_end, calculation_execution_time_start, calculation_succeeded_time, is_internal_calculation, calculation_version_dh2)
-SELECT (calculation_id, calculation_type, calculation_period_start, calculation_period_end, calculation_execution_time_start, calculation_succeeded_time, False, 0) FROM {CATALOG_NAME}.{SHARED_WHOLESALE_INPUT}.calculations_view_v1
+(calculation_id, calculation_type, calculation_period_start, calculation_period_end, calculation_execution_time_start, calculation_succeeded_time, is_internal_calculation, calculation_version_dh2, calculation_version)
+SELECT (calculation_id, calculation_type, calculation_period_start, calculation_period_end, calculation_execution_time_start, calculation_succeeded_time, False, 0, 0) FROM {CATALOG_NAME}.{SHARED_WHOLESALE_INPUT}.calculations_view_v1
 GO 
 
 -- Result ID for the energy-tables should be unique per: 
