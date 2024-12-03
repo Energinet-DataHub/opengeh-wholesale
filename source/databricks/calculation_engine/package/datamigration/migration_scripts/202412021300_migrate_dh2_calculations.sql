@@ -25,22 +25,19 @@ GO
 
 -- STEP 1: Delete existing rows across Wholesale's domain
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy e1
-WHERE calculation_id IN (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 )
+WHERE calculation_id IN (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 WHERE e1.calculation_id = calculation_id)
 GO 
 
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_b e2
-USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 c
-WHERE c.calculation_id = e2.calculation_id
+WHERE calculation_id IN (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 WHERE e2.calculation_id = calculation_id)
 GO
 
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_es e3
-USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 c
-WHERE c.calculation_id = e3.calculation_id
+WHERE calculation_id IN (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 WHERE e3.calculation_id = calculation_id)
 GO
 
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas g1
-USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 c
-WHERE c.calculation_id = g1.calculation_id
+WHERE calculation_id IN (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 WHERE g1.calculation_id = calculation_id)
 GO
 
 -- STEP 2: Remove the DH2 calculations from the main table
