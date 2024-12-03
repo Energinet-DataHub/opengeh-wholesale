@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import inspect
+
 from pyspark.sql import SparkSession
 
-from contracts.test_contracts_utils import get_database_objects
 from package.infrastructure import paths
 from package.infrastructure.paths import UnityCatalogDatabaseNames
 
@@ -49,7 +50,7 @@ def test_all_tables_and_views_created_after_migrations(
     Validates that all expected tables and views are created in the workspace after migrations are executed.
     """
     # Arrange
-    expected = get_database_objects(paths)
+    expected = _get_database_objects(paths)
     errors: list = []
 
     # Helper: Retrieve the names of tables or views from the catalog
@@ -119,3 +120,15 @@ def _validate_each_view_exists(actual_views, db_name, errors, expected_objects) 
             ), f"View {view_name} is missing in {db_name}."
         except AssertionError as e:
             errors.append(str(e))
+
+
+def _get_database_objects(module):
+    result = {}
+    for name, obj in inspect.getmembers(module):
+        if inspect.isclass(obj) and obj.__name__.startswith("Wholesale"):
+            database_name = getattr(obj, "DATABASE_NAME", None)
+            table_names = getattr(obj, "TABLE_NAMES", [])
+            view_names = getattr(obj, "VIEW_NAMES", [])
+            if database_name:
+                result[database_name] = {"tables": table_names, "views": view_names}
+    return result
