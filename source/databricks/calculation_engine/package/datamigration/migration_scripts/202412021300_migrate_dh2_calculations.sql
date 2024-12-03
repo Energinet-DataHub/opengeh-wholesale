@@ -14,39 +14,38 @@
 --   * calculation_grid_areas
 --
 
-
 DROP TABLE IF EXISTS {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2
 GO
 
-CREATE TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 AS (
-    SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations WHERE calculation_version_dh2 is not null
-)
-GO
-
 -- STEP 1: Delete existing rows across Wholesale's domain
-DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy e1
-WHERE calculation_id IN (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 WHERE e1.calculation_id = calculation_id)
+MERGE INTO {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy e1
+USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
+ON c.calculation_id <=> e1.calculation_id and c.calculation_version_dh2 is not null
+WHEN MATCHED THEN DELETE 
 GO 
 
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_b e2
-WHERE calculation_id IN (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 WHERE e2.calculation_id = calculation_id)
+USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
+ON c.calculation_id <=> e2.calculation_id and c.calculation_version_dh2 is not null
+WHEN MATCHED THEN DELETE 
 GO
 
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.energy_per_es e3
-WHERE calculation_id IN (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 WHERE e3.calculation_id = calculation_id)
+USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
+ON c.calculation_id <=> e3.calculation_id and c.calculation_version_dh2 is not null
+WHEN MATCHED THEN DELETE 
 GO
 
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_grid_areas g1
-WHERE calculation_id IN (SELECT calculation_id FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2 WHERE g1.calculation_id = calculation_id)
+USING {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations c
+ON c.calculation_id <=> g1.calculation_id and c.calculation_version_dh2 is not null
+WHEN MATCHED THEN DELETE 
 GO
 
 -- STEP 2: Remove the DH2 calculations from the main table
 DELETE FROM {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
 WHERE calculation_version_dh2 is not null
 GO 
-
-DROP TABLE IF EXISTS {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculation_ids_from_dh2
-GO
 
 -- STEP 3: Re-migrate each of the tables with calculations from DH2.
 INSERT INTO {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations 
