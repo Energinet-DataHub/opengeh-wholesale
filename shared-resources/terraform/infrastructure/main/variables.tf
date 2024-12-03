@@ -332,3 +332,9 @@ variable "dh_grafana_datasource_personal_access_token" {
   description = "The personal access token used to authenticate the grafana datasource"
   sensitive   = true
 }
+
+variable "enable_autoscale_apim" {
+  type        = bool
+  description = "Enable autoscale for the API Management instance. Only supported on premium SKU"
+  default     = false
+}
