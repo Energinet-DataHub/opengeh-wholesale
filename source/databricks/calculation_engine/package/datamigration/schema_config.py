@@ -36,6 +36,7 @@ schema_config = [
             View(
                 name=paths.WholesaleInternalDatabase.SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME,
             ),
+            View(name=paths.WholesaleInternalDatabase.CALCULATIONS_VIEW_NAME),
         ],
     ),
     Schema(

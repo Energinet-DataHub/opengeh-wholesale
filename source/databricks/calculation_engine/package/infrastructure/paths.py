@@ -27,6 +27,7 @@ class UnityCatalogDatabaseNames:
     WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
     WHOLESALE_INTERNAL = "wholesale_internal"
     WHOLESALE_SAP = "wholesale_sap"
+    SHARED_WHOLESALE_INPUT = "shared_wholesale_input"
 
     @classmethod
     def get_names(cls) -> list[str]:
@@ -63,6 +64,7 @@ class WholesaleInternalDatabase:
         CALCULATION_GRID_AREAS_TABLE_NAME,
     ]
 
+    CALCULATIONS_VIEW_NAME = "calculations_v1"
     SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME = "succeeded_external_calculations_v1"
 
 
@@ -151,6 +153,62 @@ class WholesaleBasisDataInternalDatabase:
         CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
         CHARGE_PRICE_POINTS_TABLE_NAME,
         GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
+    ]
+
+
+class SharedWholesaleInputDatabase:
+    DATABASE_NAME = UnityCatalogDatabaseNames.SHARED_WHOLESALE_INPUT
+    CALCULATIONS_TABLE_NAME = "calculations"
+    CALCULATIONS_VIEW_NAME = "calculations_view_v1"
+    CALCULATION_GRID_AREAS_TABLE_NAME = "calculation_grid_areas"
+    CALCULATION_GRID_AREAS_VIEW_NAME = "calculation_grid_areas_view_v1"
+    CALCULATION_RESULTS_TABLE_NAME = "calculation_results"
+    CALCULATION_RESULTS_ENERGY_PER_BRP_VIEW_NAME = (
+        "calculation_results_energy_per_brp_view_v1"
+    )
+    CALCULATION_RESULTS_ENERGY_PER_ES_VIEW_NAME = (
+        "calculation_results_energy_per_es_view_v1"
+    )
+    CALCULATION_RESULTS_ENERGY_VIEW_NAME = "calculation_results_energy_view_v1"
+    CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
+    CHARGE_LINK_PERIODS_VIEW_NAME = "charge_link_periods_view_v1"
+    CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = "charge_price_information_periods"
+    CHARGE_PRICE_INFORMATION_PERIODS_VIEW_NAME = (
+        "charge_price_information_periods_view_v1"
+    )
+    CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
+    CHARGE_PRICE_POINTS_VIEW_NAME = "charge_price_points_view_v1"
+    METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
+    METERING_POINT_PERIODS_VIEW_NAME = "metering_point_periods_view_v1"
+    READY_FOR_CALCULATION_TABLE_NAME = "ready_for_calculation"
+    READY_FOR_CALCULATION_VIEW_NAME = "ready_for_calculation_view_v1"
+    TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
+    TIME_SERIES_POINTS_VIEW_NAME = "time_series_points_view_v1"
+
+    TABLE_NAMES = [  # TODO: Should we even have these in the code anywhere?
+        CALCULATIONS_TABLE_NAME,
+        CALCULATION_GRID_AREAS_TABLE_NAME,
+        CALCULATION_RESULTS_TABLE_NAME,
+        CHARGE_LINK_PERIODS_TABLE_NAME,
+        CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+        CHARGE_PRICE_POINTS_TABLE_NAME,
+        METERING_POINT_PERIODS_TABLE_NAME,
+        READY_FOR_CALCULATION_TABLE_NAME,
+        TIME_SERIES_POINTS_TABLE_NAME,
+    ]
+
+    VIEW_NAMES = [
+        CALCULATIONS_VIEW_NAME,
+        CALCULATION_GRID_AREAS_VIEW_NAME,
+        CALCULATION_RESULTS_ENERGY_PER_BRP_VIEW_NAME,
+        CALCULATION_RESULTS_ENERGY_PER_ES_VIEW_NAME,
+        CALCULATION_RESULTS_ENERGY_VIEW_NAME,
+        CHARGE_LINK_PERIODS_VIEW_NAME,
+        CHARGE_PRICE_INFORMATION_PERIODS_VIEW_NAME,
+        CHARGE_PRICE_POINTS_VIEW_NAME,
+        METERING_POINT_PERIODS_VIEW_NAME,
+        READY_FOR_CALCULATION_VIEW_NAME,
+        TIME_SERIES_POINTS_VIEW_NAME,
     ]
 
 

@@ -53,7 +53,7 @@ class WholesaleInternalRepository:
             self._spark,
             self._catalog_name,
             WholesaleInternalDatabase.DATABASE_NAME,
-            WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
+            WholesaleInternalDatabase.CALCULATIONS_VIEW_NAME,
             calculations_schema,
         )
 

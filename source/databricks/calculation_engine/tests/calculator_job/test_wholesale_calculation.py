@@ -298,7 +298,7 @@ def test__when_calculation_is_stored__contains_calculation_succeeded_time(
 ) -> None:
     # Arrange
     actual = spark.read.table(
-        f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+        f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATIONS_VIEW_NAME}"
     ).where(
         f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
     )
