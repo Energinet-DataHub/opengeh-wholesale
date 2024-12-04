@@ -33,8 +33,8 @@ def assert_entry_point_exists(entry_point_name: str) -> Any:
         if not entry_point:
             assert False, f"The {entry_point_name} entry point was not found."
         # Check if the module exists
-        module_name = entry_point[0].module
-        function_name = entry_point[0].value.split(":")[1]
+        module_name = entry_point[entry_point_name].module
+        function_name = entry_point[entry_point_name].value.split(":")[1]
         if not hasattr(
             module,
             function_name,
