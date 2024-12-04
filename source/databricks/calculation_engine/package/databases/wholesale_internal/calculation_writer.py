@@ -65,7 +65,7 @@ def write_calculation(
     # And since the combination with DH2 calculations requires the identity column to decide the calculation_version, we also
     spark.sql(
         f"UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-        f" SET {TableColumnNames.calculation_version} = CASE WHEN {TableColumnNames.calculation_version_dh2} IS NOT NONE THEN 0 ELSE {TableColumnNames.calculation_version_dh3} END"
+        f" SET {TableColumnNames.calculation_version} = CASE WHEN {TableColumnNames.calculation_version_dh2} IS NOT NULL THEN 0 ELSE {TableColumnNames.calculation_version_dh3} END"
         f" WHERE {TableColumnNames.calculation_id} = '{args.calculation_id}'"
     )
 
