@@ -93,7 +93,6 @@ public sealed class WholesaleServicesRequestValidatorTests
     [Fact]
     public async Task Validate_WhenPeriodStartAndPeriodEndAreInvalidFormat_ReturnsUnsuccessfulValidation()
     {
-        // testing
         // Arrange
         var now = SystemClock.Instance.GetCurrentInstant().ToDateTimeOffset();
 
@@ -104,7 +103,7 @@ public sealed class WholesaleServicesRequestValidatorTests
                     .ToInstant()
                     .ToString())
             .WithPeriodEnd(
-                new LocalDateTime(now.Year - 2, now.Month + 1, 1, 8, 13, 56)
+                new LocalDateTime(now.Year - 2, now.Month, 1, 8, 13, 56).PlusMonths(1)
                     .InZoneStrictly(DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!)
                     .ToInstant()
                     .ToString())
