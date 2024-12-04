@@ -16,7 +16,7 @@ def get_substitutions(catalog_name: str, is_testing: bool) -> dict[str, str]:
         "{WHOLESALE_RESULTS_DATABASE_NAME}": paths.WholesaleResultsDatabase.DATABASE_NAME,
         "{WHOLESALE_SETTLEMENT_REPORTS_DATABASE_NAME}": paths.WholesaleSettlementReportsDatabase.DATABASE_NAME,
         "{WHOLESALE_SAP_DATABASE_NAME}": paths.WholesaleSapDatabase.DATABASE_NAME,
-        "{SHARED_WHOLESALE_INPUT}": paths.SharedWholesaleInputDatabase.DATABASE_NAME,
+        "{SHARED_WHOLESALE_INPUT}": paths.MigrationsWholesaleDatabase.DATABASE_NAME,
         # Flags
         "{DATABRICKS-ONLY}": (
             "--" if is_testing else ""
