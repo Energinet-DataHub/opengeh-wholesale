@@ -19,8 +19,10 @@ databricks_contributor_dataplane_group = {
   id   = "318888432738283"
   name = "SEC-A-Datahub-Test-001-Contributor-Dataplane"
 }
-apim_address_prefixes                                = ["10.143.94.0/28"]
-privateendpoints_address_prefixes                    = ["10.143.88.0/22"]
-vnetintegrations_address_prefixes                    = ["10.143.92.0/23"]
-apim_next_hop_ip_address                             = "10.142.96.196"
-udr_firewall_next_hop_ip_address                     = "10.142.65.196"
+apim_address_prefixes             = ["10.143.94.0/28"]
+privateendpoints_address_prefixes = ["10.143.88.0/22"]
+vnetintegrations_address_prefixes = ["10.143.92.0/23"]
+apim_next_hop_ip_address          = "10.142.96.196"
+udr_firewall_next_hop_ip_address  = "10.142.65.196"
+inbounddns_address_prefixes       = ["10.143.94.16/28"]
+outbounddns_address_prefixes      = ["10.143.94.32/28"]

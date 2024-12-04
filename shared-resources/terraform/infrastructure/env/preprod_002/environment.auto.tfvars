@@ -22,3 +22,5 @@ privateendpoints_address_prefixes = ["10.141.112.0/22"]
 vnetintegrations_address_prefixes = ["10.141.116.0/23"]
 apim_next_hop_ip_address          = "10.140.96.196"
 udr_firewall_next_hop_ip_address  = "10.140.65.196"
+inbounddns_address_prefixes       = ["10.141.118.16/28"]
+outbounddns_address_prefixes      = ["10.141.118.32/28"]

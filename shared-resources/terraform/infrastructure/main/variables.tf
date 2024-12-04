@@ -338,3 +338,13 @@ variable "enable_autoscale_apim" {
   description = "Enable autoscale for the API Management instance. Only supported on premium SKU"
   default     = false
 }
+
+variable "outbounddns_address_prefixes" {
+  type        = list(string)
+  description = "Address prefixes for the outbound DNS subnet"
+}
+
+variable "inbounddns_address_prefixes" {
+  type        = list(string)
+  description = "Address prefixes for the inbound DNS subnet"
+}

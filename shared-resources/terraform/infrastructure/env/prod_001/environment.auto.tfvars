@@ -26,4 +26,6 @@ privateendpoints_address_prefixes = ["10.141.88.0/22"]
 vnetintegrations_address_prefixes = ["10.141.92.0/23"]
 apim_next_hop_ip_address          = "10.140.96.196"
 udr_firewall_next_hop_ip_address  = "10.140.65.196"
+inbounddns_address_prefixes       = ["10.141.94.16/28"]
+outbounddns_address_prefixes      = ["10.141.94.32/28"]
 enable_autoscale_apim             = true
