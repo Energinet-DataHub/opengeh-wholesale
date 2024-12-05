@@ -1,6 +1,6 @@
 [
     {
-        "name": "Set 31 days from current date",
+        "name": "Set 14 days from current date",
         "type": "SetVariable",
         "dependsOn": [],
         "policy": {
@@ -9,20 +9,20 @@
         },
         "userProperties": [],
         "typeProperties": {
-            "variableName": "thirtyOneDaysFromNow",
+            "variableName": "fourteenDaysFromNow",
             "value": {
-                "value": "@getPastTime(31, 'Day')",
+                "value": "@getPastTime(14, 'Day')",
                 "type": "Expression"
             }
         }
     },
     {
         "name": "MD - Copy processed data into processed container",
-        "description": "This activity copies metering point data that is older than 31 days, which we will see as processed - into a storage account for processed data.",
+        "description": "This activity copies metering point data that is older than 14 days, which we will see as processed - into a storage account for processed data.",
         "type": "Copy",
         "dependsOn": [
             {
-                "activity": "Set 31 days from current date",
+                "activity": "Set 14 days from current date",
                 "dependencyConditions": [
                     "Succeeded"
                 ]
@@ -43,7 +43,7 @@
                     "type": "AzureBlobFSReadSettings",
                     "recursive": true,
                     "modifiedDatetimeEnd": {
-                        "value": "@variables('thirtyOneDaysFromNow')",
+                        "value": "@variables('fourteenDaysFromNow')",
                         "type": "Expression"
                     },
                     "wildcardFileName": "*.json",
@@ -81,7 +81,7 @@
     },
     {
         "name": "MD - Delete processed data",
-        "description": "This activity deletes the copied metering point data from the sink if it is older than 31 days from start of workflow. ",
+        "description": "This activity deletes the copied metering point data from the sink if it is older than 14 days from start of workflow. ",
         "type": "Delete",
         "dependsOn": [
             {
@@ -109,7 +109,7 @@
                 "type": "AzureBlobStorageReadSettings",
                 "recursive": true,
                 "modifiedDatetimeEnd": {
-                    "value": "@variables('thirtyOneDaysFromNow')",
+                    "value": "@variables('fourteenDaysFromNow')",
                     "type": "Expression"
                 },
                 "wildcardFileName": "*.json",
@@ -119,11 +119,11 @@
     },
     {
         "name": "TS - Copy processed data into processed container",
-        "description": "This activity copies time series data that is older than 31 days, which we will see as processed - into a storage account for processed data.",
+        "description": "This activity copies time series data that is older than 14 days, which we will see as processed - into a storage account for processed data.",
         "type": "Copy",
         "dependsOn": [
             {
-                "activity": "Set 31 days from current date",
+                "activity": "Set 14 days from current date",
                 "dependencyConditions": [
                     "Succeeded"
                 ]
@@ -144,7 +144,7 @@
                     "type": "AzureBlobFSReadSettings",
                     "recursive": true,
                     "modifiedDatetimeEnd": {
-                        "value": "@variables('thirtyOneDaysFromNow')",
+                        "value": "@variables('fourteenDaysFromNow')",
                         "type": "Expression"
                     },
                     "wildcardFileName": "*.json",
@@ -182,7 +182,7 @@
     },
     {
         "name": "TS - Delete processed data",
-        "description": "This activity deletes the copied time series data from the sink if it is older than 31 days from start of workflow. ",
+        "description": "This activity deletes the copied time series data from the sink if it is older than 14 days from start of workflow. ",
         "type": "Delete",
         "dependsOn": [
             {
@@ -210,7 +210,7 @@
                 "type": "AzureBlobStorageReadSettings",
                 "recursive": true,
                 "modifiedDatetimeEnd": {
-                    "value": "@variables('thirtyOneDaysFromNow')",
+                    "value": "@variables('fourteenDaysFromNow')",
                     "type": "Expression"
                 },
                 "wildcardFileName": "*.json",
@@ -220,11 +220,11 @@
     },
     {
         "name": "TS Sync - Copy processed data into processed container",
-        "description": "This activity copies synchronized time series data that is older than 31 days, which we will see as processed - into a storage account for processed data.",
+        "description": "This activity copies synchronized time series data that is older than 14 days, which we will see as processed - into a storage account for processed data.",
         "type": "Copy",
         "dependsOn": [
             {
-                "activity": "Set 31 days from current date",
+                "activity": "Set 14 days from current date",
                 "dependencyConditions": [
                     "Succeeded"
                 ]
@@ -245,7 +245,7 @@
                     "type": "AzureBlobStorageReadSettings",
                     "recursive": true,
                     "modifiedDatetimeEnd": {
-                        "value": "@variables('thirtyOneDaysFromNow')",
+                        "value": "@variables('fourteenDaysFromNow')",
                         "type": "Expression"
                     },
                     "wildcardFileName": "*.json",
@@ -283,7 +283,7 @@
     },
     {
         "name": "TS Sync - Delete processed data",
-        "description": "This activity deletes the copied synchronized time series data from the sink if it is older than 31 days from start of workflow. ",
+        "description": "This activity deletes the copied synchronized time series data from the sink if it is older than 14 days from start of workflow. ",
         "type": "Delete",
         "dependsOn": [
             {
@@ -311,7 +311,7 @@
                 "type": "AzureBlobStorageReadSettings",
                 "recursive": true,
                 "modifiedDatetimeEnd": {
-                    "value": "@variables('thirtyOneDaysFromNow')",
+                    "value": "@variables('fourteenDaysFromNow')",
                     "type": "Expression"
                 },
                 "wildcardFileName": "*.json",
