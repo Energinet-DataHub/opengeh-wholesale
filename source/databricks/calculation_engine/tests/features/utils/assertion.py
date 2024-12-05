@@ -42,7 +42,7 @@ def assert_output(
 
     # Skip the column if the first cell in the respective row is empty.
     skip_column_if_first_row_empty(
-        expected_result, TableColumnNames.calculation_result_id, columns_to_skip
+        expected_result, TableColumnNames.result_id, columns_to_skip
     )
 
     # Sort actual_result and expected_result

@@ -1,4 +1,4 @@
-calculation_id;calculation_result_id;grid_area_code;energy_supplier_id;quantity;quantity_unit;quantity_qualities;time;resolution;metering_point_type;settlement_method;price;amount;is_tax;charge_code;charge_type;charge_owner_id
+calculation_id;result_id;grid_area_code;energy_supplier_id;quantity;quantity_unit;quantity_qualities;time;resolution;metering_point_type;settlement_method;price;amount;is_tax;charge_code;charge_type;charge_owner_id
 0b15a420-9fc8-409a-a169-fbd49479d718;f7d3320c-25c1-521d-8a9c-9f1da390aab0;800;5000000000000;0.000;kWh;['missing'];2023-11-01 23:00:00;PT1H;production;;;;True;tariff-hourly-2-co_is_tax;tariff;6660000000666
 0b15a420-9fc8-409a-a169-fbd49479d718;f7d3320c-25c1-521d-8a9c-9f1da390aab0;800;5000000000000;0.000;kWh;['missing'];2023-11-02 00:00:00;PT1H;production;;;;True;tariff-hourly-2-co_is_tax;tariff;6660000000666
 0b15a420-9fc8-409a-a169-fbd49479d718;f7d3320c-25c1-521d-8a9c-9f1da390aab0;800;5000000000000;0.000;kWh;['missing'];2023-11-02 01:00:00;PT1H;production;;;;True;tariff-hourly-2-co_is_tax;tariff;6660000000666

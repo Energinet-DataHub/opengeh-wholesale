@@ -48,6 +48,14 @@ class MigrationsWholesaleDatabase:
     )
     CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points_view_v1"
 
+    TABLE_NAMES = [
+        METERING_POINT_PERIODS_TABLE_NAME,
+        TIME_SERIES_POINTS_TABLE_NAME,
+        CHARGE_LINK_PERIODS_TABLE_NAME,
+        CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+        CHARGE_PRICE_POINTS_TABLE_NAME,
+    ]
+
 
 class WholesaleInternalDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_INTERNAL
@@ -64,6 +72,10 @@ class WholesaleInternalDatabase:
     ]
 
     SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME = "succeeded_external_calculations_v1"
+
+    VIEW_NAMES = [
+        SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME,
+    ]
 
 
 class WholesaleResultsInternalDatabase:
@@ -103,6 +115,19 @@ class WholesaleResultsDatabase:
     AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
     MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "monthly_amounts_per_charge_v1"
     TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME = "total_monthly_amounts_v1"
+    LATEST_CALCULATION_BY_DAY_V1_VIEW_NAME = "latest_calculations_by_day_v1"
+
+    VIEW_NAMES = [
+        ENERGY_V1_VIEW_NAME,
+        ENERGY_PER_BRP_V1_VIEW_NAME,
+        ENERGY_PER_ES_V1_VIEW_NAME,
+        GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME,
+        EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME,
+        AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+        MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+        TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
+        LATEST_CALCULATION_BY_DAY_V1_VIEW_NAME,
+    ]
 
 
 class WholesaleSettlementReportsDatabase:
@@ -117,6 +142,23 @@ class WholesaleSettlementReportsDatabase:
     MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "monthly_amounts_per_charge_v1"
     TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME = "total_monthly_amounts_v1"
     MONTHLY_AMOUNTS_V1_VIEW_NAME = "monthly_amounts_v1"
+    CURRENT_BALANCE_FIXING_CALCULATION_V1_VIEW_NAME = (
+        "current_balance_fixing_calculation_version_v1"
+    )
+
+    VIEW_NAMES = [
+        METERING_POINT_PERIODS_VIEW_NAME_V1,
+        METERING_POINT_TIME_SERIES_VIEW_NAME_V1,
+        CHARGE_LINK_PERIODS_VIEW_NAME_V1,
+        CHARGE_PRICES_VIEW_NAME_V1,
+        ENERGY_VIEW_NAME,
+        ENERGY_PER_ES_VIEW_NAME,
+        AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+        MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+        TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
+        MONTHLY_AMOUNTS_V1_VIEW_NAME,
+        CURRENT_BALANCE_FIXING_CALCULATION_V1_VIEW_NAME,
+    ]
 
 
 class WholesaleSapDatabase:
@@ -125,15 +167,31 @@ class WholesaleSapDatabase:
     ENERGY_V1_VIEW_NAME = "energy_v1"
     AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
 
+    VIEW_NAMES = [
+        LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME,
+        ENERGY_V1_VIEW_NAME,
+        AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
+    ]
+
 
 class WholesaleBasisDataDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_BASIS_DATA
+
     METERING_POINT_PERIODS_VIEW_NAME = "metering_point_periods_v1"
     TIME_SERIES_POINTS_VIEW_NAME = "time_series_points_v1"
     CHARGE_LINK_PERIODS_VIEW_NAME = "charge_link_periods_v1"
     CHARGE_PRICE_INFORMATION_PERIODS_VIEW_NAME = "charge_price_information_periods_v1"
     CHARGE_PRICE_POINTS_VIEW_NAME = "charge_price_points_v1"
     GRID_LOSS_METERING_POINTS_VIEW_NAME = "grid_loss_metering_points_v1"
+
+    VIEW_NAMES = [
+        METERING_POINT_PERIODS_VIEW_NAME,
+        TIME_SERIES_POINTS_VIEW_NAME,
+        CHARGE_LINK_PERIODS_VIEW_NAME,
+        CHARGE_PRICE_INFORMATION_PERIODS_VIEW_NAME,
+        CHARGE_PRICE_POINTS_VIEW_NAME,
+        GRID_LOSS_METERING_POINTS_VIEW_NAME,
+    ]
 
 
 class WholesaleBasisDataInternalDatabase:
@@ -144,6 +202,7 @@ class WholesaleBasisDataInternalDatabase:
     CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME = "charge_price_information_periods"
     CHARGE_PRICE_POINTS_TABLE_NAME = "charge_price_points"
     GRID_LOSS_METERING_POINT_IDS_TABLE_NAME = "grid_loss_metering_points"
+
     TABLE_NAMES = [
         METERING_POINT_PERIODS_TABLE_NAME,
         TIME_SERIES_POINTS_TABLE_NAME,

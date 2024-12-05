@@ -1,5 +1,5 @@
-grid_area_code;energy_supplier_id;balance_responsible_party_id;quantity;quantity_qualities;time;aggregation_level;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;calculation_result_id;metering_point_id;resolution
-800;3000000000000;2200000000000;0.000;['calculated'];2023-07-02 02:00:00;es_brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;e5a9a0e4-b293-53b1-a470-a26c564b2200;;PT15M
-800;3000000000000;2200000000000;0.000;['calculated'];2023-07-02 02:15:00;es_brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;e5a9a0e4-b293-53b1-a470-a26c564b2200;;PT15M
-800;3000000000000;2200000000000;0.000;['calculated'];2023-07-02 02:30:00;es_brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;e5a9a0e4-b293-53b1-a470-a26c564b2200;;PT15M
-800;3000000000000;2200000000000;7.480;['calculated'];2023-07-02 02:45:00;es_brp_ga;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;e5a9a0e4-b293-53b1-a470-a26c564b2200;;PT15M
+grid_area_code;energy_supplier_id;balance_responsible_party_id;quantity;quantity_qualities;time;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;result_id;metering_point_id;resolution
+800;3000000000000;2200000000000;0.000;['calculated'];2023-07-02 02:00:00;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;48ff88b4-6a9f-52de-b7b6-f3023aa91e85;;PT15M
+800;3000000000000;2200000000000;0.000;['calculated'];2023-07-02 02:15:00;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;48ff88b4-6a9f-52de-b7b6-f3023aa91e85;;PT15M
+800;3000000000000;2200000000000;0.000;['calculated'];2023-07-02 02:30:00;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;48ff88b4-6a9f-52de-b7b6-f3023aa91e85;;PT15M
+800;3000000000000;2200000000000;7.480;['calculated'];2023-07-02 02:45:00;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-31 09:39:00;;48ff88b4-6a9f-52de-b7b6-f3023aa91e85;;PT15M
