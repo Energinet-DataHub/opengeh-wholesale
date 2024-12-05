@@ -85,11 +85,6 @@ variable "databricks_public_subnet_address_prefix" {
   description = "The address prefix of the public subnet used by Databricks."
 }
 
-variable "databricks_private_endpoints_subnet_address_prefix" {
-  type        = string
-  description = "The address prefix of the private endpoints subnet used by Databricks."
-}
-
 variable "databricks_enable_verbose_audit_logs" {
   type        = bool
   description = "Flag to determine if verbose audit logs should be enabled for Databricks."
