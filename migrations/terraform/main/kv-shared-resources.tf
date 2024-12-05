@@ -152,3 +152,8 @@ data "azurerm_key_vault_secret" "shared_access_connector_principal_id" {
   name         = "shared-access-connector-principal-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "dns_resolver_forwarding_ruleset_id" {
+  name         = "dns-resolver-forwarding-ruleset-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}

@@ -1,24 +1,24 @@
 module "dbw" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=databricks-workspace_9.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-workspace?ref=databricks-workspace_10.0.0"
   providers = { # The databricks module requires a databricks provider, as it uses databricks resources
     databricks = databricks.dbw
   }
 
-  project_name                             = var.domain_name_short
-  environment_short                        = var.environment_short
-  environment_instance                     = var.environment_instance
-  resource_group_name                      = azurerm_resource_group.this.name
-  location                                 = azurerm_resource_group.this.location
-  sku                                      = "premium"
-  main_virtual_network_id                  = data.azurerm_key_vault_secret.main_virtual_network_id.value
-  main_virtual_network_name                = data.azurerm_key_vault_secret.main_virtual_network_name.value
-  main_virtual_network_resource_group_name = data.azurerm_key_vault_secret.main_virtual_network_resource_group_name.value
-  databricks_virtual_network_address_space = var.databricks_vnet_address_space
-  private_subnet_address_prefix            = var.databricks_private_subnet_address_prefix
-  public_subnet_address_prefix             = var.databricks_public_subnet_address_prefix
-  private_endpoints_subnet_address_prefix  = var.databricks_private_endpoints_subnet_address_prefix
-  catalog_name                             = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  enable_verbose_audit_logs                = var.databricks_enable_verbose_audit_logs
+  project_name                               = var.domain_name_short
+  environment_short                          = var.environment_short
+  environment_instance                       = var.environment_instance
+  resource_group_name                        = azurerm_resource_group.this.name
+  location                                   = azurerm_resource_group.this.location
+  sku                                        = "premium"
+  main_virtual_network_id                    = data.azurerm_key_vault_secret.main_virtual_network_id.value
+  main_virtual_network_name                  = data.azurerm_key_vault_secret.main_virtual_network_name.value
+  main_virtual_network_resource_group_name   = data.azurerm_key_vault_secret.main_virtual_network_resource_group_name.value
+  databricks_virtual_network_address_space   = var.databricks_vnet_address_space
+  private_subnet_address_prefix              = var.databricks_private_subnet_address_prefix
+  public_subnet_address_prefix               = var.databricks_public_subnet_address_prefix
+  catalog_name                               = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  enable_verbose_audit_logs                  = var.databricks_enable_verbose_audit_logs
+  private_dns_resolver_forwarding_ruleset_id = data.azurerm_key_vault_secret.dns_resolver_forwarding_ruleset_id.value
 
   scim_databrick_group_ids = [
     var.databricks_readers_group.id,
