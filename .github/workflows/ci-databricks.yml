@@ -41,8 +41,8 @@ jobs:
         run: |
           echo "Hello World!"
           pwd
-          echo "Checking and listing all folders in './source/databricks/calculation_engine/tests/features':"
-          DIRECTORY_PATH="./source/databricks/calculation_engine/tests/features"
+          echo "Checking and listing all folders in '././source/databricks/calculation_engine/tests/features':"
+          DIRECTORY_PATH="././source/databricks/calculation_engine/tests/features"
 
           # Check if the directory exists
           if [ -d "$DIRECTORY_PATH" ]; then
@@ -50,9 +50,6 @@ jobs:
             ls -d $DIRECTORY_PATH/*/
           else
             echo "Directory '$DIRECTORY_PATH' does not exist."
-            # Optionally create the directory if it should exist
-            mkdir -p $DIRECTORY_PATH
-            echo "Directory created. No subdirectories to list."
           fi
         shell: /usr/bin/bash -e {0}
 
