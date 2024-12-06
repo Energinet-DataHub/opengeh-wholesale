@@ -46,6 +46,7 @@ jobs:
             ls -d $tests_folder_path/*/
           else
             echo "Directory '$tests_folder_path' does not exist."
+          fi
 
 
   databricks_ci_build:
