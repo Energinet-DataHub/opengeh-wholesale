@@ -363,7 +363,6 @@ jobs:
           pwd
           echo "Listing contents of the repository root:"
           ls -la
-          
           feature_tests_folder_path="./source/databricks/calculation_engine/tests/features"
           echo "Checking and listing all folders in $feature_tests_folder_path"
           if [ -d "$feature_tests_folder_path" ]; then
@@ -376,7 +375,6 @@ jobs:
                 error_flag=1
               fi
             done < given_dirs.txt
-            
             if [ "$error_flag" -eq 1 ]; then
               exit 1
             fi
