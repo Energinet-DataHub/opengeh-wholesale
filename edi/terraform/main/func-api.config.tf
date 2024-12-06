@@ -24,6 +24,7 @@ locals {
       # FeatureManagement
       FeatureManagement__UsePeekMessages                        = var.feature_management_use_peek_messages
       FeatureManagement__ReceiveMeteredDataForMeasurementPoints = var.feature_management_receive_metered_data_for_measurement_points
+      FeatureManagement__UsePeekTimeSeriesMessages              = var.feature_management_use_peek_time_series_messages
 
       # Service Bus
       ServiceBus__FullyQualifiedNamespace = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
