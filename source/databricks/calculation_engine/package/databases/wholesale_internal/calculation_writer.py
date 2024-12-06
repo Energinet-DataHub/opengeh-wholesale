@@ -62,7 +62,7 @@ def write_calculation(
         table_targeted_by_query,
     )
 
-    # And since the combination with DH2 calculations requires the identity column to decide the calculation_version, 
+    # And since the combination with DH2 calculations requires the identity column to decide the calculation_version,
     # we have to perform a separate update after the insert to finalize the calculation_version.
     spark.sql(
         f"UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
