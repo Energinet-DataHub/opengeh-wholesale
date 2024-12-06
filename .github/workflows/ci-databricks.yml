@@ -34,39 +34,6 @@ on:
         default: latest
 
 jobs:
-  hello_world:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4  # Ensures the repository contents are present
-
-      - name: Setup and Check Directories
-        run: |
-          echo "Current working directory:"
-          pwd
-          echo "Listing contents of the repository root:"
-          ls -la
-          
-          tests_folder_path="./source/databricks/calculation_engine/tests/features"
-          echo "Checking and listing all folders in $tests_folder_path"
-          if [ -d "$tests_folder_path" ]; then
-            echo "Directory exists. Searching for subdirectories that start with 'given_':"
-            find $tests_folder_path -type d -name "given_*" > given_dirs.txt
-            error_flag=0
-            while IFS= read -r dir; do
-              if [ ! -f "$dir/Coverage.py" ]; then
-                echo "Missing Coverage.py in $dir"
-                error_flag=1
-              fi
-            done < given_dirs.txt
-            
-            if [ "$error_flag" -eq 1 ]; then
-              exit 1
-            fi
-          else
-            echo "Directory '$tests_folder_path' does not exist."
-          fi
-
   databricks_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v14
     with:
@@ -382,3 +349,37 @@ jobs:
         with:
           options: --check --diff
           src: ./source/databricks/settlement_report
+
+  # Checks for existence of Coverage.py file in all feature test scenario folders (folders that start with "given_")
+  check_for_coverage_file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4  # Ensures the repository contents are present
+
+      - name: Check Directories
+        run: |
+          echo "Current working directory:"
+          pwd
+          echo "Listing contents of the repository root:"
+          ls -la
+          
+          feature_tests_folder_path="./source/databricks/calculation_engine/tests/features"
+          echo "Checking and listing all folders in $feature_tests_folder_path"
+          if [ -d "$feature_tests_folder_path" ]; then
+            echo "Directory exists. Searching for subdirectories that start with 'given_':"
+            find $feature_tests_folder_path -type d -name "given_*" > given_dirs.txt
+            error_flag=0
+            while IFS= read -r dir; do
+              if [ ! -f "$dir/Coverage.py" ]; then
+                echo "Missing Coverage.py in $dir"
+                error_flag=1
+              fi
+            done < given_dirs.txt
+            
+            if [ "$error_flag" -eq 1 ]; then
+              exit 1
+            fi
+          else
+            echo "Directory '$tests_folder_path' does not exist."
+          fi
