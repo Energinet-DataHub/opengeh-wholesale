@@ -1,4 +1,3 @@
-# OMADA groups
 data "azuread_group" "platform_developers" {
   display_name     = "SEC-G-Datahub-PlatformDevelopersAzure"
   security_enabled = true
