@@ -7,8 +7,3 @@ GO
 
 ALTER TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
 ADD COLUMNS (calculation_version_dh2 BIGINT, calculation_version_dh3 BIGINT)
-GO
-
-UPDATE TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
-SET calculation_version_dh3 = CASE WHEN calculation_version_dh2 IS NOT NULL THEN calculation_version_dh2 ELSE calculation_version
-
