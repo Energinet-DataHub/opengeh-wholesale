@@ -39,19 +39,9 @@ jobs:
     steps:
       - name: Setup and Check Directories
         run: |
-          echo "Hello World!"
-          echo "Checking and listing all folders in './source/databricks/calculation_engine/tests/features':"
-          DIRECTORY_PATH="./source/databricks/calculation_engine/tests/features"
-          
           tests_folder_path: ./source/databricks/calculation_engine/tests
-          
-          # Check if the directory exists
-          if [ -d "$tests_folder_path" ]; then
-            echo "Directory exists. Listing all subdirectories:"
-            ls -d $tests_folder_path/*/
-          else
-            echo "Directory '$tests_folder_path' does not exist."
-          fi
+          echo "Checking and listing all folders in $tests_folder_path"
+          ls -d $tests_folder_path/*/
 
   databricks_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v14
