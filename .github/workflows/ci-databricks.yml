@@ -50,8 +50,8 @@ jobs:
           tests_folder_path="./source/databricks/calculation_engine/tests/features"
           echo "Checking and listing all folders in $tests_folder_path"
           if [ -d "$tests_folder_path" ]; then
-            echo "Directory exists. Listing all subdirectories:"
-            ls -d $tests_folder_path/*/
+            echo "Directory exists. Listing all subdirectories that start with 'given_':"
+            find $tests_folder_path -type d -name "given_*" -print
           else
             echo "Directory '$tests_folder_path' does not exist."
           fi
