@@ -6,4 +6,4 @@ ALTER TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations SET T
 GO
 
 ALTER TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations
-ADD COLUMNS (calculation_version_dh2 BIGINT, calculation_version_dh3 BIGINT)
+ADD COLUMNS (calculation_version_dh2 BIGINT, calculation_version_dh3_temp BIGINT)

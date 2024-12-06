@@ -57,7 +57,7 @@ def write_calculation(
         spark,
         METADATA_CHANGED_RETRIES,
         f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-        f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation}, {TableColumnNames.calculation_version_dh2}, {TableColumnNames.calculation_version_dh3_temp})"
+        f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation}, {TableColumnNames.calculation_version_dh2}, {TableColumnNames.calculation_version_dh3})"
         f" VALUES ('{args.calculation_id}', '{args.calculation_type.value}', '{calculation_period_start_datetime}', '{calculation_period_end_datetime}', '{calculation_execution_time_start}', NULL, '{args.is_internal_calculation}', NULL, NULL);",
         table_targeted_by_query,
     )
@@ -66,7 +66,7 @@ def write_calculation(
     # we have to perform a separate update after the insert to finalize the calculation_version.
     spark.sql(
         f"UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-        f" SET {TableColumnNames.calculation_version_dh3_temp} = {TableColumnNames.calculation_version}"
+        f" SET {TableColumnNames.calculation_version_dh3} = {TableColumnNames.calculation_version}"
         f" WHERE {TableColumnNames.calculation_id} = '{args.calculation_id}'"
     )
 
