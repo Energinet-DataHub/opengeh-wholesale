@@ -65,6 +65,7 @@ jobs:
             fi
           else
             echo "Directory '$tests_folder_path' does not exist."
+          fi
 
   databricks_ci_build:
     uses: Energinet-DataHub/.github/.github/workflows/databricks-build-prerelease.yml@v14
