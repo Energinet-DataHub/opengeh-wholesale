@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2  # Ensures the repository contents are present
+        uses: actions/checkout@v4  # Ensures the repository contents are present
 
       - name: Setup and Check Directories
         run: |
@@ -47,7 +47,7 @@ jobs:
           echo "Listing contents of the repository root:"
           ls -la
           
-          tests_folder_path="./source/databricks/calculation_engine/tests"
+          tests_folder_path="./source/databricks/calculation_engine/tests/features"
           echo "Checking and listing all folders in $tests_folder_path"
           if [ -d "$tests_folder_path" ]; then
             echo "Directory exists. Listing all subdirectories:"
