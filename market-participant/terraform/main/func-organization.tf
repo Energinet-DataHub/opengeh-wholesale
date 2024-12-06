@@ -31,6 +31,10 @@ module "func_organization" {
       role_definition_name = "Key Vault Secrets User"
     },
     {
+      resource_id          = module.kv_dh2_certificates.id
+      role_definition_name = "Key Vault Secrets Officer"
+    },
+    {
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
     },

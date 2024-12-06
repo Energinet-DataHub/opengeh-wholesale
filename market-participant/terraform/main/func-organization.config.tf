@@ -34,6 +34,8 @@ locals {
       "ServiceBus:FullyQualifiedNamespace"                        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
 
       "RevisionLogOptions:ApiAddress"                             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
+
+      "KeyVault:CertificatesKeyVault"                             = module.kv_dh2_certificates.vault_uri
     }
   }
 }
