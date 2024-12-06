@@ -56,16 +56,6 @@ data "azurerm_key_vault_secret" "st_data_lake_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "st_data_lake_blob_private_ip_address" {
-  name         = "st-data-lake-blob-private-ip-address"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "st_data_lake_dfs_private_ip_address" {
-  name         = "st-data-lake-dfs-private-ip-address"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 //
 // Settlement Report storage account
 //
@@ -77,16 +67,6 @@ data "azurerm_key_vault_secret" "st_settlement_report_name" {
 
 data "azurerm_key_vault_secret" "st_settlement_report_id" {
   name         = "st-settlement-report-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "st_settlement_report_blob_private_ip_address" {
-  name         = "st-settlement-report-blob-private-ip-address"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "st_settlement_report_dfs_private_ip_address" {
-  name         = "st-settlement-report-dfs-private-ip-address"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 

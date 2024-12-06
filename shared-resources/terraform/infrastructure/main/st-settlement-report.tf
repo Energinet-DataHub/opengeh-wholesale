@@ -37,7 +37,7 @@ resource "azurerm_storage_management_policy" "retention_settlement_reports" {
     enabled = true
     filters {
       prefix_match = ["settlement-reports/reports"]
-      blob_types = ["blockBlob"]
+      blob_types   = ["blockBlob"]
     }
     actions {
       base_blob {
@@ -67,22 +67,5 @@ module "kvs_st_settlement_report_id" {
 
   name         = "st-settlement-report-id"
   value        = module.st_settlement_report.id
-  key_vault_id = module.kv_shared.id
-}
-
-
-module "kvs_st_settlement_report_blob_private_ip_address" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
-
-  name         = "st-settlement-report-blob-private-ip-address"
-  value        = module.st_settlement_report.blob_private_ip_address
-  key_vault_id = module.kv_shared.id
-}
-
-module "kvs_st_settlement_report_dfs_private_ip_address" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
-
-  name         = "st-settlement-report-dfs-private-ip-address"
-  value        = module.st_settlement_report.dfs_private_ip_address
   key_vault_id = module.kv_shared.id
 }
