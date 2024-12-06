@@ -8,4 +8,4 @@ RENAME COLUMN calculation_version_dh3 TO calculation_version
 GO
 
 ALTER TABLE {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.calculations 
-RENAME COLUMN calculation_version_dh3_temp TO calculation_version
+RENAME COLUMN calculation_version_dh3_temp TO calculation_version_dh3
