@@ -44,13 +44,14 @@ jobs:
           pwd
           echo "Checking and listing all folders in './source/databricks/calculation_engine/tests/features':"
           DIRECTORY_PATH="./source/databricks/calculation_engine/tests/features"
-
+          
           # Check if the directory exists
           if [ -d "$DIRECTORY_PATH" ]; then
             echo "Directory exists. Listing all subdirectories:"
             ls -d $DIRECTORY_PATH/*/
           else
             echo "Directory '$DIRECTORY_PATH' does not exist."
+          fi
         shell: /usr/bin/bash -e {0}
 
   databricks_ci_build:
