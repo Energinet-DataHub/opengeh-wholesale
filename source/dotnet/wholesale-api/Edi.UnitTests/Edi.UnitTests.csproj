@@ -6,7 +6,7 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="7.0.1" />
+    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="7.1.1-alpha-387" />
     <PackageReference Include="FluentAssertions" Version="7.0.0" />
     <PackageReference Include="FluentAssertions.Analyzers" Version="0.34.1">
       <PrivateAssets>all</PrivateAssets>

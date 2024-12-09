@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.DurableFunctionApp.TestCommon" Version="7.0.5-alpha-383" />
+    <PackageReference Include="Energinet.DataHub.Core.DurableFunctionApp.TestCommon" Version="7.1.1-alpha-387" />
     <PackageReference Include="FluentAssertions.Analyzers" Version="0.34.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
