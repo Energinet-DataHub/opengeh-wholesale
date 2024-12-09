@@ -19,8 +19,8 @@ limitations under the License.
     <RootNamespace>Energinet.DataHub.Wholesale.Test.Core</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="7.1.1-alpha-387" />
-    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="7.1.1-alpha-387" />
+    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="7.1.1" />
+    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="7.1.1" />
     <PackageReference Include="FluentAssertions" Version="7.0.0" />
     <PackageReference Include="FluentAssertions.Analyzers" Version="0.34.1">
       <PrivateAssets>all</PrivateAssets>
