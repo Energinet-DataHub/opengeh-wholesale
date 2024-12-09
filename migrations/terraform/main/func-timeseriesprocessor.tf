@@ -1,5 +1,5 @@
 module "func_timeseriesprocessor" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.3.0"
 
   name                                   = "timeseriesprocessor"
   project_name                           = var.domain_name_short
@@ -7,8 +7,8 @@ module "func_timeseriesprocessor" {
   environment_instance                   = var.environment_instance
   resource_group_name                    = azurerm_resource_group.this.name
   location                               = azurerm_resource_group.this.location
-  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
-  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnetintegrations_id.value
+  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
   app_service_plan_id                    = module.message_processor_service_plan.id
@@ -63,7 +63,7 @@ module "func_timeseriesprocessor" {
 }
 
 module "durabletask_storage_account_timeseriesprocesser" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.0"
 
   name                       = "tsprocdrbl"
   project_name               = var.domain_name_short
@@ -72,7 +72,7 @@ module "durabletask_storage_account_timeseriesprocesser" {
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "LRS"
-  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_002_id.value
+  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
   use_table                  = true
   use_queue                  = true

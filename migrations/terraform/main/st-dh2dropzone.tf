@@ -1,5 +1,5 @@
 module "st_dh2dropzone" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.2.0"
 
   name                         = "dh2dropzone"
   project_name                 = var.domain_name_short
@@ -9,7 +9,7 @@ module "st_dh2dropzone" {
   location                     = azurerm_resource_group.this.location
   account_replication_type     = "LRS"
   access_tier                  = "Hot"
-  private_endpoint_subnet_id   = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  private_endpoint_subnet_id   = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   ip_rules                     = var.datahub2_ip_whitelist != null ? format("%s,%s", local.ip_restrictions_as_string, var.datahub2_ip_whitelist) : local.ip_restrictions_as_string
   antimalware_scanning_enabled = true
   prevent_deletion             = false
