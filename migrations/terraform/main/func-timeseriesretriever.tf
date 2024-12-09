@@ -80,6 +80,7 @@ module "durabletask_storage_account_timeseriesretriever" {
   use_queue                  = true
   use_blob                   = true
   shared_access_key_enabled  = true
+  prevent_deletion           = false
   audit_storage_account = var.enable_audit_logs ? {
     id = data.azurerm_key_vault_secret.st_audit_shres_id.value
   } : null
