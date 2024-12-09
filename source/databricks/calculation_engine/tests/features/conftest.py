@@ -24,6 +24,13 @@ from tests.features.utils.views.view_scenario_executor import ViewScenarioExecut
 from package.calculation.calculation_output import CalculationOutput
 
 
+@pytest.fixture(scope="module", autouse=True)
+def clear_cache(spark: SparkSession) -> None:
+    yield
+    # Clear the cache after each test module to avoid memory issues
+    spark.catalog.clearCache()
+
+
 @pytest.fixture(scope="module")
 def actual_and_expected(
     request: FixtureRequest,

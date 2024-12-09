@@ -1,4 +1,4 @@
-calculation_id;metering_point_id;metering_point_type;settlement_method;grid_area_code;resolution;from_grid_area_code;to_grid_area_code;parent_metering_point_id;energy_supplier_id;balance_responsible_id;from_date;to_date
+calculation_id;metering_point_id;metering_point_type;settlement_method;grid_area_code;resolution;from_grid_area_code;to_grid_area_code;parent_metering_point_id;energy_supplier_id;balance_responsible_party_id;from_date;to_date
 0b15a420-9fc8-409a-a169-fbd49479d718;170000000000000888;consumption;flex;888;PT15M;;;;1000000000888;1100000000888;2023-01-31 23:00:00;2023-02-01 23:00:00
 0b15a420-9fc8-409a-a169-fbd49479d718;180000000000000888;production;;888;PT15M;;;;2000000000888;2200000000888;2023-01-31 23:00:00;2023-02-01 23:00:00
 0b15a420-9fc8-409a-a169-fbd49479d718;170000000000000999;consumption;flex;999;PT15M;;;;1000000000999;1100000000999;2023-01-31 23:00:00;2023-02-01 23:00:00

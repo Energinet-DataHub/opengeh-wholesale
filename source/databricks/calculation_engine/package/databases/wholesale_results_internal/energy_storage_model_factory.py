@@ -23,7 +23,7 @@ from package.calculation.energy.data_structures.energy_results import (
 from package.calculation.energy.resolution_transition_factory import (
     get_energy_result_resolution,
 )
-from package.codelists import TimeSeriesType, AggregationLevel
+from package.codelists import TimeSeriesType
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_results_internal.add_meta_data import add_metadata
@@ -34,11 +34,10 @@ def create(
     args: CalculatorArgs,
     energy_results: EnergyResults,
     time_series_type: TimeSeriesType,
-    aggregation_level: AggregationLevel,
 ) -> DataFrame:
 
     df = _add_aggregation_level_and_time_series_type(
-        energy_results.df, aggregation_level, time_series_type
+        energy_results.df, time_series_type
     )
     df = add_metadata(
         args,
@@ -58,24 +57,16 @@ def create(
 
 def _add_aggregation_level_and_time_series_type(
     results: DataFrame,
-    aggregation_level: AggregationLevel,
     time_series_type: TimeSeriesType,
 ) -> DataFrame:
     return results.withColumn(
-        TableColumnNames.aggregation_level,
-        f.lit(aggregation_level.value),
-    ).withColumn(TableColumnNames.time_series_type, f.lit(time_series_type.value))
+        TableColumnNames.time_series_type, f.lit(time_series_type.value)
+    )
 
 
 def _get_column_group_for_calculation_result_id() -> list[str]:
     """
     Get the columns that are required in order to define a single calculation result.
-
-    Calculation metadata is not included as it is the same for all rows in the data frame being written.
-    Metadata is: calculation_id, calculation_execution_time_start, calculation_type
-
-    Time series type and aggregation level is the same for all rows (applied in the writer itself)
-    and are thus neither part of this list.
     """
     return [
         Colname.calculation_id,
@@ -84,7 +75,6 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
         Colname.balance_responsible_party_id,
         Colname.energy_supplier_id,
         TableColumnNames.time_series_type,
-        TableColumnNames.aggregation_level,
     ]
 
 
@@ -97,14 +87,13 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(Colname.grid_area_code).alias(TableColumnNames.grid_area_code),
         f.col(Colname.energy_supplier_id).alias(TableColumnNames.energy_supplier_id),
         f.col(Colname.balance_responsible_party_id).alias(
-            TableColumnNames.balance_responsible_id
+            TableColumnNames.balance_responsible_party_id
         ),
         f.col(Colname.quantity)
         .alias(TableColumnNames.quantity)
         .cast(DecimalType(18, 3)),
         f.col(Colname.qualities).alias(TableColumnNames.quantity_qualities),
         f.col(Colname.observation_time).alias(TableColumnNames.time),
-        f.col(TableColumnNames.aggregation_level),
         f.col(TableColumnNames.time_series_type),
         f.col(TableColumnNames.calculation_id),
         f.col(TableColumnNames.calculation_type),
@@ -112,7 +101,7 @@ def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
         f.col(Colname.from_grid_area_code).alias(
             TableColumnNames.neighbor_grid_area_code
         ),
-        f.col(TableColumnNames.calculation_result_id),
+        f.col(TableColumnNames.result_id),
         f.col(TableColumnNames.metering_point_id),
         f.col(TableColumnNames.resolution),
     )

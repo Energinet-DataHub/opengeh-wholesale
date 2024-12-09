@@ -1,5 +1,9 @@
 # Wholesale Contracts Release notes
 
+## Version 11.0.1
+
+- Update version on reusable workflows.
+
 ## Version 11.0.0
 
 - Removed the following contracts:

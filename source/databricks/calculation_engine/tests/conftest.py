@@ -25,13 +25,13 @@ from pathlib import Path
 from typing import Generator, Callable, Optional
 
 import pytest
+import telemetry_logging.logging_configuration as config
 import yaml
 from azure.identity import ClientSecretCredential
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
-import telemetry_logging.logging_configuration as config
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists import CalculationType
@@ -236,7 +236,7 @@ def calculation_input_path(data_lake_path: str, calculation_input_folder: str) -
 @pytest.fixture(scope="session")
 def migrations_executed(
     spark: SparkSession,
-    energy_input_data_written_to_delta: None,  # TODO JVM: can be removed when all migrations are on unity catalog
+    energy_input_data_written_to_delta: None,
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
     # Execute all migrations
