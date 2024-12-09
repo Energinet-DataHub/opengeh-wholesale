@@ -156,7 +156,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // => Orchestration is completed, state should be Completed and orchestration output should be success
         // We need to wait for the orchestration to complete if it hasn't already happened in previous step
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForOrchestrationCompletedAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(3));
         var isCompletedState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.Completed, Fixture.TestLogger);
@@ -263,7 +263,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // => Orchestration is completed, state should be Completed and orchestration output should be success
         // We need to wait for the orchestration to complete if it hasn't already happened in previous step
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForOrchestrationCompletedAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(3));
         completeOrchestrationStatus.Output.ToObject<string>().Should().Be("Success");
@@ -339,7 +339,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         isActorMessagesEnqueuingFailedState.ActualState.Should().Be(CalculationOrchestrationState.ActorMessagesEnqueuingFailed);
 
         // => Orchestration is completed, state should still be ActorMessagesEnqueuingFailed and orchestration output should be error
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForOrchestrationCompletedAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(3));
         var isStillActorMessagesEnqueuingFailedState = await dbContext.WaitForCalculationWithStateAsync(
