@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Optional
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame, SparkSession
 from delta.exceptions import MetadataChangedException
@@ -48,23 +49,26 @@ def write_calculation(
     calculation_execution_time_start = args.calculation_execution_time_start.strftime(
         timestamp_format
     )[:-3]
+
     # We had to use sql statement to insert the data because the DataFrame.write.insertInto() method does not support IDENTITY columns
     # Also, since IDENTITY COLUMN requires an exclusive lock on the table, we allow up to METADATA_CHANGED_RETRIES retries of the transaction.
-    for attempt in range(METADATA_CHANGED_RETRIES):
-        try:
-            spark.sql(
-                f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-                f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation})"
-                f" VALUES ('{args.calculation_id}', '{args.calculation_type.value}', '{calculation_period_start_datetime}', '{calculation_period_end_datetime}', '{calculation_execution_time_start}', NULL, '{args.is_internal_calculation}');"
-            )
-            break
-        except MetadataChangedException as e:
-            if attempt == METADATA_CHANGED_RETRIES:
-                raise e
-            else:
-                spark.catalog.uncacheTable(
-                    f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-                )
+    table_targeted_by_query = f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+    execute_spark_sql_in_retry_loop(
+        spark,
+        METADATA_CHANGED_RETRIES,
+        f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+        f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation}, {TableColumnNames.calculation_version_dh2}, {TableColumnNames.calculation_version})"
+        f" VALUES ('{args.calculation_id}', '{args.calculation_type.value}', '{calculation_period_start_datetime}', '{calculation_period_end_datetime}', '{calculation_execution_time_start}', NULL, '{args.is_internal_calculation}', NULL, NULL);",
+        table_targeted_by_query,
+    )
+
+    # And since the combination with DH2 calculations requires the identity column to decide the calculation_version,
+    # we have to perform a separate update after the insert to finalize the calculation_version.
+    spark.sql(
+        f"UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+        f" SET {TableColumnNames.calculation_version} = {TableColumnNames.calculation_version_dh3}"
+        f" WHERE {TableColumnNames.calculation_id} = '{args.calculation_id}'"
+    )
 
 
 @use_span("calculation.write-calculation-grid-areas")
@@ -100,3 +104,20 @@ def write_calculation_succeeded_time(
         WHERE {TableColumnNames.calculation_id} = '{calculation_id}'
         """
     )
+
+
+def execute_spark_sql_in_retry_loop(
+    spark: SparkSession,
+    num_retries: int,
+    query: str,
+    table_to_uncache_on_failure: Optional[str],
+) -> None:
+    for attempt in range(num_retries):
+        try:
+            spark.sql(query)
+            break
+        except MetadataChangedException as e:
+            if attempt == METADATA_CHANGED_RETRIES:
+                raise e
+            elif table_to_uncache_on_failure is not None:
+                spark.catalog.uncacheTable(table_to_uncache_on_failure)
