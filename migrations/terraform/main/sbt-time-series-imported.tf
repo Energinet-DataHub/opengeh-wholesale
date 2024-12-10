@@ -3,5 +3,5 @@ resource "azurerm_servicebus_topic" "time_series_imported_messages_topic" {
   namespace_id                            = data.azurerm_key_vault_secret.sb_domain_relay_namespace_id.value
   max_message_size_in_kilobytes           = 102400
   requires_duplicate_detection            = true
-  duplicate_detection_history_time_window = "P2D"
+  duplicate_detection_history_time_window = "P1D"
 }
