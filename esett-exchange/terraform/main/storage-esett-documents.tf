@@ -9,7 +9,7 @@ module "storage_esett_documents" {
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "LRS"
   access_tier                = "Hot"
-  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
   containers = [
     {
