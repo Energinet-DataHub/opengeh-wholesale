@@ -37,6 +37,8 @@ module "st_audit_logs" {
     backup_vault_location     = azurerm_resource_group.this.location
     backup_vault_principal_id = module.backup_vault.identity.0.principal_id
   }
+
+  prevent_deletion = false
 }
 
 module "kvs_st_audit_shres_name" {

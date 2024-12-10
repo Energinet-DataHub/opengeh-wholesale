@@ -25,6 +25,8 @@ module "st_key_vault_backup" {
     backup_vault_location     = azurerm_resource_group.this.location
     backup_vault_principal_id = module.backup_vault.identity.0.principal_id
   }
+
+  prevent_deletion = false
 }
 
 # Automatically delete storage account blobs and snapshots after 22 days according to the retention policy
