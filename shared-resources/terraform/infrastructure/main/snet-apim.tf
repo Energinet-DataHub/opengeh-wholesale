@@ -4,7 +4,7 @@ resource "azurerm_subnet" "apim" {
   virtual_network_name = var.virtual_network_name
   address_prefixes     = var.apim_address_prefixes
 
-  service_endpoints = ["Microsoft.KeyVault"]
+  service_endpoints = ["Microsoft.KeyVault", "Microsoft.Storage"]
 }
 
 resource "azurerm_route_table" "apim" {
@@ -109,6 +109,17 @@ resource "azurerm_network_security_group" "apim" {
     destination_address_prefix = "VirtualNetwork"
   }
   security_rule {
+    name                       = "IBA-Dependency_on_Azure_Traffic_Manager"
+    priority                   = 1030
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "AzureTrafficManager"
+    destination_address_prefix = "VirtualNetwork"
+  }
+  security_rule {
     name                       = "deny_inbound_traffic"
     priority                   = 4096
     direction                  = "Inbound"
@@ -139,7 +150,7 @@ resource "azurerm_network_security_group" "apim" {
     access                     = "Allow"
     protocol                   = "*"
     source_port_range          = "*"
-    destination_port_range     = "1443"
+    destination_port_range     = "1433"
     source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "Sql"
   }
