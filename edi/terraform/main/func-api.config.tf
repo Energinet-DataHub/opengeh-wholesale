@@ -37,6 +37,8 @@ locals {
       IntegrationEvents__TopicName        = local.INTEGRATION_EVENTS_TOPIC_NAME
       IntegrationEvents__SubscriptionName = module.sbtsub_edi_integration_event_listener.name
 
+      ProcessManagerServiceBusClient__TopicName   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
+
       # Databricks
       WorkspaceToken             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-workspace-token)",
       WorkspaceUrl               = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-workspace-url)",
@@ -53,6 +55,7 @@ locals {
       "OrchestrationsTaskHubName" = "Edi01"
       # => Task Hub Storage account connection string
       "OrchestrationsStorageConnectionString" = module.taskhub_storage_account.primary_connection_string
+
     }
   }
 }

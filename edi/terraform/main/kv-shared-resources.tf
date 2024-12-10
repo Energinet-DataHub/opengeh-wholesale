@@ -112,6 +112,11 @@ data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "sbt_processmanager_id" {
+  name         = "sbt-processmanager-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 data "azurerm_key_vault_secret" "sbq_wholesale_inbox_id" {
   name         = "sbq-wholesale-inbox-messagequeue-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id

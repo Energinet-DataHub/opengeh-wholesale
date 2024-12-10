@@ -43,6 +43,11 @@ module "func_receiver" {
       role_definition_name = "Azure Service Bus Data Owner"
     },
     {
+      // ServiceBus Process Manager Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_processmanager_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
+    },
+    {
       // ServiceBus Wholesale Inbox Queue
       resource_id          = data.azurerm_key_vault_secret.sbq_wholesale_inbox_id.value
       role_definition_name = "Azure Service Bus Data Owner"

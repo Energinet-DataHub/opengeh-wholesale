@@ -14,6 +14,11 @@ locals {
 
       # Database
       "ProcessManager__SqlDatabaseConnectionString" = local.DatabaseConnectionString
+
+      # PM Topic subscriptions
+      "ServiceBus__FullyQualifiedNamespace"         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
+
+      "ProcessManagerTopic__Brs026SubscriptionName" = module.sbtsub_pm_brs_026.name
     }
   }
 }
