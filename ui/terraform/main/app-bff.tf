@@ -1,5 +1,5 @@
 module "backend_for_frontend" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_7.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_7.1.0"
 
   name                                   = "backend-for-frontend"
   project_name                           = var.domain_name_short
@@ -7,8 +7,8 @@ module "backend_for_frontend" {
   environment_instance                   = var.environment_instance
   resource_group_name                    = azurerm_resource_group.this.name
   location                               = azurerm_resource_group.this.location
-  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
-  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnetintegrations_id.value
+  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
   app_service_plan_id                    = module.webapp_service_plan.id
