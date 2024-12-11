@@ -9,14 +9,19 @@ locals {
       # Durable Functions Task Hub Name
       # See naming constraints: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs?tabs=csharp#task-hub-names
       # "ProcessManagerTaskHubName" must match the "ProcessManagerTaskHubName" value in func_orchestrations_process_manager
-      "ProcessManagerTaskHubName"                                     = local.OrchestrationsTaskHubName
-      "ProcessManagerStorageConnectionString"                         = module.st_taskhub.primary_connection_string
+      "ProcessManagerTaskHubName"             = local.OrchestrationsTaskHubName
+      "ProcessManagerStorageConnectionString" = module.st_taskhub.primary_connection_string
 
       # Database
-      "ProcessManager__SqlDatabaseConnectionString"                   = local.DatabaseConnectionString
+      "ProcessManager__SqlDatabaseConnectionString" = local.DatabaseConnectionString
+
+      # Timer triggers
+      # IMPORTANT: Override settings to enable them i development/tests environments
+      "AzureWebJobs.StartScheduledOrchestrationInstances.Disabled" = true
+      "AzureWebJobs.PerformRecurringPlanning.Disabled"             = true
 
       # PM Topic subscriptions
-      "ServiceBus__FullyQualifiedNamespace"                           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
+      "ServiceBus__FullyQualifiedNamespace" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
 
       "ProcessManagerTopic__Brs026SubscriptionName"                   = module.sbtsub_pm_brs_026.name
       "ProcessManagerTopic__Brs021ForwardMeteredDataSubscriptionName" = module.sbtsub_pm_brs_021_forward_metered_data.name
