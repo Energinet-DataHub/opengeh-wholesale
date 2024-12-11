@@ -22,7 +22,7 @@ module "st_audit_logs" {
   resource_group_name        = azurerm_resource_group.audit_logs.name
   location                   = azurerm_resource_group.audit_logs.location
   access_tier                = "Hot"
-  private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints_002.id
+  private_endpoint_subnet_id = azurerm_subnet.privateendpoints.id
   ip_rules                   = local.ip_restrictions_as_string
   audit_storage_account      = null # We disable audit logging on the audit storage account
   role_assignments = [

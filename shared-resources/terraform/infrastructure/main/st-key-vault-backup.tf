@@ -8,7 +8,7 @@ module "st_key_vault_backup" {
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
   access_tier                = "Hot"
-  private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
+  private_endpoint_subnet_id = azurerm_subnet.privateendpoints.id
   ip_rules                   = local.ip_restrictions_as_string
   audit_storage_account = var.enable_audit_logs ? {
     id = module.st_audit_logs.id

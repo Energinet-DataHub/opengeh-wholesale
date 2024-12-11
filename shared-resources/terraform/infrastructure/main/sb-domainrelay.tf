@@ -1,12 +1,12 @@
 module "sb_domain_relay" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=service-bus-namespace_8.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-namespace?ref=service-bus-namespace_8.1.0"
 
   project_name               = var.domain_name_short
   environment_short          = var.environment_short
   environment_instance       = var.environment_instance
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
-  private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
+  private_endpoint_subnet_id = azurerm_subnet.privateendpoints.id
   ip_restrictions            = var.ip_restrictions
   audit_storage_account = var.enable_audit_logs ? {
     id = module.st_audit_logs.id

@@ -24,13 +24,6 @@ data "azurerm_subnet" "snet_vnet_integration" {
   resource_group_name  = var.virtual_network_resource_group_name
 }
 
-# Legacy - to be deleted when everything is moved
-data "azurerm_subnet" "snet_apim" {
-  name                 = "snet-apim-shres"
-  virtual_network_name = var.virtual_network_name
-  resource_group_name  = var.virtual_network_resource_group_name
-}
-
 module "kvs_vnet_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 

@@ -9,7 +9,7 @@ module "st_source_maps" {
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "LRS"
   access_tier                = "Hot"
-  private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints.id
+  private_endpoint_subnet_id = azurerm_subnet.privateendpoints.id
   ip_rules                   = local.ip_restrictions_as_string
   audit_storage_account = var.enable_audit_logs ? {
     id = module.st_audit_logs.id

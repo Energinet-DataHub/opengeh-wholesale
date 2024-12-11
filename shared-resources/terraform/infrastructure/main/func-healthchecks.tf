@@ -1,5 +1,5 @@
 module "func_healthchecks" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=function-app_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=function-app_8.3.0"
 
   name                                   = "healthchecks"
   project_name                           = var.domain_name_short
@@ -7,8 +7,8 @@ module "func_healthchecks" {
   environment_instance                   = var.environment_instance
   resource_group_name                    = azurerm_resource_group.this.name
   location                               = azurerm_resource_group.this.location
-  vnet_integration_subnet_id             = data.azurerm_subnet.snet_vnet_integration.id
-  private_endpoint_subnet_id             = data.azurerm_subnet.snet_private_endpoints.id
+  vnet_integration_subnet_id             = azurerm_subnet.vnetintegrations.id
+  private_endpoint_subnet_id             = azurerm_subnet.privateendpoints.id
   app_service_plan_id                    = module.webapp_service_plan.id
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions

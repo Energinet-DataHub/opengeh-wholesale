@@ -1,5 +1,5 @@
 module "st_settlement_report" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.2.0"
 
   name                       = "settlrep"
   project_name               = var.domain_name_short
@@ -8,7 +8,7 @@ module "st_settlement_report" {
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "GRS"
-  private_endpoint_subnet_id = data.azurerm_subnet.snet_private_endpoints_002.id
+  private_endpoint_subnet_id = azurerm_subnet.privateendpoints.id
   ip_rules                   = local.ip_restrictions_as_string
   audit_storage_account = var.enable_audit_logs ? {
     id = module.st_audit_logs.id

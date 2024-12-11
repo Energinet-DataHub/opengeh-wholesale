@@ -8,7 +8,7 @@ module "st_dead_letter_logs" {
   resource_group_name                   = azurerm_resource_group.this.name
   location                              = azurerm_resource_group.this.location
   account_replication_type              = "LRS"
-  private_endpoint_subnet_id            = data.azurerm_subnet.snet_private_endpoints.id
+  private_endpoint_subnet_id            = azurerm_subnet.privateendpoints.id
   ip_rules                              = local.ip_restrictions_as_string
   lifecycle_retention_delete_after_days = 30
   audit_storage_account = var.enable_audit_logs ? {
