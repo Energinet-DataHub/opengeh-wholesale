@@ -47,14 +47,6 @@ module "apim_shared" {
   ]
 }
 
-removed {
-  from = module.apim_shared.azurerm_public_ip.this
-
-  lifecycle {
-    destroy = false
-  }
-}
-
 resource "azurerm_api_management_authorization_server" "oauth_server" {
   name                         = "oauthserver"
   api_management_name          = module.apim_shared.name

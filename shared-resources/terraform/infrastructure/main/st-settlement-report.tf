@@ -24,8 +24,6 @@ module "st_settlement_report" {
       name = "settlement-reports"
     }
   ]
-
-  prevent_deletion = false
 }
 
 
