@@ -39,7 +39,7 @@ def _create_spark_config(
         current_state_schemas_folder_path=None,
         current_state_tables_folder_path=None,
         current_state_views_folder_path=None,
-        schema_config=[],
+        schema_config=None,
         substitution_variables=get_substitutions(catalog_name, is_testing),
         catalog_name=catalog_name,
     )
