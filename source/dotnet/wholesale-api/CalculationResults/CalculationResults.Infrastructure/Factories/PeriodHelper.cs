@@ -53,15 +53,17 @@ public static class PeriodHelper
     public static DateTimeOffset GetDateTimeWithResolutionOffset(WholesaleResolution resolution, DateTimeOffset dateTime) => resolution switch
     {
         WholesaleResolution.Hour => dateTime.AddMinutes(60),
-        WholesaleResolution.Day => dateTime.AddDays(1),
-        _ => AddAMonth(dateTime.ToInstant()),
+        WholesaleResolution.Day => EnsureMidnight(dateTime.ToInstant(), daysToAdd: 1),
+        _ => EnsureMidnight(dateTime.ToInstant(), monthsToAdd: 1),
     };
 
-    private static DateTimeOffset AddAMonth(Instant dateTime)
+    private static DateTimeOffset EnsureMidnight(this Instant dateTime, int daysToAdd = 0, int monthsToAdd = 0)
     {
-        var timeForLatestPointInLocalTime = dateTime.InZone(_dkTimeZone).LocalDateTime;
-        var endAtMidnightInLocalTime = timeForLatestPointInLocalTime.PlusMonths(1).Date.AtMidnight();
-        var endAtMidnightInUtc = endAtMidnightInLocalTime.InZoneStrictly(_dkTimeZone);
-        return endAtMidnightInUtc.ToDateTimeOffset();
+        var localDate = dateTime.InZone(_dkTimeZone).LocalDateTime;
+        var midnight = localDate
+            .PlusMonths(monthsToAdd)
+            .PlusDays(daysToAdd).Date
+            .AtMidnight();
+        return midnight.InZoneStrictly(_dkTimeZone).ToDateTimeOffset();
     }
 }
