@@ -15,7 +15,6 @@
 using Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.Factories;
 using Energinet.DataHub.Wholesale.CalculationResults.Interfaces.CalculationResults.Model.WholesaleResults;
 using FluentAssertions;
-using NodaTime.Text;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.CalculationResults.UnitTests.Infrastructure.Factories;
