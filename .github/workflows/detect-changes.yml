@@ -18,8 +18,10 @@ on:
         value: ${{ jobs.changes.outputs.settlement_report_ci }}
       notifications_ci:
         value: ${{ jobs.changes.outputs.notifications_ci }}
-      process_manager_ci:
-        value: ${{ jobs.changes.outputs.process_manager_ci }}
+      process_manager_core_ci:
+        value: ${{ jobs.changes.outputs.process_manager_core_ci }}
+      process_manager_orchestrations_ci:
+        value: ${{ jobs.changes.outputs.process_manager_orchestrations_ci }}
       revision_log_ci:
         value: ${{ jobs.changes.outputs.revision_log_ci }}
       dh2_bridge_ci:
@@ -61,7 +63,8 @@ jobs:
       electricity_market_ci: ${{ steps.filter.outputs.electricity_market_ci }}
       settlement_report_ci: ${{ steps.filter.outputs.settlement_report_ci }}
       notifications_ci: ${{ steps.filter.outputs.notifications_ci }}
-      process_manager_ci: ${{ steps.filter.outputs.process_manager_ci }}
+      process_manager_core_ci: ${{ steps.filter.outputs.process_manager_core_ci }}
+      process_manager_orchestrations_ci: ${{ steps.filter.outputs.process_manager_orchestrations_ci }}
       revision_log_ci: ${{ steps.filter.outputs.revision_log_ci }}
       dh2_bridge_ci: ${{ steps.filter.outputs.dh2_bridge_ci }}
       grid_loss_imbalance_prices_ci: ${{ steps.filter.outputs.grid_loss_imbalance_prices_ci }}
@@ -117,9 +120,16 @@ jobs:
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
-            process_manager_ci:
-              - process-manager/**
-              - .github/workflows/process-manager-*.yml
+            process_manager_core_ci:
+              - process-manager/terraform/core/env/**
+              - process-manager/terraform/core/main/**
+              - .github/workflows/process-manager-core-*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            process_manager_orchestrations_ci:
+              - process-manager/terraform/orchestrations/**
+              - .github/workflows/process-manager-orchestrations-*.yml
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*

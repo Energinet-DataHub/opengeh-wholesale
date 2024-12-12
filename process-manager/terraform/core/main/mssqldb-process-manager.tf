@@ -24,7 +24,15 @@ module "mssqldb_process_manager" {
   }
 }
 
-module "kvs_sql_database_name_process_manager" {
+module "kvs_mssqldb_server_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "mssql-pm-database-server-name"
+  value        = module.mssqldb_process_manager.server_name
+  key_vault_id = module.kv_internal.id
+}
+
+module "kvs_mssqldb_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "mssql-pm-database-name"
@@ -32,7 +40,15 @@ module "kvs_sql_database_name_process_manager" {
   key_vault_id = module.kv_internal.id
 }
 
-module "kvs_sql_connection_string_db_migrations_process_manager" {
+module "kvs_mssqldb_connection_string" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "mssqldb-connection-string"
+  value        = local.DatabaseConnectionString
+  key_vault_id = module.kv_internal.id
+}
+
+module "kvs_mssqldb_connection_string_db_migrations" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "mssql-pm-connection-string-db-migrations"

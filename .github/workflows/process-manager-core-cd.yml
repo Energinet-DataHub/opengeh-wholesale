@@ -1,0 +1,22 @@
+name: Process Manager Core Infrastructure CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - process-manager/terraform/core/env/**
+      - process-manager/terraform/core/main/**
+      - .github/workflows/process-manager-core-cd.yml
+      - .github/workflows/infrastructure-build-prerelease.yml
+      - .github/workflows/infrastructure-validate.yml
+
+jobs:
+  reusable_cd:
+    uses: ./.github/workflows/reusable-cd.yml
+    with:
+      release_name_prefix: process_manager_core_infrastructure
+      event_type: process-manager-core-deployment-request-infrastructure
+      team_name: Mosaic
+      email: 65256dce.energinet.onmicrosoft.com@emea.teams.ms
+    secrets: inherit

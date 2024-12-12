@@ -40,3 +40,13 @@ module "monitor_action_group_process_manager" {
     },
   ]
 }
+
+module "kvs_monitor_action_group_process_manager_id" {
+  count = var.alert_email_address != null ? 1 : 0
+
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "monitor-action-group-id"
+  value        = module.monitor_action_group_process_manager[0].id
+  key_vault_id = module.kv_internal.id
+}

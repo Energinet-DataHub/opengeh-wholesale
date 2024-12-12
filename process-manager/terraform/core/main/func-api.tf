@@ -1,7 +1,7 @@
-module "func_orchestrations" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.0.0"
+module "func_api" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_9.1.1"
 
-  name                                   = "orchestrations"
+  name                                   = "api"
   project_name                           = var.domain_name_short
   environment_short                      = var.environment_short
   environment_instance                   = var.environment_instance
@@ -16,38 +16,36 @@ module "func_orchestrations" {
   health_check_path                      = "/api/monitor/ready"
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
-  app_settings                           = local.func_orchestrations.app_settings
-  allowed_monitor_reader_entra_groups    = compact([var.developer_security_group_name, var.pim_reader_group_name])
+  client_certificate_mode                = "Optional"
+  app_settings                           = local.func_api.app_settings
 
   health_check_alert = length(module.monitor_action_group_process_manager) != 1 ? null : {
     action_group_id = module.monitor_action_group_process_manager[0].id
     enabled         = true
   }
-  durabletask_storage_connection_string = "See app setting 'ProcessManagerStorageConnectionString'"
 
   role_assignments = [
     {
-      // Function state storage
       resource_id          = module.st_taskhub.id
       role_definition_name = "Storage Blob Data Contributor"
-    },
-    {
-      // Key Vault
-      resource_id          = module.kv_internal.id
-      role_definition_name = "Key Vault Secrets User"
     },
     {
       // Shared Key Vault
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
     },
+    {
+      // ServiceBus Process Manager Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_processmanager_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
+    },
   ]
 }
 
-module "kvs_func_orchestrations_base_url" {
+module "kvs_func_api_base_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
-  name         = "func-orchestrations-pm-base-url"
-  value        = "https://${module.func_orchestrations.default_hostname}"
+  name         = "func-core-pm-base-url"
+  value        = "https://${module.func_api.default_hostname}"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

@@ -85,13 +85,22 @@ jobs:
       infrastructure_path: ./notifications/terraform
     secrets: inherit
 
-  process_manager_ci:
+  process_manager_core_ci:
     needs: changes
-    if: ${{ needs.changes.outputs.process_manager_ci == 'true' }}
+    if: ${{ needs.changes.outputs.process_manager_core_ci == 'true' }}
     uses: ./.github/workflows/infrastructure-build-prerelease.yml
     with:
-      release_name_prefix: process_manager_infrastructure
-      infrastructure_path: ./process-manager/terraform
+      release_name_prefix: process_manager_core_infrastructure
+      infrastructure_path: ./process-manager/terraform/core
+    secrets: inherit
+
+  process_manager_orchestrations_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.process_manager_orchestrations_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: process_manager_orchestrations_infrastructure
+      infrastructure_path: ./process-manager/terraform/orchestrations
     secrets: inherit
 
   revision_log_ci:
@@ -233,7 +242,8 @@ jobs:
         electricity_market_ci,
         settlement_report_ci,
         notifications_ci,
-        process_manager_ci,
+        process_manager_core_ci,
+        process_manager_orchestrations_ci,
         revision_log_ci,
         dh2_bridge_ci,
         grid_loss_imbalance_prices_ci,

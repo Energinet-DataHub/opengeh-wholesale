@@ -9,13 +9,13 @@ locals {
 
       # Durable Functions Task Hub Name
       # See naming constraints: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs?tabs=csharp#task-hub-names
-      # "ProcessManagerTaskHubName" must match the "ProcessManagerTaskHubName" value in func_process_manager_api
+      # "ProcessManagerTaskHubName" must match the "ProcessManagerTaskHubName" value in func_orchestrations
       # "ProcessManagerTaskHubName" and "ProcessManagerStorageConnectionString" must match the names given in the host.json file for the app
       "ProcessManagerTaskHubName"             = local.OrchestrationsTaskHubName
-      "ProcessManagerStorageConnectionString" = module.st_taskhub.primary_connection_string
+      "ProcessManagerStorageConnectionString" = data.azurerm_key_vault_secret.st_taskhub_primary_connection_string.value
 
       # Database
-      "ProcessManager__SqlDatabaseConnectionString" = local.DatabaseConnectionString
+      "ProcessManager__SqlDatabaseConnectionString" = data.azurerm_key_vault_secret.mssqldb_connection_string.value
     }
   }
 }

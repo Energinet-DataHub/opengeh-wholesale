@@ -26,7 +26,7 @@ edi/terraform/main/dashboard-templates/*.tpl @Energinet-DataHub/team-mosaic @Ene
 process-manager/terraform/**/app-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
 process-manager/terraform/**/func-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
 process-manager/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
-process-manager/terraform/main/dashboard-templates/*.tpl @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
+process-manager/terraform/core/main/dashboard-templates/*.tpl @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
 
 # revision-log configurations
 revision-log/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws

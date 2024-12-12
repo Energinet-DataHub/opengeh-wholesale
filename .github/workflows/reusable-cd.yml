@@ -53,7 +53,7 @@ jobs:
           repository: ${{ vars.environment_repository_path }}
           event-type: ${{ inputs.event_type }}
           # yamllint disable-line rule:quoted-strings
-          client-payload: '{"infrastructure_pr": "${{ steps.find_pull_request.outputs.pull_request_number }}"}'
+          client-payload: '{"infrastructure_pr": "${{ steps.find_pull_request.outputs.pull_request_number }}", "release_name_prefix": "${{ inputs.release_name_prefix }}"}'
 
   #
   # Send notification to teams channel if deployment dispatch failed

@@ -28,3 +28,11 @@ module "func_service_plan" {
     severity       = 2
   }
 }
+
+module "kvs_func_service_plan_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "func-service-plan-id"
+  value        = module.func_service_plan.id
+  key_vault_id = module.kv_internal.id
+}
