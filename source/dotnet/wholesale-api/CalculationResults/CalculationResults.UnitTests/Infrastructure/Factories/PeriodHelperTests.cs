@@ -44,7 +44,7 @@ public class PeriodHelperTests
     }
 
     [Theory]
-    [InlineData("2021-10-26T22:00:00Z", Resolution.Hour, "2021-10-27T22:00:00Z")]
+    [InlineData("2021-10-26T22:00:00Z", Resolution.Day, "2021-10-27T22:00:00Z")]
     [InlineData("2021-07-31T22:00:00Z", Resolution.Month, "2021-08-31T22:00:00Z")]
 
     // From summer time to winter time
