@@ -45,7 +45,7 @@ module "func_api" {
 module "kvs_func_api_base_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
-  name         = "func-api-pm-base-url"
+  name         = "func-api-pmcore-base-url"
   value        = "https://${module.func_api.default_hostname}"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
