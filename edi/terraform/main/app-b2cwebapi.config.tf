@@ -18,6 +18,7 @@ locals {
 
       # Queue names
       IncomingMessages__QueueName = azurerm_servicebus_queue.edi_incoming_messages_queue.name
+      ProcessManagerServiceBusClient__TopicName   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
 
       # Logging
       "Logging__ApplicationInsights__LogLevel__Default"                = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
@@ -27,6 +28,10 @@ locals {
       # Durable client (orchestrations)
       OrchestrationsStorageAccountConnectionString = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=func-edi-api-taskhub-storage-connection-string)"
       OrchestrationsTaskHubName                    = local.OrchestrationsTaskHubName
+
+      # Feature flags
+      FeatureManagement__UseRequestWholesaleServicesProcessOrchestration      = var.feature_management_use_request_wholesale_services_process_orchestration
+      FeatureManagement__UseRequestAggregatedMeasureDataProcessOrchestration  = var.feature_management_use_request_aggregated_measure_data_process_orchestration
     }
   }
 }

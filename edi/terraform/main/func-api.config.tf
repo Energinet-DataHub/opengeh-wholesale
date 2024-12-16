@@ -25,6 +25,8 @@ locals {
       FeatureManagement__UsePeekMessages                        = var.feature_management_use_peek_messages
       FeatureManagement__ReceiveMeteredDataForMeasurementPoints = var.feature_management_receive_metered_data_for_measurement_points
       FeatureManagement__UsePeekTimeSeriesMessages              = var.feature_management_use_peek_time_series_messages
+      FeatureManagement__UseRequestWholesaleServicesProcessOrchestration      = var.feature_management_use_request_wholesale_services_process_orchestration
+      FeatureManagement__UseRequestAggregatedMeasureDataProcessOrchestration  = var.feature_management_use_request_aggregated_measure_data_process_orchestration
 
       # Service Bus
       ServiceBus__FullyQualifiedNamespace = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
@@ -55,7 +57,6 @@ locals {
       "OrchestrationsTaskHubName" = "Edi01"
       # => Task Hub Storage account connection string
       "OrchestrationsStorageConnectionString" = module.taskhub_storage_account.primary_connection_string
-
     }
   }
 }

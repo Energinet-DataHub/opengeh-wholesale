@@ -16,6 +16,13 @@ locals {
 
       # Database
       "ProcessManager__SqlDatabaseConnectionString" = data.azurerm_key_vault_secret.mssqldb_connection_string.value
+
+      # PM Topic subscriptions
+      "ServiceBus__FullyQualifiedNamespace" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
+
+      "ProcessManagerTopic__TopicName"                                = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
+      "ProcessManagerTopic__Brs026SubscriptionName"                   = module.sbtsub_pm_brs_026.name
+      "ProcessManagerTopic__Brs021ForwardMeteredDataSubscriptionName" = module.sbtsub_pm_brs_021_forward_metered_data.name
     }
   }
 }

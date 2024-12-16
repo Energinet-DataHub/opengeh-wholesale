@@ -112,6 +112,18 @@ variable "feature_management_use_peek_time_series_messages" {
   default     = false
 }
 
+variable "feature_management_use_request_wholesale_services_process_orchestration" {
+  type        = bool
+  description = "Use Process Manager for RequestWholesaleServices."
+  default     = false
+}
+
+variable "feature_management_use_request_aggregated_measure_data_process_orchestration" {
+  type        = bool
+  description = "Use Process Manager for RequestAggregatedMeasureData."
+  default     = false
+}
+
 variable "apim_maintenance_mode" {
   type        = bool
   description = "Determine if API Management is in maintenance mode. In maintenance mode all requests will return 503 Service Unavailable."
