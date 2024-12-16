@@ -1,5 +1,5 @@
 module "evhns_measurements" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/eventhub-namespace?ref=v14"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/eventhub-namespace?ref=eventhub-namespace_7.2.0"
 
   project_name               = var.domain_name_short
   environment_short          = var.environment_short
