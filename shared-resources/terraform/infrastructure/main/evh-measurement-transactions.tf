@@ -6,6 +6,14 @@ resource "azurerm_eventhub" "measurement_transactions" {
   message_retention   = 7
 }
 
+module "kvs_evh_measurement_transactions_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "evh-measurement-transactions-id"
+  value        = azurerm_eventhub.measurement_transactions.id
+  key_vault_id = module.kv_shared.id
+}
+
 module "kvs_evh_measurement_transactions_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
