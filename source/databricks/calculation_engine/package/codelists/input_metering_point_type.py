@@ -32,4 +32,4 @@ class InputMeteringPointType(Enum):
     TOTAL_CONSUMPTION = "D12"
     ELECTRICAL_HEATING = "D14"
     NET_CONSUMPTION = "D15"
-    EFFECT_SETTLEMENT = "D19"
+    capacity_settlement = "D19"

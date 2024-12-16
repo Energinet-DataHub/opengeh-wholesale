@@ -92,8 +92,8 @@ class TestWhenValidInput:
             ],
             [InputMeteringPointType.NET_CONSUMPTION, MeteringPointType.NET_CONSUMPTION],
             [
-                InputMeteringPointType.EFFECT_SETTLEMENT,
-                MeteringPointType.EFFECT_SETTLEMENT,
+                InputMeteringPointType.capacity_settlement,
+                MeteringPointType.capacity_settlement,
             ],
         ],
     )
