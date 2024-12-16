@@ -47,7 +47,7 @@ module "func_orchestrations" {
 module "kvs_func_orchestrations_base_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
-  name         = "func-orchestrations-pm-base-url"
+  name         = "func-orchestrations-pmorch-base-url"
   value        = "https://${module.func_orchestrations.default_hostname}"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

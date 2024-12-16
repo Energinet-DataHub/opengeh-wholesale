@@ -7,7 +7,7 @@ locals {
 
       # Process Manager
       FeatureManagement__UseProcessManager                    = var.feature_management_use_process_manager
-      ProcessManagerHttpClients__GeneralApiBaseAddress        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-api-pm-base-url)"
+      ProcessManagerHttpClients__GeneralApiBaseAddress        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-api-pmcore-base-url)"
       ProcessManagerHttpClients__OrchestrationsApiBaseAddress = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-orchestrations-pm-base-url)"
 
       ApiClientSettings__MarketParticipantBaseUrl                            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-markpart-api-base-url)"
