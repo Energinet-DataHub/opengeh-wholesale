@@ -151,8 +151,8 @@ def _fix_metering_point_type(df: DataFrame) -> DataFrame:
         )
         .when(
             col(Colname.metering_point_type)
-            == InputMeteringPointType.capacity_settlement.value,
-            lit(MeteringPointType.capacity_settlement.value),
+            == InputMeteringPointType.CAPACITY_SETTLEMENT.value,
+            lit(MeteringPointType.CAPACITY_SETTLEMENT.value),
         )
         .otherwise(lit("Unknown type")),
         # The otherwise is to avoid changing the nullability of the column.
