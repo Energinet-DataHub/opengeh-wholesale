@@ -36,7 +36,7 @@ public static class MeteringPointTypeMapper
             MeteringPointType.TotalConsumption => WholesaleServicesRequestSeries.Types.MeteringPointType.TotalConsumption,
             MeteringPointType.ElectricalHeating => WholesaleServicesRequestSeries.Types.MeteringPointType.ElectricalHeating,
             MeteringPointType.NetConsumption => WholesaleServicesRequestSeries.Types.MeteringPointType.NetConsumption,
-            MeteringPointType.EffectSettlement => WholesaleServicesRequestSeries.Types.MeteringPointType.EffectSettlement,
+            MeteringPointType.CapacitySettlement => WholesaleServicesRequestSeries.Types.MeteringPointType.CapacitySettlement,
             _ => throw new ArgumentOutOfRangeException(
                 nameof(seriesMeteringPointType),
                 actualValue: seriesMeteringPointType,

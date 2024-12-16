@@ -45,7 +45,7 @@ public class MeteringPointTypeMapperTests
             (MeteringPointType.TotalConsumption, WholesaleServicesRequestSeries.Types.MeteringPointType.TotalConsumption),
             (MeteringPointType.ElectricalHeating, WholesaleServicesRequestSeries.Types.MeteringPointType.ElectricalHeating),
             (MeteringPointType.NetConsumption, WholesaleServicesRequestSeries.Types.MeteringPointType.NetConsumption),
-            (MeteringPointType.EffectSettlement, WholesaleServicesRequestSeries.Types.MeteringPointType.EffectSettlement),
+            (MeteringPointType.CapacitySettlement, WholesaleServicesRequestSeries.Types.MeteringPointType.CapacitySettlement),
         };
 
         // Act
