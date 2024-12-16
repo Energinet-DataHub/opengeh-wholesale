@@ -223,7 +223,7 @@ def test_mapping_of_energy_business_process(
             id="when metering point type is net_consumption, then type of mp is D15",
         ),
         pytest.param(
-            MeteringPointTypeDataProductValue.capacity_settlement,
+            MeteringPointTypeDataProductValue.CAPACITY_SETTLEMENT,
             "D19",
             id="when metering point type is capacity_settlement, then type of mp is D19",
         ),

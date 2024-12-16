@@ -30,4 +30,4 @@ class MeteringPointTypeDataProductValue(Enum):
     TOTAL_CONSUMPTION = "total_consumption"
     ELECTRICAL_HEATING = "electrical_heating"
     NET_CONSUMPTION = "net_consumption"
-    capacity_settlement = "capacity_settlement"
+    CAPACITY_SETTLEMENT = "capacity_settlement"
