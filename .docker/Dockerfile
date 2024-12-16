@@ -51,6 +51,9 @@ ENV PATH=$SPARK_HOME/bin:$HADOOP_HOME/bin:$PATH \
 # Dynamically downloading spark dependencies from conf/spark-defaults.conf. This is done to save time in the build pipeline so that we don't need to download on every build.
 RUN spark-shell
 
-# Make $HOME owned by the root, which is the user used in the container
-# This is needed for e.g. commands that create files or folders in $HOME
-RUN sudo chown -R root:users $HOME
+# Change the username from jovyan to nayvoj and update the user id to 1001, as that is the user id used in the GitHub Actions runner
+RUN usermod -l nayvoj jovyan && \
+    usermod -u 1001 nayvoj && \
+    usermod -l jovyan nayvoj
+
+RUN usermod -u 1001 jovyan
