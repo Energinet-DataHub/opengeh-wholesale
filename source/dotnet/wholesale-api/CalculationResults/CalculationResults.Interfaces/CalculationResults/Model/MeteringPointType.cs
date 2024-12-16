@@ -33,5 +33,5 @@ public enum MeteringPointType
     TotalConsumption = 11,
     ElectricalHeating = 12,
     NetConsumption = 13,
-    CapacitySettlement = 14,
+    EffectSettlement = 14,
 }
