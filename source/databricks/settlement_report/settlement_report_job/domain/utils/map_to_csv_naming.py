@@ -33,7 +33,7 @@ METERING_POINT_TYPES = {
     MeteringPointTypeDataProductValue.TOTAL_CONSUMPTION.value: "D12",
     MeteringPointTypeDataProductValue.ELECTRICAL_HEATING.value: "D14",
     MeteringPointTypeDataProductValue.NET_CONSUMPTION.value: "D15",
-    MeteringPointTypeDataProductValue.EFFECT_SETTLEMENT.value: "D19",
+    MeteringPointTypeDataProductValue.CAPACITY_SETTLEMENT.value: "D19",
     MeteringPointTypeDataProductValue.CONSUMPTION.value: "E17",
     MeteringPointTypeDataProductValue.PRODUCTION.value: "E18",
     MeteringPointTypeDataProductValue.EXCHANGE.value: "E20",
