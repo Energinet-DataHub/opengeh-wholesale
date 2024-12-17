@@ -1,5 +1,5 @@
 module "func_settlement_reports_light_df" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.3.0"
 
   name                                   = "light-df"
   project_name                           = var.domain_name_short
@@ -9,8 +9,8 @@ module "func_settlement_reports_light_df" {
   location                               = azurerm_resource_group.this.location
   app_service_plan_id                    = module.func_settlement_report_light_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
-  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
-  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_002_id.value
+  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnetintegrations_id.value
+  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   allowed_monitor_reader_entra_groups    = compact([var.developer_security_group_name, var.pim_reader_group_name])
   durabletask_storage_connection_string  = module.taskhub_storage_account.primary_connection_string
   dotnet_framework_version               = "v8.0"
