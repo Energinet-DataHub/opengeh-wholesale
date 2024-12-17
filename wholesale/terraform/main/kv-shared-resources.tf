@@ -3,18 +3,13 @@ data "azurerm_key_vault" "kv_shared_resources" {
   resource_group_name = data.azurerm_resource_group.shared.name
 }
 
-data "azurerm_key_vault_secret" "snet_vnet_integration_id" {
-  name         = "snet-vnet-integration-id"
+data "azurerm_key_vault_secret" "snet_privateendpoints_id" {
+  name         = "snet-privateendpoints-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "snet_private_endpoints_id" {
-  name         = "snet-private-endpoints-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "snet_private_endpoints_002_id" {
-  name         = "snet-private-endpoints-002-id"
+data "azurerm_key_vault_secret" "snet_vnetintegrations_id" {
+  name         = "snet-vnetintegrations-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 

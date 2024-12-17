@@ -110,7 +110,7 @@ resource "databricks_permissions" "backup_endpoint" {
 }
 
 module "st_dbw_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.2.0"
 
   name                       = "dbwbackup"
   project_name               = var.domain_name_short
@@ -119,7 +119,7 @@ module "st_dbw_backup" {
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "GRS"
-  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   ip_rules                   = local.ip_restrictions_as_string
 
   role_assignments = [
