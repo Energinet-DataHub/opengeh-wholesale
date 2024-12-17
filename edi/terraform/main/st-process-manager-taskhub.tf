@@ -1,12 +1,12 @@
 module "st_process_manager" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.0.1"
 
-  name                                  = "pmtaskhub"
-  project_name                          = var.domain_name_short
-  environment_short                     = var.environment_short
-  environment_instance                  = var.environment_instance
-  resource_group_name                   = azurerm_resource_group.this.name
-  location                              = azurerm_resource_group.this.location
+  name                 = "pmtaskhub"
+  project_name         = var.domain_name_short
+  environment_short    = var.environment_short
+  environment_instance = var.environment_instance
+  resource_group_name  = azurerm_resource_group.this.name
+  location             = azurerm_resource_group.this.location
   # https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-storage-providers
   account_replication_type              = "GRS"
   private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
@@ -19,4 +19,5 @@ module "st_process_manager" {
   audit_storage_account = var.enable_audit_logs ? {
     id = data.azurerm_key_vault_secret.st_audit_shres_id.value
   } : null
+  prevent_deletion = false
 }
