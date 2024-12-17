@@ -19,4 +19,5 @@ module "storage_settlement_reports" {
   audit_storage_account = var.enable_audit_logs ? {
     id = data.azurerm_key_vault_secret.st_audit_shres_id.value
   } : null
+  prevent_deletion = false
 }
