@@ -32,3 +32,9 @@ resource "azurerm_role_assignment" "spn_measurement_transactions_eventhub_recevi
   role_definition_name = "Azure Event Hubs Data Receiver"
   principal_id         = azuread_service_principal.spn_databricks.object_id
 }
+
+resource "azurerm_role_assignment" "spn_measurement_transactions_eventhub_sender" {
+  scope                = data.azurerm_key_vault_secret.evh_measurement_transactions_id.value
+  role_definition_name = "Azure Event Hubs Data Sender"
+  principal_id         = azuread_service_principal.spn_databricks.object_id
+}
