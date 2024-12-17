@@ -1,5 +1,5 @@
 module "mssqldb_electricity_market" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.1.0"
 
   name                 = "electricity-market"
   location             = azurerm_resource_group.this.location
@@ -22,12 +22,10 @@ module "mssqldb_electricity_market" {
     backup_interval_in_hours = null # Managed by Hyperscale, see https://learn.microsoft.com/en-us/azure/azure-sql/database/hyperscale-automated-backups-overview?view=azuresql#backup-scheduling
   }
 
-  # Storage metric doesn't exist for hyperscale, so the module is not ready to support metrics for hyperscale
-  # Issue at Outlaws: https://app.zenhub.com/workspaces/the-outlaws-6193fe815d79fc0011e741b1/issues/gh/energinet-datahub/team-the-outlaws/2581
-  # monitor_action_group = length(module.monitor_action_group_elmk) != 1 ? null : {
-  #   id                  = module.monitor_action_group_elmk[0].id
-  #   resource_group_name = azurerm_resource_group.this.name
-  # }
+  monitor_action_group = length(module.monitor_action_group_elmk) != 1 ? null : {
+    id                  = module.monitor_action_group_elmk[0].id
+    resource_group_name = azurerm_resource_group.this.name
+  }
 }
 
 module "kvs_sql_ms_electricity_market_database_name" {
