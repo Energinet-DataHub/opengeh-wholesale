@@ -26,3 +26,9 @@ module "kvs_app_databricks_password" {
   value        = azuread_application_password.secret.value
   key_vault_id = module.kv_internal.id
 }
+
+resource "azurerm_role_assignment" "spn_measurement_transactions_eventhub_recevier" {
+  scope                = data.azurerm_key_vault_secret.evh_measurement_transactions_id.value
+  role_definition_name = "Azure Event Hubs Data Receiver"
+  principal_id         = azuread_service_principal.spn_databricks.object_id
+}
