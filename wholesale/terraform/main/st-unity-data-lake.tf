@@ -19,6 +19,7 @@ module "st_data_wholesale" {
   audit_storage_account = var.enable_audit_logs ? {
     id = data.azurerm_key_vault_secret.st_audit_shres_id.value
   } : null
+  prevent_deletion = false
 }
 
 # The storage containers are not created in the module, as they are used in schema creation. I.e., we want it dynamically
