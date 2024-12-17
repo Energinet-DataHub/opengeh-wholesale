@@ -1,5 +1,5 @@
 module "b2c_web_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_7.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_7.1.0"
 
   name                       = "b2cwebapi"
   project_name               = var.domain_name_short
@@ -8,8 +8,8 @@ module "b2c_web_api" {
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
   app_service_plan_id        = module.webapp_service_plan.id
-  vnet_integration_subnet_id = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
-  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  vnet_integration_subnet_id = data.azurerm_key_vault_secret.snet_vnetintegrations_id.value
+  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   dotnet_framework_version   = "v8.0"
   health_check_path          = "/monitor/ready"
 

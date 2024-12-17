@@ -1,5 +1,5 @@
 module "st_process_manager" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.0"
 
   name                 = "pmtaskhub"
   project_name         = var.domain_name_short
@@ -9,7 +9,7 @@ module "st_process_manager" {
   location             = azurerm_resource_group.this.location
   # https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-storage-providers
   account_replication_type              = "GRS"
-  private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   ip_rules                              = local.ip_restrictions_as_string
   use_table                             = true
   use_queue                             = true

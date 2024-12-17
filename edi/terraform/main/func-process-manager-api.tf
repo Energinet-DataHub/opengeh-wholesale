@@ -1,5 +1,5 @@
 module "func_process_manager_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_9.1.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_9.4.0"
 
   name                                   = "pm-api"
   project_name                           = var.domain_name_short
@@ -9,8 +9,8 @@ module "func_process_manager_api" {
   location                               = azurerm_resource_group.this.location
   app_service_plan_id                    = module.func_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
-  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnet_integration_id.value
-  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnetintegrations_id.value
+  private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   dotnet_framework_version               = "v8.0"
   use_dotnet_isolated_runtime            = true
   health_check_path                      = "/api/monitor/ready"

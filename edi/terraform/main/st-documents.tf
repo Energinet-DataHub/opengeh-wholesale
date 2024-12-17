@@ -1,5 +1,5 @@
 module "st_documents" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.2.0"
 
   name                                  = "documents"
   project_name                          = var.domain_name_short
@@ -8,7 +8,7 @@ module "st_documents" {
   resource_group_name                   = azurerm_resource_group.this.name
   location                              = azurerm_resource_group.this.location
   account_replication_type              = "LRS"
-  private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   ip_rules                              = local.ip_restrictions_as_string
   lifecycle_retention_delete_after_days = 3285 # 9 years = (5 + 3 + current year) * 365 days
   audit_storage_account = var.enable_audit_logs ? {
@@ -30,7 +30,7 @@ resource "azurerm_storage_container" "archived" {
 }
 
 module "st_documents_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.2.0"
 
   name                                  = "backupdocs"
   project_name                          = var.domain_name_short
@@ -39,7 +39,7 @@ module "st_documents_backup" {
   resource_group_name                   = azurerm_resource_group.this.name
   location                              = azurerm_resource_group.this.location
   account_replication_type              = "LRS"
-  private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  private_endpoint_subnet_id            = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   ip_rules                              = local.ip_restrictions_as_string
   lifecycle_retention_delete_after_days = 3285 # 9 years = (5 + 3 + current year) * 365 days
   audit_storage_account = var.enable_audit_logs ? {
