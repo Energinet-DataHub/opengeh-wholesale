@@ -16,9 +16,9 @@ resource "databricks_permissions" "electrical_heating" {
   depends_on = [module.dbw]
 }
 
-resource "databricks_permissions" "effect_payment" {
+resource "databricks_permissions" "capacity_settlement" {
   provider = databricks.dbw
-  job_id   = databricks_job.effect_payment.id
+  job_id   = databricks_job.capacity_settlement.id
 
   access_control {
     group_name       = var.databricks_contributor_dataplane_group.name

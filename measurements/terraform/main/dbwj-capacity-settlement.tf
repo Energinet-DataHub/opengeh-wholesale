@@ -1,10 +1,10 @@
-resource "databricks_job" "effect_payment" {
+resource "databricks_job" "capacity_settlement" {
   provider            = databricks.dbw
-  name                = "EffectPayment"
+  name                = "CapacitySettlement"
   max_concurrent_runs = 1
 
   job_cluster {
-    job_cluster_key = "effect_payment_cluster"
+    job_cluster_key = "capacity_settlement_cluster"
 
     new_cluster {
       spark_version  = local.spark_version
@@ -23,16 +23,16 @@ resource "databricks_job" "effect_payment" {
   }
 
   task {
-    task_key        = "effect_payment_task"
+    task_key        = "capacity_settlement_task"
     max_retries     = 1
-    job_cluster_key = "effect_payment_cluster"
+    job_cluster_key = "capacity_settlement_cluster"
 
     library {
-      whl = "/Workspace/Shared/PythonWheels/effect_payment/opengeh_effect_payment-1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/capacity_settlement/opengeh_capacity_settlement-1.0-py3-none-any.whl"
     }
 
     python_wheel_task {
-      package_name = "opengeh_effect_payment"
+      package_name = "opengeh_capacity_settlement"
       # The entry point is defined in setup.py
       entry_point = "execute"
     }
