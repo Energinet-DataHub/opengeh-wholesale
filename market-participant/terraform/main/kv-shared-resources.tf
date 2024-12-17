@@ -43,16 +43,6 @@ data "azurerm_key_vault_secret" "log_shared_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "snet_private_endpoints_id" {
-  name         = "snet-private-endpoints-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
-data "azurerm_key_vault_secret" "snet_vnet_integration_id" {
-  name         = "snet-vnet-integration-id"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 data "azurerm_key_vault_secret" "apim_instance_id" {
   name         = "apim-instance-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
@@ -75,5 +65,15 @@ data "azurerm_key_vault_secret" "st_audit_shres_name" {
 
 data "azurerm_key_vault_secret" "st_audit_shres_id" {
   name         = "st-audit-shres-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "snet_privateendpoints_id" {
+  name         = "snet-privateendpoints-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "snet_vnetintegrations_id" {
+  name         = "snet-vnetintegrations-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

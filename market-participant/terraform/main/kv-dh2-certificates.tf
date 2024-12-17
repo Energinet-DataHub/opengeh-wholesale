@@ -1,5 +1,5 @@
 module "kv_dh2_certificates" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=key-vault_7.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault?ref=key-vault_7.1.0"
 
   name                            = "cert"
   project_name                    = var.domain_name_short
@@ -9,7 +9,7 @@ module "kv_dh2_certificates" {
   location                        = azurerm_resource_group.this.location
   enabled_for_template_deployment = true
   sku_name                        = "premium"
-  private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_private_endpoints_id.value
+  private_endpoint_subnet_id      = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   ip_rules                        = local.ip_restrictions_as_string
   take_backup                     = true
   audit_storage_account = var.enable_audit_logs ? {
