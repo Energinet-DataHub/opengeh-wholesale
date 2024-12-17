@@ -104,6 +104,17 @@ resource "azurerm_network_security_group" "privateendpoints" {
     }
   }
   security_rule {
+    name                       = "IBA-KafkaEventHub"
+    priority                   = 1050
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "9093"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "VirtualNetwork"
+  }
+  security_rule {
     name                       = "deny_inbound_traffic"
     priority                   = 4096
     direction                  = "Inbound"

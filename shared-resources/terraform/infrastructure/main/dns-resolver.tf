@@ -69,10 +69,11 @@ resource "azurerm_private_dns_resolver_dns_forwarding_ruleset" "outbounddns" {
 
 resource "azurerm_private_dns_resolver_forwarding_rule" "cp_dns" {
   for_each = tomap({
-    blob     = "privatelink.blob.core.windows.net."
-    dfs      = "privatelink.dfs.core.windows.net."
-    queue    = "privatelink.queue.core.windows.net."
-    database = "privatelink.database.windows.net."
+    blob        = "privatelink.blob.core.windows.net."
+    dfs         = "privatelink.dfs.core.windows.net."
+    queue       = "privatelink.queue.core.windows.net."
+    database    = "privatelink.database.windows.net."
+    servicebus  = "privatelink.servicebus.windows.net."
   })
 
   name                      = "fr-${each.key}"

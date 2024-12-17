@@ -171,6 +171,17 @@ resource "azurerm_network_security_group" "vnetintegrations" {
     destination_address_prefix = "Internet"
   }
   security_rule {
+    name                       = "OBA-KafkaEventHub"
+    priority                   = 1100
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "9093"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "VirtualNetwork"
+  }
+  security_rule {
     name                       = "OBA-VirkElasticSearch"
     priority                   = 2000
     direction                  = "Outbound"
