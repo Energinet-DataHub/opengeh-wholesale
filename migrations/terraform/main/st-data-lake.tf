@@ -105,6 +105,12 @@ resource "azurerm_storage_container" "wholesale" {
   container_access_type = "private"
 }
 
+resource "azurerm_storage_container" "electricity_market" {
+  name                  = "electricity-market"
+  storage_account_name  = module.st_migrations.name
+  container_access_type = "private"
+}
+
 #---- Queues
 
 resource "azurerm_storage_queue" "bronze" {
