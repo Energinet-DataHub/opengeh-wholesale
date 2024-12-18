@@ -37,6 +37,8 @@ if ($errorMessages.Count -gt 0) {
         throw 'Environent variable FROM_EMAIL is empty'
     }
     
+    # Who should receive the email sent by Zero Report ?
+    # It may also be a MS Teams channel
     $toEmail = 'xkber@energinet.dk'
 
     Push-NotificationToTeam -FromEmail $env:FROM_EMAIL -ToEmail $toEmail -MessageSubject 'Message from scheduled zero-reports run' -Messages $errorMessages -SendgridApiKey $env:SENDGRID_APIKEY
