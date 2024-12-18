@@ -229,11 +229,6 @@ jobs:
         shell: bash
         id: test_count
         run: |
-          # Small hack to get the repository name
-          repository=${{ github.repository }}
-          repository_owner=${{ github.repository_owner }}
-          repository_name=${repository/$repository_owner\//}
-
           # IMPORTANT: When adding a new folder here, one must also add the folder
           # to one of the test jobs above! This is because this filter contains the sum of all folders
           # from test jobs.
@@ -255,7 +250,7 @@ jobs:
           optimize_job/
           datamigration/unity_catalog"
 
-          IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root -w //workspaces/${repository_name} python-unit-test ./.devcontainer/check_test_count.sh $filter
+          IMAGE_TAG=${{ inputs.image_tag }} docker compose -f .devcontainer/docker-compose.yml run --rm -u root python-unit-test ./.devcontainer/check_test_count.sh $filter
 
   calculator_job_mypy_check:
     if: ${{ inputs.has_calculator_job_changes }}
