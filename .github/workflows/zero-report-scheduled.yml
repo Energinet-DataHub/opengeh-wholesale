@@ -14,14 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     name: Run Zero Report
     steps:
-      - uses: actions/checkout@v4  
+      - uses: actions/checkout@v4
 
       - name: Run zero reports
         env:
           WORKING_DIRECTORY: ${{ github.workspace }}
-          FROM_EMAIL: ${{ vars.email_internal_sender }}          
+          FROM_EMAIL: ${{ vars.email_internal_sender }}
           SENDGRID_APIKEY: ${{ secrets.sendgrid_instance_system_notifications_api_key }}
           ZENHUB_APIKEY: ${{ secrets.zenhub_apikey }}
         shell: pwsh
         run: |
-          .\source\zero-reports\zero-reports.ps1      
+          .\source\zero-reports\zero-reports.ps1
