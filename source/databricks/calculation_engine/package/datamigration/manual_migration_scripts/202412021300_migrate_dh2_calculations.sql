@@ -70,6 +70,21 @@ USING ctl_shres_t_we_001.wholesale_internal.calculations c
 ON c.calculation_id <=> g1.calculation_id and c.calculation_version_dh2 is not null
 WHEN MATCHED THEN DELETE;
 
+MERGE INTO ctl_shres_t_we_001.wholesale_results_internal.amounts_per_charge a1
+USING ctl_shres_t_we_001.wholesale_internal.calculations c
+ON c.calculation_id <=> a1.calculation_id and c.calculation_version_dh2 is not null
+WHEN MATCHED THEN DELETE;
+
+MERGE INTO ctl_shres_t_we_001.wholesale_results_internal.monthly_amounts_per_charge a2
+USING ctl_shres_t_we_001.wholesale_internal.calculations c
+ON c.calculation_id <=> a2.calculation_id and c.calculation_version_dh2 is not null
+WHEN MATCHED THEN DELETE;
+
+MERGE INTO ctl_shres_t_we_001.wholesale_results_internal.total_monthly_amounts a3
+USING ctl_shres_t_we_001.wholesale_internal.calculations c
+ON c.calculation_id <=> a3.calculation_id and c.calculation_version_dh2 is not null
+WHEN MATCHED THEN DELETE;
+
 
 
 -- STEP 2: Remove the DH2 calculations from the main table
@@ -99,9 +114,9 @@ SELECT
   calculation_period_end,
   calculation_period_execution_time_start,
   calculation_period_succeeded_time,
-  False as is_internal_calculation,
-  0 as calculation_version_dh2,
-  0 as calculation_version
+  False AS is_internal_calculation,
+  0 AS calculation_version_dh2,
+  0 AS calculation_version
 FROM
   ctl_shres_t_we_001.shared_wholesale_input.calculations_view_v1;
 
@@ -111,22 +126,22 @@ FROM
 -- If a view is missing one of them, we mark it as NULL.
 
 -- Target table: wholesale_results_internal.energy
-with energy_view_with_hash AS (
-  select
+WITH energy_view_with_hash AS (
+  SELECT
     *,
     md5(
       CONCAT(
         CASE WHEN calculation_id IS NULL THEN 'null' ELSE calculation_id END,
         CASE WHEN grid_area_code IS NULL THEN 'null' ELSE grid_area_code END, 
-        CASE WHEN from_grid_area_code IS NULL THEN 'null' ELSE from_grid_area_code END, 
-        CASE WHEN balance_responsible_party_id IS NULL THEN 'null' ELSE balance_responsible_party_id END,
-        CASE WHEN energy_supplier_id IS NULL THEN 'null' ELSE energy_supplier_id END,  
+        'null', -- from_grid_area_code
+        'null', -- balance_responsible_party_id
+        'null', -- energy_supplier_id
         CASE WHEN time_series_type IS NULL THEN 'null' ELSE time_series_type END,
         'energy_per_brp'
       )
-    ) as md5_hash_of_result_id_group
-  from
-    ctl_shres_t_we_001.shared_wholesale_input.calculation_results_energy_per_brp_view_v1
+    ) AS md5_hash_of_result_id_group
+  FROM
+    ctl_shres_t_we_001.shared_wholesale_input.calculation_results_energy_view_v1
 )
 INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.energy 
 SELECT 
@@ -137,7 +152,7 @@ SELECT
     SUBSTRING(md5_hash_of_result_id_group, 13, 4), '-',
     SUBSTRING(md5_hash_of_result_id_group, 17, 4), '-',
     SUBSTRING(md5_hash_of_result_id_group, 21, 12)
-  ) as result_id,
+  ) AS result_id,
   grid_area_code, 
   time_series_type, 
   resolution, 
@@ -148,8 +163,8 @@ FROM energy_view_with_hash;
 
 
 -- Target table: wholesale_results_internal.energy_per_brp
-with energy_per_brp_view_with_hash AS (
-  select
+WITH energy_per_brp_view_with_hash AS (
+  SELECT
     *,
     md5(
       CONCAT(
@@ -161,8 +176,8 @@ with energy_per_brp_view_with_hash AS (
         CASE WHEN time_series_type IS NULL THEN 'null' ELSE time_series_type END,
         'energy_per_brp'
       )
-    ) as md5_hash_of_result_id_group
-  from
+    ) AS md5_hash_of_result_id_group
+  FROM
     ctl_shres_t_we_001.shared_wholesale_input.calculation_results_energy_per_brp_view_v1
 )
 INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.energy_per_brp
@@ -174,7 +189,7 @@ SELECT
     SUBSTRING(md5_hash_of_result_id_group, 13, 4), '-',
     SUBSTRING(md5_hash_of_result_id_group, 17, 4), '-',
     SUBSTRING(md5_hash_of_result_id_group, 21, 12)
-  ) as result_id,
+  ) AS result_id,
   grid_area_code, 
   balance_responsible_party_id, 
   time_series_type, 
@@ -186,8 +201,8 @@ FROM energy_per_brp_view_with_hash;
  
 
 -- Target table: wholesale_results_internal.energy_per_es
-with energy_per_es_view_with_hash AS (
-  select
+WITH energy_per_es_view_with_hash AS (
+  SELECT
     *,
     md5(
       CONCAT(
@@ -199,8 +214,8 @@ with energy_per_es_view_with_hash AS (
         CASE WHEN time_series_type IS NULL THEN 'null' ELSE time_series_type END,
         'energy_per_es'
       )
-    ) as md5_hash_of_result_id_group
-  from
+    ) AS md5_hash_of_result_id_group
+  FROM
     ctl_shres_t_we_001.shared_wholesale_input.calculation_results_energy_per_es_view_v1
 )
 INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.energy_per_es
@@ -230,11 +245,23 @@ SELECT calculation_id, grid_area_code FROM ctl_shres_t_we_001.shared_wholesale_i
 
 
 -- Target table: wholesale_results_internal.amounts_per_charge
-with amounts_per_charge_view_with_hash AS (
-  select
+WITH amounts_per_charge_view_with_hash AS (
+  SELECT
     *,
-    md5(CONCAT(calculation_id,resolution,charge_type,CASE WHEN charge_owner_id IS NULL THEN 'null' ELSE charge_owner_id END,grid_area_code,energy_supplier_id,metering_point_type,CASE WHEN settlement_method IS NULL THEN 'null' ELSE settlement_method END,'amounts_per_charge')) as md5_hash_of_result_id_group
-  from
+    md5(
+      CONCAT(
+        CASE WHEN calculation_id IS NULL THEN 'null' ELSE calculation_id END,
+        CASE WHEN resolution IS NULL THEN 'null' ELSE resolution END,
+        CASE WHEN charge_type IS NULL THEN 'null' ELSE charge_type END,
+        CASE WHEN charge_owner_id IS NULL THEN 'null' ELSE charge_owner_id END,
+        CASE WHEN grid_area_code IS NULL THEN 'null' ELSE grid_area_code END,
+        CASE WHEN energy_supplier_id IS NULL THEN 'null' ELSE energy_supplier_id END,
+        CASE WHEN metering_point_type IS NULL THEN 'null' ELSE metering_point_type END,
+        CASE WHEN settlement_method IS NULL THEN 'null' ELSE settlement_method END,
+        'amounts_per_charge'
+      )
+    ) AS md5_hash_of_result_id_group
+  FROM
     ctl_shres_t_we_001.shared_wholesale_input.amounts_per_charge_view_v1
 )
 INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.amounts_per_charge 
@@ -247,25 +274,41 @@ SELECT
     SUBSTRING(md5_hash_of_result_id_group, 17, 4), '-',
     SUBSTRING(md5_hash_of_result_id_group, 21, 12)
   ) as result_id,
+  grid_area_code,
   energy_supplier_id,
+  quantity,
   quantity_unit,
+  quantity_qualities,
   time,
+  resolution,
+  metering_point_type,
+  settlement_method,
+  price,
   amount,
   is_tax,
   charge_code,
   charge_type,
   charge_owner_id
-from
-  amounts_per_charge_view_with_hash
-  where md5_hash_of_result_id_group is null;
+FROM
+  amounts_per_charge_view_with_hash;
   
  
 -- Target table: wholesale_results_internal.monthly_amounts_per_charge
-with monthly_amounts_per_charge_view_with_hash AS (
-  select
+WITH monthly_amounts_per_charge_view_with_hash AS (
+  SELECT
     *,
-    md5(CONCAT(calculation_id,charge_type,charge_code, CASE WHEN charge_owner_id IS NULL THEN 'null' ELSE charge_owner_id END, grid_area_code, energy_supplier_id, 'monthly_amounts_per_charge')) as md5_hash_of_result_id_group
-  from
+    md5(
+      CONCAT(
+        CASE WHEN calculation_id IS NULL THEN 'null' ELSE calculation_id end,
+        CASE WHEN charge_type IS NULL THEN 'null' ELSE charge_type end,
+        CASE WHEN charge_code IS NULL THEN 'null' ELSE charge_code end,
+        CASE WHEN charge_owner_id IS NULL THEN 'null' ELSE charge_owner_id end,
+        CASE WHEN grid_area_code IS NULL THEN 'null' ELSE grid_area_code end,
+        CASE WHEN energy_supplier_id IS NULL THEN 'null' ELSE energy_supplier_id end,
+        'monthly_amounts_per_charge'
+      )
+    ) AS md5_hash_of_result_id_group
+  FROM
     ctl_shres_t_we_001.shared_wholesale_input.monthly_amounts_per_charge_view_v1
 )
 INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.monthly_amounts_per_charge 
@@ -287,19 +330,27 @@ SELECT
   charge_code,
   charge_type,
   charge_owner_id
-from
+FROM
   monthly_amounts_per_charge_view_with_hash;
 
- 
+
 -- Target table: wholesale_results_internal.monthly_amounts_per_charge
-with total_amounts_per_charge_view_with_hash AS (
-  select
+WITH total_amounts_per_charge_view_with_hash AS (
+  SELECT
     *,
-    md5(CONCAT(calculation_id, CASE WHEN charge_owner_id IS NULL THEN 'null' ELSE charge_owner_id END, grid_area_code, energy_supplier_id, 'total_amounts_per_charge')) as md5_hash_of_result_id_group
-  from
+    md5(
+      CONCAT(
+        CASE WHEN calculation_id IS NULL THEN 'null' ELSE calculation_id END,
+        CASE WHEN charge_owner_id IS NULL THEN 'null' ELSE charge_owner_id END,
+        CASE WHEN grid_area_code IS NULL THEN 'null' ELSE grid_area_code END,
+        CASE WHEN energy_supplier_id IS NULL THEN 'null' ELSE energy_supplier_id END,
+        'total_amounts_per_charge'
+      )
+    ) as md5_hash_of_result_id_group
+  FROM
     ctl_shres_t_we_001.shared_wholesale_input.total_amounts_per_charge_view_v1
 )
-INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.monthly_amounts_per_charge 
+INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.total_monthly_amounts 
 SELECT
   calculation_id,
   CONCAT(
@@ -314,5 +365,7 @@ SELECT
   time,
   amount,
   charge_owner_id
-from
+FROM
   total_amounts_per_charge_view_with_hash;
+
+
