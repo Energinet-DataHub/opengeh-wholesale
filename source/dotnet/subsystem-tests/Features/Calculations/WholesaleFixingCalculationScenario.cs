@@ -177,8 +177,9 @@ AppDependencies
         // Arrange
         var publicDataModelsAndTables = new List<(string ModelName, string TableName)>
         {
-            new("wholesale_settlement_reports", "metering_point_periods_v1"),
+            new("wholesale_sap", "energy_v1"),
             new("wholesale_results", "energy_v1"),
+            new("wholesale_basis_data", "metering_point_periods_v1"),
         };
 
         // Act
