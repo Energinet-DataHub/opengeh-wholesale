@@ -1,0 +1,17 @@
+#
+# Zero Report for Mandalorian scheduled run
+#
+name: Zero Report - Scheduled
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # Running at 01 AM every day
+    - cron: 0 1 * * *
+
+jobs:
+  run_rat:
+    runs-on: ubuntu-latest
+    name: Run Zero Report
+    steps:
+      - uses: actions/checkout@v4
