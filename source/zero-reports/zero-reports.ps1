@@ -27,7 +27,7 @@ if ($errorMessages.Count -gt 0) {
     }
 
     #One or more errors were found - team should be notified
-    $errorMessages += "<br /><br />Use this to call-to action such as link to Confluence page or similar"
+    $errorMessages += "<br /><br />Use this line as a call-to action such as link to Confluence page"
 
     if ($null -eq $env:SENDGRID_APIKEY) {
         throw 'Environent variable SENDGRID_APIKEY is empty, mails cannot be relayed through Sendgrid'
