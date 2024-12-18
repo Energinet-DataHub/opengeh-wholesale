@@ -15,15 +15,47 @@ resource "azuread_service_principal" "spn_databricks" {
   ]
 }
 
-resource "azuread_application_password" "secret" {
+# see: https://2mas.github.io/blog/rotating-azure-app-registration-secrets-with-terraform/
+resource "time_rotating" "first" {
+  rotation_months = 12
+}
+
+# Expires at time_rotating.first + 6 months
+resource "time_rotating" "second" {
+  # This is the base timestamp to use
+  rfc3339         = time_rotating.first.rotation_rfc3339
+  rotation_months = 6
+
+  lifecycle {
+    ignore_changes = [rfc3339]
+  }
+}
+
+# Secret is valid 24 months but will be rotated after 6 months
+resource "azuread_application_password" "rotating1" {
+  display_name   = "terraform-generated-rotating-1"
   application_id = azuread_application.app_databricks.id
+
+  rotate_when_changed = {
+    rotation = time_rotating.first.id
+  }
+}
+
+# Secret is valid 24 months but will be rotated after 6 months
+resource "azuread_application_password" "rotating2" {
+  display_name   = "terraform-generated-rotating-2"
+  application_id = azuread_application.app_databricks.id
+
+  rotate_when_changed = {
+    rotation = time_rotating.second.id
+  }
 }
 
 module "kvs_app_databricks_password" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "spn-databricks-secret"
-  value        = azuread_application_password.secret.value
+  value        = time_rotating.first.unix > time_rotating.second.unix ? azuread_application_password.rotating1.value : azuread_application_password.rotating2.value
   key_vault_id = module.kv_internal.id
 }
 

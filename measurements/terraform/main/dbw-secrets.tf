@@ -13,7 +13,7 @@ resource "databricks_secret" "spn_app_id" {
 resource "databricks_secret" "spn_app_secret" {
   provider     = databricks.dbw
   key          = "spn_app_secret"
-  string_value = azuread_application_password.secret.value
+  string_value = time_rotating.first.unix > time_rotating.second.unix ? azuread_application_password.rotating1.value : azuread_application_password.rotating2.value
   scope        = databricks_secret_scope.measurements_scope.id
 }
 
