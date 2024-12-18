@@ -132,33 +132,6 @@ class WholesaleResultsDatabase:
 
 class WholesaleSettlementReportsDatabase:
     DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_SETTLEMENT_REPORTS
-    METERING_POINT_PERIODS_VIEW_NAME_V1 = "metering_point_periods_v1"
-    METERING_POINT_TIME_SERIES_VIEW_NAME_V1 = "metering_point_time_series_v1"
-    CHARGE_LINK_PERIODS_VIEW_NAME_V1 = "charge_link_periods_v1"
-    CHARGE_PRICES_VIEW_NAME_V1 = "charge_prices_v1"
-    ENERGY_VIEW_NAME = "energy_v1"
-    ENERGY_PER_ES_VIEW_NAME = "energy_per_es_v1"
-    AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
-    MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "monthly_amounts_per_charge_v1"
-    TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME = "total_monthly_amounts_v1"
-    MONTHLY_AMOUNTS_V1_VIEW_NAME = "monthly_amounts_v1"
-    CURRENT_BALANCE_FIXING_CALCULATION_V1_VIEW_NAME = (
-        "current_balance_fixing_calculation_version_v1"
-    )
-
-    VIEW_NAMES = [
-        METERING_POINT_PERIODS_VIEW_NAME_V1,
-        METERING_POINT_TIME_SERIES_VIEW_NAME_V1,
-        CHARGE_LINK_PERIODS_VIEW_NAME_V1,
-        CHARGE_PRICES_VIEW_NAME_V1,
-        ENERGY_VIEW_NAME,
-        ENERGY_PER_ES_VIEW_NAME,
-        AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
-        MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
-        TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
-        MONTHLY_AMOUNTS_V1_VIEW_NAME,
-        CURRENT_BALANCE_FIXING_CALCULATION_V1_VIEW_NAME,
-    ]
 
 
 class WholesaleSapDatabase:
