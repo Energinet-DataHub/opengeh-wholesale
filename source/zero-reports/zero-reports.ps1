@@ -39,7 +39,7 @@ if ($errorMessages.Count -gt 0) {
     
     $toEmail = 'xkber@energinet.dk'
 
-    Push-NotificationToTeam -FromEmail $fromEmail -ToEmail $toEmail -MessageSubject 'Message from scheduled zero-reports run' -Messages $errorMessages -SendgridApiKey $env:SENDGRID_APIKEY
+    Push-NotificationToTeam -FromEmail $env:FROM_EMAIL -ToEmail $toEmail -MessageSubject 'Message from scheduled zero-reports run' -Messages $errorMessages -SendgridApiKey $env:SENDGRID_APIKEY
 }
 else {
     Write-Host ''
