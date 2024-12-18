@@ -36,12 +36,10 @@ if ($errorMessages.Count -gt 0) {
     if ($null -eq $env:FROM_EMAIL) {
         throw 'Environent variable FROM_EMAIL is empty'
     }
+    
+    $toEmail = 'xkber@energinet.dk'
 
-    if ($null -eq $env:TO_EMAIL) {
-        throw 'Environent variable TO_EMAIL is empty'
-    }
-
-    Push-NotificationToTeam -FromEmail $env:FROM_EMAIL -ToEmail $env:TO_EMAIL -MessageSubject 'Message from scheduled zero-reports run' -Messages $errorMessages -SendgridApiKey $env:SENDGRID_APIKEY
+    Push-NotificationToTeam -FromEmail $fromEmail -ToEmail $toEmail -MessageSubject 'Message from scheduled zero-reports run' -Messages $errorMessages -SendgridApiKey $env:SENDGRID_APIKEY
 }
 else {
     Write-Host ''

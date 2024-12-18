@@ -27,7 +27,7 @@ function Push-NotificationToTeam {
         [
             {
                 "email": "$ToEmail",
-                "name": "The Outlaws"
+                "name": "Team Mandalorian"
             }
         ]
 "@
