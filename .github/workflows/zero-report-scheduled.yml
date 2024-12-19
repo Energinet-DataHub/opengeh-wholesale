@@ -7,7 +7,7 @@ on:
   workflow_dispatch: {}
   schedule:
     # Running at 01 AM every day
-    - cron: 0 1 * * *
+    # - cron: 0 1 * * *
 
 jobs:
   run_rat:
