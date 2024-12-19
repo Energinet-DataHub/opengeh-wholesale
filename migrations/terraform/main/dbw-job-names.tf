@@ -28,6 +28,7 @@ locals {
     "Alert_Gold_Charge_Links_Changed",
     "Alert_Gold_Metering_Points_Changed",
     "Alert_Gold_Time_Series_Changed",
+    "alert_gold_time_series_completeness",
     "Bulk_Consumption_Statement_to_Bronze",
     "Bulk_Charge_Links_Gold_To_Wholesale",
     "Bulk_Charge_Links_Landing_to_Wholesale",
