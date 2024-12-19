@@ -413,47 +413,6 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
             True,
         ),
         (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.METERING_POINT_PERIODS_VIEW_NAME_V1}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME_V1}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.CHARGE_PRICES_VIEW_NAME_V1}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.CHARGE_LINK_PERIODS_VIEW_NAME_V1}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.ENERGY_VIEW_NAME}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.ENERGY_PER_ES_VIEW_NAME}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}",
-            True,
-        ),
-        (
-            # ToDo JMG: Remove when settlement report subsystem uses monthly_amounts_per_charge_v1/total_monthly_amounts_v1
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.MONTHLY_AMOUNTS_V1_VIEW_NAME}",
-            True,
-        ),
-        (
             f"{paths.WholesaleSapDatabase.DATABASE_NAME}.{paths.WholesaleSapDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME}",
             True,
         ),
