@@ -1,0 +1,2 @@
+calculation_id;calculation_type;calculation_period_start;calculation_period_end;calculation_version;metering_point_id;metering_point_type;resolution;quantity_unit;time;quantity
+0b15a420-9fc8-409a-a169-fbd49479d111;balance_fixing;2023-01-01 00:00:00;2023-02-01 00:00:00;1;180000001500001000;production;PT15M;kWh;2023-02-02 02:00;1.125
