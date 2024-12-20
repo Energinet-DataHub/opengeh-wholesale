@@ -58,6 +58,26 @@ module "kvs_databricks_dbw_workspace_token" {
   key_vault_id = module.kv_internal.id
 }
 
+#
+# Places Databricks secrets in shared key vault so other subsystems can use REST API or data.
+#
+
+module "kvs_shared_databricks_workspace_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "dbw-measurements-workspace-url"
+  value        = "https://${module.dbw.workspace_url}"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+module "kvs_shared_databricks_dbw_workspace_token" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "dbw-measurements-workspace-token"
+  value        = module.dbw.databricks_token
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 resource "azurerm_monitor_diagnostic_setting" "ds_dbw_audit" {
   name               = "ds-dbw-audit"
   target_resource_id = module.dbw.id
