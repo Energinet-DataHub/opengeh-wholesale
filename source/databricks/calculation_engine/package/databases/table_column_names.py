@@ -34,6 +34,8 @@ class TableColumnNames:
     calculation_period_end = "calculation_period_end"
     calculation_type = "calculation_type"
     calculation_version = "calculation_version"
+    calculation_version_dh2 = "calculation_version_dh2"
+    calculation_version_dh3 = "calculation_version_dh3"
     is_internal_calculation = "is_internal_calculation"
     """True if the calculation is an internal calculation, False otherwise."""
     created_by_user_id = "created_by_user_id"

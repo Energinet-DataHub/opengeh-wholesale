@@ -221,22 +221,6 @@ def test__when_energy_calculation__calculation_grid_areas_are_stored(
     "view_name, has_data",
     [
         (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.METERING_POINT_PERIODS_VIEW_NAME_V1}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.METERING_POINT_TIME_SERIES_VIEW_NAME_V1}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.ENERGY_VIEW_NAME}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSettlementReportsDatabase.DATABASE_NAME}.{paths.WholesaleSettlementReportsDatabase.ENERGY_PER_ES_VIEW_NAME}",
-            True,
-        ),
-        (
             f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME}",
             True,
         ),

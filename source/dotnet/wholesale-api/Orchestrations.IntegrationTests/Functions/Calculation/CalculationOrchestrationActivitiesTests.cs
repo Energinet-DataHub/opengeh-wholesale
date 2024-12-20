@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.DurableFunctionApp.TestCommon.DurableTask;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
-using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
@@ -95,7 +95,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
         await Fixture.WholesaleInboxQueue.SendActorMessagesEnqueuedAsync(calculationId, orchestrationStatus.InstanceId);
 
         // => Wait for completion, this should be fairly quick, since we have mocked databricks
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForOrchestrationCompletedAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(3));
 
@@ -165,7 +165,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
         calculationMetadata!.Id.Should().Be(calculationId);
 
         // => Wait for completion, this should be fairly quick, since we have mocked databricks
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForOrchestrationCompletedAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(3));
 
@@ -270,7 +270,7 @@ public class CalculationOrchestrationActivitiesTests : IAsyncLifetime
         calculationMetadata!.Id.Should().Be(calculationId);
 
         // => Wait for completion
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForOrchestrationCompletedAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(1)); // We will loop at least until expiry time has been reached
 

@@ -21,7 +21,7 @@ metering_point_time_series_v1 = t.StructType(
         # When wholesale calculations types also:
         # 've_production' | 'net_production' | 'supply_to_grid' 'consumption_from_grid' |
         # 'wholesale_services_information' | 'own_production' | 'net_from_grid' 'net_to_grid' |
-        # 'total_consumption' | 'electrical_heating' | 'net_consumption' | 'effect_settlement'
+        # 'total_consumption' | 'electrical_heating' | 'net_consumption' | 'capacity_settlement'
         t.StructField("metering_point_type", t.StringType(), not nullable),
         #
         # 'PT15M' | 'PT1H'

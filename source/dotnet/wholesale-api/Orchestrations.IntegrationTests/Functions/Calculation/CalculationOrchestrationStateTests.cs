@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.DurableFunctionApp.TestCommon.DurableTask;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.ServiceBus.ListenerMock;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Models;
 using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
-using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.DurableTask;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Extensions;
 using Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.Fixtures;
 using FluentAssertions;
@@ -156,7 +156,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // => Orchestration is completed, state should be Completed and orchestration output should be success
         // We need to wait for the orchestration to complete if it hasn't already happened in previous step
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForOrchestrationCompletedAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(3));
         var isCompletedState = await dbContext.WaitForCalculationWithStateAsync(calculationId, CalculationOrchestrationState.Completed, Fixture.TestLogger);
@@ -263,7 +263,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
 
         // => Orchestration is completed, state should be Completed and orchestration output should be success
         // We need to wait for the orchestration to complete if it hasn't already happened in previous step
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForOrchestrationCompletedAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(3));
         completeOrchestrationStatus.Output.ToObject<string>().Should().Be("Success");
@@ -339,7 +339,7 @@ public class CalculationOrchestrationStateTests : IAsyncLifetime
         isActorMessagesEnqueuingFailedState.ActualState.Should().Be(CalculationOrchestrationState.ActorMessagesEnqueuingFailed);
 
         // => Orchestration is completed, state should still be ActorMessagesEnqueuingFailed and orchestration output should be error
-        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForInstanceCompletedAsync(
+        var completeOrchestrationStatus = await Fixture.DurableClient.WaitForOrchestrationCompletedAsync(
             orchestrationStatus.InstanceId,
             TimeSpan.FromMinutes(3));
         var isStillActorMessagesEnqueuingFailedState = await dbContext.WaitForCalculationWithStateAsync(

@@ -53,20 +53,20 @@ jobs:
           git config --system core.longpaths true
 
       - name: Checkout repository
-        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v13
+        uses: Energinet-DataHub/.github/.github/actions/nuget-checkout-repository@v14
 
       - name: Setup dotnet and tools
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v13
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v14
         with:
           dotnet_version: 8.0.101
 
       - name: Build and test solution
-        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v13
+        uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v14
         with:
           solution_file_path: ./source/dotnet/wholesale-integration-events-package/Contracts.sln
 
       - name: Pack Contracts project
-        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v13
+        uses: Energinet-DataHub/.github/.github/actions/nuget-project-pack@v14
         with:
           project_path: ./source/dotnet/wholesale-integration-events-package/Contracts/Contracts.csproj
 
@@ -80,7 +80,7 @@ jobs:
             .github/workflows/packages-publish.yml
 
       - name: Assert versions of NuGet packages and push them to NuGet.org
-        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v13
+        uses: Energinet-DataHub/.github/.github/actions/nuget-packages-assert-and-push@v14
         with:
           push_packages: ${{ env.PUSH_PACKAGES }}
           content_changed: ${{ steps.changed-content.outputs.any_changed }}

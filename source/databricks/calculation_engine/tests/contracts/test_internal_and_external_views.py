@@ -29,7 +29,6 @@ from package.common import assert_schema
     [
         "wholesale_internal",
         "wholesale_results",
-        "wholesale_settlement_reports",
         "wholesale_sap",
         "wholesale_basis_data",
     ],
@@ -65,7 +64,6 @@ def test__views_have_the_expected_column_names_and_types(
     [
         "wholesale_internal",
         "data_products/wholesale_results",
-        "data_products/wholesale_settlement_reports",
         "data_products/wholesale_sap",
         "data_products/wholesale_basis_data",
     ],
