@@ -11,9 +11,11 @@
 --   * energy_per_brp
 --   * energy_per_es
 --   * energy
+--   * amounts_per_charge
+--   * monthly_amounts_per_charge
+--   * total_monthly_amounts
 -- * wholesale_internal
 --   * calculation_grid_areas
---
 
 
 -- STEP 0: 
@@ -32,6 +34,15 @@ FROM (
     UNION
     SELECT DISTINCT calculation_id 
     FROM ctl_shres_t_we_001.shared_wholesale_input.calculation_grid_areas_view_v1
+    UNION
+    SELECT DISTINCT calculation_id 
+    FROM ctl_shres_t_we_001.shared_wholesale_input.amounts_per_charge_view_v1
+    UNION
+    SELECT DISTINCT calculation_id 
+    FROM ctl_shres_t_we_001.shared_wholesale_input.monthly_amounts_per_charge_view_v1
+    UNION
+    SELECT DISTINCT calculation_id 
+    FROM ctl_shres_t_we_001.shared_wholesale_input.total_amounts_per_charge_view_v1
 ) AS calc_ids
 FULL OUTER JOIN ctl_shres_t_we_001.shared_wholesale_input.calculations_view_v1 AS calc_view
 ON calc_ids.calculation_id = calc_view.calculation_id
@@ -108,17 +119,17 @@ INSERT INTO ctl_shres_t_we_001.wholesale_internal.calculations
     calculation_version
   )
 SELECT
-  calculation_id,
-  calculation_type,
-  calculation_period_start,
-  calculation_period_end,
-  calculation_period_execution_time_start,
-  calculation_period_succeeded_time,
+  c.calculation_id,
+  c.calculation_type,
+  c.calculation_period_start,
+  c.calculation_period_end,
+  c.calculation_period_execution_time_start,
+  c.calculation_period_succeeded_time,
   False AS is_internal_calculation,
-  0 AS calculation_version_dh2,
-  0 AS calculation_version
-FROM
-  ctl_shres_t_we_001.shared_wholesale_input.calculations_view_v1;
+  r.version AS calculation_version_dh2,
+  r.version AS calculation_version
+FROM ctl_shres_t_we_001.shared_wholesale_input.calculations_view_v1 c
+INNER JOIN (SELECT DISTINCT calculation_id, version FROM ctl_shres_t_we_001.shared_wholesale_input.calculation_results) r on c.calculation_id = r.calculation_id;
 
 
 -- Result ID for the tables we are migrating is faking a MD5 hash based on the same group-by columns used for the UUID.
