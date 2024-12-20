@@ -100,6 +100,7 @@ resource "databricks_external_location" "migrations_wholesale_storage" {
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
   depends_on      = [module.dbw, module.st_migrations]
+  force_destroy   = true
 }
 
 resource "databricks_schema" "migrations_wholesale" {

@@ -139,7 +139,7 @@ module "gold_backup" {
 }
 
 module "wholesale_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_3.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_6.0.1"
   providers = {
     databricks = databricks.dbw
   }
