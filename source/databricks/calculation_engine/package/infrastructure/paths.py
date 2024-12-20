@@ -23,7 +23,6 @@ class UnityCatalogDatabaseNames:
     WHOLESALE_RESULTS = "wholesale_results"
     WHOLESALE_BASIS_DATA_INTERNAL = "wholesale_basis_data_internal"
     WHOLESALE_BASIS_DATA = "wholesale_basis_data"
-    WHOLESALE_SETTLEMENT_REPORTS = "wholesale_settlement_reports"
     WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
     WHOLESALE_INTERNAL = "wholesale_internal"
     WHOLESALE_SAP = "wholesale_sap"
@@ -128,10 +127,6 @@ class WholesaleResultsDatabase:
         TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
         LATEST_CALCULATION_BY_DAY_V1_VIEW_NAME,
     ]
-
-
-class WholesaleSettlementReportsDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_SETTLEMENT_REPORTS
 
 
 class WholesaleSapDatabase:
