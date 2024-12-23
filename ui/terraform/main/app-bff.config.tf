@@ -20,6 +20,7 @@ locals {
       ApiClientSettings__ImbalancePricesBaseUrl                              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-grid-loss-imbalance-prices-api-base-url)"
       ApiClientSettings__SettlementReportsAPIBaseUrl                         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-settlement-report-webapi-base-url)"
       ApiClientSettings__NotificationsBaseUrl                                = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-notifications-worker-base-url)"
+      ApiClientSettings__Dh2BridgeBaseUrl                                    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-grid-loss-event-receiver-api-base-url)"
       MITID_EXTERNAL_OPEN_ID_URL                                             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mitid-frontend-open-id-url)"
       EXTERNAL_OPEN_ID_URL                                                   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
       INTERNAL_OPEN_ID_URL                                                   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=api-backend-open-id-url)"
