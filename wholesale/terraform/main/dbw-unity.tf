@@ -110,6 +110,7 @@ resource "databricks_external_location" "settlement_reports" {
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
   depends_on      = [module.dbw, data.azurerm_key_vault_secret.st_data_lake_name]
+  force_destroy = true
 }
 
 resource "databricks_schema" "settlement_reports" {
