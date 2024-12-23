@@ -39,3 +39,11 @@ module "func_entrypoint_grid_loss_event_receiver" {
   ]
   app_settings = local.entrypoint_grid_loss_event_receiver.app_settings
 }
+
+module "kvs_app_grid_loss_event_receiver_api_base_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "app-grid-loss-event-receiver-api-base-url"
+  value        = "https://${module.func_entrypoint_grid_loss_event_receiver.default_hostname}"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
