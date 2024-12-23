@@ -103,26 +103,6 @@ resource "databricks_schema" "basis_data" {
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
-resource "databricks_external_location" "settlement_reports" {
-  provider        = databricks.dbw
-  name            = "${azurerm_storage_container.settlement_reports.name}_${module.st_data_wholesale.name}"
-  url             = "abfss://${azurerm_storage_container.settlement_reports.name}@${module.st_data_wholesale.name}.dfs.core.windows.net/"
-  credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
-  comment         = "Managed by TF"
-  depends_on      = [module.dbw, data.azurerm_key_vault_secret.st_data_lake_name]
-  force_destroy = true
-}
-
-resource "databricks_schema" "settlement_reports" {
-  provider     = databricks.dbw
-  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = "wholesale_settlement_reports"
-  comment      = "wholesale_settlement_reports Schema"
-  storage_root = databricks_external_location.settlement_reports.url
-
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
-}
-
 resource "databricks_external_location" "sap" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.sap.name}_${module.st_data_wholesale.name}"
