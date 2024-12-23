@@ -40,7 +40,7 @@ jobs:
             paths: \source\dotnet\wholesale-api\Events\Events.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Events.UnitTests.dll
           - name: EDI
             paths: \source\dotnet\wholesale-api\Edi.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Edi.UnitTests.dll
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v14
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@2629-addMissingCache
     with:
       download_attempt_limit: 30
       azure_functions_core_tools_version: 4.0.5413
@@ -130,7 +130,7 @@ jobs:
             filter: empty # Means skip
             use_azure_functions_tools: false
             contentroot_variable_name: empty # Means skip
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v14
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@2629-addMissingCache
     with:
       download_attempt_limit: 30
       azure_functions_core_tools_version: 4.0.5413
