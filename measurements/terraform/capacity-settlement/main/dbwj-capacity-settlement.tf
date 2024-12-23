@@ -1,10 +1,10 @@
-resource "databricks_job" "electrical_heating" {
+resource "databricks_job" "capacity_settlement" {
   provider            = databricks.dbw
-  name                = "ElectricalHeating"
+  name                = "CapacitySettlement"
   max_concurrent_runs = 1
 
   job_cluster {
-    job_cluster_key = "electrical_heating_cluster"
+    job_cluster_key = "capacity_settlement_cluster"
 
     new_cluster {
       spark_version  = local.spark_version
@@ -23,16 +23,16 @@ resource "databricks_job" "electrical_heating" {
   }
 
   task {
-    task_key        = "electrical_heating_task"
+    task_key        = "capacity_settlement_task"
     max_retries     = 1
-    job_cluster_key = "electrical_heating_cluster"
+    job_cluster_key = "capacity_settlement_cluster"
 
     library {
-      whl = "/Workspace/Shared/PythonWheels/electrical_heating/opengeh_electrical_heating-1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/capacity_settlement/opengeh_capacity_settlement-1.0-py3-none-any.whl"
     }
 
     python_wheel_task {
-      package_name = "opengeh_electrical_heating"
+      package_name = "opengeh_capacity_settlement"
       # The entry point is defined in setup.py
       entry_point = "execute"
     }
@@ -44,5 +44,23 @@ resource "databricks_job" "electrical_heating" {
 
   queue {
     enabled = false
+  }
+}
+
+
+resource "databricks_permissions" "capacity_settlement" {
+  provider = databricks.dbw
+  job_id   = databricks_job.capacity_settlement.id
+
+  access_control {
+    group_name       = var.databricks_contributor_dataplane_group.name
+    permission_level = "CAN_MANAGE"
+  }
+  dynamic "access_control" {
+    for_each = local.readers
+    content {
+      group_name       = access_control.key
+      permission_level = "CAN_VIEW"
+    }
   }
 }

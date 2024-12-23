@@ -21,6 +21,10 @@ data "azurerm_resource_group" "shared" {
   name = "rg-shres-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
 }
 
+data "azurerm_resource_group" "measurements_core" {
+  name = "rg-mmcore-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
+}
+
 data "azurerm_role_definition" "app_config_settings_read_access" {
   name  = "datahub-app-config-settings-read-access-${var.environment_short}-${local.region_code}-${var.environment_instance}"
   scope = data.azurerm_subscription.this.id

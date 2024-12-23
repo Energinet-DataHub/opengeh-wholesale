@@ -30,8 +30,12 @@ on:
         value: ${{ jobs.changes.outputs.grid_loss_imbalance_prices_ci }}
       esett_exchange_ci:
         value: ${{ jobs.changes.outputs.esett_exchange_ci }}
-      measurements_ci:
-        value: ${{ jobs.changes.outputs.measurements_ci }}
+      measurements_core_ci:
+        value: ${{ jobs.changes.outputs.measurements_core_ci }}
+      measurements_capacity_settlement_ci:
+        value: ${{ jobs.changes.outputs.measurements_capacity_settlement_ci }}
+      measurements_electrical_heating_ci:
+        value: ${{ jobs.changes.outputs.measurements_electrical_heating_ci }}
       migrations_ci:
         value: ${{ jobs.changes.outputs.migrations_ci }}
       shared_resources_infrastructure_ci:
@@ -69,7 +73,9 @@ jobs:
       dh2_bridge_ci: ${{ steps.filter.outputs.dh2_bridge_ci }}
       grid_loss_imbalance_prices_ci: ${{ steps.filter.outputs.grid_loss_imbalance_prices_ci }}
       esett_exchange_ci: ${{ steps.filter.outputs.esett_exchange_ci }}
-      measurements_ci: ${{ steps.filter.outputs.measurements_ci }}
+      measurements_core_ci: ${{ steps.filter.outputs.measurements_core_ci }}
+      measurements_capacity_settlement_ci: ${{ steps.filter.outputs.measurements_capacity_settlement_ci }}
+      measurements_electrical_heating_ci: ${{ steps.filter.outputs.measurements_electrical_heating_ci }}
       migrations_ci: ${{ steps.filter.outputs.migrations_ci }}
       shared_resources_infrastructure_ci: ${{ steps.filter.outputs.shared_resources_infrastructure_ci }}
       shared_resources_b2c_ci: ${{ steps.filter.outputs.shared_resources_b2c_ci }}
@@ -157,9 +163,21 @@ jobs:
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
-            measurements_ci:
-              - measurements/**
-              - .github/workflows/measurements-*.yml
+            measurements_core_ci:
+              - measurements/terraform/core/**
+              - .github/workflows/measurements-core*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            measurements_capacity_settlement_ci:
+              - measurements/terraform/capacity-settlement/**
+              - .github/workflows/measurements-capacity-settlement*.yml
+              - .github/workflows/infrastructure-build-prerelease.yml
+              - .github/workflows/infrastructure-validate.yml
+              - .github/actions/terraform-validate/*
+            measurements_electrical_heating_ci:
+              - measurements/terraform/electrical-heating/**
+              - .github/workflows/measurements-electrical-heating*.yml
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*

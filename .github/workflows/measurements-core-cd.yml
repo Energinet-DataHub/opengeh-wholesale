@@ -1,12 +1,12 @@
-name: Measurements Infrastructure CD
+name: Measurements Core Infrastructure CD
 
 on:
   push:
     branches:
       - main
     paths:
-      - measurements/**
-      - .github/workflows/measurements-cd.yml
+      - measurements/terraform/core/**
+      - .github/workflows/measurements-core-cd.yml
       - .github/workflows/infrastructure-build-prerelease.yml
       - .github/workflows/infrastructure-validate.yml
 
@@ -14,7 +14,7 @@ jobs:
   reusable_cd:
     uses: ./.github/workflows/reusable-cd.yml
     with:
-      release_name_prefix: measurements_infrastructure
-      event_type: measurements-deployment-request-infrastructure
+      release_name_prefix: measurements_core_infrastructure
+      event_type: measurements-core-deployment-request-infrastructure
       team_name: Volt
     secrets: inherit

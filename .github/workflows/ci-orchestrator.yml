@@ -139,13 +139,31 @@ jobs:
       infrastructure_path: ./esett-exchange/terraform
     secrets: inherit
 
-  measurements_ci:
+  measurements_core_ci:
     needs: changes
-    if: ${{ needs.changes.outputs.measurements_ci == 'true' }}
+    if: ${{ needs.changes.outputs.measurements_core_ci == 'true' }}
     uses: ./.github/workflows/infrastructure-build-prerelease.yml
     with:
-      release_name_prefix: measurements_infrastructure
-      infrastructure_path: ./measurements/terraform
+      release_name_prefix: measurements_core_infrastructure
+      infrastructure_path: ./measurements/terraform/core
+    secrets: inherit
+
+  measurements_capacity_settlement_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.measurements_capacity_settlement_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: measurements_capacity_settlement_infrastructure
+      infrastructure_path: ./measurements/terraform/capacity-settlement
+    secrets: inherit
+
+  measurements_electrical_heating_ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.measurements_electrical_heating_ci == 'true' }}
+    uses: ./.github/workflows/infrastructure-build-prerelease.yml
+    with:
+      release_name_prefix: measurements_electrical_heating_infrastructure
+      infrastructure_path: ./measurements/terraform/electrical-heating
     secrets: inherit
 
   migrations_ci:
@@ -248,7 +266,9 @@ jobs:
         dh2_bridge_ci,
         grid_loss_imbalance_prices_ci,
         esett_exchange_ci,
-        measurements_ci,
+        measurements_core_ci,
+        measurements_capacity_settlement_ci,
+        measurements_electrical_heating_ci,
         migrations_ci,
         shared_resources_ci,
         ui_ci,
