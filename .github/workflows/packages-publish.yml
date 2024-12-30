@@ -57,8 +57,6 @@ jobs:
 
       - name: Setup dotnet and tools
         uses: Energinet-DataHub/.github/.github/actions/dotnet-setup-and-tools@v14
-        with:
-          dotnet_version: 8.0.101
 
       - name: Build and test solution
         uses: Energinet-DataHub/.github/.github/actions/dotnet-solution-build-and-test@v14
