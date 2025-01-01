@@ -23,7 +23,7 @@ limitations under the License.
     <PackageReference Include="Azure.Identity" Version="1.13.1" />
     <PackageReference Include="Azure.Storage.Files.DataLake" Version="12.20.1" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="11.2.4" />
-    <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="11.2.4" />
+    <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="11.2.5" />
     <PackageReference Include="Energinet.DataHub.Core.App.Common.Abstractions" Version="14.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.5" />
