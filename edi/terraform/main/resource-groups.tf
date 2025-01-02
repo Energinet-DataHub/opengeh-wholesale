@@ -41,11 +41,6 @@ data "azurerm_role_definition" "app_manage_contributor" {
   scope = data.azurerm_subscription.this.id
 }
 
-data "azurerm_role_definition" "sql_db_query_performance_insight_reader" {
-  name  = "datahub-sql-db-query-performance-insight-reader-${var.environment_short}-${local.region_code}-${var.environment_instance}"
-  scope = data.azurerm_subscription.this.id
-}
-
 module "pim_contributor_security_group_permissions" {
   count = var.pim_contributor_data_plane_group_name != "" ? 1 : 0
 
@@ -57,7 +52,6 @@ module "pim_contributor_security_group_permissions" {
   custom_roles_contributor_data_plane = [
     data.azurerm_role_definition.app_manage_contributor.name,
     data.azurerm_role_definition.apim_groups_contributor_access.name,
-    data.azurerm_role_definition.sql_db_query_performance_insight_reader.name,
   ]
 
   depends_on = [azurerm_resource_group.this]
