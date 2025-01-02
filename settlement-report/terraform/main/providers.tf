@@ -1,5 +1,10 @@
 terraform {
   required_providers {
+    databricks = {
+      source  = "databricks/databricks"
+      version = "1.55.0"
+    }
+
     # It is recommended to pin to a given version of the Azure provider
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -11,6 +16,11 @@ terraform {
       version = "3.0.2"
     }
   }
+}
+
+provider "databricks" {
+  alias = "dbw"
+  host  = "https://${module.dbw.workspace_url}"
 }
 
 provider "azurerm" {

@@ -4,3 +4,14 @@ developer_security_group_name              = "SEC-G-Datahub-DevelopersAzure"
 platform_security_group_contributor_access = true
 platform_security_group_reader_access      = true
 enable_audit_logs                          = false
+databricks_vnet_address_space               = "10.142.112.0/22"
+databricks_private_subnet_address_prefix    = "10.142.112.0/24"
+databricks_public_subnet_address_prefix     = "10.142.114.0/24"
+databricks_readers_group = {
+  id   = "729028915538231"
+  name = "SEC-G-Datahub-DevelopersAzure"
+}
+databricks_contributor_dataplane_group = {
+  id   = "318888432738283"
+  name = "SEC-A-Datahub-Test-001-Contributor-Dataplane"
+}

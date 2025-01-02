@@ -120,3 +120,40 @@ variable "budget_alert_amount" {
   type        = number
   description = "The budget amount for this subproduct"
 }
+
+variable "databricks_vnet_address_space" {
+  type        = string
+  description = "Address space of the Virtual network where the Databricks Workspace is deployed."
+}
+
+variable "databricks_private_subnet_address_prefix" {
+  type        = string
+  description = "The address prefix of the private subnet used by Databricks."
+}
+
+variable "databricks_public_subnet_address_prefix" {
+  type        = string
+  description = "The address prefix of the public subnet used by Databricks."
+}
+
+variable "databricks_enable_verbose_audit_logs" {
+  type        = bool
+  description = "Flag to determine if verbose audit logs should be enabled for Databricks."
+  default     = true
+}
+
+variable "databricks_readers_group" {
+  type = object({
+    id   = string
+    name = string
+  })
+  description = "The Databricks group containing users with read permissions."
+}
+
+variable "databricks_contributor_dataplane_group" {
+  type = object({
+    id   = string
+    name = string
+  })
+  description = "The Databricks group containing users with contributor permissions to the data plane."
+}
