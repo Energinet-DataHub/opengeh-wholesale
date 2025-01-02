@@ -69,7 +69,8 @@ resource "azurerm_role_definition" "sql_db_query_performance_insight_reader" {
     actions = [
       "Microsoft.Sql/servers/databases/read",
       "Microsoft.Insights/metrics/read",
-      "Microsoft.Sql/servers/databases/queryStore/read"
+      "Microsoft.Sql/servers/databases/queryStore/read",
+      "Microsoft.Sql/servers/databases/queryStore/queryText/read"
     ]
   }
 }
