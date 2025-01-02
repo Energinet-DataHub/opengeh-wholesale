@@ -59,3 +59,17 @@ resource "azurerm_role_definition" "contributor_app_developers" {
     ]
   }
 }
+
+resource "azurerm_role_definition" "sql_db_query_performance_insight_reader" {
+  name        = "datahub-sql-db-query-performance-insight-reader-${var.environment_short}-${local.region_code}-${var.environment_instance}"
+  scope       = data.azurerm_subscription.this.id
+  description = "Allows access to Query Performance Insight details of SQL Databases without full Contributor permissions."
+
+  permissions {
+    actions = [
+      "Microsoft.Sql/servers/databases/read",
+      "Microsoft.Insights/metrics/read",
+      "Microsoft.Sql/servers/databases/queryStore/read"
+    ]
+  }
+}
