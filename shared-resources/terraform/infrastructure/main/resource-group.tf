@@ -33,11 +33,10 @@ module "pim_contributor_security_group_permissions" {
   role_level          = "Contributor Data Plane"
   custom_roles_contributor_data_plane = [
     azurerm_role_definition.contributor_app_developers.name,
-    azurerm_role_definition.apim_groups_contributor_access.name,
-    azurerm_role_definition.sql_db_query_performance_insight_reader.name
+    azurerm_role_definition.apim_groups_contributor_access.name
   ]
 
-  depends_on = [azurerm_resource_group.this, azurerm_role_definition.contributor_app_developers, azurerm_role_definition.apim_groups_contributor_access, azurerm_role_definition.sql_db_query_performance_insight_reader]
+  depends_on = [azurerm_resource_group.this, azurerm_role_definition.contributor_app_developers, azurerm_role_definition.apim_groups_contributor_access]
 }
 
 module "pim_contributor_control_plane_security_group_permissions" {
