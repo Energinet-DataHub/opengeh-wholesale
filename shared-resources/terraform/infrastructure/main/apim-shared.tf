@@ -91,7 +91,7 @@ resource "azurerm_api_management_logger" "apim_logger" {
   resource_id         = module.appi_shared.id
 
   application_insights {
-    instrumentation_key = module.appi_shared.instrumentation_key
+    connection_string = module.appi_shared.connection_string
   }
 }
 
