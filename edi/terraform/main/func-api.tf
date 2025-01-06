@@ -67,6 +67,11 @@ module "func_receiver" {
       resource_id          = data.azurerm_key_vault_secret.sbt_processmanager_id.value
       role_definition_name = "Azure Service Bus Data Owner"
     },
+    {
+      // ServiceBus EDI Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_edi_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
+    },
   ]
 }
 

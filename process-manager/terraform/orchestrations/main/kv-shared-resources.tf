@@ -42,3 +42,8 @@ data "azurerm_key_vault_secret" "sbt_processmanager_id" {
   name         = "sbt-processmanager-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "sbt_edi_id" {
+  name         = "sbt-edi-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
