@@ -348,3 +348,8 @@ variable "inbounddns_address_prefixes" {
   type        = list(string)
   description = "Address prefixes for the inbound DNS subnet"
 }
+
+variable "azure_isocontrol_spn_id" {
+  type        = string
+  description = "App (client) ID of the service principal used for running iso controls in Energinet Azure tenant."
+}
