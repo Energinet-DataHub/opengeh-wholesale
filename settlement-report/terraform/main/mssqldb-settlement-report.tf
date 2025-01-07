@@ -1,5 +1,5 @@
 module "mssqldb_settlement_report" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.1.0"
 
   name                 = "settlement-report"
   location             = azurerm_resource_group.this.location

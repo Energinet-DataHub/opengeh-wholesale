@@ -7,8 +7,8 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
     job_cluster_key = "hourly_time_series_cluster"
 
     new_cluster {
-      spark_version = local.spark_version
-      node_type_id = "Standard_D8as_v4"
+      spark_version  = local.spark_version
+      node_type_id   = "Standard_D8as_v4"
       runtime_engine = "PHOTON"
       autoscale {
         min_workers = 1
@@ -26,8 +26,8 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
     job_cluster_key = "settlement_report_cluster"
 
     new_cluster {
-      spark_version = local.spark_version
-      node_type_id = "Standard_D8as_v4"
+      spark_version  = local.spark_version
+      node_type_id   = "Standard_D8as_v4"
       runtime_engine = "PHOTON"
       autoscale {
         min_workers = 1
@@ -74,22 +74,6 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
   }
 
   task {
-    task_key        = "quarterly_time_series"
-    max_retries     = 1
-    job_cluster_key = "settlement_report_cluster"
-
-    library {
-      whl = "/Workspace/Shared/PythonWheels/settlement_report/geh_settlement_report-1.0-py3-none-any.whl"
-    }
-
-    python_wheel_task {
-      package_name = "geh_settlement_report"
-      # The entry point is defined in setup.py
-      entry_point = "create_quarterly_time_series"
-    }
-  }
-
-  task {
     task_key        = "metering_point_periods"
     max_retries     = 1
     job_cluster_key = "settlement_report_cluster"
@@ -102,6 +86,22 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
       package_name = "geh_settlement_report"
       # The entry point is defined in setup.py
       entry_point = "create_metering_point_periods"
+    }
+  }
+
+  task {
+    task_key        = "quarterly_time_series"
+    max_retries     = 1
+    job_cluster_key = "settlement_report_cluster"
+
+    library {
+      whl = "/Workspace/Shared/PythonWheels/settlement_report/geh_settlement_report-1.0-py3-none-any.whl"
+    }
+
+    python_wheel_task {
+      package_name = "geh_settlement_report"
+      # The entry point is defined in setup.py
+      entry_point = "create_quarterly_time_series"
     }
   }
 
@@ -126,10 +126,10 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
       task_key = "hourly_time_series"
     }
     depends_on {
-      task_key = "quarterly_time_series"
+      task_key = "metering_point_periods"
     }
     depends_on {
-      task_key = "metering_point_periods"
+      task_key = "quarterly_time_series"
     }
   }
 
@@ -151,8 +151,8 @@ resource "databricks_job" "settlement_report_job_wholesale" {
     job_cluster_key = "hourly_time_series_cluster"
 
     new_cluster {
-      spark_version = local.spark_version
-      node_type_id = "Standard_D8as_v4"
+      spark_version  = local.spark_version
+      node_type_id   = "Standard_D8as_v4"
       runtime_engine = "PHOTON"
       autoscale {
         min_workers = 1
@@ -170,8 +170,8 @@ resource "databricks_job" "settlement_report_job_wholesale" {
     job_cluster_key = "settlement_report_cluster"
 
     new_cluster {
-      spark_version = local.spark_version
-      node_type_id = "Standard_D8as_v4"
+      spark_version  = local.spark_version
+      node_type_id   = "Standard_D8as_v4"
       runtime_engine = "PHOTON"
       autoscale {
         min_workers = 1
@@ -328,14 +328,15 @@ resource "databricks_job" "settlement_report_job_wholesale" {
       # The entry point is defined in setup.py
       entry_point = "create_zip"
     }
-    depends_on {
-      task_key = "energy_results"
-    }
+
     depends_on {
       task_key = "charge_links"
     }
     depends_on {
       task_key = "charge_price_points"
+    }
+    depends_on {
+      task_key = "energy_results"
     }
     depends_on {
       task_key = "hourly_time_series"

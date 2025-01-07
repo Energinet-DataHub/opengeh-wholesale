@@ -1,5 +1,5 @@
 module "func_settlement_reports_light_df" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.3.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_6.0.0"
 
   name                                   = "light-df"
   project_name                           = var.domain_name_short
@@ -12,13 +12,16 @@ module "func_settlement_reports_light_df" {
   vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnetintegrations_id.value
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   allowed_monitor_reader_entra_groups    = compact([var.developer_security_group_name, var.pim_reader_group_name])
-  durabletask_storage_connection_string  = module.taskhub_storage_account.primary_connection_string
-  dotnet_framework_version               = "v8.0"
-  use_dotnet_isolated_runtime            = true
-  health_check_path                      = "/api/monitor/ready"
-  ip_restrictions                        = var.ip_restrictions
-  scm_ip_restrictions                    = var.ip_restrictions
-  app_settings                           = local.func_settlement_reports_light_df.app_settings
+  orchestrations_storage = {
+    storage_connection_string = module.taskhub_storage_account.primary_connection_string
+    appsettings_name          = "DURABLETASK_STORAGE_CONNECTION_STRING"
+  }
+  dotnet_framework_version    = "v8.0"
+  use_dotnet_isolated_runtime = true
+  health_check_path           = "/api/monitor/ready"
+  ip_restrictions             = var.ip_restrictions
+  scm_ip_restrictions         = var.ip_restrictions
+  app_settings                = local.func_settlement_reports_light_df.app_settings
 
   health_check_alert = length(module.monitor_action_group_setr) != 1 ? null : {
     enabled         = true
