@@ -7,3 +7,41 @@ data "azurerm_key_vault_secret" "shared_unity_catalog_name" {
   name         = "shared-unity-catalog-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+resource "databricks_external_location" "measurements_internal_storage" {
+  provider        = databricks.dbw
+  name            = "${azurerm_storage_container.internal.name}_${module.st_measurements.name}"
+  url             = "abfss://${azurerm_storage_container.internal.name}@${module.st_measurements.name}.dfs.core.windows.net/"
+  credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
+  comment         = "Managed by TF"
+  depends_on      = [module.dbw, module.st_measurements]
+}
+
+resource "databricks_schema" "measurements_internal" {
+  provider     = databricks.dbw
+  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  name         = "measurements_internal"
+  comment      = "Measurements Internal Schema"
+  storage_root = databricks_external_location.measurements_internal_storage.url
+
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
+}
+
+resource "databricks_external_location" "measurements_bronze_storage" {
+  provider        = databricks.dbw
+  name            = "${azurerm_storage_container.bronze.name}_${module.st_measurements.name}"
+  url             = "abfss://${azurerm_storage_container.bronze.name}@${module.st_measurements.name}.dfs.core.windows.net/"
+  credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
+  comment         = "Managed by TF"
+  depends_on      = [module.dbw, module.st_measurements]
+}
+
+resource "databricks_schema" "measurements_bronze" {
+  provider     = databricks.dbw
+  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  name         = "measurements_bronze"
+  comment      = "Measurements Bronze Schema"
+  storage_root = databricks_external_location.measurements_bronze_storage.url
+
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
+}
