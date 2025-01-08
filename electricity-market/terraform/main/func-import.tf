@@ -1,7 +1,7 @@
-module "app_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_7.0.1"
+module "func_import" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=function-app_8.3.0"
 
-  name                                   = "api"
+  name                                   = "import"
   project_name                           = var.domain_name_short
   environment_short                      = var.environment_short
   environment_instance                   = var.environment_instance
@@ -11,12 +11,19 @@ module "app_api" {
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   app_service_plan_id                    = module.webapp_service_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
-  health_check_path                      = "/monitor/ready"
-  dotnet_framework_version               = "v8.0"
+  health_check_path                      = "/api/monitor/ready"
+  always_on                              = true
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
-  app_settings                           = local.app_api.app_settings
 
+  health_check_alert = length(module.monitor_action_group_elmk) != 1 ? null : {
+    action_group_id = module.monitor_action_group_elmk[0].id
+    enabled         = true
+  }
+
+  dotnet_framework_version    = "v8.0"
+  use_dotnet_isolated_runtime = true
+  app_settings                = local.func_import.app_settings
 
   role_assignments = [
     {
@@ -24,12 +31,4 @@ module "app_api" {
       role_definition_name = "Key Vault Secrets User"
     }
   ]
-}
-
-module "kvs_app_elmark_api_base_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
-
-  name         = "app-elmark-api-base-url"
-  value        = "https://${module.app_api.default_hostname}"
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
