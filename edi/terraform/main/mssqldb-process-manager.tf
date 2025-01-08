@@ -1,5 +1,5 @@
 module "mssqldb_process_manager" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.0.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.1.0"
 
   name                 = "process-manager"
   location             = azurerm_resource_group.this.location

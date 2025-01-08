@@ -1,5 +1,5 @@
 module "st_process_manager" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.1"
 
   name                 = "pmtaskhub"
   project_name         = var.domain_name_short

@@ -1,20 +1,23 @@
 module "func_receiver" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.3.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_6.0.0"
 
-  name                                  = "api"
-  project_name                          = var.domain_name_short
-  environment_short                     = var.environment_short
-  environment_instance                  = var.environment_instance
-  resource_group_name                   = azurerm_resource_group.this.name
-  location                              = azurerm_resource_group.this.location
-  app_service_plan_id                   = module.func_service_plan.id
-  vnet_integration_subnet_id = data.azurerm_key_vault_secret.snet_vnetintegrations_id.value
-  private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
-  allowed_monitor_reader_entra_groups   = compact([var.developer_security_group_name, var.pim_reader_group_name])
-  durabletask_storage_connection_string = "See app setting 'OrchestrationsStorageConnectionString'"
-  dotnet_framework_version              = "v8.0"
-  use_dotnet_isolated_runtime           = true
-  health_check_path                     = "/api/monitor/ready"
+  name                                = "api"
+  project_name                        = var.domain_name_short
+  environment_short                   = var.environment_short
+  environment_instance                = var.environment_instance
+  resource_group_name                 = azurerm_resource_group.this.name
+  location                            = azurerm_resource_group.this.location
+  app_service_plan_id                 = module.func_service_plan.id
+  vnet_integration_subnet_id          = data.azurerm_key_vault_secret.snet_vnetintegrations_id.value
+  private_endpoint_subnet_id          = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
+  allowed_monitor_reader_entra_groups = compact([var.developer_security_group_name, var.pim_reader_group_name])
+  orchestrations_storage = {
+    storage_connection_string = "See app setting 'OrchestrationsStorageConnectionString'"
+    appsettings_name          = "DURABLETASK_STORAGE_CONNECTION_STRING"
+  }
+  dotnet_framework_version    = "v8.0"
+  use_dotnet_isolated_runtime = true
+  health_check_path           = "/api/monitor/ready"
 
   health_check_alert = length(module.monitor_action_group_edi) != 1 ? null : {
     action_group_id = module.monitor_action_group_edi[0].id

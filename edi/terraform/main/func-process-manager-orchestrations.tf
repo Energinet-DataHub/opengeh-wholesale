@@ -1,5 +1,5 @@
 module "func_process_manager_orchestrations" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.3.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_6.0.0"
 
   name                                   = "pm-orchestrations"
   project_name                           = var.domain_name_short
@@ -18,12 +18,14 @@ module "func_process_manager_orchestrations" {
   scm_ip_restrictions                    = var.ip_restrictions
   app_settings                           = local.func_process_manager_orchestrations.app_settings
   allowed_monitor_reader_entra_groups    = compact([var.developer_security_group_name, var.pim_reader_group_name])
-
+  orchestrations_storage = {
+    storage_connection_string = "See app setting 'ProcessManagerStorageConnectionString'"
+    appsettings_name          = "DURABLETASK_STORAGE_CONNECTION_STRING"
+  }
   health_check_alert = length(module.monitor_action_group_edi) != 1 ? null : {
     action_group_id = module.monitor_action_group_edi[0].id
     enabled         = true
   }
-  durabletask_storage_connection_string = "See app setting 'ProcessManagerStorageConnectionString'"
 
   role_assignments = [
     {
