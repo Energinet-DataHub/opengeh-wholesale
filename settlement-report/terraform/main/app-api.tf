@@ -36,6 +36,11 @@ module "app_api" {
       // Shared Key Vault
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
+    },
+    {
+      // Internal Key Vault
+      resource_id          = module.kv_internal.id
+      role_definition_name = "Key Vault Secrets User"
     }
   ]
 

@@ -51,6 +51,14 @@ module "kvs_databricks_workspace_url" {
   key_vault_id = module.kv_internal.id
 }
 
+module "kvs_databricks_workspace_https_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "dbw-workspace-https-url"
+  value        = "https://${module.dbw.workspace_url}"
+  key_vault_id = module.kv_internal.id
+}
+
 module "kvs_databricks_dbw_workspace_token" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
