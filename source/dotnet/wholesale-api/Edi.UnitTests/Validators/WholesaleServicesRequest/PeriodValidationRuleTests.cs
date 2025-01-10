@@ -267,7 +267,8 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle().Subject.Should().Be(_invalidWinterMidnightFormat.WithPropertyName("Period Start"));
+        errors[0].Message.Should().Be(_invalidWinterMidnightFormat.WithPropertyName("Period Start").Message);
+        errors[1].Message.Should().Be(_invalidPeriodAcrossMonths.Message);
     }
 
     [Fact]
@@ -472,6 +473,30 @@ public class PeriodValidationRuleTests
 
         // Assert
         errors.Should().ContainSingle().Subject.Should().Be(_invalidPeriodAcrossMonths);
+    }
+
+    [Fact]
+    public async Task Validate_WhenPeriodIsBetweenTwoYears_ReturnsNoValidationError()
+    {
+        // Arrange
+        var periodStartDate = new LocalDateTime(2024, 12, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var periodEndDate = new LocalDateTime(2025, 1, 1, 0, 0, 0)
+            .InZoneStrictly(_dateTimeZone!)
+            .ToInstant();
+
+        var message = new WholesaleServicesRequestBuilder()
+            .WithPeriodStart(periodStartDate.ToString())
+            .WithPeriodEnd(periodEndDate.ToString())
+            .Build();
+
+        // Act
+        var errors = await _sut.ValidateAsync(message);
+
+        // Assert
+        errors.Should().BeEmpty();
     }
 
     private sealed class MockClock(Func<Instant> getInstant) : IClock
