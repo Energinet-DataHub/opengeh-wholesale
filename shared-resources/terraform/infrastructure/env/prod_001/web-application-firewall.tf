@@ -72,6 +72,16 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
     }
 
     override {
+      rule_group_name = "General"
+      # Multipart request body failed strict validation
+      rule {
+        rule_id = "200003"
+        enabled = true
+        action  = "Log"
+      }
+    }
+
+    override {
       rule_group_name = "RCE"
       # Remote Code Execution: Unix Shell Injection, blocks GraphQL
       rule {
