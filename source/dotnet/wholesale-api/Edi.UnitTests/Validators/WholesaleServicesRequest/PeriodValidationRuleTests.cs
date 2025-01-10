@@ -267,7 +267,8 @@ public class PeriodValidationRuleTests
         var errors = await _sut.ValidateAsync(message);
 
         // Assert
-        errors.Should().ContainSingle().Subject.Should().Be(_invalidWinterMidnightFormat.WithPropertyName("Period Start"));
+        errors[0].Message.Should().Be(_invalidWinterMidnightFormat.WithPropertyName("Period Start").Message);
+        errors[1].Message.Should().Be(_invalidPeriodAcrossMonths.Message);
     }
 
     [Fact]
