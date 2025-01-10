@@ -1,5 +1,5 @@
 module "func_orchestrationsdf" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.3.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_6.0.0"
 
   name                                   = "orchestrationsdf"
   project_name                           = var.domain_name_short
@@ -13,12 +13,15 @@ module "func_orchestrationsdf" {
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   dotnet_framework_version               = "v8.0"
   use_dotnet_isolated_runtime            = true
-  durabletask_storage_connection_string  = "See_app_setting_OrchestrationsStorageConnectionString"
-  health_check_path                      = "/api/monitor/ready"
-  ip_restrictions                        = var.ip_restrictions
-  scm_ip_restrictions                    = var.ip_restrictions
-  app_settings                           = local.func_orchestrationsdf.app_settings
-  allowed_monitor_reader_entra_groups    = compact([var.developer_security_group_name, var.pim_reader_group_name])
+  orchestrations_storage = {
+    storage_connection_string = "See_app_setting_OrchestrationsStorageConnectionString"
+    appsettings_name          = "DURABLETASK_STORAGE_CONNECTION_STRING"
+  }
+  health_check_path                   = "/api/monitor/ready"
+  ip_restrictions                     = var.ip_restrictions
+  scm_ip_restrictions                 = var.ip_restrictions
+  app_settings                        = local.func_orchestrationsdf.app_settings
+  allowed_monitor_reader_entra_groups = compact([var.developer_security_group_name, var.pim_reader_group_name])
 
   health_check_alert = length(module.monitor_action_group_wholesale) != 1 ? null : {
     enabled         = true

@@ -1,5 +1,5 @@
 module "mssqldb_wholesale" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.1.0"
 
   name                 = "data"
   enclave_type         = null
