@@ -131,8 +131,25 @@ public sealed class PeriodValidationRule(
             return;
         }
 
+        // Requests are only valid within a one-month period
         if (zonedEndDateTime.LocalDateTime.Month - zonedStartDateTime.LocalDateTime.Month != 1)
+        {
+            // If the request spans a year in local date time, we need to inspect that the start year and end year is only 1 year a part each other.
+            if (zonedEndDateTime.LocalDateTime.Year - zonedStartDateTime.LocalDateTime.Year == 1)
+            {
+                // Now the only valid month interval spanning a year change would be end month 1, and start month 12.
+                // Example:
+                // StartDate = 2024-12-01T23:00:00Z
+                // EndDate = 2025-01-01T23:00:00Z
+                if (zonedEndDateTime.LocalDateTime.Month - zonedStartDateTime.LocalDateTime.Month == -11)
+                {
+                    // In this case the request start and end would be over the course of yearly change, but would still be valid.
+                    return;
+                }
+            }
+
             errors.Add(_invalidPeriodAcrossMonths);
+        }
     }
 
     private void MustBeMidnight(Instant instant, string propertyName, ICollection<ValidationError> errors)
