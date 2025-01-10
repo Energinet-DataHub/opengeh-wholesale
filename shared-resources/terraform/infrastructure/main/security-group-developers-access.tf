@@ -26,6 +26,13 @@ module "developer_security_group_permissions_contributor" {
     azurerm_role_definition.apim_groups_contributor_access.name,
     azurerm_role_definition.locks_contributor_access.name,
   ]
+
+  # Names are computed during plan, so we need to depend on the role definitions
+  depends_on = [
+    azurerm_resource_group.this,
+    azurerm_role_definition.apim_groups_contributor_access,
+    azurerm_role_definition.locks_contributor_access,
+  ]
 }
 
 module "developer_security_group_permissions_reader" {
@@ -37,6 +44,14 @@ module "developer_security_group_permissions_reader" {
   security_group_name = var.developer_security_group_name
   role_level          = "Reader"
   custom_roles_reader = [
-    azurerm_role_definition.app_config_settings_read_access.name
+    azurerm_role_definition.app_config_settings_read_access.name,
+    azurerm_role_definition.sql_db_query_performance_insight_reader.name,
+  ]
+
+  # Names are computed during plan, so we need to depend on the role definitions
+  depends_on = [
+    azurerm_resource_group.this,
+    azurerm_role_definition.app_config_settings_read_access,
+    azurerm_role_definition.sql_db_query_performance_insight_reader,
   ]
 }
