@@ -69,10 +69,6 @@ resource "azurerm_cdn_frontdoor_firewall_policy" "this" {
         enabled = true
         action  = "Log"
       }
-    }
-
-    override {
-      rule_group_name = "General"
       # Multipart request body failed strict validation
       rule {
         rule_id = "200003"
