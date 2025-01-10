@@ -118,6 +118,15 @@ resource "databricks_grant" "databricks_spn_database_grant_select_wholesale_resu
   privileges = ["USE_SCHEMA", "SELECT"]
 }
 
+resource "databricks_grant" "databricks_spn_database_grant_select_shared_wholesale_input" {
+  count    = var.datahub_bi_endpoint_enabled ? 1 : 0
+  provider = databricks.dbw
+
+  schema     = "${data.azurerm_key_vault_secret.shared_unity_catalog_name.value}.shared_wholesale_input"
+  principal  = azuread_application.app_datahub_bi[0].client_id
+  privileges = ["USE_SCHEMA", "SELECT"]
+}
+
 resource "databricks_grant" "databricks_spn_database_grant_select_wholesale_sap" {
   count    = var.datahub_bi_endpoint_enabled ? 1 : 0
   provider = databricks.dbw
