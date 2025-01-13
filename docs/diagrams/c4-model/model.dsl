@@ -49,14 +49,6 @@ wholesaleSubsystem = group "Wholesale" {
             # Subsystem relationships
             this -> dh3.sharedUnityCatalog "Read results"
         }
-        settlementReportsWarehouse = container "Settlement Reports Warehouse" {
-            description "Executes delta SQL queries"
-            technology "Azure Databricks SQL Warehouse"
-            tags "Microsoft Azure - Azure Databricks" "Mandalorian" "Raccoons" "Intermediate Technology"
-
-            # Subsystem relationships
-            this -> dh3.sharedUnityCatalog "Read basis data and results"
-        }
     }
 
     wholesaleDb = container "Wholesale Database" {
