@@ -20,7 +20,7 @@ pytest-xdist
 # Packages in Databricks Runtime 15.4 LTS
 azure-core==1.32.0 # issue with 1.30.2 which is the version in Databricks Runtime 15.4 LTS
 python-dateutil==2.8.2
-virtualenv==20.24.2
+virtualenv==20.26.6
 
 # Other packages
 delta-spark==3.2.0
