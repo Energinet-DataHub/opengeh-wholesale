@@ -31,7 +31,7 @@ public class GridAreaValidationRule : IValidationRule<DataHub.Edi.Requests.Whole
 
     public async Task<IList<ValidationError>> ValidateAsync(DataHub.Edi.Requests.WholesaleServicesRequest subject)
     {
-        if (subject.RequestedForActorRole != DataHubNames.ActorRole.GridOperator) return NoError;
+        if (subject.RequestedForActorRole != DataHubNames.ActorRole.GridAccessProvider) return NoError;
 
         if (subject.GridAreaCodes.Count == 0)
             return MissingGridAreaCodeError;
