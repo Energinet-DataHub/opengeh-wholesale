@@ -17,7 +17,7 @@ module "evhns_measurements" {
 module "kvs_evhns_measurements_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
-  name         = "evhns_measurements-id"
+  name         = "evhns-measurements-id"
   value        = module.evhns_measurements.id
   key_vault_id = module.kv_shared.id
 }
@@ -25,7 +25,7 @@ module "kvs_evhns_measurements_id" {
 module "kvs_evhns_measurements_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
-  name         = "evhns_measurements-name"
+  name         = "evhns-measurements-name"
   value        = module.evhns_measurements.name
   key_vault_id = module.kv_shared.id
 }
