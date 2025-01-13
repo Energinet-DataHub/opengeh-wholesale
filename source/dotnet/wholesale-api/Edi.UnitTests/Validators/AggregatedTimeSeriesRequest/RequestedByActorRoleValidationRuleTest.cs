@@ -59,7 +59,7 @@ public sealed class RequestedByActorRoleValidationRuleTest
     public async Task ValidateAsync_WhenRequestingWithDdmActorRole_ReturnsDdmShouldRequestAsMdrErrorAsync()
     {
         // Arrange
-        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedForActorRole = "GridOperator" };
+        var request = new DataHub.Edi.Requests.AggregatedTimeSeriesRequest { RequestedForActorRole = DataHubNames.ActorRole.GridAccessProvider };
         var rule = new RequestedByActorRoleValidationRule();
 
         // Act
