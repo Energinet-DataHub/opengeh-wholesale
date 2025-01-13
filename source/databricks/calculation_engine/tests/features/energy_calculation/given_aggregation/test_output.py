@@ -16,21 +16,27 @@ from typing import Any
 
 import pytest
 
-from tests.features.utils.assertion import assert_output
-from tests.features.utils.scenario_output_files import get_output_names
-from tests.testsession_configuration import TestSessionConfiguration
+from features.utils.assertion import assert_output
+from features.utils.scenario_output_files import get_output_names
+from testsession_configuration import TestSessionConfiguration
+from testcommon.etl import get_then_names, TestCase
+from testcommon.dataframes import assert_dataframes_and_schemas, AssertDataframesConfiguration
 
 
 # IMPORTANT:
 # All test files should be identical. This makes changing them cumbersome.
 # So in order to make it easier you can modify the utils/templates/calculation-test-template.py file instead,
 # and then run the power-shell script "Use-Template.ps1" to update all test_output.py files.
-@pytest.mark.parametrize("output_name", get_output_names())
+@pytest.mark.parametrize("name", get_then_names())
 def test__equals_expected(
-    actual_and_expected: Any,
-    output_name: str,
-    test_session_configuration: TestSessionConfiguration,
+    test_cases: TestCase,
+    name: str,
+    assert_dataframes_configuration: AssertDataframesConfiguration,
 ) -> None:
-    assert_output(
-        actual_and_expected, output_name, test_session_configuration.feature_tests
+    test_case = test_cases[name]
+
+    assert_dataframes_and_schemas(
+        actual=test_case.actual,
+        expected=test_case.expected,
+        configuration=assert_dataframes_configuration,
     )
