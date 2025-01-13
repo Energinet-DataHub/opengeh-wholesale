@@ -18,7 +18,8 @@ from source.databricks.calculation_engine.package.calculation import Calculation
 from source.databricks.calculation_engine.package.calculation.calculator_args import CalculatorArgs
 from source.databricks.calculation_engine.package.databases.migrations_wholesale import MigrationsWholesaleRepository
 from source.databricks.calculation_engine.package.databases.migrations_wholesale.schemas import \
-    time_series_points_schema, metering_point_periods_schema
+    time_series_points_schema, metering_point_periods_schema, charge_link_periods_schema, \
+    charge_price_information_periods_schema
 from source.databricks.calculation_engine.package.databases.wholesale_internal import WholesaleInternalRepository
 from source.databricks.calculation_engine.package.databases.wholesale_internal.schemas import \
     grid_loss_metering_point_ids_schema
@@ -83,6 +84,7 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         time_series_points_schema,
     )
     time_series_points = spark.createDataFrame(time_series_points.rdd, schema=time_series_points_schema, verifySchema=True)
+
     grid_loss_metering_points = read_csv(
         spark,
         f"{scenario_path}/when/grid_loss_metering_points.csv",
@@ -97,14 +99,44 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
     )
     metering_point_periods = spark.createDataFrame(metering_point_periods.rdd, schema=metering_point_periods_schema, verifySchema=True)
 
-
+    # Defining the mocks for the data frames in the "when" folder
     migrations_wholesale_repository: MigrationsWholesaleRepository = Mock()
     migrations_wholesale_repository.read_time_series_points.return_value = time_series_points
     migrations_wholesale_repository.read_metering_point_periods.return_value = metering_point_periods
 
+
     wholesale_internal_repository: WholesaleInternalRepository = Mock()
     wholesale_internal_repository.read_grid_loss_metering_point_ids.return_value = grid_loss_metering_points
 
+    # Only for wholesale we need these additional tests
+    if "wholesale_calculation" in scenario_path:
+        charge_link_periods = read_csv(
+            spark,
+            f"{scenario_path}/when/charge_link_periods.csv",
+            charge_link_periods_schema,
+        )
+        charge_price_information_periods = read_csv(
+            spark,
+            f"{scenario_path}/when/charge_price_information_periods.csv",
+            charge_price_information_periods_schema,
+        )
+        charge_price_points = read_csv(
+            spark,
+            f"{scenario_path}/when/charge_price_points.csv",
+            charge_link_periods_schema,
+        )
+
+        charge_link_periods = spark.createDataFrame(charge_link_periods.rdd, schema=charge_link_periods_schema,
+                                                    verifySchema=True)
+        charge_price_information_periods = spark.createDataFrame(charge_price_information_periods.rdd, schema=charge_price_information_periods_schema,
+                                                    verifySchema=True)
+        charge_price_points = spark.createDataFrame(charge_price_points.rdd,
+                                                                 schema=charge_link_periods_schema,
+                                                                 verifySchema=True)
+        #Mock
+        migrations_wholesale_repository.read_charge_link_periods.return_value = charge_link_periods
+        migrations_wholesale_repository.read_charge_price_information_periods.return_value = charge_price_information_periods
+        migrations_wholesale_repository.read_charge_price_points.return_value = charge_price_points
 
     # Execute the calculation logic
     calculation_output = CalculationCore().execute(
@@ -116,22 +148,37 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
     )
 
     # Return test cases
-    return TestCases(
-        [
+    test_cases = [
+        TestCase(
+            expected_csv_path=f"{scenario_path}/then/basis_data/grid_loss_metering_points.csv",
+            actual=calculation_output.basis_data_output.grid_loss_metering_points
+        ),
+        TestCase(
+            expected_csv_path=f"{scenario_path}/then/basis_data/metering_point_periods.csv",
+            actual=calculation_output.basis_data_output.metering_point_periods
+        ),
+        TestCase(
+            expected_csv_path=f"{scenario_path}/then/basis_data/time_series_points.csv",
+            actual=calculation_output.basis_data_output.time_series_points
+        )]
+
+    if "wholesale_calculation" in scenario_path:
+        test_cases.extend([
             TestCase(
-                expected_csv_path=f"{scenario_path}/then/basis_data/grid_loss_metering_points.csv",
-                actual=calculation_output.basis_data_output.grid_loss_metering_points
+                expected_csv_path=f"{scenario_path}/then/basis_data/charge_link_periods.csv",
+                actual=calculation_output.basis_data_output.charge_link_periods
             ),
             TestCase(
-                expected_csv_path=f"{scenario_path}/then/basis_data/metering_point_periods.csv",
-                actual=calculation_output.basis_data_output.metering_point_periods
+                expected_csv_path=f"{scenario_path}/then/basis_data/charge_price_information_periods.csv",
+                actual=calculation_output.basis_data_output.charge_price_information_periods
             ),
             TestCase(
-                expected_csv_path=f"{scenario_path}/then/basis_data/time_series_points.csv",
-                actual=calculation_output.basis_data_output.time_series_points
+                expected_csv_path=f"{scenario_path}/then/basis_data/charge_price_points.csv",
+                actual=calculation_output.basis_data_output.charge_price_points
             )
-        ]
-    )
+        ])
+
+    return TestCases(test_cases)
 
 @pytest.fixture(scope="session")
 def assert_dataframes_configuration(
