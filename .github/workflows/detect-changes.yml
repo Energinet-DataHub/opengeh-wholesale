@@ -27,8 +27,6 @@ on:
         value: ${{ jobs.changes.outputs.any_databricks }}
       calculator_job:
         value: ${{ jobs.changes.outputs.calculator_job }}
-      settlement_report_job:
-        value: ${{ jobs.changes.outputs.settlement_report_job }}
       delta_migrations:
         value: ${{ jobs.changes.outputs.delta_migrations }}
       dotnet:
@@ -52,7 +50,6 @@ jobs:
     outputs:
       any_databricks: ${{ steps.filter.outputs.any_databricks }}
       calculator_job: ${{ steps.filter.outputs.calculator_job }}
-      settlement_report_job: ${{ steps.filter.outputs.settlement_report_job }}
       delta_migrations: ${{ steps.filter.outputs.delta_migrations }}
       dotnet: ${{ steps.filter.outputs.dotnet }}
       db_migrations: ${{ steps.filter.outputs.db_migrations }}
@@ -80,8 +77,6 @@ jobs:
               - 'source/databricks/**'
             calculator_job:
               - 'source/databricks/calculation_engine/**'
-            settlement_report_job:
-              - 'source/databricks/settlement_report/**'
             delta_migrations:
               - 'source/databricks/calculation_engine/package/datamigration/**'
               - 'source/databricks/calculation_engine/tests/datamigration/**'
