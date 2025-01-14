@@ -187,3 +187,21 @@ variable "budget_alert_amount" {
   type        = number
   description = "The budget amount for this subproduct"
 }
+
+variable "mssql_min_capacity_vcore" {
+  type        = number
+  description = "Minimum compute capacity of the MSSQL database."
+  default     = 0.5
+}
+
+variable "mssql_max_size_gb" {
+  type        = number
+  description = "Maximum size of the MSSQL database in GB."
+  default     = 2
+}
+
+variable "mssql_sku_name" {
+  type        = string
+  description = "The SKU name of the MSSQL database."
+  default     = "GP_S_Gen5_1"
+}
