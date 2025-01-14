@@ -7,17 +7,16 @@ module "mssqldb_wholesale" {
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
-  max_size_gb          = 10
 
   server = {
     name                = data.azurerm_key_vault_secret.mssql_data_name.value
     resource_group_name = data.azurerm_key_vault_secret.mssql_data_resource_group_name.value
   }
 
-  elastic_pool = {
-    name                = data.azurerm_key_vault_secret.mssql_data_elastic_pool_name.value
-    resource_group_name = data.azurerm_key_vault_secret.mssql_data_elastic_pool_resource_group_name.value
-  }
+  sku_name                    = var.mssql_sku_name
+  min_capacity                = var.mssql_min_capacity_vcore
+  max_size_gb                 = var.mssql_max_size_gb
+  auto_pause_delay_in_minutes = -1
 
   monitor_action_group = length(module.monitor_action_group_wholesale) != 1 ? null : {
     id                  = module.monitor_action_group_wholesale[0].id
