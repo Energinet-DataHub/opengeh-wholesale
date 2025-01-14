@@ -1,3 +1,4 @@
+# Legacy database - Mosaic will clean up in. Track with this issue: https://app.zenhub.com/workspaces/mosaic-60a6105157304f00119be86e/issues/gh/energinet-datahub/team-mosaic/388
 module "mssqldb_process_manager" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.1.0"
 
@@ -12,12 +13,13 @@ module "mssqldb_process_manager" {
     resource_group_name = data.azurerm_key_vault_secret.mssql_data_resource_group_name.value
   }
 
-  elastic_pool = {
-    name                = data.azurerm_key_vault_secret.mssql_data_elastic_pool_name.value
-    resource_group_name = data.azurerm_key_vault_secret.mssql_data_elastic_pool_resource_group_name.value
-  }
+  # Minimal cost with dedicated compute resources - not configurable using variables
+  sku_name                    = "GP_S_Gen5_1"
+  min_capacity                = 0.5
+  max_size_gb                 = 1
+  auto_pause_delay_in_minutes = -1
 
-  monitor_action_group  = length(module.monitor_action_group_edi) != 1 ? null : {
+  monitor_action_group = length(module.monitor_action_group_edi) != 1 ? null : {
     id                  = module.monitor_action_group_edi[0].id
     resource_group_name = azurerm_resource_group.this.name
   }
