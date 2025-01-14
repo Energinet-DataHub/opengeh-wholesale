@@ -5,3 +5,6 @@ dh2_bridge_sender_party_gln    = "45V000000000184K"
 dh2_endpoint                   = "https://b2b.datahub.dk"
 alert_email_address            = "03a382d9.energinet.onmicrosoft.com@emea.teams.ms"
 budget_alert_amount            = 3300 # See issue 2359
+mssql_sku_name                 = "GP_S_Gen5_2"
+mssql_min_capacity_vcore       = 1
+mssql_max_size_gb              = 10
