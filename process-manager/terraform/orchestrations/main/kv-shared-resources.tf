@@ -47,3 +47,8 @@ data "azurerm_key_vault_secret" "sbt_edi_id" {
   name         = "sbt-edi-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "evh_measurement_transactions_id" {
+  name         = "evh-measurement-transactions-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}

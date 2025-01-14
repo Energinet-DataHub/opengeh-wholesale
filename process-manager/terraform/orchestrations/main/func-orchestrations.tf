@@ -51,6 +51,11 @@ module "func_orchestrations" {
       resource_id          = data.azurerm_key_vault_secret.sbt_edi_id.value
       role_definition_name = "Azure Service Bus Data Owner"
     },
+    {
+      // Azure Shared Event Hubs Data Sender
+      resource_id          = data.azurerm_key_vault_secret.evh_measurement_transactions_id.value
+      role_definition_name = "Azure Event Hubs Data Sender"
+    },
   ]
 }
 
