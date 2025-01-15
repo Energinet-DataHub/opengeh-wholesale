@@ -206,13 +206,13 @@ resource "databricks_job" "migration_workflow" {
         "spark.master" : "local[*, 4]"
       }
       spark_env_vars = {
-        "APPI_INSTRUMENTATION_KEY"        = azurerm_application_insights.this.instrumentation_key
-        "APPI_CONNECTION_STRING"          = azurerm_application_insights.this.connection_string
-        "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.this.name
-        "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.this.name
-        "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.this.name
-        "AUDIT_STORAGE_ACCOUNT"           = azurerm_storage_account.this.name
-        "CATALOG_NAME"                    = local.databricks_unity_catalog_name
+        "APPI_INSTRUMENTATION_KEY"              = azurerm_application_insights.this.instrumentation_key
+        "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.this.connection_string
+        "LANDING_STORAGE_ACCOUNT"               = azurerm_storage_account.this.name
+        "DATALAKE_STORAGE_ACCOUNT"              = azurerm_storage_account.this.name
+        "DATALAKE_SHARED_STORAGE_ACCOUNT"       = azurerm_storage_account.this.name
+        "AUDIT_STORAGE_ACCOUNT"                 = azurerm_storage_account.this.name
+        "CATALOG_NAME"                          = local.databricks_unity_catalog_name
       }
     }
   }
@@ -293,13 +293,13 @@ resource "databricks_cluster" "shared_all_purpose_integration_test" {
     "spark.master" : "local[*, 4]"
   }
   spark_env_vars = {
-    "APPI_INSTRUMENTATION_KEY"        = azurerm_application_insights.this.instrumentation_key
-    "APPI_CONNECTION_STRING"          = azurerm_application_insights.this.connection_string
-    "LANDING_STORAGE_ACCOUNT"         = azurerm_storage_account.this.name
-    "DATALAKE_STORAGE_ACCOUNT"        = azurerm_storage_account.this.name
-    "DATALAKE_SHARED_STORAGE_ACCOUNT" = azurerm_storage_account.this.name
-    "AUDIT_STORAGE_ACCOUNT"           = azurerm_storage_account.this.name
-    "CATALOG_NAME"                    = local.databricks_unity_catalog_name
+    "APPI_INSTRUMENTATION_KEY"              = azurerm_application_insights.this.instrumentation_key
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.this.connection_string
+    "LANDING_STORAGE_ACCOUNT"               = azurerm_storage_account.this.name
+    "DATALAKE_STORAGE_ACCOUNT"              = azurerm_storage_account.this.name
+    "DATALAKE_SHARED_STORAGE_ACCOUNT"       = azurerm_storage_account.this.name
+    "AUDIT_STORAGE_ACCOUNT"                 = azurerm_storage_account.this.name
+    "CATALOG_NAME"                          = local.databricks_unity_catalog_name
   }
 
   depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
