@@ -757,27 +757,6 @@
         "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian,Mosaic,Intermediate Technology",
         "technology" : "Azure Databricks SQL Warehouse"
       }, {
-        "description" : "Executes delta SQL queries",
-        "documentation" : { },
-        "group" : "Wholesale/Databricks Workspace",
-        "id" : "81",
-        "name" : "Settlement Reports Warehouse",
-        "properties" : {
-          "structurizr.dsl.identifier" : "settlementreportswarehouse"
-        },
-        "relationships" : [ {
-          "description" : "Read basis data and results",
-          "destinationId" : "23",
-          "id" : "82",
-          "properties" : {
-            "structurizr.dsl.identifier" : "f8b76667-499f-4d8b-adb5-8bf439180f1d"
-          },
-          "sourceId" : "81",
-          "tags" : "Relationship"
-        } ],
-        "tags" : "Element,Container,Microsoft Azure - Azure Databricks,Mandalorian,Raccoons,Intermediate Technology",
-        "technology" : "Azure Databricks SQL Warehouse"
-      }, {
         "description" : "Meta data of calculations",
         "documentation" : { },
         "group" : "Wholesale",
