@@ -24,6 +24,13 @@ resource "databricks_secret" "appi_instrumentation_key" {
   scope        = databricks_secret_scope.migration_scope.id
 }
 
+resource "databricks_secret" "appi_shared_connection_string" {
+  provider     = databricks.dbw
+  key          = "appi_shared_connection_string"
+  string_value = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+  scope        = databricks_secret_scope.migration_scope.id
+}
+
 resource "databricks_secret" "st_dh2data_storage_account" {
   provider     = databricks.dbw
   key          = "st_dh2data_storage_account"
