@@ -1,5 +1,5 @@
 module "mssql_this" { # Needs to be a named like this or it would delete all databases
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=mssql-server_7.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=mssql-server_8.0.0"
 
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
@@ -14,20 +14,7 @@ module "mssql_this" { # Needs to be a named like this or it would delete all dat
 
   ad_group_directory_reader = var.ad_group_directory_reader
 
-  elastic_pool_max_size_gb      = 100
   public_network_access_enabled = true
-
-  # If using DTU model then see pool limits based on SKU here: https://learn.microsoft.com/en-us/azure/azure-sql/database/resource-limits-dtu-elastic-pools?view=azuresql#standard-elastic-pool-limits
-  elastic_pool_sku = {
-    name     = "StandardPool"
-    tier     = "Standard"
-    capacity = 200
-  }
-
-  elastic_pool_per_database_settings = {
-    min_capacity = 0
-    max_capacity = 100
-  }
 
   private_endpoint_subnet_id = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
   audit_storage_account = var.enable_audit_logs ? {
