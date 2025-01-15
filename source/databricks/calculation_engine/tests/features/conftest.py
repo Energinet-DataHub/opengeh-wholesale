@@ -105,7 +105,6 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
     migrations_wholesale_repository.read_time_series_points.return_value = time_series_points
     migrations_wholesale_repository.read_metering_point_periods.return_value = metering_point_periods
 
-
     wholesale_internal_repository: WholesaleInternalRepository = Mock()
     wholesale_internal_repository.read_grid_loss_metering_point_ids.return_value = grid_loss_metering_points
 
@@ -116,25 +115,23 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
             f"{scenario_path}/when/charge_link_periods.csv",
             charge_link_periods_schema,
         )
+        charge_link_periods = spark.createDataFrame(charge_link_periods.rdd, schema=charge_link_periods_schema, verifySchema=True)
+
         charge_price_information_periods = read_csv(
             spark,
             f"{scenario_path}/when/charge_price_information_periods.csv",
             charge_price_information_periods_schema,
         )
+        charge_price_information_periods = spark.createDataFrame(charge_price_information_periods.rdd, schema=charge_price_information_periods_schema, verifySchema=True)
+
         charge_price_points = read_csv(
             spark,
             f"{scenario_path}/when/charge_price_points.csv",
             charge_price_points_schema,
         )
+        charge_price_points = spark.createDataFrame(charge_price_points.rdd, schema=charge_price_points_schema, verifySchema=True)
 
-        charge_link_periods = spark.createDataFrame(charge_link_periods.rdd, schema=charge_link_periods_schema,
-                                                    verifySchema=True)
-        charge_price_information_periods = spark.createDataFrame(charge_price_information_periods.rdd, schema=charge_price_information_periods_schema,
-                                                    verifySchema=True)
-        charge_price_points = spark.createDataFrame(charge_price_points.rdd,
-                                                                 schema=charge_price_points_schema,
-                                                                 verifySchema=True)
-        #Mock
+        #Mock the dataframes specific to the wholesales
         migrations_wholesale_repository.read_charge_link_periods.return_value = charge_link_periods
         migrations_wholesale_repository.read_charge_price_information_periods.return_value = charge_price_information_periods
         migrations_wholesale_repository.read_charge_price_points.return_value = charge_price_points
@@ -163,6 +160,7 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
             actual=calculation_output.basis_data_output.time_series_points
         )]
 
+    # Apply the test case for additional dataframes when the test is applied to the wholesale_calculation
     if "wholesale_calculation" in scenario_path:
         test_cases.extend([
             TestCase(
@@ -178,6 +176,8 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
                 actual=calculation_output.basis_data_output.charge_price_points
             )
         ])
+
+    # Defining logic for when the dataframe is in 'Then' folder and not in 'When', then return none for the test for the wholesale_results
     if calculation_output.wholesale_results_output is not None:
         test_cases.extend([
             TestCase(
@@ -222,6 +222,7 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
             )
         ])
 
+        # Defining logic for when the dataframe is in 'Then' folder and not in 'When', then return none for the test for the energy_results
         if calculation_output.energy_results_output is not None:
             test_cases.extend([
                 TestCase(
@@ -244,6 +245,34 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
                     expected_csv_path=f"{scenario_path}/then/energy_results/total_consumption.csv",
                     actual=calculation_output.energy_results_output.total_consumption
                 ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption_per_es.csv",
+                    actual=calculation_output.energy_results_output.non_profiled_consumption_per_es
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/flex_consumption.csv",
+                    actual=calculation_output.energy_results_output.flex_consumption
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption.csv",
+                    actual=calculation_output.energy_results_output.non_profiled_consumption
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption_per_es.csv",
+                    actual=calculation_output.energy_results_output.non_profiled_consumption_per_es
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/production.csv",
+                    actual=calculation_output.energy_results_output.production
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/temporary_flex_consumption.csv",
+                    actual=calculation_output.energy_results_output.temporary_flex_consumption
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/temporary_production.csv",
+                    actual=calculation_output.energy_results_output.temporary_production
+                )
             ])
 
     return TestCases(test_cases)
