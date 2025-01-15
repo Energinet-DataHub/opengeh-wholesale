@@ -20,12 +20,23 @@ resource "databricks_permission_assignment" "developers" {
   depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
+data "azurerm_client_config" "current" {}
+
+# Give SPN access to the catalog
+resource "databricks_grant" "self" {
+  catalog    = local.databricks_unity_catalog_name
+  principal  = data.azurerm_client_config.current.client_id
+  privileges = ["ALL_PRIVILEGES"]
+
+  depends_on = [azurerm_databricks_workspace.this]
+}
+
 resource "databricks_grant" "developer_access_catalog" {
   catalog    = local.databricks_unity_catalog_name
   principal  = "SEC-G-Datahub-DevelopersAzure"
   privileges = ["USE_CATALOG", "SELECT", "READ_VOLUME", "USE_SCHEMA"]
 
-  depends_on = [azurerm_databricks_workspace.this, databricks_permission_assignment.developers, databricks_token.pat]
+  depends_on = [databricks_grant.self, azurerm_databricks_workspace.this, databricks_permission_assignment.developers, databricks_token.pat]
 }
 
 resource "databricks_sql_global_config" "sql_global_config_integration_test" {

@@ -75,37 +75,8 @@ jobs:
         working-directory: integration-test/terraform/main
         run: terraform init
 
+      # Terraform Apply, Obtain Terraform output and Terraform Cleanup are temporarily disabled, due to problems with granting permissions to Databricks catalogs
       - name: Terraform Plan
         shell: bash
         working-directory: integration-test/terraform/main
         run: terraform plan -out=tfplan
-
-      - name: Terraform Apply
-        shell: bash
-        working-directory: integration-test/terraform/main
-        run: terraform apply tfplan
-
-      - name: Obtain Terraform output
-        if: always()
-        shell: bash
-        id: terraform_output
-        working-directory: integration-test/terraform/main
-        run: |
-          echo "resource_group_name=$(terraform output -json | jq -r .resource_group_name.value)" >>$GITHUB_OUTPUT
-          echo "dbw_resource_group_name=$(terraform output -json | jq -r .dbw_resource_group_name.value)" >>$GITHUB_OUTPUT
-
-      - name: Terraform Cleanup AZ CLI
-        if: always()
-        shell: pwsh
-        run: |
-          $groupExists = az group exists --name ${{ steps.terraform_output.outputs.resource_group_name }}
-          # We delete the group here, as we need to wait on the resource group to be deleted
-          # before we can delete the databricks resource group, as it creates deny assignments
-          if ($groupExists) {
-            Write-Host "Deleting resource group ${{ steps.terraform_output.outputs.resource_group_name }}"
-            az group delete --name ${{ steps.terraform_output.outputs.resource_group_name }} --yes
-          }
-          # We need to delete it manually, as it created unity catalog resources automatically
-          # It uses resource delete, as databricks outputs the resource id, and not the resource group name
-          Write-Host "Deleting databricks resource group ${{ steps.terraform_output.outputs.dbw_resource_group_name }}"
-          az resource delete --ids ${{ steps.terraform_output.outputs.dbw_resource_group_name }}
