@@ -111,7 +111,7 @@ public class WholesaleInboxTriggerTests : IAsyncLifetime
             BusinessReason = DataHubNames.BusinessReason.WholesaleFixing,
             GridAreaCodes = { "804" },
             RequestedForActorNumber = "1234567890123",
-            RequestedForActorRole = DataHubNames.ActorRole.GridOperator,
+            RequestedForActorRole = DataHubNames.ActorRole.GridAccessProvider,
             Resolution = DataHubNames.Resolution.Hourly,
         };
 
