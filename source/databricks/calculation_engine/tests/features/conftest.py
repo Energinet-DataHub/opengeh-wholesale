@@ -7,6 +7,8 @@ from pyspark.sql import SparkSession
 from testcommon.dataframes import AssertDataframesConfiguration, read_csv
 from testcommon.etl import TestCase, TestCases
 
+from features.utils.calculation_args import create_calculation_args
+from package.calculation import CalculationCore, PreparedDataReader
 from package.codelists.calculation_type import is_wholesale_calculation_type
 from package.databases.migrations_wholesale.schemas import charge_price_points_schema
 from tests.features.utils.expected_output import ExpectedOutput
@@ -15,31 +17,22 @@ from tests.features.utils.views.dataframe_wrapper import DataframeWrapper
 from tests.features.utils.views.view_scenario_executor import ViewScenarioExecutor
 from package.calculation.calculation_output import CalculationOutput
 
-
-from source.databricks.calculation_engine.package.calculation import (
-    CalculationCore,
-    PreparedDataReader,
-)
-
-from source.databricks.calculation_engine.package.databases.migrations_wholesale import (
+from package.databases.migrations_wholesale import (
     MigrationsWholesaleRepository,
 )
-from source.databricks.calculation_engine.package.databases.migrations_wholesale.schemas import (
+from package.databases.migrations_wholesale.schemas import (
     time_series_points_schema,
     metering_point_periods_schema,
     charge_link_periods_schema,
     charge_price_information_periods_schema,
 )
-from source.databricks.calculation_engine.package.databases.wholesale_internal import (
+from package.databases.wholesale_internal import (
     WholesaleInternalRepository,
 )
-from source.databricks.calculation_engine.package.databases.wholesale_internal.schemas import (
+from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
 
-from source.databricks.calculation_engine.tests.features.utils.calculation_args import (
-    create_calculation_args,
-)
 from testsession_configuration import TestSessionConfiguration
 
 
