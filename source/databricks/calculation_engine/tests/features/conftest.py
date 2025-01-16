@@ -2,7 +2,6 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-import yaml
 from _pytest.fixtures import FixtureRequest
 from pyspark.sql import SparkSession
 from testcommon.dataframes import AssertDataframesConfiguration, read_csv
@@ -14,7 +13,6 @@ from tests.features.utils.views.dataframe_wrapper import DataframeWrapper
 from tests.features.utils.views.view_scenario_executor import ViewScenarioExecutor
 from package.calculation.calculation_output import CalculationOutput
 
-from databricks.calculation_engine.package.codelists import CalculationType
 from databricks.calculation_engine.package.codelists.calculation_type import (
     is_wholesale_calculation_type,
 )
@@ -25,9 +23,7 @@ from source.databricks.calculation_engine.package.calculation import (
     CalculationCore,
     PreparedDataReader,
 )
-from source.databricks.calculation_engine.package.calculation.calculator_args import (
-    CalculatorArgs,
-)
+
 from source.databricks.calculation_engine.package.databases.migrations_wholesale import (
     MigrationsWholesaleRepository,
 )
