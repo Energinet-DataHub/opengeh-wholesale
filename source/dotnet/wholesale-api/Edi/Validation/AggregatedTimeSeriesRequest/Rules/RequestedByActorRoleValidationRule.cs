@@ -25,7 +25,7 @@ public sealed class RequestedByActorRoleValidationRule : IValidationRule<DataHub
             DataHubNames.ActorRole.MeteredDataResponsible => new List<ValidationError>(),
             DataHubNames.ActorRole.BalanceResponsibleParty => new List<ValidationError>(),
             DataHubNames.ActorRole.EnergySupplier => new List<ValidationError>(),
-            DataHubNames.ActorRole.GridOperator => new List<ValidationError>
+            DataHubNames.ActorRole.GridAccessProvider => new List<ValidationError>
             {
                 new(
                     "Rollen skal være MDR når der anmodes om beregnede energitidsserier / Role must be MDR when requesting aggregated measure data",
