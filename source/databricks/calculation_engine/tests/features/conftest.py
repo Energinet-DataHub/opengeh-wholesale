@@ -14,18 +14,39 @@ from tests.features.utils.views.dataframe_wrapper import DataframeWrapper
 from tests.features.utils.views.view_scenario_executor import ViewScenarioExecutor
 from package.calculation.calculation_output import CalculationOutput
 
-from databricks.calculation_engine.package.databases.migrations_wholesale.schemas import charge_price_points_schema
-from source.databricks.calculation_engine.package.calculation import CalculationCore, PreparedDataReader
-from source.databricks.calculation_engine.package.calculation.calculator_args import CalculatorArgs
-from source.databricks.calculation_engine.package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from source.databricks.calculation_engine.package.databases.migrations_wholesale.schemas import \
-    time_series_points_schema, metering_point_periods_schema, charge_link_periods_schema, \
-    charge_price_information_periods_schema
-from source.databricks.calculation_engine.package.databases.wholesale_internal import WholesaleInternalRepository
-from source.databricks.calculation_engine.package.databases.wholesale_internal.schemas import \
-    grid_loss_metering_point_ids_schema
+from databricks.calculation_engine.package.codelists import CalculationType
+from databricks.calculation_engine.package.codelists.calculation_type import (
+    is_wholesale_calculation_type,
+)
+from databricks.calculation_engine.package.databases.migrations_wholesale.schemas import (
+    charge_price_points_schema,
+)
+from source.databricks.calculation_engine.package.calculation import (
+    CalculationCore,
+    PreparedDataReader,
+)
+from source.databricks.calculation_engine.package.calculation.calculator_args import (
+    CalculatorArgs,
+)
+from source.databricks.calculation_engine.package.databases.migrations_wholesale import (
+    MigrationsWholesaleRepository,
+)
+from source.databricks.calculation_engine.package.databases.migrations_wholesale.schemas import (
+    time_series_points_schema,
+    metering_point_periods_schema,
+    charge_link_periods_schema,
+    charge_price_information_periods_schema,
+)
+from source.databricks.calculation_engine.package.databases.wholesale_internal import (
+    WholesaleInternalRepository,
+)
+from source.databricks.calculation_engine.package.databases.wholesale_internal.schemas import (
+    grid_loss_metering_point_ids_schema,
+)
 
-from source.databricks.calculation_engine.tests.features.utils.calculation_args import create_calculation_args
+from source.databricks.calculation_engine.tests.features.utils.calculation_args import (
+    create_calculation_args,
+)
 from testsession_configuration import TestSessionConfiguration
 
 
@@ -70,6 +91,7 @@ def actual_and_expected_views(
     executor = ViewScenarioExecutor(spark)
     return executor.execute(scenario_path)
 
+
 @pytest.fixture(scope="module")
 def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases:
     """Fixture used for scenario tests. Learn more in package `testcommon.etl`."""
@@ -84,57 +106,91 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         f"{scenario_path}/when/time_series_points.csv",
         time_series_points_schema,
     )
-    time_series_points = spark.createDataFrame(time_series_points.rdd, schema=time_series_points_schema, verifySchema=True)
+    time_series_points = spark.createDataFrame(
+        time_series_points.rdd, schema=time_series_points_schema, verifySchema=True
+    )
 
     grid_loss_metering_points = read_csv(
         spark,
         f"{scenario_path}/when/grid_loss_metering_points.csv",
         grid_loss_metering_point_ids_schema,
     )
-    grid_loss_metering_points = spark.createDataFrame(grid_loss_metering_points.rdd, schema=grid_loss_metering_point_ids_schema, verifySchema=True)
+    grid_loss_metering_points = spark.createDataFrame(
+        grid_loss_metering_points.rdd,
+        schema=grid_loss_metering_point_ids_schema,
+        verifySchema=True,
+    )
 
     metering_point_periods = read_csv(
         spark,
         f"{scenario_path}/when/metering_point_periods.csv",
         metering_point_periods_schema,
     )
-    metering_point_periods = spark.createDataFrame(metering_point_periods.rdd, schema=metering_point_periods_schema, verifySchema=True)
+    metering_point_periods = spark.createDataFrame(
+        metering_point_periods.rdd,
+        schema=metering_point_periods_schema,
+        verifySchema=True,
+    )
 
     # Defining the mocks for the data frames in the "when" folder
     migrations_wholesale_repository: MigrationsWholesaleRepository = Mock()
-    migrations_wholesale_repository.read_time_series_points.return_value = time_series_points
-    migrations_wholesale_repository.read_metering_point_periods.return_value = metering_point_periods
+    migrations_wholesale_repository.read_time_series_points.return_value = (
+        time_series_points
+    )
+    migrations_wholesale_repository.read_metering_point_periods.return_value = (
+        metering_point_periods
+    )
 
     wholesale_internal_repository: WholesaleInternalRepository = Mock()
-    wholesale_internal_repository.read_grid_loss_metering_point_ids.return_value = grid_loss_metering_points
+    wholesale_internal_repository.read_grid_loss_metering_point_ids.return_value = (
+        grid_loss_metering_points
+    )
 
     # Only for wholesale we need these additional tests
-    if "wholesale_calculation" in scenario_path:
+    if is_wholesale_calculation_type(calculation_args.calculation_type):
         charge_link_periods = read_csv(
             spark,
             f"{scenario_path}/when/charge_link_periods.csv",
             charge_link_periods_schema,
         )
-        charge_link_periods = spark.createDataFrame(charge_link_periods.rdd, schema=charge_link_periods_schema, verifySchema=True)
+        charge_link_periods = spark.createDataFrame(
+            charge_link_periods.rdd,
+            schema=charge_link_periods_schema,
+            verifySchema=True,
+        )
 
         charge_price_information_periods = read_csv(
             spark,
             f"{scenario_path}/when/charge_price_information_periods.csv",
             charge_price_information_periods_schema,
         )
-        charge_price_information_periods = spark.createDataFrame(charge_price_information_periods.rdd, schema=charge_price_information_periods_schema, verifySchema=True)
+        charge_price_information_periods = spark.createDataFrame(
+            charge_price_information_periods.rdd,
+            schema=charge_price_information_periods_schema,
+            verifySchema=True,
+        )
 
         charge_price_points = read_csv(
             spark,
             f"{scenario_path}/when/charge_price_points.csv",
             charge_price_points_schema,
         )
-        charge_price_points = spark.createDataFrame(charge_price_points.rdd, schema=charge_price_points_schema, verifySchema=True)
+        charge_price_points = spark.createDataFrame(
+            charge_price_points.rdd,
+            schema=charge_price_points_schema,
+            verifySchema=True,
+        )
 
-        #Mock the dataframes specific to the wholesales
-        migrations_wholesale_repository.read_charge_link_periods.return_value = charge_link_periods
-        migrations_wholesale_repository.read_charge_price_information_periods.return_value = charge_price_information_periods
-        migrations_wholesale_repository.read_charge_price_points.return_value = charge_price_points
+        # Mock the dataframes specific to the wholesales
+        migrations_wholesale_repository.read_charge_link_periods.return_value = (
+            charge_link_periods
+        )
+        migrations_wholesale_repository.read_charge_price_information_periods.return_value = (
+            charge_price_information_periods
+        )
+        migrations_wholesale_repository.read_charge_price_points.return_value = (
+            charge_price_points
+        )
 
     # Execute the calculation logic
     calculation_output = CalculationCore().execute(
@@ -146,164 +202,172 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
     )
 
     # Return test cases
-    test_cases = [
-        TestCase(
-            expected_csv_path=f"{scenario_path}/then/basis_data/grid_loss_metering_points.csv",
-            actual=calculation_output.basis_data_output.grid_loss_metering_points
-        ),
-        TestCase(
-            expected_csv_path=f"{scenario_path}/then/basis_data/metering_point_periods.csv",
-            actual=calculation_output.basis_data_output.metering_point_periods
-        ),
-        TestCase(
-            expected_csv_path=f"{scenario_path}/then/basis_data/time_series_points.csv",
-            actual=calculation_output.basis_data_output.time_series_points
-        )]
+    test_cases = []
 
-    # Apply the test case for additional dataframes when the test is applied to the wholesale_calculation
-    if "wholesale_calculation" in scenario_path:
-        test_cases.extend([
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/basis_data/charge_link_periods.csv",
-                actual=calculation_output.basis_data_output.charge_link_periods
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/basis_data/charge_price_information_periods.csv",
-                actual=calculation_output.basis_data_output.charge_price_information_periods
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/basis_data/charge_price_points.csv",
-                actual=calculation_output.basis_data_output.charge_price_points
-            )
-        ])
+    if (
+        calculation_output.basis_data_output
+    ):  # logic to look into any folders that are defined in the calculation_output
+        test_cases.extend(
+            [
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/basis_data/grid_loss_metering_points.csv",
+                    actual=calculation_output.basis_data_output.grid_loss_metering_points,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/basis_data/metering_point_periods.csv",
+                    actual=calculation_output.basis_data_output.metering_point_periods,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/basis_data/time_series_points.csv",
+                    actual=calculation_output.basis_data_output.time_series_points,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/basis_data/charge_link_periods.csv",
+                    actual=calculation_output.basis_data_output.charge_link_periods,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/basis_data/charge_price_information_periods.csv",
+                    actual=calculation_output.basis_data_output.charge_price_information_periods,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/basis_data/charge_price_points.csv",
+                    actual=calculation_output.basis_data_output.charge_price_points,
+                ),
+            ]
+        )
 
     # Defining logic for when the dataframe is in 'Then' folder and not in 'When', then return none for the test for the wholesale_results
-    if calculation_output.wholesale_results_output is not None:
-        test_cases.extend([
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/wholesale_results/daily_tariff_per_co_es.csv",
-                actual=calculation_output.wholesale_results_output.daily_tariff_per_co_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/wholesale_results/hourly_tariff_per_co_es.csv",
-                actual=calculation_output.wholesale_results_output.hourly_tariff_per_co_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/wholesale_results/fee_per_co_es.csv",
-                actual=calculation_output.wholesale_results_output.fee_per_co_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/wholesale_results/subscription_per_co_es.csv",
-                actual=calculation_output.wholesale_results_output.subscription_per_co_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/wholesale_results/monthly_subscription_per_co_es.csv",
-                actual=calculation_output.wholesale_results_output.monthly_subscription_per_co_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/wholesale_results/monthly_fee_per_co_es.csv",
-                actual=calculation_output.wholesale_results_output.monthly_fee_per_co_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/wholesale_results/monthly_tariff_from_daily_per_co_es.csv",
-                actual=calculation_output.wholesale_results_output.monthly_tariff_from_daily_per_co_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/wholesale_results/monthly_tariff_from_hourly_per_co_es.csv",
-                actual=calculation_output.wholesale_results_output.monthly_tariff_from_hourly_per_co_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/wholesale_results/total_monthly_amounts_per_es.csv",
-                actual=calculation_output.wholesale_results_output.total_monthly_amounts_per_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/wholesale_results/total_monthly_amounts_per_co_es.csv",
-                actual=calculation_output.wholesale_results_output.total_monthly_amounts_per_co_es
-            )
-        ])
+    if calculation_output.wholesale_results_output:
+        test_cases.extend(
+            [
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/wholesale_results/daily_tariff_per_co_es.csv",
+                    actual=calculation_output.wholesale_results_output.daily_tariff_per_co_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/wholesale_results/hourly_tariff_per_co_es.csv",
+                    actual=calculation_output.wholesale_results_output.hourly_tariff_per_co_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/wholesale_results/fee_per_co_es.csv",
+                    actual=calculation_output.wholesale_results_output.fee_per_co_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/wholesale_results/subscription_per_co_es.csv",
+                    actual=calculation_output.wholesale_results_output.subscription_per_co_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/wholesale_results/monthly_subscription_per_co_es.csv",
+                    actual=calculation_output.wholesale_results_output.monthly_subscription_per_co_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/wholesale_results/monthly_fee_per_co_es.csv",
+                    actual=calculation_output.wholesale_results_output.monthly_fee_per_co_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/wholesale_results/monthly_tariff_from_daily_per_co_es.csv",
+                    actual=calculation_output.wholesale_results_output.monthly_tariff_from_daily_per_co_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/wholesale_results/monthly_tariff_from_hourly_per_co_es.csv",
+                    actual=calculation_output.wholesale_results_output.monthly_tariff_from_hourly_per_co_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/wholesale_results/total_monthly_amounts_per_es.csv",
+                    actual=calculation_output.wholesale_results_output.total_monthly_amounts_per_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/wholesale_results/total_monthly_amounts_per_co_es.csv",
+                    actual=calculation_output.wholesale_results_output.total_monthly_amounts_per_co_es,
+                ),
+            ]
+        )
 
     # Defining logic for when the dataframe is in 'Then' folder and not in 'When', then return none for the test for the energy_results
-    if calculation_output.energy_results_output is not None:
-        test_cases.extend([
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/exchange.csv",
-                actual=calculation_output.energy_results_output.exchange
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/flex_consumption_per_es.csv",
-                actual=calculation_output.energy_results_output.flex_consumption_per_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/grid_loss.csv",
-                actual=calculation_output.energy_results_output.grid_loss
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/production_per_es.csv",
-                actual=calculation_output.energy_results_output.production_per_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/total_consumption.csv",
-                actual=calculation_output.energy_results_output.total_consumption
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption_per_es.csv",
-                actual=calculation_output.energy_results_output.non_profiled_consumption_per_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/flex_consumption.csv",
-                actual=calculation_output.energy_results_output.flex_consumption
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption.csv",
-                actual=calculation_output.energy_results_output.non_profiled_consumption
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption_per_es.csv",
-                actual=calculation_output.energy_results_output.non_profiled_consumption_per_es
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/production.csv",
-                actual=calculation_output.energy_results_output.production
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/temporary_flex_consumption.csv",
-                actual=calculation_output.energy_results_output.temporary_flex_consumption
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/temporary_production.csv",
-                actual=calculation_output.energy_results_output.temporary_production
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/exchange_per_neighbor.csv",
-                actual=calculation_output.energy_results_output.exchange_per_neighbor
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/negative_grid_loss.csv",
-                actual=calculation_output.energy_results_output.negative_grid_loss
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/positive_grid_loss.csv",
-                actual=calculation_output.energy_results_output.positive_grid_loss
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/flex_consumption_per_brp.csv",
-                actual=calculation_output.energy_results_output.flex_consumption_per_brp
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption_per_brp.csv",
-                actual=calculation_output.energy_results_output.non_profiled_consumption_per_brp
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption_per_brp.csv",
-                actual=calculation_output.energy_results_output.non_profiled_consumption_per_brp
-            ),
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/energy_results/production_per_brp.csv",
-                actual=calculation_output.energy_results_output.production_per_brp
-            )
-        ])
+    if calculation_output.energy_results_output:
+        test_cases.extend(
+            [
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/exchange.csv",
+                    actual=calculation_output.energy_results_output.exchange,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/flex_consumption_per_es.csv",
+                    actual=calculation_output.energy_results_output.flex_consumption_per_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/grid_loss.csv",
+                    actual=calculation_output.energy_results_output.grid_loss,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/production_per_es.csv",
+                    actual=calculation_output.energy_results_output.production_per_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/total_consumption.csv",
+                    actual=calculation_output.energy_results_output.total_consumption,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption_per_es.csv",
+                    actual=calculation_output.energy_results_output.non_profiled_consumption_per_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/flex_consumption.csv",
+                    actual=calculation_output.energy_results_output.flex_consumption,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption.csv",
+                    actual=calculation_output.energy_results_output.non_profiled_consumption,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption_per_es.csv",
+                    actual=calculation_output.energy_results_output.non_profiled_consumption_per_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/production.csv",
+                    actual=calculation_output.energy_results_output.production,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/temporary_flex_consumption.csv",
+                    actual=calculation_output.energy_results_output.temporary_flex_consumption,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/temporary_production.csv",
+                    actual=calculation_output.energy_results_output.temporary_production,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/exchange_per_neighbor.csv",
+                    actual=calculation_output.energy_results_output.exchange_per_neighbor,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/negative_grid_loss.csv",
+                    actual=calculation_output.energy_results_output.negative_grid_loss,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/positive_grid_loss.csv",
+                    actual=calculation_output.energy_results_output.positive_grid_loss,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/flex_consumption_per_brp.csv",
+                    actual=calculation_output.energy_results_output.flex_consumption_per_brp,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption_per_brp.csv",
+                    actual=calculation_output.energy_results_output.non_profiled_consumption_per_brp,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/non_profiled_consumption_per_brp.csv",
+                    actual=calculation_output.energy_results_output.non_profiled_consumption_per_brp,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/energy_results/production_per_brp.csv",
+                    actual=calculation_output.energy_results_output.production_per_brp,
+                ),
+            ]
+        )
 
     return TestCases(test_cases)
+
 
 @pytest.fixture(scope="session")
 def assert_dataframes_configuration(

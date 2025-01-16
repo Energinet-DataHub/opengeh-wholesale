@@ -1,6 +1,10 @@
 import pytest
 from testcommon.etl import get_then_names, TestCase
-from testcommon.dataframes import assert_dataframes_and_schemas, AssertDataframesConfiguration
+from testcommon.dataframes import (
+    assert_dataframes_and_schemas,
+    AssertDataframesConfiguration,
+)
+
 
 @pytest.mark.parametrize("name", get_then_names())
 def test__equals_expected(
