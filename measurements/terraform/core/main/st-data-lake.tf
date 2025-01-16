@@ -43,3 +43,9 @@ resource "azurerm_storage_container" "bronze" {
   storage_account_name  = module.st_measurements.name
   container_access_type = "private"
 }
+
+resource "azurerm_storage_container" "silver" {
+  name                  = "silver"
+  storage_account_name  = module.st_measurements.name
+  container_access_type = "private"
+}
