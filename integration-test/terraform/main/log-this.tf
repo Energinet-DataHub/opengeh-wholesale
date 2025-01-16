@@ -30,23 +30,6 @@ resource "azurerm_application_insights" "this" {
   tags = local.tags
 }
 
-# To be deleted when all subsystems use TestCommon 6.3.0
-resource "azurerm_key_vault_secret" "kvs_appi_instrumentation_key" {
-  name         = "AZURE-APPINSIGHTS-INSTRUMENTATIONKEY"
-  value        = azurerm_application_insights.this.instrumentation_key
-  key_vault_id = azurerm_key_vault.this.id
-
-  lifecycle {
-    ignore_changes = [
-      tags,
-    ]
-  }
-
-  depends_on = [
-    azurerm_role_assignment.kv_self
-  ]
-}
-
 resource "azurerm_key_vault_secret" "kvs_log_workspace_id" {
   name         = "AZURE-LOGANALYTICS-WORKSPACE-ID"
   value        = azurerm_log_analytics_workspace.this.workspace_id

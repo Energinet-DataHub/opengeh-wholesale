@@ -82,14 +82,6 @@ resource "databricks_secret" "spn_app_secret_integration_test" {
   depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
 }
 
-resource "databricks_secret" "appi_instrumentation_key_integration_test" {
-  key          = "appi_instrumentation_key"
-  string_value = azurerm_application_insights.this.instrumentation_key
-  scope        = databricks_secret_scope.migration_scope_integration_test.id
-
-  depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
-}
-
 resource "databricks_secret" "appi_shared_connection_string_integration_test" {
   key          = "appi_shared_connection_string"
   string_value = azurerm_application_insights.this.connection_string
@@ -206,7 +198,6 @@ resource "databricks_job" "migration_workflow" {
         "spark.master" : "local[*, 4]"
       }
       spark_env_vars = {
-        "APPI_INSTRUMENTATION_KEY"              = azurerm_application_insights.this.instrumentation_key
         "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.this.connection_string
         "LANDING_STORAGE_ACCOUNT"               = azurerm_storage_account.this.name
         "DATALAKE_STORAGE_ACCOUNT"              = azurerm_storage_account.this.name
@@ -293,7 +284,6 @@ resource "databricks_cluster" "shared_all_purpose_integration_test" {
     "spark.master" : "local[*, 4]"
   }
   spark_env_vars = {
-    "APPI_INSTRUMENTATION_KEY"              = azurerm_application_insights.this.instrumentation_key
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.this.connection_string
     "LANDING_STORAGE_ACCOUNT"               = azurerm_storage_account.this.name
     "DATALAKE_STORAGE_ACCOUNT"              = azurerm_storage_account.this.name
