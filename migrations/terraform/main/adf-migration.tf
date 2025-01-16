@@ -18,8 +18,9 @@ resource "azurerm_data_factory" "this" {
 resource "azurerm_data_factory_pipeline" "this" {
   name            = "pl-move-processed-files-${local.resources_suffix}"
   data_factory_id = azurerm_data_factory.this.id
+  concurrency = 1
   variables = {
-    "fourteenDaysFromNow" = "string"
+    "tenDaysFromNow" = "string"
   }
   activities_json = templatefile("adf-pipelines/pl-move-processed-files.json",
     {
@@ -34,14 +35,13 @@ resource "azurerm_data_factory_pipeline" "this" {
 
 # Triggers
 
-resource "azurerm_data_factory_trigger_schedule" "trig-move-processed-files-weekly" {
-  name            = "trig-move-processed-files-weekly-${local.resources_suffix}"
+resource "azurerm_data_factory_trigger_schedule" "trig-move-processed-files" {
+  name            = "trig-move-processed-files-${local.resources_suffix}"
   data_factory_id = azurerm_data_factory.this.id
   pipeline_name   = azurerm_data_factory_pipeline.this.name
-  frequency       = "Week"
-  description     = "Weekly trigger to move processed(14d old) files. The reason behind the moving of data, is to increase the AutoLoader(Backfill job) performance."
+  frequency       = "Day"
+  description     = "Daily trigger to move processed(10d old) files. The reason behind the moving of data, is to improve the AutoLoader(Backfill job) performance."
   schedule {
-    days_of_week = ["Monday"]
     hours        = [7]
     minutes      = [0]
   }
