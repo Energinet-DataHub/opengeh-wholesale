@@ -46,21 +46,38 @@ resource "databricks_schema" "measurements_bronze" {
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
-resource "databricks_external_location" "measurements_silver_storage" {
-  provider        = databricks.dbw
-  name            = "${azurerm_storage_container.silver.name}_${module.st_measurements.name}"
-  url             = "abfss://${azurerm_storage_container.silver.name}@${module.st_measurements.name}.dfs.core.windows.net/"
-  credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
-  comment         = "Managed by TF"
-  depends_on      = [module.dbw, module.st_measurements]
-}
-
 resource "databricks_schema" "measurements_silver" {
   provider     = databricks.dbw
   catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
   name         = "measurements_silver"
   comment      = "Measurements Silver Schema"
   storage_root = databricks_external_location.measurements_silver_storage.url
+}
+
+resource "databricks_external_location" "measurements_silver_storage" {
+  provider        = databricks.dbw
+  name            = "${azurerm_storage_container.silver.name}_${module.st_measurements.name}"
+  url             = "abfss://${azurerm_storage_container.silver.name}@${module.st_measurements.name}.dfs.core.windows.net/"
+
+  credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
+  comment         = "Managed by TF"
+  depends_on      = [module.dbw, module.st_measurements]
+}
+
+resource "databricks_schema" "measurements_gold" {
+  provider     = databricks.dbw
+  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  name         = "measurements_gold"
+  comment      = "Measurements Gold Schema"
+  storage_root = databricks_external_location.measurements_gold_storage.url
+}
+
+resource "databricks_external_location" "measurements_gold_storage" {
+  provider        = databricks.dbw
+  name            = "${azurerm_storage_container.gold.name}_${module.st_measurements.name}"
+  url             = "abfss://${azurerm_storage_container.gold.name}@${module.st_measurements.name}.dfs.core.windows.net/"
+  credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
+  comment         = "Managed by TF"
 
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
