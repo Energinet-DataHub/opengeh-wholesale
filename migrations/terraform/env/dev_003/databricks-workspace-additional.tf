@@ -7,7 +7,7 @@ module "kvs_mig_dbw_workspace_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "dbw-migration-workspace-url"
-  value        = module.dbw.workspace_url
+  value        = "https://${module.dbw.workspace_url}"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
