@@ -32,10 +32,6 @@ on:
         default: ubuntu-22.04
         type: string
 
-env:
-  RELEASE_VERSION: shared_resources_infrastructure_${{ github.event.pull_request.number }}
-  RELEASE_ZIP_FILENAME: shared_resources_infrastructure_${{ github.event.pull_request.number }}.zip
-
 jobs:
   validate_infrastructure_configuration:
     uses: ./.github/workflows/infrastructure-validate.yml
@@ -80,19 +76,25 @@ jobs:
             --configuration Release \
             --output '${{ env.RELEASE_FOLDER_PATH }}\functions\healthchecks'
 
+      - name: Get releaseversion strings
+        id: get_releaseversion_strings
+        uses: Energinet-Datahub/.github/.github/actions/github-get-releaseversion-strings@v14
+        with:
+          release_name_prefix: shared_resources_infrastructure
+
       - name: Zip files for prerelease
         uses: thedoctor0/zip-release@0.6.2
         with:
           type: zip
-          filename: ${{ env.RELEASE_ZIP_FILENAME }}
+          filename: ${{ steps.get_releaseversion_strings.outputs.release_zip_filename }}
           directory: ${{ env.RELEASE_FOLDER_PATH }}
 
       - name: Create pre-release
         uses: Energinet-Datahub/.github/.github/actions/github-create-release@v14
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: ${{ env.RELEASE_VERSION }}
+          automatic_release_tag: ${{ steps.get_releaseversion_strings.outputs.release_version }}
           prerelease: true
-          title: ${{ env.RELEASE_VERSION }}
+          title: ${{ steps.get_releaseversion_strings.outputs.release_version }}
           files: |
-            ${{ env.RELEASE_FOLDER_PATH }}/${{ env.RELEASE_ZIP_FILENAME }}
+            ${{ env.RELEASE_FOLDER_PATH }}/${{ steps.get_releaseversion_strings.outputs.release_zip_filename }}
