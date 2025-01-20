@@ -353,3 +353,9 @@ variable "azure_isocontrol_spn_id" {
   type        = string
   description = "App (client) ID of the service principal used for running iso controls in Energinet Azure tenant."
 }
+
+variable "app_configuration_sku" {
+  type        = string
+  description = "The SKU of the App Configuration instance"
+  default     = "standard"
+}

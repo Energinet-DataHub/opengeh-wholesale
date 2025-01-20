@@ -71,6 +71,7 @@ module "pim_reader_security_group_permissions" {
   custom_roles_reader = [
     azurerm_role_definition.app_config_settings_read_access.name,
     azurerm_role_definition.sql_db_query_performance_insight_reader.name,
+    "App Configuration Data Reader"
   ]
 
   depends_on = [azurerm_role_definition.app_config_settings_read_access, azurerm_role_definition.sql_db_query_performance_insight_reader]

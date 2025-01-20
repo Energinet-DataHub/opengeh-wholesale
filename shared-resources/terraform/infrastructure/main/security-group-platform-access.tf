@@ -16,6 +16,7 @@ module "platform_security_group_permissions_contributor" {
   custom_roles_contributor = [
     azurerm_role_definition.apim_groups_contributor_access.name,
     azurerm_role_definition.locks_contributor_access.name,
+    "App Configuration Data Owner"
   ]
 
   # Names are computed during plan, so we need to depend on the role definitions
@@ -37,6 +38,7 @@ module "platform_security_group_permissions_reader" {
   custom_roles_reader = [
     azurerm_role_definition.app_config_settings_read_access.name,
     azurerm_role_definition.sql_db_query_performance_insight_reader.name,
+    "App Configuration Data Reader"
   ]
 
   # Names are computed during plan, so we need to depend on the role definitions
