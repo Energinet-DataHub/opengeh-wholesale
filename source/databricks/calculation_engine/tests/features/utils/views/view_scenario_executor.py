@@ -27,27 +27,21 @@ class ViewScenarioExecutor:
         self.spark = spark
         self.parser = CsvToDataframeWrapperParser(spark)
 
-    def execute(
-        self, scenario_folder_path: str
-    ) -> Tuple[list[DataframeWrapper], list[DataframeWrapper]]:
-
+    def execute(self, scenario_folder_path: str) -> list[DataframeWrapper]:
         input_dataframes_wrappers = self.parser.parse_csv_files_concurrently(
             f"{scenario_folder_path}/when"
         )
 
-        input_dataframes_wrappers = self.correct_dataframe_types(
-            input_dataframes_wrappers
-        )
+        self.types = self.correct_dataframe_types(input_dataframes_wrappers)
+        input_dataframes_wrappers = self.types
         self._write_to_tables(input_dataframes_wrappers)
 
         output_dataframe_wrappers = self.parser.parse_csv_files_concurrently(
             f"{scenario_folder_path}/then"
         )
 
-        expected = self.correct_dataframe_types(output_dataframe_wrappers)
-
         actual = self._read_from_views(output_dataframe_wrappers)
-        return actual, expected
+        return actual
 
     @staticmethod
     def _write_to_tables(

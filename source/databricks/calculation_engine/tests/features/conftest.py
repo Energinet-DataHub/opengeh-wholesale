@@ -13,7 +13,6 @@ from package.codelists.calculation_type import is_wholesale_calculation_type
 from package.databases.migrations_wholesale.schemas import charge_price_points_schema
 from tests.features.utils.expected_output import ExpectedOutput
 from tests.features.utils.scenario_executor import ScenarioExecutor
-from tests.features.utils.views.dataframe_wrapper import DataframeWrapper
 from tests.features.utils.views.view_scenario_executor import ViewScenarioExecutor
 from package.calculation.calculation_output import CalculationOutput
 
@@ -61,11 +60,11 @@ def actual_and_expected(
 
 
 @pytest.fixture(scope="module")
-def actual_and_expected_views(
+def test_cases_views(
     migrations_executed: None,
     request: FixtureRequest,
     spark: SparkSession,
-) -> tuple[list[DataframeWrapper], list[DataframeWrapper]]:
+) -> TestCases:
     """
     Provides the actual and expected output for a scenario test case.
 
@@ -75,7 +74,19 @@ def actual_and_expected_views(
 
     scenario_path = str(Path(request.module.__file__).parent)
     executor = ViewScenarioExecutor(spark)
-    return executor.execute(scenario_path)
+    actual_results = executor.execute(scenario_path)
+
+    view_test_cases = []
+
+    for actual_result in actual_results:
+        view_test_cases.append(
+            TestCase(
+                expected_csv_path=f"{scenario_path}/then/{actual_result.name}.csv",
+                actual=actual_result.df,
+            )
+        )
+
+    return TestCases(view_test_cases)
 
 
 @pytest.fixture(scope="module")
