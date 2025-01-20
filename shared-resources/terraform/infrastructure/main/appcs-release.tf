@@ -69,3 +69,11 @@ module "kvs_app_configuration_endpoint" {
   value        = azurerm_app_configuration.release.endpoint
   key_vault_id = module.kv_shared.id
 }
+
+module "kvs_app_configuration_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "app-configuration-shared-id"
+  value        = azurerm_app_configuration.release.id
+  key_vault_id = module.kv_shared.id
+}
