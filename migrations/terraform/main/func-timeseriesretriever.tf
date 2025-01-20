@@ -1,5 +1,5 @@
 module "func_timeseriesretriever" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_5.3.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_6.0.0"
 
   name                                   = "timeseriesretriever"
   project_name                           = var.domain_name_short
@@ -20,8 +20,11 @@ module "func_timeseriesretriever" {
   pre_warmed_instance_count              = 1
   elastic_instance_minimum               = 1
   allowed_monitor_reader_entra_groups    = compact([var.developer_security_group_name, var.pim_reader_group_name])
-  durabletask_storage_connection_string  = module.durabletask_storage_account_timeseriesretriever.primary_connection_string
-  health_check_path                      = "/api/monitor/ready"
+  orchestrations_storage = {
+    storage_connection_string = module.durabletask_storage_account_timeseriesretriever.primary_connection_string
+    appsettings_name          = "DURABLETASK_STORAGE_CONNECTION_STRING"
+  }
+  health_check_path = "/api/monitor/ready"
   health_check_alert = length(module.monitor_action_group_mig) != 1 ? null : {
     action_group_id = module.monitor_action_group_mig[0].id
     enabled         = var.enable_health_check_alerts
@@ -65,7 +68,7 @@ module "func_timeseriesretriever" {
 }
 
 module "durabletask_storage_account_timeseriesretriever" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.1"
 
   name                       = "tsretrdrbl"
   project_name               = var.domain_name_short
