@@ -34,6 +34,11 @@ module "func_api" {
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
     },
+    {
+      // ServiceBus Process Manager Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_processmanager_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
+    },
   ]
 }
 
