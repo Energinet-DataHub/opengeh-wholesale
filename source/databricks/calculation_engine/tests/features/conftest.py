@@ -88,12 +88,7 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
 
     # Read input data
     time_series_points = read_csv(
-        spark,
-        f"{scenario_path}/when/time_series_points.csv",
-        time_series_points_schema,
-    )
-    time_series_points = spark.createDataFrame(
-        time_series_points.rdd, schema=time_series_points_schema, verifySchema=True
+        spark, f"{scenario_path}/when/time_series_points.csv", time_series_points_schema
     )
 
     grid_loss_metering_points = read_csv(
@@ -101,21 +96,11 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         f"{scenario_path}/when/grid_loss_metering_points.csv",
         grid_loss_metering_point_ids_schema,
     )
-    grid_loss_metering_points = spark.createDataFrame(
-        grid_loss_metering_points.rdd,
-        schema=grid_loss_metering_point_ids_schema,
-        verifySchema=True,
-    )
 
     metering_point_periods = read_csv(
         spark,
         f"{scenario_path}/when/metering_point_periods.csv",
         metering_point_periods_schema,
-    )
-    metering_point_periods = spark.createDataFrame(
-        metering_point_periods.rdd,
-        schema=metering_point_periods_schema,
-        verifySchema=True,
     )
 
     # Defining the mocks for the data frames in the "when" folder
@@ -139,32 +124,17 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
             f"{scenario_path}/when/charge_link_periods.csv",
             charge_link_periods_schema,
         )
-        charge_link_periods = spark.createDataFrame(
-            charge_link_periods.rdd,
-            schema=charge_link_periods_schema,
-            verifySchema=True,
-        )
 
         charge_price_information_periods = read_csv(
             spark,
             f"{scenario_path}/when/charge_price_information_periods.csv",
             charge_price_information_periods_schema,
         )
-        charge_price_information_periods = spark.createDataFrame(
-            charge_price_information_periods.rdd,
-            schema=charge_price_information_periods_schema,
-            verifySchema=True,
-        )
 
         charge_price_points = read_csv(
             spark,
             f"{scenario_path}/when/charge_price_points.csv",
             charge_price_points_schema,
-        )
-        charge_price_points = spark.createDataFrame(
-            charge_price_points.rdd,
-            schema=charge_price_points_schema,
-            verifySchema=True,
         )
 
         # Mock the dataframes specific to the wholesales
