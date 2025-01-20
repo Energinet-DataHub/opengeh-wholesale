@@ -51,7 +51,7 @@ jobs:
         run: |
           mkdir ${{ env.RELEASE_FOLDER_PATH }}
           mkdir ${{ env.RELEASE_FOLDER_PATH }}/infrastructure
-          cp -fR ${{ inputs.infrastructure_path }}/main ${{ steps.get_releaseversion_strings.outputs.release_version }}/infrastructure/main 2>/dev/null || :
+          cp -fR ${{ inputs.infrastructure_path }}/main ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/main 2>/dev/null || :
           cp -fR ${{ inputs.infrastructure_path }}/env ${{ env.RELEASE_FOLDER_PATH }}/infrastructure/env 2>/dev/null || :
 
       - name: Zip files for prerelease
