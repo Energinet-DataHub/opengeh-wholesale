@@ -10,10 +10,6 @@
 
   <ItemGroup>
     <PackageReference Include="Energinet.DataHub.Core.DurableFunctionApp.TestCommon" Version="7.1.1" />
-    <PackageReference Include="FluentAssertions.Analyzers" Version="0.34.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="2.13.7" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.66.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
