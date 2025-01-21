@@ -64,7 +64,7 @@ public class WholesaleServicesQueries(
                                                             previousRow,
                                                             querySnippetsProvider.DatabricksContract),
                            WholesaleTimeSeriesPointFactory.Create,
-                           sqlStatement).ConfigureAwait(false))
+                           sqlStatement))
         {
             yield return wholesaleServices;
         }
