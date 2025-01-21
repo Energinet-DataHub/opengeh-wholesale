@@ -541,6 +541,7 @@ def _write_input_test_data_to_table(
     schema: StructType,
 ) -> None:
     df = spark.read.csv(file_name, header=True, schema=schema, sep=";")
+
     write_dataframe_to_table(
         spark,
         df,
