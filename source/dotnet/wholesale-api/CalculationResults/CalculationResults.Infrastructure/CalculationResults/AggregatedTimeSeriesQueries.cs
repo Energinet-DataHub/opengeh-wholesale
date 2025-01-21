@@ -80,7 +80,7 @@ public class AggregatedTimeSeriesQueries(
                                    || currentRow[calculationIdColumnName] != previousRow[calculationIdColumnName]
                                    || !ResultStartEqualsPreviousResultEnd(currentRow, previousRow, querySnippetProvider.DatabricksContract),
                                EnergyTimeSeriesPointFactory.CreateTimeSeriesPoint,
-                               sqlStatement))
+                               sqlStatement).ConfigureAwait(false))
             {
                 yield return aggregatedTimeSeries;
             }
