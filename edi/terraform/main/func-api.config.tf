@@ -42,9 +42,10 @@ locals {
       ProcessManagerServiceBusClient__TopicName   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
 
       EdiTopic__Name = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-edi-name)"
-      EdiTopic__EnqueueBrs_023_027_SubscriptionName   = module.sbtsub_edi_enqueue_brs_023_027.name
-      EdiTopic__EnqueueBrs_026_SubscriptionName       = module.sbtsub_edi_enqueue_brs_026.name
-      EdiTopic__EnqueueBrs_028_SubscriptionName       = module.sbtsub_edi_enqueue_brs_028.name
+      EdiTopic__EnqueueBrs_023_027_SubscriptionName                  = module.sbtsub_edi_enqueue_brs_023_027.name
+      EdiTopic__EnqueueBrs_026_SubscriptionName                      = module.sbtsub_edi_enqueue_brs_026.name
+      EdiTopic__EnqueueBrs_028_SubscriptionName                      = module.sbtsub_edi_enqueue_brs_028.name
+      EdiTopic__EnqueueBrs_021_Forward_Metered_Data_SubscriptionName = module.sbtsub_edi_enqueue_brs_021_forward_metered_data.name
 
       # Databricks
       WorkspaceToken             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-workspace-token)",
