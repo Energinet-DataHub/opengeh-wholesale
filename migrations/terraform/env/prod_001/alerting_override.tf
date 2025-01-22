@@ -11,6 +11,7 @@ module "monitor_action_group_mig" {
       query       = <<QUERY
         exceptions
         | where cloud_RoleName in ("${module.func_dropzoneunzipper.name}")
+        | where not(details has_any ("The operation was canceled"))
         | summarize exceptionCount = count() by type
         | order by exceptionCount desc
         QUERY
