@@ -24,8 +24,8 @@ module "st_electricity_market" {
   ]
 
   containers = [
-    { name = "electrical_heating" },
-    { name = "capacity_settlement" }
+    { name = "electrical-heating" },
+    { name = "capacity-settlement" }
   ]
 }
 
