@@ -1,7 +1,7 @@
 calculation_id;charge_key;charge_code;charge_type;charge_owner_id;resolution;is_tax;from_date;to_date
-0b15a420-9fc8-409a-a169-fbd49479d718;fee-1-0000000000800-fee;fee-1;fee;0000000000800;P1M;false;2023-11-01 23:00;2023-11-03 23:00
-0b15a420-9fc8-409a-a169-fbd49479d718;subscription-1-0000000000800-subscription;subscription-1;subscription;0000000000800;P1M;false;2023-11-01 23:00;2023-11-03 23:00
-0b15a420-9fc8-409a-a169-fbd49479d718;tariff-hourly-1-0000000000800-tariff;tariff-hourly-1;tariff;0000000000800;PT1H;false;2023-11-01 23:00;2023-11-03 23:00
-0b15a420-9fc8-409a-a169-fbd49479d718;tariff-hourly-2-co_is_tax-6660000000666-tariff;tariff-hourly-2-co_is_tax;tariff;6660000000666;PT1H;true;2023-11-01 23:00;2023-11-03 23:00
-0b15a420-9fc8-409a-a169-fbd49479d718;tariff-daily-1-0000000000800-tariff;tariff-daily-1;tariff;0000000000800;P1D;false;2023-11-01 23:00;2023-11-03 23:00
-0b15a420-9fc8-409a-a169-fbd49479d718;tariff-daily-2-co_is_tax-6660000000666-tariff;tariff-daily-2-co_is_tax;tariff;6660000000666;P1D;true;2023-11-01 23:00;2023-11-03 23:00
+0b15a420-9fc8-409a-a169-fbd49479d718;fee-1-0000000000800-fee;fee-1;fee;0000000000800;P1M;false;2023-11-01T23:00:00Z;2023-11-03T23:00:00Z
+0b15a420-9fc8-409a-a169-fbd49479d718;subscription-1-0000000000800-subscription;subscription-1;subscription;0000000000800;P1M;false;2023-11-01T23:00:00Z;2023-11-03T23:00:00Z
+0b15a420-9fc8-409a-a169-fbd49479d718;tariff-hourly-1-0000000000800-tariff;tariff-hourly-1;tariff;0000000000800;PT1H;false;2023-11-01T23:00:00Z;2023-11-03T23:00:00Z
+0b15a420-9fc8-409a-a169-fbd49479d718;tariff-hourly-2-co_is_tax-6660000000666-tariff;tariff-hourly-2-co_is_tax;tariff;6660000000666;PT1H;true;2023-11-01T23:00:00Z;2023-11-03T23:00:00Z
+0b15a420-9fc8-409a-a169-fbd49479d718;tariff-daily-1-0000000000800-tariff;tariff-daily-1;tariff;0000000000800;P1D;false;2023-11-01T23:00:00Z;2023-11-03T23:00:00Z
+0b15a420-9fc8-409a-a169-fbd49479d718;tariff-daily-2-co_is_tax-6660000000666-tariff;tariff-daily-2-co_is_tax;tariff;6660000000666;P1D;true;2023-11-01T23:00:00Z;2023-11-03T23:00:00Z
