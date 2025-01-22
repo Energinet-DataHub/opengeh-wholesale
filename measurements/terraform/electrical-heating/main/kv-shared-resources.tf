@@ -49,3 +49,13 @@ data "azurerm_key_vault_secret" "st_audit_shres_name" {
   name         = "st-audit-shres-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "st_electricity_market_url" {
+  name         = "st-electricity-market-url"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "st_electricity_market_id" {
+  name         = "st-electricity-market-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
