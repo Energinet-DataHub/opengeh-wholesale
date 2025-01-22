@@ -19,7 +19,17 @@ resource "azurerm_role_assignment" "app_configuration" {
   principal_id         = data.azurerm_client_config.current.object_id
 }
 
-# Later on, a role assignment to new OMADA group will be added here, which allows management to toggle releases on/off
+resource "azurerm_role_assignment" "release_toggle_managers" {
+  scope                = azurerm_app_configuration.release.id
+  role_definition_name = "App Configuration Data Owner"
+  principal_id         = data.azuread_group.release_toggle_managers.object_id
+}
+
+resource "azurerm_role_assignment" "release_toggle_managers_read" {
+  scope                = azurerm_app_configuration.release.id
+  role_definition_name = "App Configuration Reader"
+  principal_id         = data.azuread_group.release_toggle_managers.object_id
+}
 
 locals {
   # Product goals to be in App Configuration is defined by Kristian Brønner (XKVBR)
