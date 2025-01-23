@@ -48,6 +48,7 @@ module "monitor_action_group_mig" {
         | where outerType == "System.Threading.Tasks.TaskCanceledException"
         | where innermostMessage !contains "Non-Deterministic workflow detected: A previous execution of this orchestration scheduled an activity task with sequence ID 0"
         | where innermostMessage !contains "The operation was canceled"
+        | where not(details has_any ("The operation was canceled"))
         | summarize exceptionCount = count() by type
         | order by exceptionCount desc
         QUERY
