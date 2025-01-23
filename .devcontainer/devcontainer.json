@@ -1,0 +1,32 @@
+{
+    "name": "Terraform",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "postStartCommand": "./.devcontainer/postStart.sh",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "editor.formatOnSave": true
+            },
+            "extensions": [
+                "EditorConfig.EditorConfig",
+                "4ops.terraform",
+                "AccuricsInc.terrascan-rego-editor",
+                "github.vscode-github-actions",
+                "davidanson.vscode-markdownlint"
+            ]
+        }
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/terraform:1": {
+            "version": "1.9.6"
+        },
+        "ghcr.io/devcontainers/features/dotnet:2": {
+            "version": "8.0"
+        },
+        "ghcr.io/devcontainers/features/powershell:1": {}
+    },
+    "remoteUser": "root" // https://github.com/microsoft/vscode-remote-release/issues/9125 && https://github.com/microsoft/vscode-remote-release/issues/4646
+}
