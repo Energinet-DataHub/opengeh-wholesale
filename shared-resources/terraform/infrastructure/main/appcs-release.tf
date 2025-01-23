@@ -87,3 +87,22 @@ module "kvs_app_configuration_id" {
   value        = azurerm_app_configuration.release.id
   key_vault_id = module.kv_shared.id
 }
+
+resource "azurerm_monitor_diagnostic_setting" "app_configuration_audit" {
+  count = var.enable_audit_logs ? 1 : 0
+
+  name               = "audit"
+  target_resource_id = azurerm_app_configuration.release.id
+  storage_account_id = module.st_audit_logs.id
+
+  enabled_log {
+    category_group = "audit"
+  }
+
+  lifecycle {
+    # For some reason Azure shows changes to null each time...
+    ignore_changes = [
+      metric
+    ]
+  }
+}
