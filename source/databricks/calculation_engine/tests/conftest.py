@@ -421,6 +421,7 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
         f"{test_files_folder_path}/GridLossMeteringPointIds.csv",
         header=True,
         schema=grid_loss_metering_point_ids_schema,
+        sep=";",
     )
     df.write.format("delta").mode("overwrite").saveAsTable(
         f"{wholesale_internal_database}.{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
@@ -539,7 +540,8 @@ def _write_input_test_data_to_table(
     table_location: str,
     schema: StructType,
 ) -> None:
-    df = spark.read.csv(file_name, header=True, schema=schema)
+    df = spark.read.csv(file_name, header=True, schema=schema, sep=";")
+
     write_dataframe_to_table(
         spark,
         df,
