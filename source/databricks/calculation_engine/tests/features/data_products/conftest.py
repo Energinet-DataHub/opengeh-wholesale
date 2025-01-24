@@ -18,6 +18,16 @@ from package.databases.wholesale_internal.schemas import (
     calculations_schema,
     calculation_grid_areas_schema,
 )
+from package.databases.wholesale_results_internal.schemas import (
+    energy_schema,
+    energy_per_brp_schema,
+    energy_per_es_schema,
+    exchange_per_neighbor_schema,
+    grid_loss_metering_point_time_series_schema,
+    amounts_per_charge_schema,
+    total_monthly_amounts_schema,
+    monthly_amounts_schema,
+)
 
 
 @pytest.fixture(scope="module")
@@ -61,6 +71,38 @@ def test_cases(
         (
             "wholesale_internal.calculation_grid_areas.csv",
             calculation_grid_areas_schema,
+        ),
+        (
+            "wholesale_results_internal.energy.csv",
+            energy_schema,
+        ),
+        (
+            "wholesale_results_internal.energy_per_brp.csv",
+            energy_per_brp_schema,
+        ),
+        (
+            "wholesale_results_internal.energy_per_es.csv",
+            energy_per_es_schema,
+        ),
+        (
+            "wholesale_results_internal.exchange_per_neighbor_ga.csv",
+            exchange_per_neighbor_schema,
+        ),
+        (
+            "wholesale_results_internal.grid_loss_metering_point_time_series.csv",
+            grid_loss_metering_point_time_series_schema,
+        ),
+        (
+            "wholesale_results_internal.amounts_per_charge.csv",
+            amounts_per_charge_schema,
+        ),
+        (
+            "wholesale_results_internal.monthly_amounts_per_charge.csv",
+            monthly_amounts_schema,
+        ),
+        (
+            "wholesale_results_internal.total_monthly_amounts.csv",
+            total_monthly_amounts_schema,
         ),
     ]
 
