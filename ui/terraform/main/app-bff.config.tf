@@ -21,6 +21,7 @@ locals {
       SubSystemBaseUrls__SettlementReportsAPIBaseUrl                         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-settlement-report-webapi-base-url)"
       SubSystemBaseUrls__NotificationsBaseUrl                                = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-notifications-worker-base-url)"
       SubSystemBaseUrls__Dh2BridgeBaseUrl                                    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-grid-loss-event-receiver-api-base-url)"
+      SubSystemBaseUrls__ElectricityMarketBaseUrl                            = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=app-elmark-api-base-url)"
       MITID_EXTERNAL_OPEN_ID_URL                                             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mitid-frontend-open-id-url)"
       EXTERNAL_OPEN_ID_URL                                                   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=frontend-open-id-url)"
       INTERNAL_OPEN_ID_URL                                                   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=api-backend-open-id-url)"
