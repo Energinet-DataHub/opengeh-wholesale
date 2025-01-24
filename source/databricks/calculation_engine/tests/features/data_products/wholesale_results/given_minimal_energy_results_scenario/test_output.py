@@ -19,4 +19,3 @@ def test__equals_expected(
         expected=test_case.expected,
         configuration=assert_dataframes_configuration,
     )
-
