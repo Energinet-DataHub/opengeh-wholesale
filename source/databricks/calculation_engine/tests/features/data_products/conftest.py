@@ -25,8 +25,8 @@ from package.databases.wholesale_results_internal.schemas import (
     exchange_per_neighbor_schema,
     grid_loss_metering_point_time_series_schema,
     amounts_per_charge_schema,
-    total_monthly_amounts_schema,
-    monthly_amounts_schema,
+    total_monthly_amounts_schema_uc,
+    monthly_amounts_schema_uc,
 )
 
 
@@ -98,11 +98,11 @@ def test_cases(
         ),
         (
             "wholesale_results_internal.monthly_amounts_per_charge.csv",
-            monthly_amounts_schema,
+            monthly_amounts_schema_uc,
         ),
         (
             "wholesale_results_internal.total_monthly_amounts.csv",
-            total_monthly_amounts_schema,
+            total_monthly_amounts_schema_uc,
         ),
     ]
 
