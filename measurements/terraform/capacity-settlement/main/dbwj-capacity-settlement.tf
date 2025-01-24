@@ -28,7 +28,7 @@ resource "databricks_job" "capacity_settlement" {
     job_cluster_key = "capacity_settlement_cluster"
 
     library {
-      whl = "/Workspace/Shared/PythonWheels/capacity_settlement/opengeh_capacity_settlement-1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/capacity_settlement/opengeh_capacity_settlement-0.1.0-py3-none-any.whl"
     }
 
     python_wheel_task {

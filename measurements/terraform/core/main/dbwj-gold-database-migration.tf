@@ -32,7 +32,7 @@ resource "databricks_job" "gold_database_migration" {
     job_cluster_key = "gold_database_migration_cluster"
 
     library {
-      whl = "/Workspace/Shared/PythonWheels/core/gold-0.1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/core/opengeh_gold-0.1.0-py3-none-any.whl"
     }
 
     python_wheel_task {

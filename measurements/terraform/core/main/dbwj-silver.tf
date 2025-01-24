@@ -32,7 +32,7 @@ resource "databricks_job" "silver_database_migration" {
     job_cluster_key = "silver_database_migration_cluster"
 
     library {
-      whl = "/Workspace/Shared/PythonWheels/core/silver-0.1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/core/opengeh_silver-0.1.0-py3-none-any.whl"
     }
 
     python_wheel_task {

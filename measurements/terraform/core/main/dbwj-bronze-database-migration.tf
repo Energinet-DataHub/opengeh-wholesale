@@ -32,7 +32,7 @@ resource "databricks_job" "bronze_database_migration" {
     job_cluster_key = "bronze_database_migration_cluster"
 
     library {
-      whl = "/Workspace/Shared/PythonWheels/core/bronze-0.1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/core/opengeh_bronze-0.1.0-py3-none-any.whl"
     }
 
     python_wheel_task {
