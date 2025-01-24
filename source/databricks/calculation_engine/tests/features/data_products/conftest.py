@@ -28,7 +28,7 @@ def test_cases(
 ) -> TestCases:
     scenario_path = str(Path(request.module.__file__).parent)
 
-    # Defining all the 'when' files that have to be tested on
+    # Define a list of tuples containing a 'when' file name and the corresponding schema
     path_schema_tuples = [
         (
             "wholesale_basis_data_internal.charge_link_periods.csv",
@@ -64,19 +64,19 @@ def test_cases(
         ),
     ]
 
-    # Writing all the 'when' files from the scenario_path into spark dataframes.
+    # Populate the delta tables with the 'when' files.
     write_when_files_to_delta(
         spark,
         scenario_path,
         path_schema_tuples,
     )
 
-    # Define then path
-    csv_files_then = get_then_names(scenario_path)
+    # Receive a list of 'then' file names
+    then_files = get_then_names(scenario_path)
 
-    # Executing the test cases for all the files in the then folder
+    # Construct a list of TestCase objects
     test_cases = []
-    for path_name in csv_files_then:
+    for path_name in then_files:
         actual = spark.sql(f"SELECT * FROM {path_name}")
 
         test_cases.append(
