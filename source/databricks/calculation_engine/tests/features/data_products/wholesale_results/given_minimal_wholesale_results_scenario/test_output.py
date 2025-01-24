@@ -8,7 +8,6 @@ from testcommon.dataframes import (
 
 @pytest.mark.parametrize("name", get_then_names())
 def test__equals_expected(
-    migrations_executed: None,
     test_cases_views: TestCases,
     name: str,
     assert_dataframes_configuration: AssertDataframesConfiguration,
@@ -20,3 +19,4 @@ def test__equals_expected(
         expected=test_case.expected,
         configuration=assert_dataframes_configuration,
     )
+

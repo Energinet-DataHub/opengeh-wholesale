@@ -6,32 +6,17 @@ from testcommon.dataframes import (
 )
 
 
-# @pytest.mark.parametrize("name", get_then_names())
-# def test__equals_expected(
-#     migrations_executed: None,
-#     test_cases: TestCases,
-#     name: str,
-#     assert_dataframes_configuration: AssertDataframesConfiguration,
-# ) -> None:
-#     test_case = test_cases[name]
-#
-#     assert_dataframes_and_schemas(
-#         actual=test_case.actual,
-#         expected=test_case.expected,
-#         configuration=assert_dataframes_configuration,
-#     )
-
-
 @pytest.mark.parametrize("name", get_then_names())
 def test__equals_expected(
-    # migrations_executed: None,
-    test_cases: TestCases,
+    test_cases_views: TestCases,
     name: str,
     assert_dataframes_configuration: AssertDataframesConfiguration,
 ) -> None:
-    test_case = test_cases[name]
+    test_case = test_cases_views[name]
+
     assert_dataframes_and_schemas(
         actual=test_case.actual,
         expected=test_case.expected,
         configuration=assert_dataframes_configuration,
     )
+

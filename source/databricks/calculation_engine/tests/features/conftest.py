@@ -6,7 +6,6 @@ from _pytest.fixtures import FixtureRequest
 from pyspark.sql import SparkSession
 from testcommon.dataframes import AssertDataframesConfiguration, read_csv
 from testcommon.etl import TestCase, TestCases
-from testcommon.utils.views.view_scenario_executor import ViewScenarioExecutor
 
 from features.utils.calculation_args import create_calculation_args
 from package.calculation import CalculationCore, PreparedDataReader
@@ -58,36 +57,6 @@ def actual_and_expected(
     scenario_path = str(Path(request.module.__file__).parent)
     scenario_executor = ScenarioExecutor(spark)
     return scenario_executor.execute(scenario_path)
-
-
-@pytest.fixture(scope="module")
-def test_cases_views(
-    migrations_executed: None,
-    request: FixtureRequest,
-    spark: SparkSession,
-) -> TestCases:
-    """
-    Provides the actual and expected output for a scenario test case.
-
-    IMPORTANT: It is crucial that this fixture has scope=module, as the scenario executor
-    is specific to a single scenario, which are each located in their own module.
-    """
-
-    scenario_path = str(Path(request.module.__file__).parent)
-    executor = ViewScenarioExecutor(spark)
-    actual_results = executor.execute(scenario_path)
-
-    view_test_cases = []
-
-    for actual_result in actual_results:
-        view_test_cases.append(
-            TestCase(
-                expected_csv_path=f"{scenario_path}/then/{actual_result.name}.csv",
-                actual=actual_result.df,
-            )
-        )
-
-    return TestCases(view_test_cases)
 
 
 @pytest.fixture(scope="module")

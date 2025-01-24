@@ -4,7 +4,7 @@ import pytest
 from _pytest.fixtures import FixtureRequest
 from pyspark.sql import SparkSession
 from testcommon.dataframes.write_to_delta import write_when_files_to_delta
-from testcommon.etl import TestCase, TestCases
+from testcommon.etl import TestCase, TestCases, get_then_names
 
 from package.databases.wholesale_basis_data_internal.schemas import (
     metering_point_periods_schema,
@@ -25,45 +25,58 @@ def test_cases(
 ) -> TestCases:
     scenario_path = str(Path(request.module.__file__).parent)
 
-    path_schema_dict = {
-        "wholesale_basis_data_internal.charge_link_periods.csv": charge_link_periods_schema,
-        "wholesale_basis_data_internal.charge_price_information_periods.csv": charge_price_information_periods_schema,
-        "wholesale_basis_data_internal.charge_price_points.csv": charge_price_points_schema,
-        "wholesale_basis_data_internal.grid_loss_metering_points.csv": grid_loss_metering_point_ids_schema,
-        "wholesale_basis_data_internal.metering_point_periods.csv": metering_point_periods_schema,
-        "wholesale_basis_data_internal.time_series_points.csv": time_series_points_schema,
-        "wholesale_internal.calculations.csv": calculations_schema,
-    }
+    # Defining all the 'when' files that have to be tested on
+    path_schema_tuples = [
+        (
+            "wholesale_basis_data_internal.charge_link_periods.csv",
+            charge_link_periods_schema,
+        ),
+        (
+            "wholesale_basis_data_internal.charge_price_information_periods.csv",
+            charge_price_information_periods_schema,
+        ),
+        (
+            "wholesale_basis_data_internal.charge_price_points.csv",
+            charge_price_points_schema,
+        ),
+        (
+            "wholesale_basis_data_internal.grid_loss_metering_points.csv",
+            grid_loss_metering_point_ids_schema,
+        ),
+        (
+            "wholesale_basis_data_internal.metering_point_periods.csv",
+            metering_point_periods_schema,
+        ),
+        (
+            "wholesale_basis_data_internal.time_series_points.csv",
+            time_series_points_schema,
+        ),
+        (
+            "wholesale_internal.calculations.csv",
+            calculations_schema,
+        ),
+    ]
 
+    # Writing all the 'when' files from the scenario_path into spark dataframes.
     write_when_files_to_delta(
         spark,
         scenario_path,
-        list(path_schema_dict.items()),
+        path_schema_tuples,
     )
 
     # Define then path
-    then_path = f"{scenario_path}/then"
-    csv_files_then = [x.name for x in list(Path(then_path).rglob("*.csv"))]
+    csv_files_then = get_then_names(scenario_path)
 
+    # Executing the test cases for all the files in the then folder
     test_cases = []
     for path_name in csv_files_then:
-        view_path_name = path_name.removesuffix(".csv")
-        dict_path_name = path_name.removesuffix("_v1.csv")
+        actual = spark.sql(f"SELECT * FROM {path_name}")
 
-        view = spark.sql(f"SELECT * FROM {view_path_name}")
-        if dict_path_name in path_schema_dict.keys():
-            test_cases.append(
-                TestCase(
-                    expected_csv_path=path_name,
-                    actual=view,
-                )
+        test_cases.append(
+            TestCase(
+                expected_csv_path=f"{scenario_path}/then/{path_name}.csv",
+                actual=actual,
             )
-        elif dict_path_name in "wholesale_internal.succeeded_external_calculations":
-            test_cases.append(
-                TestCase(
-                    expected_csv_path="wholesale_internal.succeeded_external_calculations_v1.csv",
-                    actual=view,
-                )
-            )
+        )
 
     return TestCases(test_cases)
