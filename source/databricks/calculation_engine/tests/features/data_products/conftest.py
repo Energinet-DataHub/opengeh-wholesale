@@ -14,7 +14,10 @@ from package.databases.wholesale_basis_data_internal.schemas import (
     charge_price_points_schema,
     grid_loss_metering_point_ids_schema,
 )
-from package.databases.wholesale_internal.schemas import calculations_schema
+from package.databases.wholesale_internal.schemas import (
+    calculations_schema,
+    calculation_grid_areas_schema,
+)
 
 
 @pytest.fixture(scope="module")
@@ -54,6 +57,10 @@ def test_cases(
         (
             "wholesale_internal.calculations.csv",
             calculations_schema,
+        ),
+        (
+            "wholesale_internal.calculation_grid_areas.csv",
+            calculation_grid_areas_schema,
         ),
     ]
 
