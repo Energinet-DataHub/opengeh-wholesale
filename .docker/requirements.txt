@@ -40,4 +40,5 @@ pytest-mock==3.14.0
 
 # Custom packages
 opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.4.2#subdirectory=source/spark_sql_migrations
-opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.4.2#subdirectory=source/telemetry
+# opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.4.2#subdirectory=source/telemetry
+opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages.git@cbang/simplify_entry_point#subdirectory=source/telemetry
