@@ -93,26 +93,6 @@ resource "databricks_schema" "migrations_internal" {
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
-resource "databricks_external_location" "migrations_wholesale_storage" {
-  provider        = databricks.dbw
-  name            = "${azurerm_storage_container.wholesale.name}_${module.st_migrations.name}"
-  url             = "abfss://${azurerm_storage_container.wholesale.name}@${module.st_migrations.name}.dfs.core.windows.net/"
-  credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
-  comment         = "Managed by TF"
-  depends_on      = [module.dbw, module.st_migrations]
-  force_destroy   = true
-}
-
-resource "databricks_schema" "migrations_wholesale" {
-  provider     = databricks.dbw
-  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = "migrations_wholesale"
-  comment      = "Migrations Wholesale Schema"
-  storage_root = databricks_external_location.migrations_wholesale_storage.url
-
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
-}
-
 resource "databricks_external_location" "migrations_electricity_market_storage" {
   provider        = databricks.dbw
   name            = "${azurerm_storage_container.electricity_market.name}_${module.st_migrations.name}"

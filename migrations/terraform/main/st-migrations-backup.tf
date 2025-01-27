@@ -61,12 +61,6 @@ resource "azurerm_storage_container" "eloverblik_backup" {
   container_access_type = "private"
 }
 
-resource "azurerm_storage_container" "wholesale_backup" {
-  name                  = "wholesale-backup"
-  storage_account_name  = module.st_migrations_backup.name
-  container_access_type = "private"
-}
-
 resource "azurerm_storage_container" "shared_wholesale_input_backup" {
   name                  = "shared-wholesale-input-backup"
   storage_account_name  = module.st_migrations_backup.name

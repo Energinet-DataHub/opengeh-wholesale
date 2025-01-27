@@ -99,12 +99,6 @@ resource "azurerm_storage_container" "eloverblik" {
   container_access_type = "private"
 }
 
-resource "azurerm_storage_container" "wholesale" {
-  name                  = "wholesale"
-  storage_account_name  = module.st_migrations.name
-  container_access_type = "private"
-}
-
 resource "azurerm_storage_container" "electricity_market" {
   name                  = "electricity-market"
   storage_account_name  = module.st_migrations.name
