@@ -19,7 +19,7 @@ module "mssql_markpart_application_access" {
   sql_server_name = data.azurerm_key_vault_secret.mssql_data_name.value
   database_name   = data.azurerm_key_vault_secret.markpart_db_name.value
   schema_name     = "electricitymarket"
-  write_access    = false
+  write_access    = true
 
   principal_names = [
     module.app_api.name,
