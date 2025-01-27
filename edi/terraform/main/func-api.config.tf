@@ -11,6 +11,7 @@ locals {
       AZURE_STORAGE_ACCOUNT_URL      = local.AZURE_STORAGE_ACCOUNT_URL
 
       # File storage
+      FileStorage__StorageAccountUrlObsoleted = local.AZURE_STORAGE_ACCOUNT_URL_OBSOLETED
       FileStorage__StorageAccountUrl = local.AZURE_STORAGE_ACCOUNT_URL
 
       # Logging
@@ -22,11 +23,12 @@ locals {
       RevisionLogOptions__ApiAddress = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
 
       # FeatureManagement
-      FeatureManagement__UsePeekMessages                        = var.feature_management_use_peek_messages
-      FeatureManagement__ReceiveMeteredDataForMeasurementPoints = var.feature_management_receive_metered_data_for_measurement_points
-      FeatureManagement__UsePeekTimeSeriesMessages              = var.feature_management_use_peek_time_series_messages
+      FeatureManagement__UsePeekMessages                                      = var.feature_management_use_peek_messages
+      FeatureManagement__ReceiveMeteredDataForMeasurementPoints               = var.feature_management_receive_metered_data_for_measurement_points
+      FeatureManagement__UsePeekTimeSeriesMessages                            = var.feature_management_use_peek_time_series_messages
       FeatureManagement__UseRequestWholesaleServicesProcessOrchestration      = var.feature_management_use_request_wholesale_services_process_orchestration
       FeatureManagement__UseRequestAggregatedMeasureDataProcessOrchestration  = var.feature_management_use_request_aggregated_measure_data_process_orchestration
+      FeatureManagement__UseStandardBlobServiceClient                         = var.feature_management_use_standard_blob_service_client
 
       # Service Bus
       ServiceBus__FullyQualifiedNamespace = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"

@@ -47,6 +47,10 @@ module "b2c_web_api" {
       // ServiceBus Process Manager Topic
       resource_id          = data.azurerm_key_vault_secret.sbt_processmanager_id.value
       role_definition_name = "Azure Service Bus Data Owner"
+    },
+    {
+      resource_id          = module.st_docs.id
+      role_definition_name = "Storage Blob Data Contributor"
     }
   ]
 }

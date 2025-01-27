@@ -5,6 +5,7 @@ locals {
       AZURE_STORAGE_ACCOUNT_URL = local.AZURE_STORAGE_ACCOUNT_URL
 
       # File storage
+      FileStorage__StorageAccountUrlObsoleted = local.AZURE_STORAGE_ACCOUNT_URL_OBSOLETED
       FileStorage__StorageAccountUrl = local.AZURE_STORAGE_ACCOUNT_URL
 
       # Authentication
@@ -32,6 +33,7 @@ locals {
       # Feature flags
       FeatureManagement__UseRequestWholesaleServicesProcessOrchestration      = var.feature_management_use_request_wholesale_services_process_orchestration
       FeatureManagement__UseRequestAggregatedMeasureDataProcessOrchestration  = var.feature_management_use_request_aggregated_measure_data_process_orchestration
+      FeatureManagement__UseStandardBlobServiceClient                         = var.feature_management_use_standard_blob_service_client
     }
   }
 }

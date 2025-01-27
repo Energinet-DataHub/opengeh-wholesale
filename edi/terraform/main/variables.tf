@@ -124,6 +124,12 @@ variable "feature_management_use_request_aggregated_measure_data_process_orchest
   default     = false
 }
 
+variable "feature_management_use_standard_blob_service_client" {
+  type        = bool
+  description = "Use standard blob service client."
+  default     = false
+}
+
 variable "apim_maintenance_mode" {
   type        = bool
   description = "Determine if API Management is in maintenance mode. In maintenance mode all requests will return 503 Service Unavailable."

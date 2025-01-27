@@ -11,7 +11,8 @@ locals {
   ip_restrictions_as_string = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
 
   # Data lake
-  AZURE_STORAGE_ACCOUNT_URL = "https://${module.st_documents.name}.blob.core.windows.net"
+  AZURE_STORAGE_ACCOUNT_URL = "https://${module.st_docs.name}.blob.core.windows.net"
+  AZURE_STORAGE_ACCOUNT_URL_OBSOLETED = "https://${module.st_documents.name}.blob.core.windows.net"
 
   # Logging
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_EDI  = "Information" # From opengeh-edi
