@@ -68,3 +68,13 @@ data "azurerm_key_vault_secret" "evh_measurement_transactions_receipts_id" {
   name         = "evh-measurement-transactions-receipts-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "evhns_measurements_name" {
+  name         = "evhns-measurements-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "evh_measurement_transactions_name" {
+  name         = "evh-measurement-transactions-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
