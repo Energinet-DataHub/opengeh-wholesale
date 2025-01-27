@@ -26,8 +26,8 @@ class CalculationType(Enum):
 
 def is_wholesale_calculation_type(calculation_type: CalculationType) -> bool:
     return (
-        calculation_type.value == CalculationType.WHOLESALE_FIXING.value
-        or calculation_type.value == CalculationType.FIRST_CORRECTION_SETTLEMENT.value
-        or calculation_type.value == CalculationType.SECOND_CORRECTION_SETTLEMENT.value
-        or calculation_type.value == CalculationType.THIRD_CORRECTION_SETTLEMENT.value
+        calculation_type == CalculationType.WHOLESALE_FIXING
+        or calculation_type == CalculationType.FIRST_CORRECTION_SETTLEMENT
+        or calculation_type == CalculationType.SECOND_CORRECTION_SETTLEMENT
+        or calculation_type == CalculationType.THIRD_CORRECTION_SETTLEMENT
     )
