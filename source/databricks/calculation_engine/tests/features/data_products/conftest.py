@@ -40,69 +40,24 @@ def test_cases(
 
     # Define a list of tuples containing a 'when' file name and the corresponding schema
     path_schema_tuples = [
-        (
-            "wholesale_basis_data_internal.charge_link_periods.csv",
-            charge_link_periods_schema,
-        ),
-        (
-            "wholesale_basis_data_internal.charge_price_information_periods.csv",
-            charge_price_information_periods_schema,
-        ),
-        (
-            "wholesale_basis_data_internal.charge_price_points.csv",
-            charge_price_points_schema,
-        ),
-        (
-            "wholesale_basis_data_internal.grid_loss_metering_points.csv",
-            grid_loss_metering_point_ids_schema,
-        ),
-        (
-            "wholesale_basis_data_internal.metering_point_periods.csv",
-            metering_point_periods_schema,
-        ),
-        (
-            "wholesale_basis_data_internal.time_series_points.csv",
-            time_series_points_schema,
-        ),
-        (
-            "wholesale_internal.calculations.csv",
-            calculations_schema,
-        ),
-        (
-            "wholesale_internal.calculation_grid_areas.csv",
-            calculation_grid_areas_schema,
-        ),
-        (
-            "wholesale_results_internal.energy.csv",
-            energy_schema,
-        ),
-        (
-            "wholesale_results_internal.energy_per_brp.csv",
-            energy_per_brp_schema,
-        ),
-        (
-            "wholesale_results_internal.energy_per_es.csv",
-            energy_per_es_schema,
-        ),
-        (
-            "wholesale_results_internal.exchange_per_neighbor_ga.csv",
-            exchange_per_neighbor_schema,
-        ),
+        ("wholesale_basis_data_internal.charge_link_periods.csv", charge_link_periods_schema),
+        ("wholesale_basis_data_internal.charge_price_information_periods.csv", charge_price_information_periods_schema),
+        ("wholesale_basis_data_internal.charge_price_points.csv", charge_price_points_schema),
+        ("wholesale_basis_data_internal.grid_loss_metering_points.csv", grid_loss_metering_point_ids_schema),
+        ("wholesale_basis_data_internal.metering_point_periods.csv", metering_point_periods_schema),
+        ("wholesale_basis_data_internal.time_series_points.csv", time_series_points_schema),
+        ("wholesale_internal.calculations.csv", calculations_schema),
+        ("wholesale_internal.calculation_grid_areas.csv", calculation_grid_areas_schema),
+        ("wholesale_results_internal.energy.csv", energy_schema),
+        ("wholesale_results_internal.energy_per_brp.csv", energy_per_brp_schema),
+        ("wholesale_results_internal.energy_per_es.csv", energy_per_es_schema),
+        ("wholesale_results_internal.exchange_per_neighbor_ga.csv", exchange_per_neighbor_schema),
+        ("wholesale_results_internal.amounts_per_charge.csv", amounts_per_charge_schema),
+        ("wholesale_results_internal.monthly_amounts_per_charge.csv", monthly_amounts_schema_uc),
+        ("wholesale_results_internal.total_monthly_amounts.csv", total_monthly_amounts_schema_uc),
         (
             "wholesale_results_internal.grid_loss_metering_point_time_series.csv",
             grid_loss_metering_point_time_series_schema,
-        ),
-        (
-            "wholesale_results_internal.amounts_per_charge.csv",
-            amounts_per_charge_schema,
-        ),
-        (
-            "wholesale_results_internal.monthly_amounts_per_charge.csv",
-            monthly_amounts_schema_uc,
-        ),
-        (
-            "wholesale_results_internal.total_monthly_amounts.csv",
-            total_monthly_amounts_schema_uc,
         ),
     ]
 
