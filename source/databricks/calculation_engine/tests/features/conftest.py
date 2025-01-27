@@ -88,17 +88,11 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
 
     # Defining the mocks for the data frames in the "when" folder
     migrations_wholesale_repository: MigrationsWholesaleRepository = Mock()
-    migrations_wholesale_repository.read_time_series_points.return_value = (
-        time_series_points
-    )
-    migrations_wholesale_repository.read_metering_point_periods.return_value = (
-        metering_point_periods
-    )
+    migrations_wholesale_repository.read_time_series_points.return_value = time_series_points
+    migrations_wholesale_repository.read_metering_point_periods.return_value = metering_point_periods
 
     wholesale_internal_repository: WholesaleInternalRepository = Mock()
-    wholesale_internal_repository.read_grid_loss_metering_point_ids.return_value = (
-        grid_loss_metering_points
-    )
+    wholesale_internal_repository.read_grid_loss_metering_point_ids.return_value = grid_loss_metering_points
 
     # Only for wholesale we need these additional tests
     if is_wholesale_calculation_type(calculation_args.calculation_type):
@@ -121,15 +115,11 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         )
 
         # Mock the dataframes specific to the wholesales
-        migrations_wholesale_repository.read_charge_link_periods.return_value = (
-            charge_link_periods
-        )
+        migrations_wholesale_repository.read_charge_link_periods.return_value = charge_link_periods
         migrations_wholesale_repository.read_charge_price_information_periods.return_value = (
             charge_price_information_periods
         )
-        migrations_wholesale_repository.read_charge_price_points.return_value = (
-            charge_price_points
-        )
+        migrations_wholesale_repository.read_charge_price_points.return_value = charge_price_points
 
     # Execute the calculation logic
     calculation_output = CalculationCore().execute(

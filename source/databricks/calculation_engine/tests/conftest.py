@@ -1,20 +1,8 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 """
 By having a conftest.py in this directory, we are able to add all packages
 defined in the geh_stream directory in our tests.
 """
+
 import logging
 import os
 import shutil
@@ -68,10 +56,7 @@ def spark(
     warehouse_location = f"{tests_path}/__spark-warehouse__"
     metastore_path = f"{tests_path}/__metastore_db__"
 
-    if (
-        test_session_configuration.migrations.execute.value
-        == sql_migration_helper.MigrationsExecution.ALL.value
-    ):
+    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
         if os.path.exists(warehouse_location):
             print(f"Removing warehouse before clean run (path={warehouse_location})")
             shutil.rmtree(warehouse_location)
@@ -254,9 +239,7 @@ def virtual_environment() -> Generator:
 
     # Create and activate the virtual environment
     subprocess.call(["virtualenv", ".wholesale-pytest"])
-    subprocess.call(
-        "source .wholesale-pytest/bin/activate", shell=True, executable="/bin/bash"
-    )
+    subprocess.call("source .wholesale-pytest/bin/activate", shell=True, executable="/bin/bash")
 
     yield None
 
@@ -265,9 +248,7 @@ def virtual_environment() -> Generator:
 
 
 @pytest.fixture(scope="session")
-def installed_package(
-    virtual_environment: Generator, calculation_engine_path: str
-) -> None:
+def installed_package(virtual_environment: Generator, calculation_engine_path: str) -> None:
     """Ensures that the wholesale package is installed (after building it)."""
 
     # Build the package wheel
@@ -327,9 +308,7 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
             os.environ[key] = value
 
     if "AZURE_KEYVAULT_URL" in settings:
-        return IntegrationTestConfiguration(
-            azure_keyvault_url=settings["AZURE_KEYVAULT_URL"]
-        )
+        return IntegrationTestConfiguration(azure_keyvault_url=settings["AZURE_KEYVAULT_URL"])
 
     logging.error(
         f"Integration test configuration could not be loaded from {settings_file_path} or environment variables."
@@ -380,9 +359,7 @@ def any_calculator_args_for_wholesale() -> CalculatorArgs:
 
 
 @pytest.fixture(scope="session")
-def infrastructure_settings(
-    data_lake_path: str, calculation_input_path: str
-) -> InfrastructureSettings:
+def infrastructure_settings(data_lake_path: str, calculation_input_path: str) -> InfrastructureSettings:
     return InfrastructureSettings(
         catalog_name="spark_catalog",
         calculation_input_database_name="wholesale_migrations_wholesale",
