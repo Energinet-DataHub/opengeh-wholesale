@@ -11,8 +11,7 @@ from features.utils.calculation_args import create_calculation_args
 from package.calculation import CalculationCore, PreparedDataReader
 from package.codelists.calculation_type import is_wholesale_calculation_type
 from package.databases.migrations_wholesale.schemas import charge_price_points_schema
-from tests.features.utils.expected_output import ExpectedOutput
-from tests.features.utils.scenario_executor import ScenarioExecutor
+
 
 from package.calculation.calculation_output import CalculationOutput
 
@@ -40,23 +39,6 @@ def clear_cache(spark: SparkSession) -> None:
     yield
     # Clear the cache after each test module to avoid memory issues
     spark.catalog.clearCache()
-
-
-@pytest.fixture(scope="module")
-def actual_and_expected(
-    request: FixtureRequest,
-    spark: SparkSession,
-) -> tuple[CalculationOutput, list[ExpectedOutput]]:
-    """
-    Provides the actual and expected output for a scenario test case.
-
-    IMPORTANT: It is crucial that this fixture has scope=module, as the scenario executor
-    is specific to a single scenario, which are each located in their own module.
-    """
-
-    scenario_path = str(Path(request.module.__file__).parent)
-    scenario_executor = ScenarioExecutor(spark)
-    return scenario_executor.execute(scenario_path)
 
 
 @pytest.fixture(scope="module")
