@@ -17,6 +17,8 @@ on:
   pull_request:
     branches:
       - main
+  merge_group:
+    types: [checks_requested]
 
 jobs:
   #
@@ -53,7 +55,6 @@ jobs:
     uses: ./.github/workflows/ci-databricks.yml
     with:
       has_calculator_job_changes: ${{ needs.changes.outputs.calculator_job == 'true' }}
-      has_settlement_report_job_changes: ${{ needs.changes.outputs.settlement_report_job == 'true' }}
       has_delta_migration_changes: ${{ needs.changes.outputs.delta_migrations == 'true' }}
       image_tag: ${{ needs.ci_docker.outputs.image_tag }}
 
