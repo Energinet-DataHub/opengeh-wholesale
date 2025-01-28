@@ -4,8 +4,8 @@ locals {
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE            = "Information" # From geh-core
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_PROCESS_MANAGER = "Information" # From opengeh-process-manager
 
-  # Task Hub name given by PM Core
-  OrchestrationsTaskHubName = data.azurerm_key_vault_secret.st_taskhub_hub_name.value
+  # Task Hub name must match PM Core locals OrchestrationsTaskHubName
+  OrchestrationsTaskHubName = "ProcessManager03"
 
   # Outlaw stuff
   tags = {

@@ -36,11 +36,3 @@ module "kvs_st_taskhub_id" {
   value        = module.st_taskhub.id
   key_vault_id = module.kv_internal.id
 }
-
-module "kvs_st_taskhub_hub_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
-
-  name         = "st-taskhub-hub-name"
-  value        = local.OrchestrationsTaskHubName
-  key_vault_id = module.kv_internal.id
-}

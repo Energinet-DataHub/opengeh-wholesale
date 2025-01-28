@@ -33,11 +33,6 @@ data "azurerm_key_vault_secret" "st_taskhub_id" {
   key_vault_id = data.azurerm_key_vault.kv_pmcore.id
 }
 
-data "azurerm_key_vault_secret" "st_taskhub_hub_name" {
-  name         = "st-taskhub-hub-name"
-  key_vault_id = data.azurerm_key_vault.kv_pmcore.id
-}
-
 data "azurerm_key_vault_secret" "monitor_action_group_id" {
   count = var.monitor_action_group_exists == false ? 0 : 1
 
