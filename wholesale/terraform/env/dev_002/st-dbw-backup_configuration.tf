@@ -1,5 +1,5 @@
 module "results_internal_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_3.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_6.0.2"
   providers = { # The module requires a databricks provider, as it uses databricks resources
     databricks = databricks.dbw
   }
@@ -20,7 +20,7 @@ module "results_internal_backup" {
 }
 
 module "internal_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_3.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_6.0.2"
   providers = { # The module requires a databricks provider, as it uses databricks resources
     databricks = databricks.dbw
   }
