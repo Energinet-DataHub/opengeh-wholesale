@@ -25,47 +25,6 @@ module "monitor_action_group_wholesale" {
 
   query_alerts_list = [
     //
-    // Wholesale Aggregations (Python) alerts
-    //
-    {
-      name        = "request-errors-aggregations"
-      description = "Default alert for request errors."
-      query       = <<-QUERY
-                      let startTime = ago(1d);
-                      let endTime = now();
-                      let resolution = 1h;
-                      requests
-                      | where timestamp between(startTime .. endTime)
-                      | where customDimensions["Subsystem"] == "wholesale-aggregations"
-                      | summarize failCount = sum(iif(success == "False", 1, 0)) by timeSlot = bin(timestamp, resolution)
-                      | where failCount >= 5 // Filtering hours with 5 or more failed requests
-                      | summarize count() by bin(timeSlot, 8h) // Aggregating into 8-hour windows
-                      | where count_ >= 8 // Checking for windows with sufficient failed request counts
-                      | project timeWindowStart = timeSlot, countInWindow = count_
-                      QUERY
-      severity    = 1
-      frequency   = 5
-      time_window = 5
-      threshold   = 0
-      operator    = "GreaterThan"
-    },
-    {
-      name        = "exception-trigger-aggregations"
-      description = "Alert when total results cross threshold"
-      query       = <<-QUERY
-                      exceptions
-                        | where timestamp > ago(10m)
-                        | where customDimensions["Subsystem"] == "wholesale-aggregations"
-                        // avoid triggering alert when exception is logged by health check
-                        | where customDimensions["EventName"] != "HealthCheckEnd"
-                    QUERY
-      severity    = 1
-      frequency   = 5
-      time_window = 5
-      threshold   = 0
-      operator    = "GreaterThan"
-    },
-    //
     // Wholesale .NET alerts
     //
     {
