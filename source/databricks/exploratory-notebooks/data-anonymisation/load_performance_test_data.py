@@ -18,9 +18,9 @@
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Load anonymised dataset 
+# MAGIC ### Load anonymised dataset
 # MAGIC This notebook loads the anonymised dataset from blobstorage and ensures that our schemas are valid.
-# MAGIC We should keep this notebook for the instance of databricks deletion in the workspace so we can reread the data 
+# MAGIC We should keep this notebook for the instance of databricks deletion in the workspace so we can reread the data
 # MAGIC add it to wholesale database
 
 # COMMAND ----------

@@ -56,7 +56,10 @@ def spark(
     warehouse_location = f"{tests_path}/__spark-warehouse__"
     metastore_path = f"{tests_path}/__metastore_db__"
 
-    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
+    if (
+        test_session_configuration.migrations.execute.value
+        == sql_migration_helper.MigrationsExecution.ALL.value
+    ):
         if os.path.exists(warehouse_location):
             print(f"Removing warehouse before clean run (path={warehouse_location})")
             shutil.rmtree(warehouse_location)
@@ -239,7 +242,9 @@ def virtual_environment() -> Generator:
 
     # Create and activate the virtual environment
     subprocess.call(["virtualenv", ".wholesale-pytest"])
-    subprocess.call("source .wholesale-pytest/bin/activate", shell=True, executable="/bin/bash")
+    subprocess.call(
+        "source .wholesale-pytest/bin/activate", shell=True, executable="/bin/bash"
+    )
 
     yield None
 
@@ -248,7 +253,9 @@ def virtual_environment() -> Generator:
 
 
 @pytest.fixture(scope="session")
-def installed_package(virtual_environment: Generator, calculation_engine_path: str) -> None:
+def installed_package(
+    virtual_environment: Generator, calculation_engine_path: str
+) -> None:
     """Ensures that the wholesale package is installed (after building it)."""
 
     # Build the package wheel
@@ -308,7 +315,9 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
             os.environ[key] = value
 
     if "AZURE_KEYVAULT_URL" in settings:
-        return IntegrationTestConfiguration(azure_keyvault_url=settings["AZURE_KEYVAULT_URL"])
+        return IntegrationTestConfiguration(
+            azure_keyvault_url=settings["AZURE_KEYVAULT_URL"]
+        )
 
     logging.error(
         f"Integration test configuration could not be loaded from {settings_file_path} or environment variables."
@@ -359,7 +368,9 @@ def any_calculator_args_for_wholesale() -> CalculatorArgs:
 
 
 @pytest.fixture(scope="session")
-def infrastructure_settings(data_lake_path: str, calculation_input_path: str) -> InfrastructureSettings:
+def infrastructure_settings(
+    data_lake_path: str, calculation_input_path: str
+) -> InfrastructureSettings:
     return InfrastructureSettings(
         catalog_name="spark_catalog",
         calculation_input_database_name="wholesale_migrations_wholesale",

@@ -22,17 +22,17 @@
 # COMMAND ----------
 
 # Write mode
-target_table_write_mode = "append" # FILL IN
+target_table_write_mode = "append"  # FILL IN
 
 # Source variables
-anonymised_database = "hive_metastore.wholesale_output_anonymised" # FILL IN
-anonymised_table_name = "energy_results" # FILL IN
-anonymised_storage_account_name = "stdatalakeshresdwe002" # FILL IN
-anonymised_delta_table_root_path = f"abfss://wholesale@{anonymised_storage_account_name}.dfs.core.windows.net/wholesale_output_anonymised" # FILL IN
+anonymised_database = "hive_metastore.wholesale_output_anonymised"  # FILL IN
+anonymised_table_name = "energy_results"  # FILL IN
+anonymised_storage_account_name = "stdatalakeshresdwe002"  # FILL IN
+anonymised_delta_table_root_path = f"abfss://wholesale@{anonymised_storage_account_name}.dfs.core.windows.net/wholesale_output_anonymised"  # FILL IN
 
 # Target variables
-target_database = "hive_metastore.wholesale_output" # FILL IN
-target_table_name = "energy_results" # FILL IN
+target_database = "hive_metastore.wholesale_output"  # FILL IN
+target_table_name = "energy_results"  # FILL IN
 
 # COMMAND ----------
 
@@ -67,8 +67,8 @@ spark.sql(query)
 # COMMAND ----------
 
 df_anonymised = spark.read.table(f"{anonymised_database}.{anonymised_table_name}")
-df_anonymised.write.mode(target_table_write_mode).saveAsTable(f"{target_database}.{target_table_name}")
+df_anonymised.write.mode(target_table_write_mode).saveAsTable(
+    f"{target_database}.{target_table_name}"
+)
 
 # COMMAND ----------
-
-

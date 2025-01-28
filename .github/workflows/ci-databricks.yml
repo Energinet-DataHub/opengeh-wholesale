@@ -270,5 +270,5 @@ jobs:
       - uses: actions/checkout@v4
       - uses: psf/black@stable
         with:
-          options: --check --diff --line-length 120
+          options: --check --diff
           src: ./source/databricks/calculation_engine
