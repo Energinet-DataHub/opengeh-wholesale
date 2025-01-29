@@ -19,15 +19,35 @@
 
 # COMMAND ----------
 
-from pyspark.sql.functions import lit, when, col, lead, last, coalesce, explode, from_json, row_number, expr
+from pyspark.sql.functions import (
+    lit,
+    when,
+    col,
+    lead,
+    last,
+    coalesce,
+    explode,
+    from_json,
+    row_number,
+    expr,
+)
 import pyspark.sql.functions as F
-from pyspark.sql.types import MapType, StringType, StructType, StructField, TimestampType
+from pyspark.sql.types import (
+    MapType,
+    StringType,
+    StructType,
+    StructField,
+    TimestampType,
+)
 from pyspark.sql.window import Window
 import os
 
 storage_account_name = os.environ["STORAGE_ACCOUNT_NAME"]
 storage_account_key = os.environ["STORAGE_ACCOUNT_KEY"]
-spark.conf.set(f"fs.azure.account.key.{storage_account_name}.dfs.core.windows.net",  storage_account_key)
+spark.conf.set(
+    f"fs.azure.account.key.{storage_account_name}.dfs.core.windows.net",
+    storage_account_key,
+)
 path = f"abfss://integration-events@{storage_account_name}.dfs.core.windows.net/events"
 
 print(storage_account_name, storage_account_key)
@@ -39,12 +59,13 @@ print(storage_account_name, storage_account_key)
 # COMMAND ----------
 
 integration_events = (
-    spark.read.option("mergeSchema", "true").parquet(path)
+    spark.read.option("mergeSchema", "true")
+    .parquet(path)
     .withColumn("body", col("body").cast("string"))
     .orderBy(col("storedTime").desc())
 )
 display(integration_events)
-#integration_events.printSchema()
+# integration_events.printSchema()
 
 # COMMAND ----------
 
@@ -63,8 +84,9 @@ grid_area_event_schema = StructType(
 )
 
 grid_area_events = (
-    integration_events
-    .withColumn("body", from_json(col("body"), grid_area_event_schema))
+    integration_events.withColumn(
+        "body", from_json(col("body"), grid_area_event_schema)
+    )
     .select("*", "body.*")
     .where(col("MessageType") == "GridAreaUpdated")
 )
@@ -79,9 +101,11 @@ display(grid_area_events.orderBy(col("enqueuedTime").desc()))
 
 # COMMAND ----------
 
-#from pyspark.sql.types import MapType, StringType, StructType, StructField, TimestampType, LongType
-#time_series_raw_schema = StructType([StructField("GsrnNumber", StringType(), True), StructField("CreatedDateTime", TimestampType(), True)])
-timeseries_raw_df = spark.read.json("abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/timeseries-raw/")              
+# from pyspark.sql.types import MapType, StringType, StructType, StructField, TimestampType, LongType
+# time_series_raw_schema = StructType([StructField("GsrnNumber", StringType(), True), StructField("CreatedDateTime", TimestampType(), True)])
+timeseries_raw_df = spark.read.json(
+    "abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/timeseries-raw/"
+)
 display(timeseries_raw_df)
 
 # COMMAND ----------
@@ -91,14 +115,17 @@ display(timeseries_raw_df)
 
 # COMMAND ----------
 
-timeseries_unprocssed_df = (spark.read.option("mergeSchema", "true").parquet("abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/timeseries-unprocessed/")
-                 #.where(col("storedTime") <= snapshot_datetime)
-                 #.where(col("time") >= period_start_datetime)
-                 #.where(col("time") < period_end_datetime)
-                 # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
-                 #.withColumn("quantity", col("quantity").cast("decimal(18,6)"))
-                 #.orderBy(col("storedTime").desc())
-                )
+timeseries_unprocssed_df = (
+    spark.read.option("mergeSchema", "true").parquet(
+        "abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/timeseries-unprocessed/"
+    )
+    # .where(col("storedTime") <= snapshot_datetime)
+    # .where(col("time") >= period_start_datetime)
+    # .where(col("time") < period_end_datetime)
+    # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
+    # .withColumn("quantity", col("quantity").cast("decimal(18,6)"))
+    # .orderBy(col("storedTime").desc())
+)
 timeseries_unproccesd_df
 
 display(timeseries_unprocssed_df)
@@ -107,18 +134,21 @@ display(timeseries_unprocssed_df)
 
 # MAGIC %md # Published Time Series Points
 # MAGIC After validation of time-series the valid time-series are exploded into rows representing a single point each.
-# MAGIC 
+# MAGIC
 # MAGIC The points are enriched with some time-series data.
 
 # COMMAND ----------
 
-timeseries_points_df = (spark.read.option("mergeSchema", "true").parquet("abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/time-series-points/")
-                 #.where(col("storedTime") <= snapshot_datetime)
-                 #.where(col("time") >= period_start_datetime)
-                 #.where(col("time") < period_end_datetime)
-                 # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
-                 #.withColumn("quantity", col("quantity").cast("decimal(18,6)"))
-                 .orderBy(col("storedTime").desc())
-                )
+timeseries_points_df = (
+    spark.read.option("mergeSchema", "true").parquet(
+        "abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/time-series-points/"
+    )
+    # .where(col("storedTime") <= snapshot_datetime)
+    # .where(col("time") >= period_start_datetime)
+    # .where(col("time") < period_end_datetime)
+    # Quantity of time series points should have 3 digits. Calculations, however, must use 6 digit precision to reduce rounding errors
+    # .withColumn("quantity", col("quantity").cast("decimal(18,6)"))
+    .orderBy(col("storedTime").desc())
+)
 
 display(timeseries_points_df)

@@ -66,10 +66,9 @@ spark.sql(query)
 # COMMAND ----------
 
 # Read source tables
-df_source_energy_results_table = (
-    spark.read.table(f"{source_database}.{source_energy_results_table_name}")
-    .filter(f"{calculation_id_column_name} == '{source_calculation_id_to_use}'")
-)
+df_source_energy_results_table = spark.read.table(
+    f"{source_database}.{source_energy_results_table_name}"
+).filter(f"{calculation_id_column_name} == '{source_calculation_id_to_use}'")
 
 # COMMAND ----------
 
@@ -111,26 +110,33 @@ df_source_grid_area_codes_table = (
 
 # COMMAND ----------
 
-df_unique_grid_area_codes = df_source_grid_area_codes_table.union(df_source_energy_results_table.select(grid_area_code_column_name).distinct()).distinct()
+df_unique_grid_area_codes = df_source_grid_area_codes_table.union(
+    df_source_energy_results_table.select(grid_area_code_column_name).distinct()
+).distinct()
 
 anonymised_grid_area_codes = []
-list_unique_grid_area_codes = [row[grid_area_code_column_name] for row in df_unique_grid_area_codes.collect()]
+list_unique_grid_area_codes = [
+    row[grid_area_code_column_name] for row in df_unique_grid_area_codes.collect()
+]
 
 first_anonymized_id_iteration = 1
 for grid_area_code in list_unique_grid_area_codes:
-    str_i = str(first_anonymized_id_iteration).rjust(3, '0')
+    str_i = str(first_anonymized_id_iteration).rjust(3, "0")
     first_anonymized_id_iteration += 1
 
     # Keep going until we reach a new unique grid area code
     while str_i in list_unique_grid_area_codes:
-        str_i = str(first_anonymized_id_iteration).rjust(3, '0')
+        str_i = str(first_anonymized_id_iteration).rjust(3, "0")
         first_anonymized_id_iteration += 1
-    
+
     anonymised_grid_area_codes.append((grid_area_code, str_i))
 
 # COMMAND ----------
 
-df_anonymised_grid_area_codes = spark.createDataFrame(anonymised_grid_area_codes, [grid_area_code_column_name, anonymised_grid_area_code_column_name]).cache()
+df_anonymised_grid_area_codes = spark.createDataFrame(
+    anonymised_grid_area_codes,
+    [grid_area_code_column_name, anonymised_grid_area_code_column_name],
+).cache()
 
 # COMMAND ----------
 
@@ -160,11 +166,13 @@ assert (
 
 # COMMAND ----------
 
-df_anonymised_suppliers_balancers_and_metering_points = df_anonymised_gln_numbers_with_mps.select(
-    F.col(gln_original_column_name).alias(metering_point_id_column_name),
-    F.col(gln_original_column_name).alias(balance_responsible_id_column_name),
-    F.col(gln_original_column_name).alias(energy_supplier_id_column_name),
-    gln_anonymised_column_name,
+df_anonymised_suppliers_balancers_and_metering_points = (
+    df_anonymised_gln_numbers_with_mps.select(
+        F.col(gln_original_column_name).alias(metering_point_id_column_name),
+        F.col(gln_original_column_name).alias(balance_responsible_id_column_name),
+        F.col(gln_original_column_name).alias(energy_supplier_id_column_name),
+        gln_anonymised_column_name,
+    )
 )
 
 # COMMAND ----------
@@ -173,39 +181,77 @@ df_source_energy_results_table_anonymised = (
     df_source_energy_results_table
     # Anonymise Metering Point Id
     .join(
-        df_anonymised_suppliers_balancers_and_metering_points.select(metering_point_id_column_name, gln_anonymised_column_name),
-        df_source_energy_results_table[metering_point_id_column_name].eqNullSafe(df_anonymised_suppliers_balancers_and_metering_points[metering_point_id_column_name]),
+        df_anonymised_suppliers_balancers_and_metering_points.select(
+            metering_point_id_column_name, gln_anonymised_column_name
+        ),
+        df_source_energy_results_table[metering_point_id_column_name].eqNullSafe(
+            df_anonymised_suppliers_balancers_and_metering_points[
+                metering_point_id_column_name
+            ]
+        ),
         "left",
     )
-    .drop(df_anonymised_suppliers_balancers_and_metering_points[metering_point_id_column_name])
+    .drop(
+        df_anonymised_suppliers_balancers_and_metering_points[
+            metering_point_id_column_name
+        ]
+    )
     .withColumn(metering_point_id_column_name, F.col(gln_anonymised_column_name))
     .drop(gln_anonymised_column_name)
     # Anonymise Energy Supplier Id
     .join(
-        df_anonymised_suppliers_balancers_and_metering_points.select(energy_supplier_id_column_name, gln_anonymised_column_name),
-        df_anonymised_suppliers_balancers_and_metering_points[energy_supplier_id_column_name].eqNullSafe(df_source_energy_results_table[energy_supplier_id_column_name]),
+        df_anonymised_suppliers_balancers_and_metering_points.select(
+            energy_supplier_id_column_name, gln_anonymised_column_name
+        ),
+        df_anonymised_suppliers_balancers_and_metering_points[
+            energy_supplier_id_column_name
+        ].eqNullSafe(df_source_energy_results_table[energy_supplier_id_column_name]),
         "left",
     )
-    .drop(df_anonymised_suppliers_balancers_and_metering_points[energy_supplier_id_column_name], df_anonymised_suppliers_balancers_and_metering_points[balance_responsible_id_column_name])
+    .drop(
+        df_anonymised_suppliers_balancers_and_metering_points[
+            energy_supplier_id_column_name
+        ],
+        df_anonymised_suppliers_balancers_and_metering_points[
+            balance_responsible_id_column_name
+        ],
+    )
     .withColumn(energy_supplier_id_column_name, F.col(gln_anonymised_column_name))
     .drop(gln_anonymised_column_name)
     # Anonymise Balance Supplier Id
     .join(
-        df_anonymised_suppliers_balancers_and_metering_points.select(balance_responsible_id_column_name, gln_anonymised_column_name),
-        df_anonymised_suppliers_balancers_and_metering_points[balance_responsible_id_column_name].eqNullSafe(df_source_energy_results_table[balance_responsible_id_column_name]),
+        df_anonymised_suppliers_balancers_and_metering_points.select(
+            balance_responsible_id_column_name, gln_anonymised_column_name
+        ),
+        df_anonymised_suppliers_balancers_and_metering_points[
+            balance_responsible_id_column_name
+        ].eqNullSafe(
+            df_source_energy_results_table[balance_responsible_id_column_name]
+        ),
         "left",
     )
-    .drop(df_anonymised_suppliers_balancers_and_metering_points[energy_supplier_id_column_name], df_anonymised_suppliers_balancers_and_metering_points[balance_responsible_id_column_name])
+    .drop(
+        df_anonymised_suppliers_balancers_and_metering_points[
+            energy_supplier_id_column_name
+        ],
+        df_anonymised_suppliers_balancers_and_metering_points[
+            balance_responsible_id_column_name
+        ],
+    )
     .withColumn(balance_responsible_id_column_name, F.col(gln_anonymised_column_name))
     .drop(gln_anonymised_column_name)
     # Anonymise Grid Area Code
     .join(
         df_anonymised_grid_area_codes,
-        df_source_energy_results_table[grid_area_code_column_name].eqNullSafe(df_anonymised_grid_area_codes[grid_area_code_column_name]),
+        df_source_energy_results_table[grid_area_code_column_name].eqNullSafe(
+            df_anonymised_grid_area_codes[grid_area_code_column_name]
+        ),
         "left",
     )
     .drop(df_anonymised_grid_area_codes[grid_area_code_column_name])
-    .withColumn(grid_area_code_column_name, F.col(anonymised_grid_area_code_column_name))
+    .withColumn(
+        grid_area_code_column_name, F.col(anonymised_grid_area_code_column_name)
+    )
     .drop(anonymised_grid_area_code_column_name)
     # Select and Distinct
     .select(df_source_energy_results_table.columns)
@@ -241,53 +287,89 @@ assert (
 # COMMAND ----------
 
 assert (
-    df_source_energy_results_table_anonymised.select(metering_point_id_column_name).distinct().count() == df_source_energy_results_table.select(metering_point_id_column_name).distinct().count()
+    df_source_energy_results_table_anonymised.select(metering_point_id_column_name)
+    .distinct()
+    .count()
+    == df_source_energy_results_table.select(metering_point_id_column_name)
+    .distinct()
+    .count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_energy_results_table_anonymised.filter(F.col(metering_point_id_column_name).isNull()).count()
-    == df_source_energy_results_table.filter(F.col(metering_point_id_column_name).isNull()).count()
+    df_source_energy_results_table_anonymised.filter(
+        F.col(metering_point_id_column_name).isNull()
+    ).count()
+    == df_source_energy_results_table.filter(
+        F.col(metering_point_id_column_name).isNull()
+    ).count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_energy_results_table_anonymised.select(balance_responsible_id_column_name).distinct().count() == df_source_energy_results_table.select(balance_responsible_id_column_name).distinct().count()
+    df_source_energy_results_table_anonymised.select(balance_responsible_id_column_name)
+    .distinct()
+    .count()
+    == df_source_energy_results_table.select(balance_responsible_id_column_name)
+    .distinct()
+    .count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_energy_results_table_anonymised.filter(F.col(balance_responsible_id_column_name).isNull()).count()
-    == df_source_energy_results_table.filter(F.col(balance_responsible_id_column_name).isNull()).count()
+    df_source_energy_results_table_anonymised.filter(
+        F.col(balance_responsible_id_column_name).isNull()
+    ).count()
+    == df_source_energy_results_table.filter(
+        F.col(balance_responsible_id_column_name).isNull()
+    ).count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_energy_results_table_anonymised.select(energy_supplier_id_column_name).distinct().count() == df_source_energy_results_table.select(energy_supplier_id_column_name).distinct().count()
+    df_source_energy_results_table_anonymised.select(energy_supplier_id_column_name)
+    .distinct()
+    .count()
+    == df_source_energy_results_table.select(energy_supplier_id_column_name)
+    .distinct()
+    .count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_energy_results_table_anonymised.filter(F.col(energy_supplier_id_column_name).isNull()).count()
-    == df_source_energy_results_table.filter(F.col(energy_supplier_id_column_name).isNull()).count()
+    df_source_energy_results_table_anonymised.filter(
+        F.col(energy_supplier_id_column_name).isNull()
+    ).count()
+    == df_source_energy_results_table.filter(
+        F.col(energy_supplier_id_column_name).isNull()
+    ).count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_energy_results_table_anonymised.select(grid_area_code_column_name).distinct().count() == df_source_energy_results_table.select(grid_area_code_column_name).distinct().count()
+    df_source_energy_results_table_anonymised.select(grid_area_code_column_name)
+    .distinct()
+    .count()
+    == df_source_energy_results_table.select(grid_area_code_column_name)
+    .distinct()
+    .count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_energy_results_table_anonymised.filter(F.col(grid_area_code_column_name).isNull()).count()
-    == df_source_energy_results_table.filter(F.col(grid_area_code_column_name).isNull()).count()
+    df_source_energy_results_table_anonymised.filter(
+        F.col(grid_area_code_column_name).isNull()
+    ).count()
+    == df_source_energy_results_table.filter(
+        F.col(grid_area_code_column_name).isNull()
+    ).count()
 )
 
 # COMMAND ----------
@@ -297,10 +379,8 @@ assert (
 
 # COMMAND ----------
 
-df_source_energy_results_table_anonymised.write.format("delta").mode("overwrite").saveAsTable(
-    f"{target_database}.{target_energy_results_table_name}"
-)
+df_source_energy_results_table_anonymised.write.format("delta").mode(
+    "overwrite"
+).saveAsTable(f"{target_database}.{target_energy_results_table_name}")
 
 # COMMAND ----------
-
-
