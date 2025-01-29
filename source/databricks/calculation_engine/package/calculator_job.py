@@ -36,18 +36,58 @@ from package.databases import migrations_wholesale, wholesale_internal
 from package.infrastructure import initialize_spark
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
+from telemetry_logging import Logger, logging_configuration
+from telemetry_logging.logging_configuration import configure_logging,LoggingSettings
+from telemetry_logging.decorators import start_trace, use_span
+
 
 # The start() method should only have its name updated in correspondence with the
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
+
 def start() -> None:
-    applicationinsights_connection_string = os.getenv(
-        "APPLICATIONINSIGHTS_CONNECTION_STRING"
+
+    logging_settings = LoggingSettings()
+
+    configure_logging(
+        logging_settings=logging_settings,
+        extras={'tracer_name': 'calculator-job'} #Tjek om denne skal kunne overskrives eller om den bare skal bruge subsystem
     )
 
-    start_with_deps(
-        applicationinsights_connection_string=applicationinsights_connection_string
+    foo()
+
+@start_trace()
+def foo() -> None:
+    spark = initialize_spark()
+    args = CalculatorArgs() #Lav class med BaseSettings
+    infrastructure_settings = InfrastructureSettings() #Lav class med BaseSettings
+    create_and_configure_container(spark, infrastructure_settings)
+
+    prepared_data_reader = create_prepared_data_reader(
+        infrastructure_settings, spark
     )
+
+    if not prepared_data_reader.is_calculation_id_unique(args.calculation_id):
+        raise Exception(
+            f"Calculation ID '{args.calculation_id}' is already used."
+        )
+    try:
+        calculation_executor(
+            args,
+            prepared_data_reader,
+            CalculationCore(),
+            CalculationMetadataService(),
+            CalculationOutputService(),
+        )
+
+
+
+
+
+
+
+# --------------------------------------------------------
+
 
 
 def start_with_deps(
@@ -83,7 +123,7 @@ def start_with_deps(
             span.set_attributes(config.get_extras())
 
             args, infrastructure_settings = parse_job_args(command_line_args)
-
+# --------------------------------------------------------------------------
             spark = initialize_spark()
             create_and_configure_container(spark, infrastructure_settings)
 
@@ -105,6 +145,8 @@ def start_with_deps(
             )
 
         # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
+
+        # ------ TJEK at dette er håndteret i start_trace()
         except SystemExit as e:
             if e.code != 0:
                 span_record_exception(e, span)
