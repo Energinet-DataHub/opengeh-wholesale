@@ -72,7 +72,7 @@ resource "databricks_permissions" "backup_endpoint" {
 resource "databricks_sql_endpoint" "investigate_sql_endpoint" {
   provider                  = databricks.dbw
   name                      = "Investigate SQL endpoint"
-  cluster_size              = "2X-Large"
+  cluster_size              = "Large"
   max_num_clusters          = 1
   auto_stop_mins            = 30
   warehouse_type            = "PRO"
