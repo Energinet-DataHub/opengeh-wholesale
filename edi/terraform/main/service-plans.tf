@@ -42,14 +42,6 @@ module "webapp_service_plan" {
 
   monitor_alerts_action_group_id = length(module.monitor_action_group_edi) != 1 ? null : module.monitor_action_group_edi[0].id
 
-  cpu_alert_information = {
-    alerts_enabled = length(module.monitor_action_group_edi) != 1 ? false : true
-    frequency      = "PT1M"
-    window_size    = "PT5M"
-    threshold      = 80
-    severity       = 2
-  }
-
   memory_alert_information = {
     alerts_enabled = length(module.monitor_action_group_edi) != 1 ? false : true
     frequency      = "PT1M"
