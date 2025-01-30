@@ -36,7 +36,7 @@ resource "databricks_job" "bronze_database_migration" {
     }
 
     python_wheel_task {
-      package_name = "bronze"
+      package_name = "opengeh_bronze"
       # The entry point is defined in pyproject.toml
       entry_point = "migrate"
     }

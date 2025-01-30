@@ -41,7 +41,7 @@ resource "databricks_job" "bronze_submitted_transactions_ingestion_stream" {
     }
 
     python_wheel_task {
-      package_name = "bronze"
+      package_name = "opengeh_bronze"
       # The entry point is defined in pyproject.toml
       entry_point = "ingest_submitted_transactions"
     }

@@ -97,7 +97,7 @@ resource "databricks_job" "gold_database_migration" {
     }
 
     python_wheel_task {
-      package_name = "gold"
+      package_name = "opengeh_gold"
       entry_point  = "migrate"
     }
   }
