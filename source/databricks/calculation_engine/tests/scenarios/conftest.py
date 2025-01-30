@@ -6,7 +6,6 @@ from pyspark.sql import SparkSession
 from testcommon.dataframes import AssertDataframesConfiguration, read_csv
 from testcommon.etl import TestCase, TestCases
 
-from scenarios.utils.calculation_args import create_calculation_args
 from package.calculation import CalculationCore, PreparedDataReader
 from package.codelists.calculation_type import is_wholesale_calculation_type
 from package.databases.migrations_wholesale.schemas import charge_price_points_schema
@@ -28,6 +27,63 @@ from package.databases.wholesale_internal.schemas import (
 )
 
 from testsession_configuration import TestSessionConfiguration
+
+
+from datetime import datetime
+
+import yaml
+
+from package.calculation.calculator_args import CalculatorArgs
+from package.codelists import CalculationType
+from package.constants import Colname
+
+
+class ArgsName:
+    calculation_id = "calculation_id"
+    period_start = "period_start"
+    period_end = "period_end"
+    grid_area_codes = "grid_areas"
+    is_internal_calculation = "is_internal_calculation"
+
+
+CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
+
+def create_calculation_args(input_path: str) -> CalculatorArgs:
+    with open(input_path + "calculation_arguments.yml", "r") as file:
+        calculation_args = yaml.safe_load(file)[0]
+
+    quarterly_resolution_transition_datetime = datetime(2023, 1, 31, 23, 0, 0)
+    if "quarterly_resolution_transition_datetime" in calculation_args:
+        quarterly_resolution_transition_datetime = datetime.strptime(
+            calculation_args["quarterly_resolution_transition_datetime"],
+            CSV_DATE_FORMAT,
+        )
+    time_zone = "Europe/Copenhagen"
+    if "time_zone" in calculation_args:
+        time_zone = calculation_args["time_zone"]
+
+    return CalculatorArgs(
+        calculation_id=calculation_args[ArgsName.calculation_id],
+        calculation_grid_areas=calculation_args[ArgsName.grid_area_codes],
+        calculation_period_start_datetime=datetime.strptime(
+            calculation_args[ArgsName.period_start], CSV_DATE_FORMAT
+        ),
+        calculation_period_end_datetime=datetime.strptime(
+            calculation_args[ArgsName.period_end], CSV_DATE_FORMAT
+        ),
+        calculation_type=CalculationType(calculation_args[Colname.calculation_type]),
+        calculation_execution_time_start=datetime.strptime(
+            calculation_args[Colname.calculation_execution_time_start],
+            CSV_DATE_FORMAT,
+        ),
+        created_by_user_id=calculation_args[Colname.created_by_user_id],
+        time_zone=time_zone,
+        quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
+        is_internal_calculation=calculation_args.get(
+            ArgsName.is_internal_calculation, False
+        ),
+    )
 
 
 @pytest.fixture(scope="module", autouse=True)
