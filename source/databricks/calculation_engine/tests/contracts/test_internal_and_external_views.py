@@ -20,7 +20,7 @@ from tests.contracts.databases_and_schemas import (
     get_expected_schemas,
     get_views_from_database,
 )
-from tests.features.utils.dataframes.columns.view_columns import ViewColumns
+from tests.scenarios.utils.dataframes.columns.view_columns import ViewColumns
 from package.common import assert_schema
 
 
