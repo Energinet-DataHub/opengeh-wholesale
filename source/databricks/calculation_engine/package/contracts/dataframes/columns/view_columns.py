@@ -12,7 +12,7 @@ from pyspark.sql.types import (
     IntegerType,
 )
 
-from tests.features.utils.dataframes.columns.column import Column
+from package.contracts.dataframes.columns import Column
 
 
 class ViewColumns:
