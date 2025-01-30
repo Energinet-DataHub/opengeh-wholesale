@@ -143,11 +143,11 @@ jobs:
           - name: Wholesale (calculator_job)
             paths: calculator_job/test_wholesale_calculation.py
           - name: Energy logic
-            paths: features/energy_calculation
+            paths: scenarios/energy_calculation
           - name: Wholesale logic
-            paths: features/wholesale_calculation
+            paths: scenarios/wholesale_calculation
           - name: Data products
-            paths: features/data_products contracts
+            paths: scenarios/data_products contracts
           - name: Unit tests
             paths: calculation codelists common optimize_job databases infrastructure
           - name: Entry point tests
@@ -233,9 +233,9 @@ jobs:
           calculator_job/test_wholesale_calculation.py
           calculator_job/test_start.py
           calculator_job/test_start_with_deps.py
-          features/energy_calculation
-          features/wholesale_calculation
-          features/data_products
+          scenarios/energy_calculation
+          scenarios/wholesale_calculation
+          scenarios/data_products
           calculation/
           codelists/
           common/
