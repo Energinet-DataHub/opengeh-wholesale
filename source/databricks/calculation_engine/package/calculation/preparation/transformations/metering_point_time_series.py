@@ -24,7 +24,7 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
     PreparedMeteringPointTimeSeries,
 )
 from package.codelists import MeteringPointResolution, QuantityQuality
-from package.common import assert_schema
+from testcommon.dataframes.assert_schemas import assert_schema
 from package.constants import Colname
 
 
