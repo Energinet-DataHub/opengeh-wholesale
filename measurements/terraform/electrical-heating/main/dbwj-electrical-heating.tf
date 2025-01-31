@@ -18,6 +18,7 @@ resource "databricks_job" "electrical_heating" {
         "TIME_ZONE"                             = local.TIME_ZONE
         "CATALOG_NAME"                          = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+        "ELECTRICITY_MARKET_DATA_PATH"          = "${data.azurerm_key_vault_secret.st_electricity_market_url.value}/electrical-heating"
       }
     }
   }
