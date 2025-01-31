@@ -130,6 +130,12 @@ variable "feature_management_use_standard_blob_service_client" {
   default     = false
 }
 
+variable "feature_management_use_process_manager_to_enqueue_brs023027_messages" {
+  type        = bool
+  description = "Use Process Manager for Energy and Wholesale calculation messages, not Wholesale."
+  default     = false
+}
+
 variable "apim_maintenance_mode" {
   type        = bool
   description = "Determine if API Management is in maintenance mode. In maintenance mode all requests will return 503 Service Unavailable."

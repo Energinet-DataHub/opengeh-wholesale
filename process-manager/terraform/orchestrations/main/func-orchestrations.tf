@@ -56,6 +56,11 @@ module "func_orchestrations" {
       resource_id          = data.azurerm_key_vault_secret.evh_measurement_transactions_id.value
       role_definition_name = "Azure Event Hubs Data Sender"
     },
+    {
+      // ServiceBus Integration Events Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
+    },
   ]
 }
 

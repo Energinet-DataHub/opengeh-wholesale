@@ -25,7 +25,9 @@ locals {
       "ProcessManagerTopic__Brs028SubscriptionName"                   = module.sbtsub_pm_brs_028.name
       "ProcessManagerTopic__Brs021ForwardMeteredDataSubscriptionName" = module.sbtsub_pm_brs_021_forward_metered_data.name
 
-      "EdiTopic__Name" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-edi-name)"
+      # Subsystem Topics
+      "EdiTopic__Name"              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-edi-name)"
+      "IntegrationEventTopic_Name"  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"
 
       # Databricks workspaces
       "WholesaleWorkspace__BaseUrl"    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-workspace-url)"
