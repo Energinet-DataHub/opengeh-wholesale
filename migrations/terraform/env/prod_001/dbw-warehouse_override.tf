@@ -7,5 +7,9 @@ resource "databricks_sql_endpoint" "backup_warehouse" {
 }
 
 resource "databricks_sql_endpoint" "investigate_sql_endpoint" {
-  cluster_size              = "2X-Large"
+  cluster_size = "2X-Large"
+}
+
+resource "databricks_sql_endpoint" "ts_api_sql_endpoint" {
+  max_num_clusters = 2
 }

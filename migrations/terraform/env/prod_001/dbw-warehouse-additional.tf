@@ -1,13 +1,3 @@
-# kvs_mig_dbw_warehouse_id is temporary until a separate Databricks workspace is available for the Electricity market
-
-module "kvs_mig_dbw_warehouse_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
-
-  name         = "dbw-migration-warehouse-id"
-  value        = resource.databricks_sql_endpoint.migration_sql_endpoint.id
-  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
-}
-
 resource "databricks_query" "ts_api_sql_endpoint_keep_alive" {
   provider     = databricks.dbw
   warehouse_id = databricks_sql_endpoint.ts_api_sql_endpoint.id
@@ -21,7 +11,7 @@ resource "databricks_job" "ts_api_sql_endpoint_keep_alive" {
   name     = "ts_api_sql_endpoint_keep_alive"
 
   schedule {
-    quartz_cron_expression = "0 0 6-16 ? * *"
+    quartz_cron_expression = "0 0 7-16 ? * MON-FRI"
     timezone_id            = "Europe/Copenhagen"
   }
 
