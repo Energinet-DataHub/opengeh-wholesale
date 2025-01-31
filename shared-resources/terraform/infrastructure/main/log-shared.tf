@@ -52,8 +52,9 @@ resource "azurerm_log_analytics_workspace_table" "azure_activity" {
   total_retention_in_days = 183
 }
 
+# Only exists on prod, as diagnostics is only enabled on prod
 resource "azurerm_log_analytics_workspace_table" "azure_diagnostics" {
-  count = var.environment_short == "p" || var.environment_short == "b" ? 1 : 0
+  count = var.environment_short == "p" ? 1 : 0
 
   workspace_id            = module.log_workspace_shared.id
   name                    = "AzureDiagnostics"
