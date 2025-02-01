@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Monitor.Query" Version="1.5.0" />
-    <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="11.2.4" />
+    <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="12.0.1" />
     <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="2.5.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
