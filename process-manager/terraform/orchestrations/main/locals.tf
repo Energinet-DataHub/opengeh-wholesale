@@ -5,7 +5,7 @@ locals {
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_PROCESS_MANAGER = "Information" # From opengeh-process-manager
 
   # Task Hub name must match PM Core locals OrchestrationsTaskHubName
-  OrchestrationsTaskHubName = "ProcessManager04"
+  OrchestrationsTaskHubName = "ProcessManager05"
 
   # Outlaw stuff
   tags = {
