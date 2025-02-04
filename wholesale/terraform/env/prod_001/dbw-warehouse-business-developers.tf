@@ -20,5 +20,9 @@ resource "databricks_permissions" "business_developers_access" {
     group_name       = "SEC-G-DataHub-BusinessDevelopers"
     permission_level = "CAN_MONITOR"
   }
+  access_control {
+    group_name       = var.databricks_readers_group.name
+    permission_level = "CAN_MONITOR"
+  }
   depends_on = [module.dbw]
 }
