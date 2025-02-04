@@ -52,7 +52,7 @@ def start() -> None:
 
 def start_with_deps(
     *,
-    cloud_role_name: str = "dbr-calculation-engine",
+    cloud_role_name: str = "dbr-calculation-engine", # TODO CHBA NOTE: Sets the name of the top-level request
     applicationinsights_connection_string: str | None = None,
     parse_command_line_args: Callable[..., Namespace] = parse_command_line_arguments,
     parse_job_args: Callable[
@@ -71,18 +71,18 @@ def start_with_deps(
 
     with config.get_tracer().start_as_current_span(
         __name__, kind=SpanKind.SERVER
-    ) as span:
+    ) as span: # TODO CHBA NOTE: Sets the name of the top-level request, using initial span
         # Try/except added to enable adding custom fields to the exception as
         # the span attributes do not appear to be included in the exception.
         try:
             # The command line arguments are parsed to have necessary information for coming log messages
-            command_line_args = parse_command_line_args()
+            command_line_args = parse_command_line_args() # TODO CHBA NOTE: Calls package.calculator_job_args.parse_command_line_arguments, but it does NOT implement decorator - hence not visible in the log
 
             # Add calculation_id to structured logging data to be included in every log message.
             config.add_extras({"calculation_id": command_line_args.calculation_id})
             span.set_attributes(config.get_extras())
 
-            args, infrastructure_settings = parse_job_args(command_line_args)
+            args, infrastructure_settings = parse_job_args(command_line_args) # TODO CHBA NOTE: This one implements use_span in its definition, and actually creates a subspan of the same name
 
             spark = initialize_spark()
             create_and_configure_container(spark, infrastructure_settings)

@@ -45,7 +45,7 @@ def parse_job_arguments(
     logger = Logger(__name__)
     logger.info(f"Command line arguments: {repr(job_args)}")
 
-    with logging_configuration.start_span("calculation.parse_job_arguments"):
+    with logging_configuration.start_span("calculation.parse_job_arguments"): # TODO CHBA NOTE: Creates a subspan with the same name: intended?
 
         time_zone = env_vars.get_time_zone()
         quarterly_resolution_transition_datetime = (
