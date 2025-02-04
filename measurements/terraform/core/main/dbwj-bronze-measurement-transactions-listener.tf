@@ -27,6 +27,7 @@ resource "databricks_job" "bronze_submitted_transactions_ingestion_stream" {
         "TENANT_ID"                                 = var.tenant_id,
         "SPN_APP_ID"                                = databricks_secret.spn_app_id.config_reference
         "SPN_APP_SECRET"                            = databricks_secret.spn_app_secret.config_reference
+        "CONTINUOUS_STREAMING_ENABLED"              = var.enable_continuous_streaming
       }
     }
   }
