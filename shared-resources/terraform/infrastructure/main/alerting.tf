@@ -1,3 +1,13 @@
+
+# Grants the alertsmanager role to the platform security group
+resource "azurerm_role_assignment" "alertsmanager_platform" {
+  scope                = data.azurerm_subscription.this.id
+  role_definition_name = azurerm_role_definition.alertsmanager.name
+  principal_id         = data.azuread_group.platform_security_group_name.object_id
+
+  depends_on = [azurerm_role_definition.alertsmanager]
+}
+
 module "monitor_action_group_shres" {
   count = var.alert_email_address != null ? 1 : 0
 

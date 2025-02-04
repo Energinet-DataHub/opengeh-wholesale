@@ -26,6 +26,21 @@ resource "azurerm_role_definition" "apim_groups_contributor_access" {
   }
 }
 
+# There is no built-in role for managing alerts without giving many other permissions
+resource "azurerm_role_definition" "alertsmanager" {
+  name        = "datahub-alertsmanager-${var.environment_short}-${local.region_code}-${var.environment_instance}"
+  scope       = data.azurerm_subscription.this.id
+  description = "Allow management of alerts"
+
+  permissions {
+    actions = [
+      "Microsoft.AlertsManagement/alerts/read",
+      "Microsoft.AlertsManagement/alerts/history/read",
+      "Microsoft.AlertsManagement/alerts/changestate/action"
+    ]
+  }
+}
+
 # There is no built-in role for managing locks without giving many other permissions
 resource "azurerm_role_definition" "locks_contributor_access" {
   name        = "datahub-locks-contributor-access-${var.environment_short}-${local.region_code}-${var.environment_instance}"
