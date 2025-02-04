@@ -23,6 +23,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Generator, Callable, Optional
+from unittest import mock
 
 import pytest
 import telemetry_logging.logging_configuration as config
@@ -31,6 +32,7 @@ from azure.identity import ClientSecretCredential
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
+from telemetry_logging.logging_configuration import LoggingSettings
 
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
@@ -55,6 +57,21 @@ from tests.testsession_configuration import (
 )
 
 
+# @pytest.fixture(scope="session")
+# def setup_params() -> None:
+#     sys_args = [
+#         'program_name',
+#         '--orchestration_instance_id', '4a540892-2c0a-46a9-9257-c4e13051d76a',
+#         '--force_configuration', 'true'
+#     ]
+#     env_args = {
+#         'CLOUD_ROLE_NAME': 'cloud_role_name_value',
+#         'APPLICATIONINSIGHTS_CONNECTION_STRING': 'applicationinsights_connection_string_value',
+#         'SUBSYSTEM': 'subsystem_value'
+#     }
+#     with mock.patch.dict(os.environ, env_args), mock.patch('sys.argv', sys_args):
+
+# -----------------------------------------------------------------------------
 @pytest.fixture(scope="session")
 def test_files_folder_path(tests_path: str) -> str:
     return f"{tests_path}/test_files"
@@ -428,15 +445,32 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
     )
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session", autouse=False)
 def configure_logging() -> None:
     """
     Configures the logging initially.
     """
-    config.configure_logging(
-        cloud_role_name="dbr-calculation-engine-tests",
-        tracer_name="unit-tests",
-    )
+
+    logging_env_args = {
+        'CLOUD_ROLE_NAME': 'dbr-calculation-engine-tests',
+        'APPLICATIONINSIGHTS_CONNECTION_STRING': 'temp_string',
+        'SUBSYSTEM': 'unit-tests'
+    }
+
+    logging_sys_args = [
+        'program_name',
+        '--orchestration_instance_id', '4a540892-2c0a-46a9-9257-c4e13051d76a',
+        '--force_configuration', 'false'
+    ]
+
+    with (mock.patch('sys.argv', logging_sys_args),
+          mock.patch.dict('os.environ', logging_env_args, clear=False)):
+        logging_settings = config.LoggingSettings()
+        logging_settings.applicationinsights_connection_string = None
+        config.configure_logging(
+            logging_settings = logging_settings,
+            extras = dict(orchestration_instance_id = logging_settings.orchestration_instance_id),
+        )
 
 
 @pytest.fixture(scope="session")

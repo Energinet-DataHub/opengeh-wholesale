@@ -13,12 +13,14 @@
 # limitations under the License.
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pydantic_settings import BaseSettings, CliSettingsSource, PydanticBaseSettingsSource
+from pydantic.dataclasses import Field
 from typing import Tuple, Type, Optional
 from package.codelists.calculation_type import (
     CalculationType,
 )
+import os
 
 
 # @dataclass
@@ -34,9 +36,6 @@ from package.codelists.calculation_type import (
 #     quarterly_resolution_transition_datetime: datetime
 #     is_internal_calculation: bool
 
-import os
-
-os.environ["TIME_ZONE"] = "test_time_zone"
 
 class CalculatorArgs(BaseSettings):
     """
@@ -44,16 +43,16 @@ class CalculatorArgs(BaseSettings):
     Parameters can come from both runtime (CLI) or from environment variables.
     The priority is CLI parameters first and then environment variables.
     """
-    calculation_id: Optional[str] = None
-    calculation_grid_areas: Optional[list[str]] = None
-    calculation_period_start_datetime: Optional[datetime] = None
-    calculation_period_end_datetime: Optional[datetime] = None
-    calculation_type: Optional[CalculationType] = None
-    calculation_execution_time_start: Optional[datetime] = None
-    created_by_user_id: Optional[str] = None
-    time_zone: Optional[str] = None
-    quarterly_resolution_transition_datetime: Optional[datetime] = None
-    is_internal_calculation: Optional[bool] = None
+    calculation_id: str = Field(..., alias="calculation-id") #From CLI
+    calculation_grid_areas: list[str] = Field(..., alias="grid-areas") #From CLI
+    calculation_period_start_datetime: datetime = Field(..., alias="period-start-datetime") #From CLI
+    calculation_period_end_datetime: datetime = Field(..., alias="period-end-datetime") #From CLI
+    calculation_type: CalculationType = Field(..., alias="calculation-type") #From CLI
+    calculation_execution_time_start: datetime = datetime.now(timezone.utc)
+    created_by_user_id: str = Field(..., alias="created-by-user-id") #From CLI
+    time_zone: str #From ENVIRONMENT
+    quarterly_resolution_transition_datetime: datetime #From ENVIRONMENT
+    is_internal_calculation: Optional[bool] = Field(default=False, alias="is-internal-calculation") #From CLI
 
     @classmethod
     def settings_customise_sources(
@@ -64,6 +63,14 @@ class CalculatorArgs(BaseSettings):
         dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: PydanticBaseSettingsSource,
     ) -> Tuple[PydanticBaseSettingsSource, ...]:
-        return CliSettingsSource(settings_cls, cli_parse_args=True, cli_ignore_unknown_args=True), env_settings
+        return CliSettingsSource(settings_cls, cli_parse_args=True, cli_ignore_unknown_args=True), env_settings, init_settings
 
 
+
+# os.environ['TIME_ZONE'] = 'tzutc'
+# os.environ['QUARTERLY_RESOLUTION_TRANSITION_DATETIME'] = '1989-01-01'
+#
+# _settings = CalculatorArgs()
+# #
+# for s in _settings:
+#     print(s)

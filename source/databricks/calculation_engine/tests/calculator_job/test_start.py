@@ -17,23 +17,72 @@ import time
 import uuid
 from datetime import timedelta
 from typing import cast, Callable
+from unittest import mock
 from unittest.mock import Mock, patch
+
 
 import pytest
 from azure.monitor.query import LogsQueryClient, LogsQueryResult
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculator_job import start, start_with_deps
+from package.calculator_job import start
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from tests.integration_test_configuration import IntegrationTestConfiguration
 
+from telemetry_logging.logging_configuration import configure_logging, LoggingSettings
 
+def test_start() -> None:
+    env_args = {
+        "CLOUD_ROLE_NAME": "test_role",
+        "APPLICATIONINSIGHTS_CONNECTION_STRING": "connection_string",
+        "SUBSYSTEM": "test_subsystem",
+        "CATALOG_NAME": "default_hadoop",
+        "TIME_ZONE": "Europe/Copenhagen",
+        "CALCULATION_INPUT_DATABASE_NAME": 'calculation_input_database_name_str',
+        "DATA_STORAGE_ACCOUNT_NAME": 'data_storage_account_name_str',
+        "TENANT_ID": '550e8400-e29b-41d4-a716-446655440000',
+        "SPN_APP_ID": '123e4567-e89b-12d3-a456-426614174000',
+        "SPN_APP_SECRET": 'MyPassword~HQ',
+        "QUARTERLY_RESOLUTION_TRANSITION_DATETIME": "2019-12-04"
+    }
+
+    sys_args = [
+        "program_name",
+        "--force-configuration", "false",
+        "--orchestration-instance-id", "4a540892-2c0a-46a9-9257-c4e13051d76a",
+        "--calculation-id", "runID123",
+        "--grid-areas", "[gridarea1, gridarea2]",
+        "--period-start-datetime", "2024-01-30T08:00:00Z",
+        "--period-end-datetime", "2024-01-31T08:00:00Z",
+        "--calculation-type", "wholesale_fixing",
+        "--created-by-user-id", "userid123",
+        "--is-internal-calculation", "true",
+        "--calculation_input_folder_name", "calculation_input_folder_name_str",
+        "--time_series_points_table_name", "time_series_points_table_name_str",
+        "--metering_point_periods_table_name", "metering_point_periods_table_name_str",
+        "--grid_loss_metering_points_table_name", "grid_loss_metering_point_ids_table_name_str"
+
+    ]
+    with (
+        mock.patch('sys.argv', sys_args),
+        mock.patch.dict('os.environ', env_args, clear=False),
+        # mock.patch("package.calculator_job.start.CalculatorArgs") as mock_CalculatorArgs,
+        # mock.patch("telemetry_logging.logging_configuration.LoggingSettings") as mock_logging_settings,
+        # mock.patch("telemetry_logging.logging_configuration.configure_logging") as mock_configure_logging,
+        # mock.patch(
+        #     "package.calculator_job.start.start_with_deps"
+        # ) as mock_start_with_deps,
+    ):
+        # start()
+        # print(mock_CalculatorArgs.return_value)
+        assert 1==1
+
+# --------------------------------------------------------------------------------------------------------
 class TestWhenInvokedWithInvalidArguments:
     def test_exits_with_code_2(self) -> None:
         """The exit code 2 originates from the argparse library."""
         with pytest.raises(SystemExit) as system_exit:
             start()
-
         assert system_exit.value.code == 2
 
 

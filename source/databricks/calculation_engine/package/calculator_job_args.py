@@ -47,10 +47,12 @@ def parse_job_arguments(
 
     with logging_configuration.start_span("calculation.parse_job_arguments"):
 
-        # time_zone = env_vars.get_time_zone()
+        time_zone = env_vars.get_time_zone()
         quarterly_resolution_transition_datetime = (
             env_vars.get_quarterly_resolution_transition_datetime()
         )
+        calculator_args = CalculatorArgs()
+
 
         _validate_quarterly_resolution_transition_datetime(
             quarterly_resolution_transition_datetime,

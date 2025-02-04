@@ -33,6 +33,7 @@ class EnvironmentVariable(Enum):
     QUARTERLY_RESOLUTION_TRANSITION_DATETIME = (
         "QUARTERLY_RESOLUTION_TRANSITION_DATETIME"
     )
+    CLOUD_ROLE_NAME = "CLOUD_ROLE_NAME"
 
 
 def get_storage_account_credential() -> ClientSecretCredential:
