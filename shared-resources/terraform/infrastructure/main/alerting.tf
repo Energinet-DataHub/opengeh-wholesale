@@ -24,6 +24,7 @@ module "monitor_action_group_shres" {
   application_insights_id = module.appi_shared.id
 }
 
+
 module "monitor_action_group_platform" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_6.0.1"
 
