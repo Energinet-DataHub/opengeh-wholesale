@@ -42,9 +42,9 @@ class InfrastructureSettings(BaseSettings):
     calculation_input_database_name: str #From ENVIRONMENT
     data_storage_account_name: str #From ENVIRONMENT
     # Prevent the credentials from being printed or logged (using e.g., print() or repr())
-    tenant_id: Optional[str] = Field(repr=False, default="tenant_id") #Ud? #From ENVIRONMENT
-    spn_app_id: Optional[str] = Field(repr=False, default="spn_app_id") #Ud? #From ENVIRONMENT
-    spn_app_secret: Optional[str] = Field(repr=False, default="spn_app_secret") #Ud? #From ENVIRONMENT
+    tenant_id: Optional[str] = Field(repr=False, default="foo") #Ud? #From ENVIRONMENT
+    spn_app_id: Optional[str] = Field(repr=False, default="foo") #Ud? #From ENVIRONMENT
+    spn_app_secret: Optional[str] = Field(repr=False, default="foo") #Ud? #From ENVIRONMENT
 
     calculation_input_folder_name: Optional[str] = Field(default=None) #Ud? From CLI/ENVIRONMENT
 
@@ -57,16 +57,16 @@ class InfrastructureSettings(BaseSettings):
     calculation_input_path: Optional[str] = Field(default=None)  # Filled out in model_post_init
 
 
-    # def model_post_init(self, __context):
-    #     """Automatically set data_storage_account_credentials after settings are loaded."""
-    #     self.data_storage_account_credentials = ClientSecretCredential(
-    #         tenant_id=str(self.tenant_id),
-    #         client_id=str(self.spn_app_id),
-    #         client_secret=str(self.spn_app_secret),
-    #     )
-    #     self.wholesale_container_path = paths.get_container_root_path(str(self.data_storage_account_name))
-    #     self.calculation_input_path = paths.get_calculation_input_path(str(self.data_storage_account_name), str(self.calculation_input_folder_name))
-    #
+    def model_post_init(self, __context):
+        """Automatically set data_storage_account_credentials after settings are loaded."""
+        self.data_storage_account_credentials = ClientSecretCredential(
+            tenant_id=str(self.tenant_id),
+            client_id=str(self.spn_app_id),
+            client_secret=str(self.spn_app_secret),
+        )
+        self.wholesale_container_path = paths.get_container_root_path(str(self.data_storage_account_name))
+        self.calculation_input_path = paths.get_calculation_input_path(str(self.data_storage_account_name), str(self.calculation_input_folder_name))
+
 
     @classmethod
     def settings_customise_sources(

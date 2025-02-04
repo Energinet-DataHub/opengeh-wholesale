@@ -66,15 +66,16 @@ def test_start() -> None:
     with (
         mock.patch('sys.argv', sys_args),
         mock.patch.dict('os.environ', env_args, clear=False),
-        # mock.patch("package.calculator_job.start.CalculatorArgs") as mock_CalculatorArgs,
+        #mock.patch("package.calculator_job.calculator_args.CalculatorArgs") as mock_CalculatorArgs,
         # mock.patch("telemetry_logging.logging_configuration.LoggingSettings") as mock_logging_settings,
         # mock.patch("telemetry_logging.logging_configuration.configure_logging") as mock_configure_logging,
         # mock.patch(
         #     "package.calculator_job.start.start_with_deps"
         # ) as mock_start_with_deps,
     ):
-        # start()
-        # print(mock_CalculatorArgs.return_value)
+        #start()
+        #print(mock_CalculatorArgs.return_value)
+        #1assert mock_CalculatorArgs.assert_called_once()
         assert 1==1
 
 # --------------------------------------------------------------------------------------------------------

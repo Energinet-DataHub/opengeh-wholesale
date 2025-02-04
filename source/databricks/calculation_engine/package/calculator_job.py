@@ -55,10 +55,10 @@ from package.codelists.calculation_type import (
 def start() -> None:
 
     # Parse params for LoggingSettings
-    logging_settings = LoggingSettings(
-        cloud_role_name = "dbr-calculation-engine",
-        subsystem = "calculator-job" #Will be used as trace_name
-    )
+    # logging_settings = LoggingSettings(
+    #     cloud_role_name = "dbr-calculation-engine",
+    #     subsystem = "calculator-job" #Will be used as trace_name
+    # )
     # Parse params for CalculatorArgs and InfrastructureSettings
     args = CalculatorArgs()
     infrastructure_settings = InfrastructureSettings()
@@ -82,14 +82,14 @@ def start() -> None:
     # )
 
 
-    configure_logging(
-        logging_settings=logging_settings,
-        extras = dict(Subsystem = "wholesale-aggregations",
-                      calculation_id = args.calculation_id)
-        # extras={'tracer_name': 'calculator-job'}
-    )
-
-    start_with_deps(args, infrastructure_settings)
+    # configure_logging(
+    #     logging_settings=logging_settings,
+    #     extras = dict(Subsystem = "wholesale-aggregations",
+    #                   calculation_id = args.calculation_id)
+    #     # extras={'tracer_name': 'calculator-job'}
+    # )
+    #
+    # start_with_deps(args, infrastructure_settings)
 
 
 
