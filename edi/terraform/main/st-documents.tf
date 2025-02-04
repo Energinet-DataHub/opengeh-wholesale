@@ -15,6 +15,8 @@ module "st_documents" {
   audit_storage_account = var.enable_audit_logs ? {
     id = data.azurerm_key_vault_secret.st_audit_shres_id.value
   } : null
+
+  prevent_deletion = false
 }
 
 resource "azurerm_storage_container" "outgoing" {
@@ -46,6 +48,8 @@ module "st_documents_backup" {
   audit_storage_account = var.enable_audit_logs ? {
     id = data.azurerm_key_vault_secret.st_audit_shres_id.value
   } : null
+
+  prevent_deletion = false
 }
 
 # New standard storage account with backup enabled
