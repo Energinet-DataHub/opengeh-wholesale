@@ -1,10 +1,10 @@
-resource "databricks_job" "bronze_submitted_transactions_ingestion_stream" {
+resource "databricks_job" "bronze_notify_transactions_persisted_stream" {
   provider            = databricks.dbw
-  name                = "Bronze Submitted Transactions Ingestion Stream"
+  name                = "Bronze Notify Transactions Persisted Stream"
   max_concurrent_runs = 1
 
   job_cluster {
-    job_cluster_key = "bronze_submitted_transactions_ingestion_stream_cluster"
+    job_cluster_key = "bronze_notify_transactions_persisted_stream_cluster"
 
     new_cluster {
       spark_version  = local.spark_version
@@ -23,7 +23,7 @@ resource "databricks_job" "bronze_submitted_transactions_ingestion_stream" {
         "CATALOG_NAME"                              = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "APPLICATIONINSIGHTS_CONNECTION_STRING"     = data.azurerm_key_vault_secret.appi_shared_connection_string.value
         "EVENT_HUB_NAMESPACE"                       = data.azurerm_key_vault_secret.evhns_measurements_name.value
-        "EVENT_HUB_INSTANCE"                        = data.azurerm_key_vault_secret.evh_measurement_transactions_name.value
+        "EVENT_HUB_INSTANCE"                        = data.azurerm_key_vault_secret.evh_measurement_transactions_receipts_name.value
         "TENANT_ID"                                 = var.tenant_id,
         "SPN_APP_ID"                                = databricks_secret.spn_app_id.config_reference
         "SPN_APP_SECRET"                            = databricks_secret.spn_app_secret.config_reference
@@ -34,9 +34,9 @@ resource "databricks_job" "bronze_submitted_transactions_ingestion_stream" {
   }
 
   task {
-    task_key        = "bronze_submitted_transactions_ingestion_stream_task"
+    task_key        = "bronze_notify_transactions_persisted_stream_task"
     max_retries     = 1
-    job_cluster_key = "bronze_submitted_transactions_ingestion_stream_cluster"
+    job_cluster_key = "bronze_notify_transactions_persisted_stream_cluster"
 
     library {
       whl = "/Workspace/Shared/PythonWheels/core/opengeh_bronze-0.1.0-py3-none-any.whl"
@@ -45,7 +45,7 @@ resource "databricks_job" "bronze_submitted_transactions_ingestion_stream" {
     python_wheel_task {
       package_name = "opengeh_bronze"
       # The entry point is defined in pyproject.toml
-      entry_point = "ingest_submitted_transactions"
+      entry_point = "notify_transactions_persisted"
     }
   }
 
@@ -58,9 +58,9 @@ resource "databricks_job" "bronze_submitted_transactions_ingestion_stream" {
   }
 }
 
-resource "databricks_permissions" "bronze_submitted_transactions_ingestion_stream" {
+resource "databricks_permissions" "bronze_notify_transactions_persisted_stream" {
   provider = databricks.dbw
-  job_id   = databricks_job.bronze_submitted_transactions_ingestion_stream.id
+  job_id   = databricks_job.bronze_notify_transactions_persisted_stream.id
 
   access_control {
     group_name       = var.databricks_contributor_dataplane_group.name
