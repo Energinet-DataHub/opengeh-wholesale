@@ -51,10 +51,13 @@ locals {
       EdiTopic__EnqueueBrs_021_Forward_Metered_Data_SubscriptionName = module.sbtsub_edi_enqueue_brs_021_forward_metered_data.name
 
       # Databricks
-      WorkspaceToken             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-workspace-token)",
-      WorkspaceUrl               = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-workspace-url)",
-      WarehouseId                = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-warehouse-id)",
+      WorkspaceToken             = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-workspace-token)"
+      WorkspaceUrl               = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-workspace-url)"
+      WarehouseId                = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-warehouse-id)"
       EdiDatabricks__CatalogName = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=shared-unity-catalog-name)"
+      # DatabricksCatalogName is used in CalculationResults (actor requests copied from Wholesale)
+      DatabricksCatalogName      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=shared-unity-catalog-name)"
+
 
       # Dead-letter logs
       DeadLetterLogging__StorageAccountUrl = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=st-deadltr-shres-blob-url)"
