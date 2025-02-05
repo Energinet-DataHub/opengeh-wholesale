@@ -2,16 +2,16 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.6.0"
+      version = "4.17.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
-      version = "3.0.2"
+      version = "3.1.0"
     }
     # We cannot update higher currently, as the new version has a big the cluster where it says we use singlenode, but we use multinode
     databricks = {
       source  = "databricks/databricks"
-      version = "1.55.0"
+      version = "1.65.0"
     }
   }
 }
