@@ -27,49 +27,44 @@ module "st_electricity_market" {
     { name = local.st_electricity_market_electrical_heating_container_name },
     { name = local.st_electricity_market_capacity_settlement_container_name }
   ]
+
+  prevent_deletion = false
 }
+
 
 locals {
   st_electricity_market_electrical_heating_container_name  = "electrical-heating"
   st_electricity_market_capacity_settlement_container_name = "capacity-settlement"
 }
 
-module "kvs_st_electricity_market_url" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+# module "kvs_st_electricity_market_url" {
+#   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
-  name         = "st-electricity-market-url"
-  value        = "https://${module.st_electricity_market.name}.blob.core.windows.net"
-  key_vault_id = module.kv_shared.id
-}
+#   name         = "st-electricity-market-url"
+#   value        = "https://${module.st_electricity_market.name}.blob.core.windows.net"
+#   key_vault_id = module.kv_shared.id
+# }
 
-module "kvs_st_electricity_market_electrical_heating_container_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+# module "kvs_st_electricity_market_electrical_heating_container_name" {
+#   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
-  name         = "st-electricity-market-electrical-heating-container-name"
-  value        = local.st_electricity_market_electrical_heating_container_name
-  key_vault_id = module.kv_shared.id
-}
+#   name         = "st-electricity-market-electrical-heating-container-name"
+#   value        = local.st_electricity_market_electrical_heating_container_name
+#   key_vault_id = module.kv_shared.id
+# }
 
-module "kvs_st_electricity_market_capacity_settlement_container_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+# module "kvs_st_electricity_market_capacity_settlement_container_name" {
+#   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
-  name         = "st-electricity-market-capacity-settlement-container-name"
-  value        = local.st_electricity_market_capacity_settlement_container_name
-  key_vault_id = module.kv_shared.id
-}
+#   name         = "st-electricity-market-capacity-settlement-container-name"
+#   value        = local.st_electricity_market_capacity_settlement_container_name
+#   key_vault_id = module.kv_shared.id
+# }
 
-module "kvs_st_electricity_market_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+# module "kvs_st_electricity_market_name" {
+#   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
-  name         = "st-electricity-market-name"
-  value        = module.st_electricity_market.name
-  key_vault_id = module.kv_shared.id
-}
-
-module "kvs_st_electricity_market_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
-
-  name         = "st-electricity-market-id"
-  value        = module.st_electricity_market.id
-  key_vault_id = module.kv_shared.id
-}
+#   name         = "st-electricity-market-name"
+#   value        = module.st_electricity_market.name
+#   key_vault_id = module.kv_shared.id
+# }
