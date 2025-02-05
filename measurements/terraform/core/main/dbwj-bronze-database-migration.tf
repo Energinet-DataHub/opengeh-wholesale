@@ -22,6 +22,7 @@ resource "databricks_job" "bronze_database_migration" {
         "spark.databricks.sql.initial.catalog.name" = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "CATALOG_NAME"                              = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "APPLICATIONINSIGHTS_CONNECTION_STRING"     = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+        "BRONZE_DATABASE_NAME"                      = databricks_schema.measurements_bronze.name
       }
     }
   }

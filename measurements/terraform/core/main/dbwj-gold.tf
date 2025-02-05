@@ -22,6 +22,7 @@ resource "databricks_job" "silver_to_gold_measurements" {
         "CATALOG_NAME"                          = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
         "DATALAKE_STORAGE_ACCOUNT"              = module.st_measurements.name
+        "GOLD_DATABASE_NAME"                      = databricks_schema.measurements_gold.name
       }
     }
   }
