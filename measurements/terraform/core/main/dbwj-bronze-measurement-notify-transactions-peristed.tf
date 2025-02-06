@@ -42,11 +42,11 @@ resource "databricks_job" "bronze_notify_transactions_persisted_stream" {
     job_cluster_key = "bronze_notify_transactions_persisted_stream_cluster"
 
     library {
-      whl = "/Workspace/Shared/PythonWheels/core/opengeh_bronze-0.1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/core/core-0.1.0-py3-none-any.whl"
     }
 
     python_wheel_task {
-      package_name = "opengeh_bronze"
+      package_name = "core"
       # The entry point is defined in pyproject.toml
       entry_point = "notify_transactions_persisted"
     }

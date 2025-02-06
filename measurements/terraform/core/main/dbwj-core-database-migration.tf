@@ -1,10 +1,10 @@
-resource "databricks_job" "bronze_database_migration" {
+resource "databricks_job" "core_database_migration" {
   provider            = databricks.dbw
-  name                = "Bronze Database Migration"
+  name                = "Core Database Migration"
   max_concurrent_runs = 1
 
   job_cluster {
-    job_cluster_key = "bronze_database_migration_cluster"
+    job_cluster_key = "core_database_migration_cluster"
 
     new_cluster {
       spark_version  = local.spark_version
@@ -30,16 +30,16 @@ resource "databricks_job" "bronze_database_migration" {
   }
 
   task {
-    task_key        = "bronze_database_migration_task"
+    task_key        = "core_database_migration_task"
     max_retries     = 1
-    job_cluster_key = "bronze_database_migration_cluster"
+    job_cluster_key = "core_database_migration_cluster"
 
     library {
-      whl = "/Workspace/Shared/PythonWheels/core/opengeh_bronze-0.1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/core/core-0.1.0-py3-none-any.whl"
     }
 
     python_wheel_task {
-      package_name = "opengeh_bronze"
+      package_name = "core"
       # The entry point is defined in pyproject.toml
       entry_point = "migrate"
     }
@@ -54,9 +54,9 @@ resource "databricks_job" "bronze_database_migration" {
   }
 }
 
-resource "databricks_permissions" "bronze_database_migration" {
+resource "databricks_permissions" "core_database_migration" {
   provider = databricks.dbw
-  job_id   = databricks_job.bronze_database_migration.id
+  job_id   = databricks_job.core_database_migration.id
 
   access_control {
     group_name       = var.databricks_contributor_dataplane_group.name
