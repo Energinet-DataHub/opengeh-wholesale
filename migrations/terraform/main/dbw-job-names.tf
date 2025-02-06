@@ -26,6 +26,8 @@ locals {
     "alert_silver_quarantined_ts_increased",
     "Ready_For_Calculation_Balance_Fixing",
     "Alert_Gold_Charge_Links_Changed",
+    "Alert_Gold_Charge_Price_Information_Periods",
+    "Alert_Gold_Charge_Price_Points_Duplicates",
     "Alert_Gold_Metering_Points_Changed",
     "Alert_Gold_Time_Series_Changed",
     "alert_gold_time_series_completeness",
