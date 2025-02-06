@@ -30,6 +30,8 @@ resource "databricks_job" "bronze_submitted_transactions_ingestion_stream" {
         "DATALAKE_STORAGE_ACCOUNT"                  = module.st_measurements.name
         "CONTINUOUS_STREAMING_ENABLED"              = var.enable_continuous_streaming
         "BRONZE_DATABASE_NAME"                      = databricks_schema.measurements_bronze.name
+        "SILVER_DATABASE_NAME"                      = databricks_schema.measurements_silver.name
+        "GOLD_DATABASE_NAME"                        = databricks_schema.measurements_gold.name
       }
     }
   }
