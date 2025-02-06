@@ -36,3 +36,11 @@ resource "databricks_job" "ts_api_sql_warehouse_keep_alive" {
     }
   }
 }
+
+removed {
+  from = databricks_query.ts_api_sql_endpoint_keep_alive
+
+  lifecycle {
+    destroy = false
+  }
+}
