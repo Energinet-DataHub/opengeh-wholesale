@@ -55,9 +55,9 @@ resource "databricks_schema" "measurements_silver" {
 }
 
 resource "databricks_external_location" "measurements_silver_storage" {
-  provider        = databricks.dbw
-  name            = "${azurerm_storage_container.silver.name}_${module.st_measurements.name}"
-  url             = "abfss://${azurerm_storage_container.silver.name}@${module.st_measurements.name}.dfs.core.windows.net/"
+  provider = databricks.dbw
+  name     = "${azurerm_storage_container.silver.name}_${module.st_measurements.name}"
+  url      = "abfss://${azurerm_storage_container.silver.name}@${module.st_measurements.name}.dfs.core.windows.net/"
 
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
@@ -78,6 +78,55 @@ resource "databricks_external_location" "measurements_gold_storage" {
   url             = "abfss://${azurerm_storage_container.gold.name}@${module.st_measurements.name}.dfs.core.windows.net/"
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
+
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
+}
+
+#
+# Shared Electricity Market storage account
+#
+
+# Give the access connector the necessary role on the storage account
+resource "azurerm_role_assignment" "st_electricity_market_contributor" {
+  scope                = data.azurerm_key_vault_secret.st_electricity_market_id.value
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = data.azurerm_key_vault_secret.shared_access_connector_principal_id.value
+}
+
+resource "databricks_external_location" "shared_electricity_market_capacity_settlement_container" {
+  provider        = databricks.dbw
+  name            = "measurements_${data.azurerm_key_vault_secret.st_electricity_market_name.value}_${data.azurerm_key_vault_secret.st_electricity_market_capacity_settlement_container_name.value}"
+  url             = "abfss://${data.azurerm_key_vault_secret.st_electricity_market_capacity_settlement_container_name.value}@${data.azurerm_key_vault_secret.st_electricity_market_name.value}.dfs.core.windows.net/"
+  credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
+  comment         = "Managed by TF"
+  depends_on      = [module.dbw, azurerm_role_assignment.st_electricity_market_contributor]
+}
+
+resource "databricks_schema" "shared_electricity_market_capacity_settlement_input" {
+  provider     = databricks.dbw
+  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  name         = "shared_electricity_market_capacity_settlement_input"
+  comment      = "Shared Electricity Market Capacity settlement Schema"
+  storage_root = databricks_external_location.shared_electricity_market_capacity_settlement_container.url
+
+  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
+}
+
+resource "databricks_external_location" "shared_electricity_market_electrical_heating_container" {
+  provider        = databricks.dbw
+  name            = "measurements_${data.azurerm_key_vault_secret.st_electricity_market_name.value}_${data.azurerm_key_vault_secret.st_electricity_market_electrical_heating_container_name.value}"
+  url             = "abfss://${data.azurerm_key_vault_secret.st_electricity_market_electrical_heating_container_name.value}@${data.azurerm_key_vault_secret.st_electricity_market_name.value}.dfs.core.windows.net/"
+  credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
+  comment         = "Managed by TF"
+  depends_on      = [module.dbw, azurerm_role_assignment.st_electricity_market_contributor]
+}
+
+resource "databricks_schema" "shared_electricity_market_electrical_heating_input" {
+  provider     = databricks.dbw
+  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  name         = "shared_electricity_market_electrical_heating_input"
+  comment      = "Shared Electricity Market Electrical heating Schema"
+  storage_root = databricks_external_location.shared_electricity_market_electrical_heating_container.url
 
   depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }

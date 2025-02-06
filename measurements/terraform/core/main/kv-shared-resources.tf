@@ -55,6 +55,26 @@ data "azurerm_key_vault_secret" "st_audit_shres_name" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "st_electricity_market_id" {
+  name         = "st-electricity-market-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "st_electricity_market_name" {
+  name         = "st-electricity-market-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "st_electricity_market_capacity_settlement_container_name" {
+  name         = "st-electricity-market-capacity-settlement-container-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "st_electricity_market_electrical_heating_container_name" {
+  name         = "st-electricity-market-electrical-heating-container-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 //
 // Event Hub
 //
