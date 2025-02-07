@@ -8,3 +8,4 @@ feature_management_use_standard_blob_service_client                 = true
 
 feature_management_use_request_wholesale_services_process_orchestration         = true
 feature_management_use_request_aggregated_measure_data_process_orchestration    = true
+feature_management_use_process_manager_to_enqueue_brs023027_messages            = true
