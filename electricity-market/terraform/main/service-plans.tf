@@ -26,10 +26,10 @@ module "webapp_service_plan" {
   }
 }
 
-module "func_mp_import_plan" {
+module "func_mp_data_api_plan" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_6.0.1"
 
-  name                         = "mp-import"
+  name                         = "mp-data-api"
   type                         = "func"
   project_name                 = var.domain_name_short
   environment_short            = var.environment_short

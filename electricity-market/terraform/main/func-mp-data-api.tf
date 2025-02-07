@@ -1,7 +1,7 @@
-module "func_import" {
+module "func_mp_data_api" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=function-app_8.3.0"
 
-  name                                   = "import"
+  name                                   = "mp-data-api"
   project_name                           = var.domain_name_short
   environment_short                      = var.environment_short
   environment_instance                   = var.environment_instance
@@ -9,7 +9,7 @@ module "func_import" {
   location                               = azurerm_resource_group.this.location
   vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnetintegrations_id.value
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
-  app_service_plan_id                    = module.webapp_service_plan.id
+  app_service_plan_id                    = module.func_mp_data_api_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   health_check_path                      = "/api/monitor/ready"
   always_on                              = true
@@ -23,7 +23,7 @@ module "func_import" {
 
   dotnet_framework_version    = "v8.0"
   use_dotnet_isolated_runtime = true
-  app_settings                = local.func_import.app_settings
+  app_settings                = local.func_mp_data_api.app_settings
 
   role_assignments = [
     {
@@ -31,4 +31,12 @@ module "func_import" {
       role_definition_name = "Key Vault Secrets User"
     }
   ]
+}
+
+module "kvs_mp_data_api_base_url" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "mp-data-api-base-url"
+  value        = "https://${module.func_mp_data_api.default_hostname}"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }

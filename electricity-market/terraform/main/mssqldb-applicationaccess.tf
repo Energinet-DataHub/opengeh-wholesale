@@ -24,13 +24,13 @@ module "mssql_markpart_application_access" {
   principal_names = [
     module.app_api.name,
     module.app_api.slot_name,
-    module.func_import.name,
+    module.func_mp_data_api.name,
     module.func_mp_import_df.name
   ]
 
   depends_on = [
     module.app_api,
-    module.func_import,
+    module.func_mp_data_api,
     module.func_mp_import_df
   ]
 }
