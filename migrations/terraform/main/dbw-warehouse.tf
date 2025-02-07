@@ -41,7 +41,7 @@ resource "databricks_sql_endpoint" "backup_warehouse" {
   name                 = "SQL Endpoint for running Deep Clone backups"
   cluster_size         = "Small"
   max_num_clusters     = 2
-  auto_stop_mins       = 15
+  auto_stop_mins       = 20
   warehouse_type       = "PRO"
   spot_instance_policy = "RELIABILITY_OPTIMIZED"
 
