@@ -7,7 +7,7 @@ module "func_mp_import_df" {
   environment_instance                   = var.environment_instance
   resource_group_name                    = azurerm_resource_group.this.name
   location                               = azurerm_resource_group.this.location
-  app_service_plan_id                    = module.webapp_service_plan.id
+  app_service_plan_id                    = module.func_mp_import_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   vnet_integration_subnet_id             = data.azurerm_key_vault_secret.snet_vnetintegrations_id.value
   private_endpoint_subnet_id             = data.azurerm_key_vault_secret.snet_privateendpoints_id.value
