@@ -36,7 +36,6 @@ def _create_spark_config(
         migration_schema_name=paths.WholesaleInternalDatabase.DATABASE_NAME,
         migration_table_name=paths.WholesaleInternalDatabase.EXECUTED_MIGRATIONS_TABLE_NAME,
         migration_scripts_folder_path=MIGRATION_SCRIPTS_FOLDER_PATH,
-        schema_config=None,
         substitution_variables=get_substitutions(catalog_name, is_testing),
         catalog_name=catalog_name,
     )
