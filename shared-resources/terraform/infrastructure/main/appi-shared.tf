@@ -1,5 +1,5 @@
 module "appi_shared" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/application-insights?ref=application-insights_7.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/application-insights?ref=application-insights_8.0.0"
 
   project_name               = var.domain_name_short
   environment_short          = var.environment_short

@@ -1,5 +1,5 @@
 module "mssql_data_additional" { # Needs to be a named like this or it would delete all databases
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=mssql-server_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-server?ref=mssql-server_9.0.0"
 
   project_name         = var.domain_name_short
   environment_short    = var.environment_short

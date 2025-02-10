@@ -11,7 +11,7 @@ resource "azurerm_role_assignment" "alertsmanager_platform" {
 module "monitor_action_group_shres" {
   count = var.alert_email_address != null ? 1 : 0
 
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_7.0.0"
 
   name                 = "alerts"
   project_name         = var.domain_name_short
@@ -36,7 +36,7 @@ module "monitor_action_group_shres" {
 
 
 module "monitor_action_group_platform" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/monitor-action-group-email?ref=monitor-action-group-email_7.0.0"
 
   name                 = "platform-alerts"
   project_name         = var.domain_name_short

@@ -42,7 +42,7 @@ locals {
 module "pim_contributor_control_plane_security_group_permissions_tfstate" {
   count = var.pim_contributor_control_plane_group_name != "" ? 1 : 0
 
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_7.0.0"
 
   resource_group_name = data.azurerm_resource_group.tfstate.name
   security_group_name = var.pim_contributor_control_plane_group_name
@@ -59,7 +59,7 @@ module "pim_contributor_control_plane_security_group_permissions_tfstate" {
 module "platform_security_group_permissions_contributor_tfstate" {
   count = var.platform_security_group_contributor_access == true ? 1 : 0
 
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/resource-group-role-assignments?ref=resource-group-role-assignments_7.0.0"
 
   resource_group_name = data.azurerm_resource_group.tfstate.name
   security_group_name = var.platform_security_group_name

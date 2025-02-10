@@ -1,5 +1,5 @@
 module "st_source_maps" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_8.0.0"
 
   name                       = "sourcemaps"
   project_name               = var.domain_name_short

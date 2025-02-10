@@ -1,5 +1,5 @@
 module "apima_ping" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=api-management-api_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=api-management-api_7.0.0"
 
   name                       = "ping"
   project_name               = var.domain_name_short
@@ -36,7 +36,7 @@ module "apima_ping" {
 }
 
 module "apimao_ping_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=api-management-api-operation_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=api-management-api-operation_7.0.0"
 
   operation_id            = "ping-api"
   api_management_api_name = module.apima_ping.name

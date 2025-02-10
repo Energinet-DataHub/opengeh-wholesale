@@ -1,5 +1,5 @@
 module "log_workspace_shared" {
-  source               = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/log-workspace?ref=log-workspace_6.0.1"
+  source               = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/log-workspace?ref=log-workspace_7.0.0"
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
   resource_group_name  = azurerm_resource_group.this.name

@@ -1,5 +1,5 @@
 module "backup_vault" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/backup-vault?ref=backup-vault_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/backup-vault?ref=backup-vault_7.0.0"
 
   project_name         = var.domain_name_short
   environment_short    = var.environment_short
