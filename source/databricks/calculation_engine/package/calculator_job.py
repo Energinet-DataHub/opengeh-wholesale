@@ -20,7 +20,7 @@ from typing import Callable, Tuple
 from opentelemetry.trace import SpanKind
 from pyspark.sql import SparkSession
 
-import telemetry_logging.logging_configuration as config
+import geh_common.telemetry.logging_configuration as config
 from geh_common.telemetry.span_recording import span_record_exception
 from package import calculation
 from package.calculation import CalculationCore
