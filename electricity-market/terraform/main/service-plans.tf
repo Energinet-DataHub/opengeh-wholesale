@@ -68,9 +68,11 @@ module "func_mp_import_plan" {
   environment_instance         = var.environment_instance
   resource_group_name          = azurerm_resource_group.this.name
   location                     = azurerm_resource_group.this.location
-  sku_name                     = "EP2"
-  maximum_elastic_worker_count = 20
+  sku_name                     = "EP1"
+  maximum_elastic_worker_count = 5
+
   monitor_alerts_action_group_id = length(module.monitor_action_group_elmk) != 1 ? null : module.monitor_action_group_elmk[0].id
+
   cpu_alert_information = {
     alerts_enabled = length(module.monitor_action_group_elmk) != 1 ? false : true
     frequency      = "PT1M"

@@ -1,5 +1,5 @@
 module "func_mp_data_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=function-app_8.3.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_9.4.0"
 
   name                                   = "mp-data-api"
   project_name                           = var.domain_name_short
@@ -12,7 +12,6 @@ module "func_mp_data_api" {
   app_service_plan_id                    = module.func_mp_data_api_plan.id
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   health_check_path                      = "/api/monitor/ready"
-  always_on                              = true
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
 
