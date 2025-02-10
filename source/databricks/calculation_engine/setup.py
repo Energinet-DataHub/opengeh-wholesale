@@ -37,7 +37,8 @@ setup(
         "python-dateutil==2.8.2",
         "azure-monitor-opentelemetry==1.6.4",
         "azure-core==1.32.0",
-        "geh_common @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@4.0.0",
+        "pytest-xdist",
+        "geh_common @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@geh_common_4.0.0",
     ],
     entry_points={
         "console_scripts": [
