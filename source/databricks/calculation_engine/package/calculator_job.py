@@ -27,92 +27,102 @@ from package.calculation import CalculationCore
 from package.calculation.calculation_metadata_service import CalculationMetadataService
 from package.calculation.calculation_output_service import CalculationOutputService
 from package.calculation.calculator_args import CalculatorArgs
-from package.calculator_job_args import (
-    parse_job_arguments,
-    parse_command_line_arguments,
-)
+
 from package.container import create_and_configure_container
 from package.databases import migrations_wholesale, wholesale_internal
 from package.infrastructure import initialize_spark
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
+from telemetry_logging import Logger, logging_configuration
+from telemetry_logging.logging_configuration import configure_logging,LoggingSettings
+from telemetry_logging.decorators import start_trace
+from datetime import datetime
+
+
+from package.common.datetime_utils import (
+    is_exactly_one_calendar_month,
+    is_midnight_in_time_zone,
+)
+from package.codelists.calculation_type import (
+    CalculationType,
+    is_wholesale_calculation_type,
+)
 
 # The start() method should only have its name updated in correspondence with the
 # wheels entry point for it. Further the method must remain parameterless because
 # it will be called from the entry point when deployed.
 def start() -> None:
-    applicationinsights_connection_string = os.getenv(
-        "APPLICATIONINSIGHTS_CONNECTION_STRING"
-    )
 
-    start_with_deps(
-        applicationinsights_connection_string=applicationinsights_connection_string
-    )
+    # Parse params for LoggingSettings
+    # logging_settings = LoggingSettings(
+    #     cloud_role_name = "dbr-calculation-engine",
+    #     subsystem = "calculator-job" #Will be used as trace_name
+    # )
 
+    # Parse params for CalculatorArgs and InfrastructureSettings
+    # args = CalculatorArgs()
+    # infrastructure_settings = InfrastructureSettings()
 
+    # Extra validation of Params
+    # _validate_quarterly_resolution_transition_datetime(
+    #     args.quarterly_resolution_transition_datetime,
+    #     args.time_zone,
+    #     args.period_start_datetime,
+    #     args.period_end_datetime,
+    # )
+    #
+    # if is_wholesale_calculation_type(args.calculation_type):
+    #     _validate_period_for_wholesale_calculation(
+    #         args.time_zone,
+    #         args.period_start_datetime,
+    #         args.period_end_datetime,
+    #     )
+    #
+    # _throw_exception_if_internal_calculation_and_not_aggregation_calculation_type(
+    #     args
+    # )
+
+    # configure_logging(
+    #     logging_settings=logging_settings,
+    #     extras = dict(
+    #         Subsystem = "wholesale-aggregations",
+    #         calculation_id = args.calculation_id
+    #     )
+    # )
+
+    # start_with_deps(
+    #     args = args,
+    #     infrastructure_settings = infrastructure_settings
+    # )
+    raise(SystemExit)
+
+@start_trace()
 def start_with_deps(
     *,
-    cloud_role_name: str = "dbr-calculation-engine",
-    applicationinsights_connection_string: str | None = None,
-    parse_command_line_args: Callable[..., Namespace] = parse_command_line_arguments,
-    parse_job_args: Callable[
-        ..., Tuple[CalculatorArgs, InfrastructureSettings]
-    ] = parse_job_arguments,
-    calculation_executor: Callable[..., None] = calculation.execute,
+    args: CalculatorArgs,
+    infrastructure_settings: InfrastructureSettings,
 ) -> None:
     """Start overload with explicit dependencies for easier testing."""
 
-    config.configure_logging(
-        cloud_role_name=cloud_role_name,
-        tracer_name="calculator-job",
-        applicationinsights_connection_string=applicationinsights_connection_string,
-        extras={"Subsystem": "wholesale-aggregations"},
+    spark = initialize_spark()
+    create_and_configure_container(spark, infrastructure_settings)
+
+    prepared_data_reader = create_prepared_data_reader(
+        infrastructure_settings, spark
     )
 
-    with config.get_tracer().start_as_current_span(
-        __name__, kind=SpanKind.SERVER
-    ) as span:
-        # Try/except added to enable adding custom fields to the exception as
-        # the span attributes do not appear to be included in the exception.
-        try:
-            # The command line arguments are parsed to have necessary information for coming log messages
-            command_line_args = parse_command_line_args()
+    if not prepared_data_reader.is_calculation_id_unique(args.calculation_id):
+        raise Exception(
+            f"Calculation ID '{args.calculation_id}' is already used."
+        )
 
-            # Add calculation_id to structured logging data to be included in every log message.
-            config.add_extras({"calculation_id": command_line_args.calculation_id})
-            span.set_attributes(config.get_extras())
-
-            args, infrastructure_settings = parse_job_args(command_line_args)
-
-            spark = initialize_spark()
-            create_and_configure_container(spark, infrastructure_settings)
-
-            prepared_data_reader = create_prepared_data_reader(
-                infrastructure_settings, spark
-            )
-
-            if not prepared_data_reader.is_calculation_id_unique(args.calculation_id):
-                raise Exception(
-                    f"Calculation ID '{args.calculation_id}' is already used."
-                )
-
-            calculation_executor(
-                args,
-                prepared_data_reader,
-                CalculationCore(),
-                CalculationMetadataService(),
-                CalculationOutputService(),
-            )
-
-        # Added as ConfigArgParse uses sys.exit() rather than raising exceptions
-        except SystemExit as e:
-            if e.code != 0:
-                span_record_exception(e, span)
-            sys.exit(e.code)
-
-        except Exception as e:
-            span_record_exception(e, span)
-            sys.exit(4)
+    calculation.execute(
+        args,
+        prepared_data_reader,
+        CalculationCore(),
+        CalculationMetadataService(),
+        CalculationOutputService(),
+    )
 
 
 def create_prepared_data_reader(
@@ -140,3 +150,52 @@ def create_prepared_data_reader(
         migrations_wholesale_repository, wholesale_internal_repository
     )
     return prepared_data_reader
+
+def _validate_quarterly_resolution_transition_datetime(
+    quarterly_resolution_transition_datetime: datetime,
+    time_zone: str,
+    calculation_period_start_datetime: datetime,
+    calculation_period_end_datetime: datetime,
+) -> None:
+    if (
+        is_midnight_in_time_zone(quarterly_resolution_transition_datetime, time_zone)
+        is False
+    ):
+        raise Exception(
+            f"The quarterly resolution transition datetime must be at midnight local time ({time_zone})."
+        )
+    if (
+        calculation_period_start_datetime
+        < quarterly_resolution_transition_datetime
+        < calculation_period_end_datetime
+    ):
+        raise Exception(
+            "The calculation period must not cross the quarterly resolution transition datetime."
+        )
+
+
+def _validate_period_for_wholesale_calculation(
+    time_zone: str,
+    calculation_period_start_datetime: datetime,
+    calculation_period_end_datetime: datetime,
+) -> None:
+    is_valid_period = is_exactly_one_calendar_month(
+        calculation_period_start_datetime,
+        calculation_period_end_datetime,
+        time_zone,
+    )
+
+    if not is_valid_period:
+        raise Exception(
+            f"The calculation period for wholesale calculation types must be a full month starting and ending at midnight local time ({time_zone}))."
+        )
+
+
+def _throw_exception_if_internal_calculation_and_not_aggregation_calculation_type(
+    calculator_args: CalculatorArgs,
+) -> None:
+    if (
+        calculator_args.is_internal_calculation
+        and calculator_args.calculation_type != CalculationType.AGGREGATION
+    ):
+        raise Exception("Internal calculations must be of type AGGREGATION. ")
