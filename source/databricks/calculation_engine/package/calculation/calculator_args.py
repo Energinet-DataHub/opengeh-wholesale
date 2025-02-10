@@ -12,23 +12,72 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass
-from datetime import datetime
+
+from datetime import datetime, timezone
+from pydantic_settings import BaseSettings
+from pydantic import AliasChoices, Field
 
 from package.codelists.calculation_type import (
     CalculationType,
 )
 
 
-@dataclass
-class CalculatorArgs:
-    calculation_id: str
-    calculation_grid_areas: list[str]
-    calculation_period_start_datetime: datetime
-    calculation_period_end_datetime: datetime
-    calculation_type: CalculationType
-    calculation_execution_time_start: datetime
-    created_by_user_id: str
-    time_zone: str
-    quarterly_resolution_transition_datetime: datetime
-    is_internal_calculation: bool
+# -------- Should be moved to Packages Repo
+class ApplicationSettings(
+    BaseSettings,
+    cli_parse_args=True,
+    cli_kebab_case=True,
+    cli_ignore_unknown_args=True,
+    cli_implicit_flags=True,
+):
+    """
+    Base class for application settings.
+    Supports:
+    - CLI parsing with arguments using kebab-case.
+    - Environment variables using SNAKE_UPPER_CASE.
+    - Ignoring unknown CLI arguments. This behavior can be overridden by setting `cli_ignore_unknown_args=False`
+      in the class definition of the derived settings class. Example:
+      `class Settings(ApplicationSettings, cli_ignore_unknown_args=False):`
+    """
+
+    pass
+
+
+class CalculatorArgs(ApplicationSettings):
+    """
+    CalculatorArgs class uses Pydantic BaseSettings to configure and validate parameters.
+    Parameters can come from both runtime (CLI) or from environment variables.
+    The priority is CLI parameters first and then environment variables.
+    """
+
+    calculation_id: str  # From CLI
+    calculation_grid_areas: list[str] = Field(
+        ...,
+        validation_alias=AliasChoices(
+            "grid_areas", "grid-areas", "calculation_grid_areas"
+        ),
+    )  # From CLI
+    calculation_period_start_datetime: datetime = Field(
+        ...,
+        validation_alias=AliasChoices(
+            "period_start_datetime",
+            "period-start-datetime",
+            "calculation_period_start_datetime",
+        ),
+    )  # From CLI
+    calculation_period_end_datetime: datetime = Field(
+        ...,
+        validation_alias=AliasChoices(
+            "period_end_datetime",
+            "period-end-datetime",
+            "calculation_period_end_datetime",
+        ),
+    )  # From CLI
+    calculation_type: CalculationType  # From CLI
+    calculation_execution_time_start: datetime = Field(
+        default=datetime.now(timezone.utc)
+    )
+    created_by_user_id: str  # From CLI
+    time_zone: str  # From ENVIRONMENT
+    quarterly_resolution_transition_datetime: datetime  # From ENVIRONMENT
+    is_internal_calculation: bool = Field(default=False)
