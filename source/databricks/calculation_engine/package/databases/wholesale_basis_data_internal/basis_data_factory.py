@@ -24,7 +24,7 @@ from package.calculation.preparation.data_structures.prepared_metering_point_tim
     PreparedMeteringPointTimeSeries,
 )
 from package.databases.wholesale_basis_data_internal import basis_data
-from telemetry_logging import use_span, logging_configuration
+from geh_common.telemetry import use_span, logging_configuration
 
 
 @use_span("calculation.basis_data.prepare")

@@ -1,6 +1,6 @@
 import pytest
-from testcommon.etl import get_then_names, TestCase
-from testcommon.dataframes import (
+from geh_common.testing.etl import get_then_names, TestCase
+from geh_common.testing.dataframes import (
     assert_dataframes_and_schemas,
     AssertDataframesConfiguration,
 )

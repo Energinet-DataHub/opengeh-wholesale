@@ -21,7 +21,7 @@ from opentelemetry.trace import SpanKind
 from pyspark.sql import SparkSession
 
 import telemetry_logging.logging_configuration as config
-from telemetry_logging.span_recording import span_record_exception
+from geh_common.telemetry.span_recording import span_record_exception
 from package import calculation
 from package.calculation import CalculationCore
 from package.calculation.calculation_metadata_service import CalculationMetadataService

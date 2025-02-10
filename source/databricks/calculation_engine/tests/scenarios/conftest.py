@@ -3,8 +3,8 @@ from unittest.mock import Mock
 
 import pytest
 from pyspark.sql import SparkSession
-from testcommon.dataframes import AssertDataframesConfiguration, read_csv
-from testcommon.etl import TestCase, TestCases
+from geh_common.testing.dataframes import AssertDataframesConfiguration, read_csv
+from geh_common.testing.etl import TestCase, TestCases
 
 from package.calculation import CalculationCore, PreparedDataReader
 from package.codelists.calculation_type import is_wholesale_calculation_type

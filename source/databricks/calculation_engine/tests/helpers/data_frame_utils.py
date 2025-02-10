@@ -15,7 +15,7 @@
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
-from testcommon.dataframes.assert_schemas import assert_schema
+from geh_common.testing.dataframes.assert_schemas import assert_schema
 from tests.testsession_configuration import FeatureTestsConfiguration
 
 

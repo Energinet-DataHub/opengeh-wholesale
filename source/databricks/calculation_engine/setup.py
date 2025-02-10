@@ -37,6 +37,7 @@ setup(
         "python-dateutil==2.8.2",
         "azure-monitor-opentelemetry==1.6.4",
         "azure-core==1.32.0",
+        "geh_common @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@4.0.0",
         "opengeh-spark-sql-migrations @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.4.2#subdirectory=source/spark_sql_migrations",
         "opengeh-telemetry @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@2.4.2#subdirectory=source/telemetry",
         "opengeh-testcommon @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@3.3.0#subdirectory=source/testcommon",

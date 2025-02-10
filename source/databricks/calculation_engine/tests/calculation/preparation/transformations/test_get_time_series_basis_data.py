@@ -13,7 +13,7 @@
 # limitations under the License.
 from pyspark.sql import SparkSession
 
-from testcommon.dataframes.assert_schemas import assert_schema
+from geh_common.testing.dataframes.assert_schemas import assert_schema
 from package.databases.wholesale_basis_data_internal import (
     get_time_series_points_basis_data,
 )

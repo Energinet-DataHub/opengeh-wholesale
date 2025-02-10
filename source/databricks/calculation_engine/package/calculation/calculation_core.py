@@ -23,7 +23,7 @@ from package.calculation.preparation.transformations.metering_point_periods_for_
     is_parent_metering_point,
 )
 from package.databases.wholesale_basis_data_internal import basis_data_factory
-from telemetry_logging import use_span, logging_configuration
+from geh_common.telemetry import use_span, logging_configuration
 from .calculation_output import (
     CalculationOutput,
 )
