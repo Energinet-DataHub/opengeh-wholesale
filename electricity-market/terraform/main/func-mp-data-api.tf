@@ -1,5 +1,5 @@
 module "func_mp_data_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_9.4.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic?ref=function-app-elastic_10.0.0"
 
   name                                   = "mp-data-api"
   project_name                           = var.domain_name_short

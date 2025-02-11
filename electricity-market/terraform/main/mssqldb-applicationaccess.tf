@@ -1,5 +1,5 @@
 module "mssql_database_application_access" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=mssql-database-application-access_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=mssql-database-application-access_6.0.0"
 
   sql_server_name = module.mssqldb_electricity_market.server_name
   database_name   = module.mssqldb_electricity_market.name
@@ -14,7 +14,7 @@ module "mssql_database_application_access" {
 }
 
 module "mssql_markpart_application_access" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-access?ref=mssql-database-access_1.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-access?ref=mssql-database-access_2.0.0"
 
   sql_server_name = data.azurerm_key_vault_secret.mssql_data_name.value
   database_name   = data.azurerm_key_vault_secret.markpart_db_name.value

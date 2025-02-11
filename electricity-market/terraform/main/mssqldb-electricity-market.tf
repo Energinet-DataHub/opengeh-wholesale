@@ -1,5 +1,5 @@
 module "mssqldb_electricity_market" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_10.0.0"
 
   name                 = "electricity-market"
   location             = azurerm_resource_group.this.location
