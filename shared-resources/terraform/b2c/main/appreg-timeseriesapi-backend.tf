@@ -1,6 +1,9 @@
 resource "random_uuid" "backend_timeseriesapi_app_role" {
 }
 
+resource "random_uuid" "backend_timeseriesapi_app_role_energy_track_and_trace" {
+}
+
 resource "azuread_application" "backend_timeseriesapi_app" {
   display_name    = "backend-timeseriesapi-app"
   identifier_uris = [local.timeseriesapi_id_uri] # NOTE: This should be api://<this-app-id>/backend-timeseriesapi but TF is not able, see: https://github.com/hashicorp/terraform-provider-azuread/issues/428
@@ -16,6 +19,14 @@ resource "azuread_application" "backend_timeseriesapi_app" {
     value                = "eloverblik"
     display_name         = "ElOverblik"
     description          = "TimeSeriesApi backend Application Scope for ElOverblik."
+  }
+
+  app_role {
+    allowed_member_types = ["Application"]
+    id                   = random_uuid.backend_timeseriesapi_app_role_energy_track_and_trace.result
+    value                = "energytrackandtrace"
+    display_name         = "EnergyTrackAndTrace"
+    description          = "TimeSeriesApi backend Application Scope for Energy Track and Trace."
   }
 }
 

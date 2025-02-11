@@ -28,8 +28,9 @@ module "apim_timeseriesapi" {
                                 <claim name="aud" match="any">
                                     <value>${data.azurerm_key_vault_secret.apim_timeseriesapi_app_id.value}</value>
                                 </claim>
-                                <claim name="roles" match="all">
+                                <claim name="roles" match="any">
                                     <value>eloverblik</value>
+                                    <value>energytrackandtrace</value>
                                 </claim>
                             </required-claims>
                         </validate-jwt>

@@ -81,3 +81,9 @@ output "eloverblik_timeseriesapi_client_app_id" {
   value       = azuread_application.eloverblik_timeseriesapi_client_app.client_id
   sensitive   = false
 }
+
+output "energy_track_and_trace_timeseriesapi_client_app_id" {
+  description = "The Application ID of the Energy Track and Trace TimeSeriesApi client app registration."
+  value       = azuread_application.energy_track_and_trace_timeseriesapi_client_app.client_id
+  sensitive   = false
+}

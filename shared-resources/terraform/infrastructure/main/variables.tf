@@ -115,6 +115,11 @@ variable "eloverblik_timeseriesapi_client_app_id" {
   description = "The Application ID of the Eloverblik TimeSeriesApi client app registration."
 }
 
+variable "energy_track_and_trace_timeseriesapi_client_app_id" {
+  type        = string
+  description = "The Application ID of the Energy Track and Trace TimeSeriesApi client app registration."
+}
+
 variable "authentication_sign_in_user_flow_id" {
   type        = string
   description = "The id of the user flow used for signing users in."

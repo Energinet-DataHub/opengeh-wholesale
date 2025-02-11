@@ -68,6 +68,11 @@ data "azurerm_key_vault_secret" "apim_eloverblik_timeseriesapi_client_app_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "apim_energy_track_and_trace_timeseriesapi_client_app_id" {
+  name         = "energy-track-and-trace-timeseriesapi-client-app-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 data "azurerm_key_vault_secret" "apim_b2c_tenant_id" {
   name         = "b2c-tenant-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id

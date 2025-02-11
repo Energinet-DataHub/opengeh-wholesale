@@ -38,6 +38,14 @@ module "kvs_eloverblik_timeseriesapi_client_app_id" {
   key_vault_id = module.kv_shared.id
 }
 
+module "kvs_energy_track_and_trace_timeseriesapi_client_app_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "energy-track-and-trace-timeseriesapi-client-app-id"
+  value        = var.energy_track_and_trace_timeseriesapi_client_app_id
+  key_vault_id = module.kv_shared.id
+}
+
 module "kvs_backend_bff_app_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
