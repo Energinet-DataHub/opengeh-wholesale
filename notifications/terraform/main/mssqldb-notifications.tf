@@ -1,5 +1,5 @@
 module "mssqldb_notifications" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.0.2"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_10.0.0"
 
   name                 = "notifications"
   location             = azurerm_resource_group.this.location

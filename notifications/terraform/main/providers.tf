@@ -3,12 +3,12 @@ terraform {
     # It is recommended to pin to a given version of the Azure provider
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "4.6.0"
+      version = "4.17.0"
     }
 
     azuread = {
       source  = "hashicorp/azuread"
-      version = "2.47.0"
+      version = "3.1.0"
     }
   }
 }
