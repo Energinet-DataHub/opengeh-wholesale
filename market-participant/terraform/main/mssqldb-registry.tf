@@ -1,5 +1,5 @@
 module "mssqldb_market_participant" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_10.0.0"
 
   name                 = "registry"
   location             = azurerm_resource_group.this.location
