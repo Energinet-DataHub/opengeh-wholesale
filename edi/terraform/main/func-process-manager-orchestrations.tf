@@ -1,5 +1,5 @@
 module "func_process_manager_orchestrations" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_6.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_7.0.0"
 
   name                                   = "pm-orchestrations"
   project_name                           = var.domain_name_short

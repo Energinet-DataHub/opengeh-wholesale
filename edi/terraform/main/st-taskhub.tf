@@ -1,5 +1,5 @@
 module "taskhub_storage_account" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_8.0.0"
 
   name                       = "taskhub"
   project_name               = var.domain_name_short

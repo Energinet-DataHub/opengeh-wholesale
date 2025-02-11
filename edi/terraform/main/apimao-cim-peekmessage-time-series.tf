@@ -1,5 +1,5 @@
 module "apimao_cim_peek_message_time_series" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=api-management-api-operation_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=api-management-api-operation_7.0.0"
 
   operation_id            = "cim-peek-message-time-series"
   api_management_api_name = module.apima_b2b.name

@@ -1,6 +1,6 @@
 # Old, HNS-enabled storage account
 module "st_documents" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.2.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_10.0.0"
 
   name                                  = "documents"
   project_name                          = var.domain_name_short
@@ -33,7 +33,7 @@ resource "azurerm_storage_container" "archived" {
 
 # Old, HNS-enabled storage account for backup
 module "st_documents_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.2.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_10.0.0"
 
   name                                  = "backupdocs"
   project_name                          = var.domain_name_short
@@ -54,7 +54,7 @@ module "st_documents_backup" {
 
 # New standard storage account with backup enabled
 module "st_docs" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_8.0.0"
 
   name                 = "docs"
   project_name         = var.domain_name_short

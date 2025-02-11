@@ -1,6 +1,6 @@
 # Legacy database - Mosaic will clean up in. Track with this issue: https://app.zenhub.com/workspaces/mosaic-60a6105157304f00119be86e/issues/gh/energinet-datahub/team-mosaic/388
 module "mssqldb_process_manager" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.1.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_10.0.0"
 
   name                 = "process-manager"
   location             = azurerm_resource_group.this.location

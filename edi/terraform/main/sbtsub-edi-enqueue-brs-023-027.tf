@@ -1,5 +1,5 @@
 ﻿module "sbtsub_edi_enqueue_brs_023_027" {
-  source             = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=service-bus-topic-subscription_6.0.1"
+  source             = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-bus-topic-subscription?ref=service-bus-topic-subscription_7.0.0"
   name               = "edi-enqueue-brs-023-027"
   topic_id           = data.azurerm_key_vault_secret.sbt_edi_id.value
   project_name       = var.domain_name_short
