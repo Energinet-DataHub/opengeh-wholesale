@@ -1,5 +1,5 @@
 module "st_migrations_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_9.2.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_10.0.0"
 
   name                       = "migbackup"
   project_name               = var.domain_name_short

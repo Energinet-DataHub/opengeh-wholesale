@@ -1,5 +1,5 @@
 module "func_timeseriesprocessor" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_6.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_7.0.0"
 
   name                                   = "timeseriesprocessor"
   project_name                           = var.domain_name_short
@@ -66,7 +66,7 @@ module "func_timeseriesprocessor" {
 }
 
 module "durabletask_storage_account_timeseriesprocesser" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_8.0.0"
 
   name                       = "tsprocdrbl"
   project_name               = var.domain_name_short
