@@ -1,5 +1,5 @@
 module "apima_health_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=api-management-api_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api?ref=api-management-api_7.0.0"
 
   name                       = "sauron-health-checks-api"
   project_name               = var.domain_name_short
@@ -53,7 +53,7 @@ module "apima_health_api" {
 }
 
 module "apimao_health_checks_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=api-management-api-operation_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=api-management-api-operation_7.0.0"
 
   operation_id            = "healthchecks-api"
   api_management_api_name = module.apima_health_api.name
