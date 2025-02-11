@@ -1,5 +1,5 @@
 ﻿module "mssqldb" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_9.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database?ref=mssql-database_10.0.0"
 
   name                 = "data"
   location             = azurerm_resource_group.this.location
@@ -25,7 +25,7 @@
 }
 
 module "mssql_database_application_access" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=mssql-database-application-access_5.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-application-access?ref=mssql-database-application-access_6.0.0"
 
   sql_server_name = module.mssqldb.server_name
   database_name   = module.mssqldb.name

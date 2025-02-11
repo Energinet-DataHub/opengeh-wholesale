@@ -1,7 +1,7 @@
 data "azurerm_client_config" "this" {}
 
 module "st_this" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_7.1.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account?ref=storage-account_8.0.0"
 
   name                       = "docs"
   project_name               = var.domain_name_short
@@ -32,9 +32,9 @@ module "st_this" {
   } : null
 
   blob_storage_backup_policy = {
-      backup_policy_id          = data.azurerm_key_vault_secret.bvault_vaulted_policy_id.value
-      backup_vault_id           = data.azurerm_key_vault_secret.bvault_vault_id.value
-      backup_vault_location     = data.azurerm_key_vault_secret.bvault_vault_location.value
-      backup_vault_principal_id = data.azurerm_key_vault_secret.bvault_vault_principal_id.value
+    backup_policy_id          = data.azurerm_key_vault_secret.bvault_vaulted_policy_id.value
+    backup_vault_id           = data.azurerm_key_vault_secret.bvault_vault_id.value
+    backup_vault_location     = data.azurerm_key_vault_secret.bvault_vault_location.value
+    backup_vault_principal_id = data.azurerm_key_vault_secret.bvault_vault_principal_id.value
   }
 }
