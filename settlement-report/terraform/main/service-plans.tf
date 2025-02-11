@@ -1,5 +1,5 @@
 module "func_settlement_report_service_plan" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_7.0.0"
 
   type                         = "func"
   project_name                 = var.domain_name_short
@@ -31,7 +31,7 @@ module "func_settlement_report_service_plan" {
 }
 
 module "func_settlement_report_light_service_plan" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_7.0.0"
 
   name                         = "light"
   type                         = "func"
@@ -63,7 +63,7 @@ module "func_settlement_report_light_service_plan" {
 }
 
 module "webapp_service_plan" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_6.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/service-plan?ref=service-plan_7.0.0"
 
   type                 = "webapp"
   project_name         = var.domain_name_short

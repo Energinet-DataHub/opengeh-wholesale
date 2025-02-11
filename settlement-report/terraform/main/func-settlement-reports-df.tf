@@ -1,5 +1,5 @@
 module "func_settlement_reports_df" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_6.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_7.0.0"
 
   name                                   = "settlement-reports-df"
   project_name                           = var.domain_name_short
