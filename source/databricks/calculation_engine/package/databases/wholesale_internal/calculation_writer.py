@@ -19,7 +19,7 @@ from delta.exceptions import MetadataChangedException
 from package.calculation.calculator_args import CalculatorArgs
 from package.container import Container
 from package.databases.table_column_names import TableColumnNames
-from telemetry_logging import use_span
+from geh_common.telemetry import use_span
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from package.infrastructure.paths import (
     WholesaleInternalDatabase,

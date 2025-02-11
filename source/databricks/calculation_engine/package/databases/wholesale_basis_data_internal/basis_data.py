@@ -14,7 +14,7 @@
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
-from telemetry_logging import use_span
+from geh_common.telemetry import use_span
 
 from package.calculation.preparation.data_structures import InputChargesContainer
 from package.calculation.preparation.data_structures.grid_loss_metering_point_ids import (

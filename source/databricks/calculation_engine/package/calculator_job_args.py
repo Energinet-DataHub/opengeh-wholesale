@@ -29,7 +29,7 @@ from package.common.datetime_utils import (
     is_exactly_one_calendar_month,
     is_midnight_in_time_zone,
 )
-from telemetry_logging import Logger, use_span, logging_configuration
+from geh_common.telemetry import Logger, use_span, logging_configuration
 from package.infrastructure import valid_date, valid_list, paths
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 

@@ -3,8 +3,8 @@ from unittest.mock import Mock
 
 import pytest
 from pyspark.sql import SparkSession
-from testcommon.dataframes import AssertDataframesConfiguration, read_csv
-from testcommon.etl import TestCase, TestCases
+from geh_common.testing.dataframes import AssertDataframesConfiguration, read_csv
+from geh_common.testing.scenario_testing import TestCase, TestCases
 
 from package.calculation import CalculationCore, PreparedDataReader
 from package.codelists.calculation_type import is_wholesale_calculation_type
@@ -26,7 +26,7 @@ from package.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
 
-from testsession_configuration import TestSessionConfiguration
+from tests.testsession_configuration import TestSessionConfiguration
 
 
 from datetime import datetime

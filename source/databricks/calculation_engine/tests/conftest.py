@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Generator, Callable, Optional
 
 import pytest
-import telemetry_logging.logging_configuration as config
+import geh_common.telemetry.logging_configuration as config
 import yaml
 from azure.identity import ClientSecretCredential
 from delta import configure_spark_with_delta_pip

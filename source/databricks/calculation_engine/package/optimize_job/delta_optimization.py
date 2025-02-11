@@ -21,8 +21,8 @@ from package.infrastructure.paths import (
     WholesaleBasisDataInternalDatabase,
     WholesaleInternalDatabase,
 )
-import telemetry_logging.logging_configuration as config
-from telemetry_logging import Logger
+import geh_common.telemetry.logging_configuration as config
+from geh_common.telemetry import Logger
 import package.infrastructure.environment_variables as env_vars
 
 

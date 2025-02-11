@@ -14,7 +14,7 @@
 
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
-from telemetry_logging import use_span, logging_configuration
+from geh_common.telemetry import use_span, logging_configuration
 
 from package.calculation.calculation_output import WholesaleResultsOutput
 from package.container import Container

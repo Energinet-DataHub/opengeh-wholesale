@@ -3,8 +3,8 @@ from pathlib import Path
 import pytest
 from _pytest.fixtures import FixtureRequest
 from pyspark.sql import SparkSession
-from testcommon.dataframes.write_to_delta import write_when_files_to_delta
-from testcommon.etl import TestCase, TestCases, get_then_names
+from geh_common.testing.dataframes.write_to_delta import write_when_files_to_delta
+from geh_common.testing.scenario_testing import TestCase, TestCases, get_then_names
 
 from package.databases.wholesale_basis_data_internal.schemas import (
     metering_point_periods_schema,

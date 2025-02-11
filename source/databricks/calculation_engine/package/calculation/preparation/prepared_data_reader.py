@@ -36,7 +36,7 @@ from .data_structures import ChargePrices, ChargePriceInformation
 from ...constants import Colname
 from ...databases import wholesale_internal
 from ...databases.table_column_names import TableColumnNames
-from telemetry_logging import use_span
+from geh_common.telemetry import use_span
 
 
 class PreparedDataReader:

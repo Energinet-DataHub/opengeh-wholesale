@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pyspark.sql.functions as f
 from pyspark.sql import SparkSession
-from spark_sql_migrations.utility import delta_table_helper
+from geh_common.migrations.utility import delta_table_helper
 
 from package.datamigration.migration import migrate_data_lake
 from package.infrastructure.paths import UnityCatalogDatabaseNames
