@@ -16,7 +16,7 @@ resource "azuread_service_principal" "spn_databricks" {
 }
 
 module "spn_databricks_rotating_secret" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/entra-application-rotating-secret?ref=entra-application-rotating-secret_1.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/entra-application-rotating-secret?ref=entra-application-rotating-secret_2.0.0"
 
   application_id = azuread_application.app_databricks.id
 }
