@@ -47,6 +47,7 @@ locals {
     "alert_bronze_migration_audit_changed",
     "alert_eloverblik_time_series_freshness_compared_to_bronze",
     "alert_wholesale_time_series_freshness_compared_to_bronze",
-    "alert_eloverblik_time_series_completeness"
+    "alert_eloverblik_time_series_completenes",
+    "alert_wholesale_time_series_completeness"
   ]
 }
