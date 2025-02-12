@@ -1,0 +1,3 @@
+﻿charge_code;charge_type;charge_owner_id;resolution;is_tax;from_date;to_date
+fee-1;fee;0000000000800;P1M;false;2016-01-31T23:00:00Z;
+subscription-1;subscription;0000000000800;P1M;false;2016-01-31T23:00:00Z;

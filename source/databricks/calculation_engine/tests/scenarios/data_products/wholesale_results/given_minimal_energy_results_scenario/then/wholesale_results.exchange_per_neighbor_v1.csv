@@ -1,0 +1,2 @@
+calculation_id;calculation_type;calculation_period_start;calculation_period_end;grid_area_code;neighbor_grid_area_code;resolution;time;quantity;quantity_unit;quantity_qualities
+0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2023-01-01T00:00:00Z;2023-02-01T00:00:00Z;804;907;PT15M;2023-02-02T02:00:00Z;1.125;kWh;['measured']

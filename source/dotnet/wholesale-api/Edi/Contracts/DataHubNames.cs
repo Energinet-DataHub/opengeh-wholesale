@@ -17,7 +17,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Energinet.DataHub.Wholesale.Edi.Contracts;
 
 /// <summary>
-/// These domain names are shared between the EDI and Wholesale subsystems
+/// These DataHub domain names are shared between the EDI and Wholesale subsystems
 /// When updating these, you need to manually update the classes in the other subsystem
 /// Files to manually keep in sync:
 /// - EDI: BuildingBlocks.Domain/DataHub/DataHubNames.cs
@@ -34,6 +34,8 @@ public static class DataHubNames
         public const string PreliminaryAggregation = "PreliminaryAggregation";
         public const string WholesaleFixing = "WholesaleFixing";
         public const string Correction = "Correction";
+        public const string PeriodicMetering = "PeriodicMetering";
+        public const string PeriodicFlexMetering = "PeriodicFlexMetering";
     }
 
     public static class ChargeType
@@ -88,11 +90,12 @@ public static class DataHubNames
         public const string MeteredDataResponsible = "MeteredDataResponsible";
         public const string EnergySupplier = "EnergySupplier";
         public const string BalanceResponsibleParty = "BalanceResponsibleParty";
-        public const string GridOperator = "GridOperator";
+        public const string GridAccessProvider = "GridAccessProvider";
         public const string MeteredDataAdministrator = "MeteredDataAdministrator";
         public const string ImbalanceSettlementResponsible = "ImbalanceSettlementResponsible";
         public const string SystemOperator = "SystemOperator";
         public const string DanishEnergyAgency = "DanishEnergyAgency";
         public const string Delegated = "Delegated";
+        public const string DataHubAdministrator = "DataHubAdministrator";
     }
 }

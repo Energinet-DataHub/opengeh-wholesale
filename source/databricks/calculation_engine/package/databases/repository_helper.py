@@ -15,7 +15,7 @@
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
-from package.common.schemas import assert_contract
+from geh_common.testing.dataframes.assert_schemas import assert_contract
 
 
 def read_table(

@@ -13,7 +13,7 @@
 # limitations under the License.
 from typing import Tuple
 
-from telemetry_logging import use_span, logging_configuration
+from geh_common.telemetry import use_span, logging_configuration
 
 import package.calculation.energy.aggregators.exchange_aggregators as exchange_aggr
 import package.calculation.energy.aggregators.grid_loss_aggregators as grid_loss_aggr

@@ -1,0 +1,4 @@
+charge_code;charge_type;charge_owner_id;charge_price;charge_time
+fee-1;fee;0000000000800;10;2023-01-31T23:00:00Z
+fee-1;fee;0000000000800;10;2023-02-02T23:00:00Z
+subscription-1;subscription;0000000000800;10;2023-01-31T23:00:00Z

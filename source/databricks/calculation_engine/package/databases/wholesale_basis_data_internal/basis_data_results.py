@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from dependency_injector.wiring import inject, Provide
-from telemetry_logging import use_span, logging_configuration
+from geh_common.telemetry import use_span, logging_configuration
 
 from package.calculation.calculation_output import BasisDataOutput
 from package.container import Container

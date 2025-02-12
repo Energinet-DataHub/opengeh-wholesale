@@ -1,0 +1,5 @@
+grid_area_code;energy_supplier_id;balance_responsible_party_id;quantity;quantity_qualities;time;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;result_id;metering_point_id;resolution
+800;1000000000000;1100000000000;0.000;['calculated'];2023-10-10T06:00:00Z;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-01T23:00:00Z;;86e4487a-fc36-55ed-87c6-4c3c90ab13f3;;PT15M
+800;1000000000000;1100000000000;0.000;['calculated'];2023-10-10T06:15:00Z;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-01T23:00:00Z;;86e4487a-fc36-55ed-87c6-4c3c90ab13f3;;PT15M
+800;1000000000000;1100000000000;0.000;['calculated'];2023-10-10T06:30:00Z;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-01T23:00:00Z;;86e4487a-fc36-55ed-87c6-4c3c90ab13f3;;PT15M
+800;1000000000000;1100000000000;0.000;['calculated'];2023-10-10T06:45:00Z;production;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-01T23:00:00Z;;86e4487a-fc36-55ed-87c6-4c3c90ab13f3;;PT15M

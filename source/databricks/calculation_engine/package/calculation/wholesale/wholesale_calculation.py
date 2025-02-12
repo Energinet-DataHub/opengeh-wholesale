@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from telemetry_logging import use_span
+from geh_common.telemetry import use_span
 
 import package.calculation.preparation.data_structures as d
 import package.calculation.wholesale.fee_calculators as fee_calculator

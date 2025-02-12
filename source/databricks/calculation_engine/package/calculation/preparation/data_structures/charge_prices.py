@@ -16,7 +16,7 @@ import pyspark.sql.types as t
 from pyspark.sql import DataFrame
 
 from package.codelists import ChargeType
-from package.common import DataFrameWrapper
+from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
 from package.constants import Colname
 
 

@@ -1,0 +1,5 @@
+calculation_id;result_id;grid_area_code;energy_supplier_id;quantity;quantity_unit;quantity_qualities;time;resolution;metering_point_type;settlement_method;price;amount;is_tax;charge_code;charge_type;charge_owner_id
+0b15a420-9fc8-409a-a169-fbd49479d718;c8862948-5e29-5cac-9462-26059a042485;800;3000000000000;20.000;kWh;['missing', 'measured'];2023-01-31T23:00:00Z;P1D;consumption;non_profiled;0.001000;0.020000;False;tariff-daily-1;tariff;0000000000800
+0b15a420-9fc8-409a-a169-fbd49479d718;c8862948-5e29-5cac-9462-26059a042485;800;3000000000000;0.000;kWh;['missing'];2023-02-01T23:00:00Z;P1D;consumption;non_profiled;;;False;tariff-daily-1;tariff;0000000000800
+0b15a420-9fc8-409a-a169-fbd49479d718;9a8cd23c-eaea-51cd-bfd2-dc4644dfa723;800;4000000000000;4.121;kWh;['missing', 'measured'];2023-01-31T23:00:00Z;P1D;production;;;;False;tariff-daily-2;tariff;0000000000800
+0b15a420-9fc8-409a-a169-fbd49479d718;9a8cd23c-eaea-51cd-bfd2-dc4644dfa723;800;4000000000000;0.000;kWh;['missing'];2023-02-01T23:00:00Z;P1D;production;;;;False;tariff-daily-2;tariff;0000000000800

@@ -1,4 +1,4 @@
-from spark_sql_migrations import (
+from geh_common.migrations import (
     create_and_configure_container,
     schema_migration_pipeline,
     SparkSqlMigrationsConfiguration,
@@ -36,10 +36,6 @@ def _create_spark_config(
         migration_schema_name=paths.WholesaleInternalDatabase.DATABASE_NAME,
         migration_table_name=paths.WholesaleInternalDatabase.EXECUTED_MIGRATIONS_TABLE_NAME,
         migration_scripts_folder_path=MIGRATION_SCRIPTS_FOLDER_PATH,
-        current_state_schemas_folder_path=None,
-        current_state_tables_folder_path=None,
-        current_state_views_folder_path=None,
-        schema_config=None,
         substitution_variables=get_substitutions(catalog_name, is_testing),
         catalog_name=catalog_name,
     )

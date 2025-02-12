@@ -17,7 +17,7 @@ from pyspark.sql import SparkSession, Row
 from package.codelists import (
     MeteringPointResolution,
 )
-from package.common import assert_schema
+from geh_common.testing.dataframes.assert_schemas import assert_schema
 from package.constants import Colname
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal import (

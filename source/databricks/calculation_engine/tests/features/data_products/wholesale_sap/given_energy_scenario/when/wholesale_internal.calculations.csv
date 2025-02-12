@@ -1,4 +1,0 @@
-calculation_id;calculation_type;calculation_period_start;calculation_period_end;calculation_execution_time_start;calculation_version;is_internal_calculation;calculation_succeeded_time
-0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2023-01-01 00:00:00;2023-02-01 00:00:00;2023-04-01 00:00:00;1;true;2023-04-01 00:00:00
-22222222-9fc8-409a-a169-fbd49479d718;balance_fixing;2023-01-01 00:00:00;2023-02-01 00:00:00;2023-04-01 00:00:00;1;true;
-33333333-9fc8-409a-a169-fbd49479d719;wholesale_fixing;2023-01-01 00:00:00;2023-02-01 00:00:00;2023-04-01 00:00:00;2;false;2023-04-01 00:00:00

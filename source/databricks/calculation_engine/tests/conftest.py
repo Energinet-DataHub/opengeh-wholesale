@@ -1,20 +1,8 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 """
 By having a conftest.py in this directory, we are able to add all packages
 defined in the geh_stream directory in our tests.
 """
+
 import logging
 import os
 import shutil
@@ -25,7 +13,7 @@ from pathlib import Path
 from typing import Generator, Callable, Optional
 
 import pytest
-import telemetry_logging.logging_configuration as config
+import geh_common.telemetry.logging_configuration as config
 import yaml
 from azure.identity import ClientSecretCredential
 from delta import configure_spark_with_delta_pip
@@ -421,6 +409,7 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
         f"{test_files_folder_path}/GridLossMeteringPointIds.csv",
         header=True,
         schema=grid_loss_metering_point_ids_schema,
+        sep=";",
     )
     df.write.format("delta").mode("overwrite").saveAsTable(
         f"{wholesale_internal_database}.{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
@@ -539,7 +528,8 @@ def _write_input_test_data_to_table(
     table_location: str,
     schema: StructType,
 ) -> None:
-    df = spark.read.csv(file_name, header=True, schema=schema)
+    df = spark.read.csv(file_name, header=True, schema=schema, sep=";")
+
     write_dataframe_to_table(
         spark,
         df,

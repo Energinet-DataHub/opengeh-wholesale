@@ -16,7 +16,7 @@ import pyspark.sql.functions as f
 from dependency_injector.wiring import inject, Provide
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType
-from telemetry_logging import use_span, logging_configuration
+from geh_common.telemetry import use_span, logging_configuration
 
 import package.databases.wholesale_results_internal.schemas as schemas
 from package.calculation.calculation_output import EnergyResultsOutput

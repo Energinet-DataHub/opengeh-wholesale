@@ -1,0 +1,2 @@
+grid_area_code;energy_supplier_id;balance_responsible_party_id;quantity;quantity_qualities;time;time_series_type;calculation_id;calculation_type;calculation_execution_time_start;neighbor_grid_area_code;result_id;metering_point_id;resolution
+800;1000000000000;1100000000000;1.000;['calculated'];2023-02-01T00:00:00Z;positive_grid_loss;0b15a420-9fc8-409a-a169-fbd49479d718;balance_fixing;2024-01-01T23:00:00Z;;30dc9a92-9547-5ff5-b19e-d29ad67d29a7;170000000150001000;PT1H
