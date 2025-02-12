@@ -18,7 +18,7 @@ resource "databricks_job" "electrical_heating" {
         "TIME_ZONE"                             = local.TIME_ZONE
         "CATALOG_NAME"                          = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
-        "ELECTRICITY_MARKET_DATA_PATH"          = "${data.azurerm_key_vault_secret.st_electricity_market_url.value}/electrical-heating"
+        "ELECTRICITY_MARKET_DATA_PATH"          = "/Volumes/${data.azurerm_key_vault_secret.shared_unity_catalog_name.value}/measurements_internal/shared_electricity_market_electrical_heating_container"
       }
     }
   }
@@ -29,13 +29,13 @@ resource "databricks_job" "electrical_heating" {
     job_cluster_key = "electrical_heating_cluster"
 
     library {
-      whl = "/Workspace/Shared/PythonWheels/electrical_heating/opengeh_electrical_heating-0.1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/electrical_heating/geh_calculated_measurements-0.1.0-py3-none-any.whl"
     }
 
     python_wheel_task {
-      package_name = "opengeh_electrical_heating"
+      package_name = "geh_calculated_measurements"
       # The entry point is defined in setup.py
-      entry_point = "execute"
+      entry_point = "execute_electrical_heating"
     }
   }
 

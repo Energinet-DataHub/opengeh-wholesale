@@ -134,3 +134,90 @@ resource "databricks_external_location" "measurements_calculated_storage" {
   depends_on      = [module.dbw, module.st_measurements]
 }
 
+#
+# Volume Mounts
+#
+resource "databricks_volume" "shared_electricity_market_capacity_settlement_container" {
+  provider         = databricks.dbw
+  name             = "shared_electricity_market_capacity_settlement_container"
+  catalog_name     = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  schema_name      = databricks_schema.measurements_internal.name
+  volume_type      = "EXTERNAL"
+  storage_location = databricks_external_location.shared_electricity_market_capacity_settlement_container.url
+  comment          = "Managed by TF"
+}
+resource "databricks_volume" "shared_electricity_market_electrical_heating_container" {
+  provider         = databricks.dbw
+  name             = "shared_electricity_market_electrical_heating_container"
+  catalog_name     = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  schema_name      = databricks_schema.measurements_internal.name
+  volume_type      = "EXTERNAL"
+  storage_location = databricks_external_location.shared_electricity_market_electrical_heating_container.url
+  comment          = "Managed by TF"
+}
+resource "databricks_volume" "measurements_calculated_internal_storage" {
+  provider         = databricks.dbw
+  name             = "measurements_calculated_internal_storage"
+  catalog_name     = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  schema_name      = databricks_schema.measurements_internal.name
+  volume_type      = "EXTERNAL"
+  storage_location = databricks_external_location.measurements_calculated_internal_storage.url
+  comment          = "Managed by TF"
+}
+resource "databricks_volume" "measurements_calculated_storage" {
+  provider         = databricks.dbw
+  name             = "measurements_calculated_storage"
+  catalog_name     = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+  schema_name      = databricks_schema.measurements_internal.name
+  volume_type      = "EXTERNAL"
+  storage_location = databricks_external_location.measurements_calculated_storage.url
+  comment          = "Managed by TF"
+}
+resource "databricks_grants" "shared_electricity_market_capacity_settlement_container" {
+  provider = databricks.dbw
+  volume   = databricks_volume.shared_electricity_market_capacity_settlement_container.id
+  grant {
+    principal  = var.databricks_contributor_dataplane_group.name
+    privileges = ["READ_VOLUME"]
+  }
+  grant {
+    principal  = var.databricks_readers_group.name
+    privileges = ["READ_VOLUME"]
+  }
+}
+resource "databricks_grants" "shared_electricity_market_electrical_heating_container" {
+  provider = databricks.dbw
+  volume   = databricks_volume.shared_electricity_market_electrical_heating_container.id
+  grant {
+    principal  = var.databricks_contributor_dataplane_group.name
+    privileges = ["READ_VOLUME"]
+  }
+  grant {
+    principal  = var.databricks_readers_group.name
+    privileges = ["READ_VOLUME"]
+  }
+}
+resource "databricks_grants" "measurements_calculated_internal_storage" {
+  provider = databricks.dbw
+  volume   = databricks_volume.measurements_calculated_internal_storage.id
+  grant {
+    principal  = var.databricks_contributor_dataplane_group.name
+    privileges = ["READ_VOLUME"]
+  }
+  grant {
+    principal  = var.databricks_readers_group.name
+    privileges = ["READ_VOLUME"]
+  }
+}
+resource "databricks_grants" "measurements_calculated_storage" {
+  provider = databricks.dbw
+  volume   = databricks_volume.measurements_calculated_storage.id
+  grant {
+    principal  = var.databricks_contributor_dataplane_group.name
+    privileges = ["READ_VOLUME"]
+  }
+  grant {
+    principal  = var.databricks_readers_group.name
+    privileges = ["READ_VOLUME"]
+  }
+}

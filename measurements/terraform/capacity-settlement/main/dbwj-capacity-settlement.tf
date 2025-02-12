@@ -28,13 +28,13 @@ resource "databricks_job" "capacity_settlement" {
     job_cluster_key = "capacity_settlement_cluster"
 
     library {
-      whl = "/Workspace/Shared/PythonWheels/capacity_settlement/opengeh_capacity_settlement-0.1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/capacity_settlement/geh_calculated_measurements-0.1.0-py3-none-any.whl"
     }
 
     python_wheel_task {
-      package_name = "opengeh_capacity_settlement"
+      package_name = "geh_calculated_measurements"
       # The entry point is defined in setup.py
-      entry_point = "execute"
+      entry_point = "execute_capacity_settlement"
     }
   }
 
