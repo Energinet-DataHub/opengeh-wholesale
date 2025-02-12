@@ -102,16 +102,6 @@ resource "databricks_external_location" "shared_electricity_market_capacity_sett
   depends_on      = [module.dbw, azurerm_role_assignment.st_electricity_market_contributor]
 }
 
-resource "databricks_schema" "shared_electricity_market_capacity_settlement_input" {
-  provider     = databricks.dbw
-  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = "shared_electricity_market_capacity_settlement_input"
-  comment      = "Shared Electricity Market Capacity settlement Schema"
-  storage_root = databricks_external_location.shared_electricity_market_capacity_settlement_container.url
-
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
-}
-
 resource "databricks_external_location" "shared_electricity_market_electrical_heating_container" {
   provider        = databricks.dbw
   name            = "measurements_${data.azurerm_key_vault_secret.st_electricity_market_name.value}_${data.azurerm_key_vault_secret.st_electricity_market_electrical_heating_container_name.value}"
@@ -119,16 +109,6 @@ resource "databricks_external_location" "shared_electricity_market_electrical_he
   credential_name = data.azurerm_key_vault_secret.unity_storage_credential_id.value
   comment         = "Managed by TF"
   depends_on      = [module.dbw, azurerm_role_assignment.st_electricity_market_contributor]
-}
-
-resource "databricks_schema" "shared_electricity_market_electrical_heating_input" {
-  provider     = databricks.dbw
-  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = "shared_electricity_market_electrical_heating_input"
-  comment      = "Shared Electricity Market Electrical heating Schema"
-  storage_root = databricks_external_location.shared_electricity_market_electrical_heating_container.url
-
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
 }
 
 #
@@ -144,16 +124,6 @@ resource "databricks_external_location" "measurements_calculated_internal_storag
   depends_on      = [module.dbw, module.st_measurements]
 }
 
-resource "databricks_schema" "measurements_calculated_internal" {
-  provider     = databricks.dbw
-  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = "measurements_calculated_internal"
-  comment      = "Measurements Calculated Internal Schema"
-  storage_root = databricks_external_location.measurements_calculated_internal_storage.url
-
-  depends_on = [module.dbw, module.kvs_databricks_dbw_workspace_token]
-}
-
 resource "databricks_external_location" "measurements_calculated_storage" {
   provider = databricks.dbw
   name     = "${azurerm_storage_container.measurements_calculated.name}_${module.st_measurements.name}"
@@ -164,10 +134,3 @@ resource "databricks_external_location" "measurements_calculated_storage" {
   depends_on      = [module.dbw, module.st_measurements]
 }
 
-resource "databricks_schema" "measurements_calculated" {
-  provider     = databricks.dbw
-  catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = "measurements_calculated"
-  comment      = "Measurements Calculated Schema"
-  storage_root = databricks_external_location.measurements_calculated_storage.url
-}
