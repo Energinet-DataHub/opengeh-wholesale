@@ -31,6 +31,8 @@ module "monitor_action_group_edi" {
                         | where severityLevel >= 3
                         // avoid triggering alert when exception is logged by health check
                         | where customDimensions["EventName"] != "HealthCheckEnd"
+                        | where (type == "System.Threading.Tasks.TaskCanceledException" and customDimensions["CategoryName"] == "Microsoft.AspNetCore.Server.Kestrel") == false
+                        | where (type == "System.Threading.Tasks.TaskCanceledException" and customDimensions["AzureFunctions_FunctionName"] == "HealthCheck") == false
                     QUERY
       severity    = 1
       frequency   = 5
