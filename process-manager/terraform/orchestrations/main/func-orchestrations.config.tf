@@ -38,6 +38,9 @@ locals {
       # Measurements EventHub
       "MeasurementsEventHub__NamespaceName"   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=evhns-measurements-name)"
       "MeasurementsEventHub__EventHubName"    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=evh-measurement-transactions-name)"
+
+      # Electricity Market client
+      "ApiClientOptions__BaseUrl"    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mp-data-api-base-url)"
     }
   }
 }
