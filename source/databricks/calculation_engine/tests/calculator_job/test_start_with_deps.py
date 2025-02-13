@@ -14,7 +14,7 @@
 import argparse
 import uuid
 from datetime import datetime
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 from pyspark import Row
@@ -31,32 +31,37 @@ from package.infrastructure.paths import WholesaleInternalDatabase
     "calculation_id_already_used",
     [True, False],
 )
+@patch("package.calculator_job.calculation")
 def test_start_with_deps__throws_exception_when_calculation_id_already_used(
+    calculation_executor_mock,
     calculator_args_balance_fixing: CalculatorArgs,
     spark: SparkSession,
     any_calculator_args: CalculatorArgs,
     infrastructure_settings: InfrastructureSettings,
     calculation_id_already_used: bool,
-    migrations_executed: bool,
+    # migrations_executed: bool,
 ) -> None:
 
     # Arrange
     calculation_id = str(uuid.uuid4())
-    command_line_args = argparse.Namespace()
-    command_line_args.calculation_id = calculation_id
+    # command_line_args = argparse.Namespace()
+    # command_line_args.calculation_id = calculation_id
     any_calculator_args.calculation_id = calculation_id
-    calculation_executor_mock = Mock()
-
+    # calculation_executor_mock = Mock()
+    print("THOMAS")
+    print(infrastructure_settings)
     # If true add calculation row to fake that the calculation id is already used
     if calculation_id_already_used:
         add_calculation_row(calculation_id, infrastructure_settings, spark)
 
-    # Act
+        # Act
     try:
         start_with_deps(
-            parse_command_line_args=lambda: command_line_args,
-            parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
-            calculation_executor=calculation_executor_mock.execute,
+            args=any_calculator_args,
+            infrastructure_settings=infrastructure_settings,
+            # parse_command_line_args=lambda: command_line_args,
+            # parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
+            # calculation_executor=calculation_executor_mock.execute,
         )
     except SystemExit as e:
         assert e.code == 4
@@ -85,6 +90,22 @@ def add_calculation_row(
             is_internal_calculation=True,
         )
     ]
+    # databases = spark.sql("SHOW DATABASES")  # Display the
+    print("kig her")
+    # databases.show()
+
+    catalogs = spark.catalog.listCatalogs()  # Available in Spark 3.x
+    for catalog in catalogs:
+        print(f"Catalog: {catalog.name}")
+
+        # Switch to the catalog (optional)
+        spark.sql(f"USE CATALOG {catalog.name}")
+
+        # Get databases in the catalog
+        databases = spark.catalog.listDatabases()
+        for db in databases:
+            print(f"  - Database: {db.name}")
+
     calculations_df = spark.createDataFrame(data, calculations_schema)
     calculations_df.write.format("delta").mode("append").saveAsTable(
         f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"

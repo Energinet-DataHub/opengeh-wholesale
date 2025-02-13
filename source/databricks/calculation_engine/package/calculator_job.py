@@ -15,7 +15,7 @@
 import os
 import sys
 from argparse import Namespace
-from typing import Callable, Tuple
+from typing import Callable
 
 from opentelemetry.trace import SpanKind
 from pyspark.sql import SparkSession
@@ -38,7 +38,7 @@ from package.infrastructure.infrastructure_settings import InfrastructureSetting
 
 from telemetry_logging import Logger, logging_configuration
 from telemetry_logging.logging_configuration import configure_logging, LoggingSettings
-from telemetry_logging.decorators import start_trace
+from telemetry_logging.decorators import start_trace, use_span
 from datetime import datetime
 
 from package.common.datetime_utils import (
@@ -90,6 +90,11 @@ def start() -> None:
 
     start_with_deps(args=args, infrastructure_settings=infrastructure_settings)
 
+    # @start_trace
+    # def get_params() -> tuple[CalculatorArgs, InfrastructureSettings]
+
+    # return CalculatorArgs, InfrastructureSettings
+
 
 @start_trace()
 def start_with_deps(
@@ -98,6 +103,9 @@ def start_with_deps(
     infrastructure_settings: InfrastructureSettings,
 ) -> None:
     """Start overload with explicit dependencies for easier testing."""
+    logger = Logger(__name__)
+    logger.info(f"Calculator arguments: {args}")
+    logger.info(f"Infrastructure settings: {infrastructure_settings}")
 
     spark = initialize_spark()
     create_and_configure_container(spark, infrastructure_settings)
