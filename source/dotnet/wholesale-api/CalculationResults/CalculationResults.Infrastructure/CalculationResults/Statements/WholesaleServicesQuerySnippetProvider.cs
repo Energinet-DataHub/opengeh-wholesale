@@ -160,9 +160,32 @@ public sealed class WholesaleServicesQuerySnippetProvider(
 
         if (_queryParameters.ChargeOwnerId is not null)
         {
-            sql += $"""
-                    AND {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{_queryParameters.ChargeOwnerId}'
-                    """;
+            if (_queryParameters is { RequestedForActorNumber: SystemOperatorActorNumber })
+            {
+                sql += $"""
+                            AND (
+                               {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SystemOperatorActorNumber}'
+                                 AND {table}.{DatabricksContract.GetIsTaxColumnName()} = false
+                            )
+                        """;
+            }
+            else if (_queryParameters is { ChargeOwnerId: SystemOperatorActorNumber })
+            {
+                sql += $"""
+                            AND (
+                               {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{SystemOperatorActorNumber}'
+                                 AND {table}.{DatabricksContract.GetIsTaxColumnName()} = true
+                            )
+                        """;
+            }
+            else
+            {
+                sql += $"""
+                            AND (
+                               {table}.{DatabricksContract.GetChargeOwnerIdColumnName()} = '{_queryParameters.ChargeOwnerId}' 
+                            )
+                        """;
+            }
         }
 
         if (_queryParameters is { RequestedForEnergySupplier: false, ChargeOwnerId: null })
