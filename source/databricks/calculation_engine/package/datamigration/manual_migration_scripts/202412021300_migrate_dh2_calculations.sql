@@ -60,6 +60,39 @@ FROM no_unparanted_calculations_check;
 
 
 
+-- The following temp views help us identify multiple versions from DH2.
+-- We want to only keep the newest ones, except for a specific outlier.
+CREATE OR REPLACE TEMP VIEW calc_versions AS 
+SELECT c.*, r.resolution, g.grid_area_code, row_number() OVER (PARTITION BY calculation_type, calculation_period_start, calculation_period_end, resolution, grid_area_code ORDER BY calculation_period_succeeded_time) AS row_num
+FROM ctl_shres_p_we_001.shared_wholesale_input.calculations_view_v1 c
+INNER JOIN ctl_shres_p_we_001.shared_wholesale_input.calculation_grid_areas_view_v1 g ON c.calculation_id = g.calculation_id 
+INNER JOIN ( SELECT DISTINCT calculation_id, resolution FROM (
+    SELECT DISTINCT calculation_id, resolution from ctl_shres_p_we_001.shared_wholesale_input.calculation_results_energy_view_v1
+    UNION
+    SELECT DISTINCT calculation_id, resolution from ctl_shres_p_we_001.shared_wholesale_input.calculation_results_energy_per_brp_view_v1
+    UNION
+    SELECT DISTINCT calculation_id, resolution from ctl_shres_p_we_001.shared_wholesale_input.calculation_results_energy_per_es_view_v1
+    UNION
+    SELECT DISTINCT calculation_id, resolution from ctl_shres_p_we_001.shared_wholesale_input.amounts_per_charge_view_v1
+    UNION
+    SELECT DISTINCT calculation_id, 'P1M' as resolution from ctl_shres_p_we_001.shared_wholesale_input.monthly_amounts_per_charge_view_v1
+    )
+) r on c.calculation_id = r.calculation_id; 
+
+
+CREATE OR REPLACE TEMP VIEW only_newest_calc_versions AS 
+SELECT c.* FROM calc_versions c
+INNER JOIN (
+  SELECT calculation_type, calculation_period_start, calculation_period_end, resolution, grid_area_code, max(row_num) as max_row_num FROM calc_versions
+  GROUP BY calculation_type, calculation_period_start, calculation_period_end, resolution, grid_area_code
+) m ON c.calculation_type = m.calculation_type 
+  and c.calculation_period_start = m.calculation_period_start 
+  and c.calculation_period_end = m.calculation_period_end 
+  and c.resolution = m.resolution 
+  and c.grid_area_code = m.grid_area_code 
+WHERE max_row_num = row_num or calculation_id in ('a92b382f-a352-67af-eab8-abb5493eb47b', '5d39c80d-0880-8683-05ad-899fbf15f566'); -- The two outliers, which are both kept.
+
+
 -- STEP 1: Delete existing rows across Wholesale's domain
 MERGE INTO ctl_shres_t_we_001.wholesale_results_internal.energy e1
 USING ctl_shres_t_we_001.wholesale_internal.calculations c
@@ -103,7 +136,6 @@ DELETE FROM ctl_shres_t_we_001.wholesale_internal.calculations
 WHERE calculation_version_dh2 is not null;
 
 
-
 -- STEP 3: Re-migrate each of the tables with calculations from DH2.
 -- TODO: Replace "0" with whatever version is given by VOLT later.
 INSERT INTO ctl_shres_t_we_001.wholesale_internal.calculations 
@@ -129,8 +161,8 @@ SELECT
   r.version AS calculation_version_dh2,
   r.version AS calculation_version
 FROM ctl_shres_t_we_001.shared_wholesale_input.calculations_view_v1 c
-INNER JOIN (SELECT DISTINCT calculation_id, version FROM ctl_shres_t_we_001.shared_wholesale_input.calculation_results) r on c.calculation_id = r.calculation_id;
-
+INNER JOIN (SELECT DISTINCT calculation_id, version FROM ctl_shres_t_we_001.shared_wholesale_input.calculation_results) r on c.calculation_id = r.calculation_id
+INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
 
 -- Result ID for the tables we are migrating is faking a MD5 hash based on the same group-by columns used for the UUID.
 -- For the energy tables it is calculation_id, grid_area_code, from_grid_area_code, balance_responsible_party_id, energy_supplier_id and time_series_type.
@@ -170,7 +202,8 @@ SELECT
   time, 
   quantity, 
   quantity_qualities
-FROM energy_view_with_hash;
+FROM energy_view_with_hash c
+INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
 
 
 -- Target table: wholesale_results_internal.energy_per_brp
@@ -208,7 +241,8 @@ SELECT
   time, 
   quantity, 
   quantity_qualities
-FROM energy_per_brp_view_with_hash; 
+FROM energy_per_brp_view_with_hash c
+INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
  
 
 -- Target table: wholesale_results_internal.energy_per_es
@@ -247,12 +281,14 @@ SELECT
   time, 
   quantity, 
   quantity_qualities
-FROM energy_per_es_view_with_hash; 
+FROM energy_per_es_view_with_hash c
+INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
 
 
 -- Target table: wholesale_internal.calculation_grid_areas
 INSERT INTO ctl_shres_t_we_001.wholesale_internal.calculation_grid_areas
-SELECT calculation_id, grid_area_code FROM ctl_shres_t_we_001.shared_wholesale_input.calculation_grid_areas_view_v1;
+SELECT calculation_id, grid_area_code FROM ctl_shres_t_we_001.shared_wholesale_input.calculation_grid_areas_view_v1 c
+INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
 
 
 -- Target table: wholesale_results_internal.amounts_per_charge
@@ -301,7 +337,8 @@ SELECT
   charge_type,
   charge_owner_id
 FROM
-  amounts_per_charge_view_with_hash;
+  amounts_per_charge_view_with_hash c
+INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
   
  
 -- Target table: wholesale_results_internal.monthly_amounts_per_charge
@@ -342,7 +379,8 @@ SELECT
   charge_type,
   charge_owner_id
 FROM
-  monthly_amounts_per_charge_view_with_hash;
+  monthly_amounts_per_charge_view_with_hash c
+INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
 
 
 -- Target table: wholesale_results_internal.monthly_amounts_per_charge
@@ -377,6 +415,7 @@ SELECT
   amount,
   charge_owner_id
 FROM
-  total_amounts_per_charge_view_with_hash;
+  total_amounts_per_charge_view_with_hash c
+INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
 
 
