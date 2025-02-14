@@ -12,23 +12,51 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass
-from datetime import datetime
-
+from datetime import datetime, timezone
 from package.codelists.calculation_type import (
     CalculationType,
 )
 
+from pydantic import AliasChoices, Field
 
-@dataclass
-class CalculatorArgs:
-    calculation_id: str
-    calculation_grid_areas: list[str]
-    calculation_period_start_datetime: datetime
-    calculation_period_end_datetime: datetime
-    calculation_type: CalculationType
-    calculation_execution_time_start: datetime
-    created_by_user_id: str
-    time_zone: str
-    quarterly_resolution_transition_datetime: datetime
-    is_internal_calculation: bool
+from geh_common.parsing.pydantic_settings_parsing import PydanticParsingSettings
+
+
+class CalculatorArgs(PydanticParsingSettings):
+    """
+    CalculatorArgs class uses Pydantic BaseSettings to configure and validate parameters.
+    Parameters can come from both runtime (CLI) or from environment variables.
+    The priority is CLI parameters first and then environment variables.
+    """
+
+    calculation_id: str  # From CLI
+    calculation_grid_areas: list[str] = Field(
+        ...,
+        validation_alias=AliasChoices(
+            "grid_areas", "grid-areas", "calculation_grid_areas"
+        ),
+    )  # From CLI
+    calculation_period_start_datetime: datetime = Field(
+        ...,
+        validation_alias=AliasChoices(
+            "period_start_datetime",
+            "period-start-datetime",
+            "calculation_period_start_datetime",
+        ),
+    )  # From CLI
+    calculation_period_end_datetime: datetime = Field(
+        ...,
+        validation_alias=AliasChoices(
+            "period_end_datetime",
+            "period-end-datetime",
+            "calculation_period_end_datetime",
+        ),
+    )  # From CLI
+    calculation_type: CalculationType  # From CLI
+    calculation_execution_time_start: datetime = Field(
+        default=datetime.now(timezone.utc)
+    )
+    created_by_user_id: str  # From CLI
+    time_zone: str  # From ENVIRONMENT
+    quarterly_resolution_transition_datetime: datetime  # From ENVIRONMENT
+    is_internal_calculation: bool = Field(default=False)

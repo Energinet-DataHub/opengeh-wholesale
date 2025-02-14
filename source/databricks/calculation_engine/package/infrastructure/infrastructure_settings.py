@@ -12,20 +12,79 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass, field
-
 from azure.identity import ClientSecretCredential
+from pydantic import AliasChoices, Field
+
+from package.infrastructure import paths
+from geh_common.parsing.pydantic_settings_parsing import PydanticParsingSettings
 
 
-@dataclass
-class InfrastructureSettings:
-    catalog_name: str
-    calculation_input_database_name: str
-    data_storage_account_name: str
-    # Prevent the credentials from being printed or logged (using e.g. print() or repr())
-    data_storage_account_credentials: ClientSecretCredential = field(repr=False)
-    wholesale_container_path: str
-    calculation_input_path: str
-    time_series_points_table_name: str | None
-    metering_point_periods_table_name: str | None
-    grid_loss_metering_point_ids_table_name: str | None
+class InfrastructureSettings(PydanticParsingSettings, cli_kebab_case=False):
+    """
+    InfrastructureSettings class uses Pydantic BaseSettings to configure and validate parameters.
+    Parameters can come from both runtime (CLI) or from environment variables.
+    The priority is CLI parameters first and then environment variables.
+    """
+
+    catalog_name: str  # From ENVIRONMENT
+    calculation_input_database_name: str  # From ENVIRONMENT
+    data_storage_account_name: str  # From ENVIRONMENT
+    # Prevent the credentials from being printed or logged (using e.g., print() or repr())
+    tenant_id: str = Field(repr=False, default="foo")  # Ud? #From ENVIRONMENT
+    spn_app_id: str = Field(repr=False, default="foo")  # Ud? #From ENVIRONMENT
+    spn_app_secret: str = Field(repr=False, default="foo")  # Ud? #From ENVIRONMENT
+
+    calculation_input_folder_name: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "calculation_input_folder_name", "calculation-input-folder-name"
+        ),
+    )  # Ud? From CLI/ENVIRONMENT
+
+    time_series_points_table_name: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "time_series_points_table_name", "time-series-points-table-name"
+        ),
+    )  # From CLI
+    metering_point_periods_table_name: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "metering_point_periods_table_name", "metering-point-periods-table-name"
+        ),
+    )  # From CLI
+    grid_loss_metering_point_ids_table_name: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "grid_loss_metering_points_table_name",
+            "grid-loss-metering-points-table-name",
+            "grid_loss_metering_point_ids_table_name",
+        ),
+    )  # From CLI
+
+    data_storage_account_credentials: ClientSecretCredential | None = Field(
+        default=None
+    )
+    wholesale_container_path: str | None = Field(default=None)
+    calculation_input_path: str | None = Field(default=None)
+
+    def model_post_init(self, __context) -> None:
+        self.data_storage_account_credentials = (
+            self.data_storage_account_credentials
+            or ClientSecretCredential(
+                tenant_id=self.tenant_id,
+                client_id=self.spn_app_id,
+                client_secret=self.spn_app_secret,
+            )
+        )
+        self.wholesale_container_path = (
+            self.wholesale_container_path
+            or paths.get_container_root_path(str(self.data_storage_account_name))
+        )
+        self.calculation_input_path = (
+            self.calculation_input_path
+            or paths.get_calculation_input_path(
+                str(self.data_storage_account_name),
+                str(self.calculation_input_folder_name),
+            )
+        )
