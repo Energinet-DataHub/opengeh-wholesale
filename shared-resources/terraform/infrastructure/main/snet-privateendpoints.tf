@@ -114,6 +114,21 @@ resource "azurerm_network_security_group" "privateendpoints" {
     source_address_prefix      = "VirtualNetwork"
     destination_address_prefix = "VirtualNetwork"
   }
+  dynamic "security_rule" {
+    # LogPoint is only on prod
+    for_each = var.environment_short == "p" ? [1] : []
+    content {
+      name                       = "IBA-LogPoint"
+      priority                   = 1060
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "*"
+      source_port_range          = "*"
+      destination_port_ranges    = ["443", "9093", "5671-5672"]
+      source_address_prefixes    = ["10.151.0.149", "10.151.0.150", "10.151.0.151", "10.151.0.152", "10.151.0.153", "10.151.0.154", "10.151.0.155", "10.151.0.156"]
+      destination_address_prefix = "VirtualNetwork"
+    }
+  }
   security_rule {
     name                       = "deny_inbound_traffic"
     priority                   = 4096
