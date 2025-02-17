@@ -25,3 +25,12 @@ resource "databricks_permissions" "core_sql_endpoint_permissions" {
   }
   depends_on = [module.dbw]
 }
+
+module "kvs_databricks_core_warehouse_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "core-warehouse-id"
+  value        = databricks_sql_endpoint.core_sql_endpoint.id
+  key_vault_id = module.kv_internal.id
+}
+
