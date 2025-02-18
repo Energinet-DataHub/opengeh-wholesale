@@ -195,9 +195,9 @@ variable "budget_alert_amount" {
   description = "The budget amount for this subproduct"
 }
 
-variable "setup_backup_sql_warehouse" {
+variable "activate_backup" {
   type        = bool
-  description = "Flag to determine if a SQL warehouse for executing Databricks back ups should be created."
+  description = "Flag to determine if back-ups of delta tables are enabled."
   default     = true
 }
 

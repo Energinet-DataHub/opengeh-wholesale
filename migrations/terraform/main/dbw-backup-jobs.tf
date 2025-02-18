@@ -1,5 +1,5 @@
 module "internal_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_7.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.1.1"
   providers = {
     databricks = databricks.dbw
   }
@@ -16,16 +16,18 @@ module "internal_backup" {
     }
   }
   source_schema_name                     = databricks_schema.migrations_internal.name
-  backup_sql_endpoint_id                 = databricks_sql_endpoint.backup_warehouse[local.backup_warehouse_key].id
+  backup_cluster_id                      = databricks_cluster.backup_cluster[local.backup_key].id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 * ? * *"
+
+  force_destroy = true
 
   depends_on = [module.dbw]
 }
 
 module "bronze_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_7.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.1.1"
   providers = {
     databricks = databricks.dbw
   }
@@ -57,16 +59,18 @@ module "bronze_backup" {
     }
   }
   source_schema_name                     = databricks_schema.migrations_bronze.name
-  backup_sql_endpoint_id                 = databricks_sql_endpoint.backup_warehouse[local.backup_warehouse_key].id
+  backup_cluster_id                      = databricks_cluster.backup_cluster[local.backup_key].id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0/15 * ? * *"
+
+  force_destroy = true
 
   depends_on = [module.dbw]
 }
 
 module "silver_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_7.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.1.1"
   providers = {
     databricks = databricks.dbw
   }
@@ -101,16 +105,18 @@ module "silver_backup" {
     }
   }
   source_schema_name                     = databricks_schema.migrations_silver.name
-  backup_sql_endpoint_id                 = databricks_sql_endpoint.backup_warehouse[local.backup_warehouse_key].id
+  backup_cluster_id                      = databricks_cluster.backup_cluster[local.backup_key].id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 0/4 ? * *"
+
+  force_destroy = true
 
   depends_on = [module.dbw]
 }
 
 module "gold_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_7.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.1.1"
   providers = {
     databricks = databricks.dbw
   }
@@ -130,16 +136,18 @@ module "gold_backup" {
     }
   }
   source_schema_name                     = databricks_schema.migrations_gold.name
-  backup_sql_endpoint_id                 = databricks_sql_endpoint.backup_warehouse[local.backup_warehouse_key].id
+  backup_cluster_id                      = databricks_cluster.backup_cluster[local.backup_key].id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 0/12 ? * *"
+
+  force_destroy = true
 
   depends_on = [module.dbw]
 }
 
 module "shared_wholesale_input_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_7.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.1.1"
   providers = {
     databricks = databricks.dbw
   }
@@ -159,16 +167,18 @@ module "shared_wholesale_input_backup" {
     }
   }
   source_schema_name                     = databricks_schema.shared_wholesale_input.name
-  backup_sql_endpoint_id                 = databricks_sql_endpoint.backup_warehouse[local.backup_warehouse_key].id
+  backup_cluster_id                      = databricks_cluster.backup_cluster[local.backup_key].id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 0/12 ? * *"
+
+  force_destroy = true
 
   depends_on = [module.dbw]
 }
 
 module "eloverblik_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_7.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.1.1"
   providers = {
     databricks = databricks.dbw
   }
@@ -185,10 +195,12 @@ module "eloverblik_backup" {
     }
   }
   source_schema_name                     = databricks_schema.migrations_eloverblik.name
-  backup_sql_endpoint_id                 = databricks_sql_endpoint.backup_warehouse[local.backup_warehouse_key].id
+  backup_cluster_id                      = databricks_cluster.backup_cluster[local.backup_key].id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 0/12 ? * *"
+
+  force_destroy = true
 
   depends_on = [module.dbw]
 }

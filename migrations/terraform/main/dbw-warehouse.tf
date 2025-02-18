@@ -35,35 +35,25 @@ resource "databricks_permissions" "endpoint_permissions" {
   depends_on = [module.dbw]
 }
 
-resource "databricks_sql_endpoint" "backup_warehouse" {
-  for_each             = local.backup_warehouse_set
-  provider             = databricks.dbw
-  name                 = "SQL Endpoint for running Deep Clone backups"
-  cluster_size         = "Small"
-  max_num_clusters     = 2
-  auto_stop_mins       = 20
-  warehouse_type       = "PRO"
-  spot_instance_policy = "RELIABILITY_OPTIMIZED"
-
-  depends_on = [module.dbw]
+data "databricks_spark_version" "latest_lts" {
+  provider          = databricks.dbw
+  long_term_support = true
 }
 
-resource "databricks_permissions" "backup_endpoint" {
-  for_each        = local.backup_warehouse_set
-  provider        = databricks.dbw
-  sql_endpoint_id = databricks_sql_endpoint.backup_warehouse[each.key].id
+resource "databricks_cluster" "backup_cluster" {
+  for_each = local.backup_set
+  provider = databricks.dbw
 
-  access_control {
-    group_name       = var.databricks_contributor_dataplane_group.name
-    permission_level = "CAN_MANAGE"
+  cluster_name   = "Shared backup cluster"
+  spark_version  = data.databricks_spark_version.latest_lts.id
+  node_type_id   = "Standard_DS3_v2"
+  runtime_engine = "STANDARD"
+  autoscale {
+    min_workers = 1
+    max_workers = 4
   }
-  dynamic "access_control" {
-    for_each = local.readers
-    content {
-      group_name       = access_control.key
-      permission_level = "CAN_MONITOR"
-    }
-  }
+  autotermination_minutes = 15
+  data_security_mode      = "USER_ISOLATION"
 
   depends_on = [module.dbw]
 }

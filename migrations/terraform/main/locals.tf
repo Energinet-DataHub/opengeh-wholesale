@@ -48,6 +48,6 @@ locals {
       group_name         = var.databricks_readers_group.name
       contributor_access = false
   }]
-  backup_warehouse_key = "backup_warehouse"
-  backup_warehouse_set = var.setup_backup_sql_warehouse == true ? toset([local.backup_warehouse_key]) : toset([])
+  backup_key = "backup"
+  backup_set = var.activate_backup == true ? toset([local.backup_key]) : toset([])
 }
