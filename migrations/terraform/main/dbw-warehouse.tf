@@ -35,29 +35,6 @@ resource "databricks_permissions" "endpoint_permissions" {
   depends_on = [module.dbw]
 }
 
-data "databricks_spark_version" "latest_lts" {
-  provider          = databricks.dbw
-  long_term_support = true
-}
-
-resource "databricks_cluster" "backup_cluster" {
-  for_each = local.backup_set
-  provider = databricks.dbw
-
-  cluster_name   = "Shared backup cluster"
-  spark_version  = data.databricks_spark_version.latest_lts.id
-  node_type_id   = "Standard_DS3_v2"
-  runtime_engine = "STANDARD"
-  autoscale {
-    min_workers = 1
-    max_workers = 4
-  }
-  autotermination_minutes = 15
-  data_security_mode      = "USER_ISOLATION"
-
-  depends_on = [module.dbw]
-}
-
 # SQL warehouse investigate data, used for ad-hoc queries in big data
 resource "databricks_sql_endpoint" "investigate_sql_endpoint" {
   provider                  = databricks.dbw

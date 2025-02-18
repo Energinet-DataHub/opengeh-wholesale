@@ -195,12 +195,6 @@ variable "budget_alert_amount" {
   description = "The budget amount for this subproduct"
 }
 
-variable "activate_backup" {
-  type        = bool
-  description = "Flag to determine if back-ups of delta tables are enabled."
-  default     = true
-}
-
 variable "databricks_readers_group" {
   type = object({
     id   = string

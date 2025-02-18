@@ -48,6 +48,4 @@ locals {
       group_name         = var.databricks_readers_group.name
       contributor_access = false
   }]
-  backup_key = "backup"
-  backup_set = var.activate_backup == true ? toset([local.backup_key]) : toset([])
 }
