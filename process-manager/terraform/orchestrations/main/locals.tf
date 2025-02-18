@@ -1,4 +1,7 @@
 locals {
+  # Wholesale database name
+  wholesale_db_name = "mssqldb-data-wholsal-${lower(var.environment_short)}-we-${lower(var.environment_instance)}"
+
   # Logging
   LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT                           = "Information" # Everything else
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE            = "Information" # From geh-core
