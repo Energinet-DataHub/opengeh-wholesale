@@ -13,7 +13,7 @@ module "mssql_database_access_process_manager" {
 
 # Assign read access to Wholesale database
 module "mssql_wholesale_database_access" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-access?ref=mssql-database-access_2.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-access?ref=mssql-database-access_2.0.1"
 
   sql_server_name = data.azurerm_key_vault_secret.mssqldb_server_name.value
   database_name   = local.wholesale_db_name
