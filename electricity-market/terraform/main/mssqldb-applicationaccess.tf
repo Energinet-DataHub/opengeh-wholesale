@@ -14,7 +14,7 @@ module "mssql_database_application_access" {
 }
 
 module "mssql_markpart_application_access" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-access?ref=mssql-database-access_2.0.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-access?ref=mssql-database-access_2.1.0"
 
   sql_server_name = data.azurerm_key_vault_secret.mssql_data_name.value
   database_name   = data.azurerm_key_vault_secret.markpart_db_name.value
@@ -25,12 +25,29 @@ module "mssql_markpart_application_access" {
     module.app_api.name,
     module.app_api.slot_name,
     module.func_mp_data_api.name,
-    module.func_mp_import_df.name
   ]
 
   depends_on = [
     module.app_api,
-    module.func_mp_data_api,
+    module.func_mp_data_api
+  ]
+}
+
+
+module "mssql_markpart_application_access_mp_import_df" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/mssql-database-access?ref=mssql-database-access_2.1.0"
+
+  sql_server_name = data.azurerm_key_vault_secret.mssql_data_name.value
+  database_name   = data.azurerm_key_vault_secret.markpart_db_name.value
+  schema_name     = "electricitymarket"
+  write_access    = true
+  alter_schema    = true
+
+  principal_names = [
+    module.func_mp_import_df.name
+  ]
+
+  depends_on = [
     module.func_mp_import_df
   ]
 }
