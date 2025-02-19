@@ -32,10 +32,8 @@ on:
         value: ${{ jobs.changes.outputs.esett_exchange_ci }}
       measurements_core_ci:
         value: ${{ jobs.changes.outputs.measurements_core_ci }}
-      measurements_capacity_settlement_ci:
-        value: ${{ jobs.changes.outputs.measurements_capacity_settlement_ci }}
-      measurements_electrical_heating_ci:
-        value: ${{ jobs.changes.outputs.measurements_electrical_heating_ci }}
+      measurements_calculated_measurements_ci:
+        value: ${{ jobs.changes.outputs.measurements_calculated_measurements_ci }}
       migrations_ci:
         value: ${{ jobs.changes.outputs.migrations_ci }}
       shared_resources_infrastructure_ci:
@@ -74,8 +72,7 @@ jobs:
       grid_loss_imbalance_prices_ci: ${{ steps.filter.outputs.grid_loss_imbalance_prices_ci }}
       esett_exchange_ci: ${{ steps.filter.outputs.esett_exchange_ci }}
       measurements_core_ci: ${{ steps.filter.outputs.measurements_core_ci }}
-      measurements_capacity_settlement_ci: ${{ steps.filter.outputs.measurements_capacity_settlement_ci }}
-      measurements_electrical_heating_ci: ${{ steps.filter.outputs.measurements_electrical_heating_ci }}
+      measurements_calculated_measurements_ci: ${{ steps.filter.outputs.measurements_calculated_measurements_ci }}
       migrations_ci: ${{ steps.filter.outputs.migrations_ci }}
       shared_resources_infrastructure_ci: ${{ steps.filter.outputs.shared_resources_infrastructure_ci }}
       shared_resources_b2c_ci: ${{ steps.filter.outputs.shared_resources_b2c_ci }}
@@ -169,15 +166,9 @@ jobs:
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*
-            measurements_capacity_settlement_ci:
-              - measurements/terraform/capacity-settlement/**
-              - .github/workflows/measurements-capacity-settlement*.yml
-              - .github/workflows/infrastructure-build-prerelease.yml
-              - .github/workflows/infrastructure-validate.yml
-              - .github/actions/terraform-validate/*
-            measurements_electrical_heating_ci:
-              - measurements/terraform/electrical-heating/**
-              - .github/workflows/measurements-electrical-heating*.yml
+            measurements_calculated_measurements_ci:
+              - measurements/terraform/calculated-measurements/**
+              - .github/workflows/measurements-calculated-measurements*.yml
               - .github/workflows/infrastructure-build-prerelease.yml
               - .github/workflows/infrastructure-validate.yml
               - .github/actions/terraform-validate/*

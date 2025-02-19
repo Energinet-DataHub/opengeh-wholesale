@@ -334,36 +334,14 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directories:
-      - "/measurements/terraform/capacity-settlement/main/**"
+      - "/measurements/terraform/calculated-measurements/main/**"
     schedule:
       interval: "monthly"
       time: "08:00"
       timezone: "Europe/Copenhagen"
     open-pull-requests-limit: 1
     commit-message:
-      prefix: "measurements-capacity-settlement"
-    assignees:
-      - "NicolajAaH"
-      - "kerbou"
-      - "djorgensendk"
-      - "lanni-energinet"
-      - "Karl-koder"
-      - "yusuftezel03"
-      - "ole-kaas"
-    groups:
-      providers:
-        patterns:
-          - "*"
-  - package-ecosystem: "terraform"
-    directories:
-      - "/measurements/terraform/electrical-heating/main/**"
-    schedule:
-      interval: "monthly"
-      time: "08:00"
-      timezone: "Europe/Copenhagen"
-    open-pull-requests-limit: 1
-    commit-message:
-      prefix: "measurements-electrical-heating"
+      prefix: "measurements-calculated-measurements"
     assignees:
       - "NicolajAaH"
       - "kerbou"
