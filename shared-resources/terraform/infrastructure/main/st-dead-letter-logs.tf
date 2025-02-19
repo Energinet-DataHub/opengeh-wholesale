@@ -26,6 +26,8 @@ module "st_dead_letter_logs" {
     backup_vault_location     = azurerm_resource_group.this.location
     backup_vault_principal_id = module.backup_vault.identity.0.principal_id
   }
+
+  prevent_deletion = false
 }
 
 module "kvs_st_deadltr_shres_blob_url" {
