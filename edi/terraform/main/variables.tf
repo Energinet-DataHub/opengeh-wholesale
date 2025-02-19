@@ -124,12 +124,6 @@ variable "feature_management_use_request_aggregated_measure_data_process_orchest
   default     = false
 }
 
-variable "feature_management_use_standard_blob_service_client" {
-  type        = bool
-  description = "Use standard blob service client."
-  default     = false
-}
-
 variable "feature_management_use_process_manager_to_enqueue_brs023027_messages" {
   type        = bool
   description = "Use Process Manager for Energy and Wholesale calculation messages, not Wholesale."
