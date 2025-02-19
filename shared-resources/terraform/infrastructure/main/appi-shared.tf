@@ -16,6 +16,7 @@ resource "azurerm_application_insights_standard_web_test" "datahub3dk" {
   location                = azurerm_resource_group.this.location
   application_insights_id = module.appi_shared.id
   enabled                 = true
+  retry_enabled           = true
   geo_locations           = ["emea-nl-ams-azr", "emea-gb-db3-azr"] # WE, NE, see https://learn.microsoft.com/da-dk/previous-versions/azure/azure-monitor/app/monitor-web-app-availability#location-population-tags
 
   request {
@@ -35,6 +36,7 @@ resource "azurerm_application_insights_standard_web_test" "b2b" {
   location                = azurerm_resource_group.this.location
   application_insights_id = module.appi_shared.id
   enabled                 = true
+  retry_enabled           = true
   geo_locations           = ["emea-nl-ams-azr", "emea-gb-db3-azr"] # West Europe, see https://learn.microsoft.com/da-dk/previous-versions/azure/azure-monitor/app/monitor-web-app-availability#location-population-tags
 
   request {
