@@ -43,8 +43,6 @@ module "internal_backup" {
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 * ? * *"
 
-  force_destroy = true
-
   depends_on = [module.dbw]
 }
 
@@ -85,8 +83,6 @@ module "bronze_backup" {
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0/15 * ? * *"
-
-  force_destroy = true
 
   depends_on = [module.dbw]
 }
@@ -132,8 +128,6 @@ module "silver_backup" {
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 0/4 ? * *"
 
-  force_destroy = true
-
   depends_on = [module.dbw]
 }
 
@@ -162,8 +156,6 @@ module "gold_backup" {
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 0/12 ? * *"
-
-  force_destroy = true
 
   depends_on = [module.dbw]
 }
@@ -194,8 +186,6 @@ module "shared_wholesale_input_backup" {
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 0/12 ? * *"
 
-  force_destroy = true
-
   depends_on = [module.dbw]
 }
 
@@ -221,8 +211,6 @@ module "eloverblik_backup" {
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 0/12 ? * *"
-
-  force_destroy = true
 
   depends_on = [module.dbw]
 }
