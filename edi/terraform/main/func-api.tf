@@ -30,12 +30,7 @@ module "func_receiver" {
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   app_settings                           = local.func_receiver.app_settings
 
-  # Role assigments is needed to connect to the storage account (st_documents) using URI
   role_assignments = [
-    {
-      resource_id          = module.st_documents.id
-      role_definition_name = "Storage Blob Data Contributor"
-    },
     {
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
@@ -75,6 +70,7 @@ module "func_receiver" {
       resource_id          = data.azurerm_key_vault_secret.sbt_edi_id.value
       role_definition_name = "Azure Service Bus Data Owner"
     },
+    // Role assigment is needed to connect to the storage account (st_docs) using URI
     {
       resource_id          = module.st_docs.id
       role_definition_name = "Storage Blob Data Contributor"

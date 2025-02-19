@@ -23,12 +23,7 @@ module "b2c_web_api" {
   application_insights_connection_string = data.azurerm_key_vault_secret.appi_shared_connection_string.value
   app_settings                           = local.b2c_web_api.app_settings
 
-  # Role assigments is needed to connect to the storage account (st_documents) using URI
   role_assignments = [
-    {
-      resource_id          = module.st_documents.id
-      role_definition_name = "Storage Blob Data Contributor"
-    },
     {
       resource_id          = data.azurerm_key_vault.kv_shared_resources.id
       role_definition_name = "Key Vault Secrets User"
@@ -48,6 +43,7 @@ module "b2c_web_api" {
       resource_id          = data.azurerm_key_vault_secret.sbt_processmanager_id.value
       role_definition_name = "Azure Service Bus Data Owner"
     },
+    // Role assigment is needed to connect to the storage account (st_docs) using URI
     {
       resource_id          = module.st_docs.id
       role_definition_name = "Storage Blob Data Contributor"

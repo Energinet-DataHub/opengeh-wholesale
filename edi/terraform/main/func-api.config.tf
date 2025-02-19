@@ -7,8 +7,8 @@ locals {
       B2C_TENANT_ID                              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=b2c-tenant-id)",
       BACKEND_SERVICE_APP_ID                     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=backend-b2b-app-id)",
       # Endregion: Default Values
-      DB_CONNECTION_STRING           = local.CONNECTION_STRING
-      AZURE_STORAGE_ACCOUNT_URL      = local.AZURE_STORAGE_ACCOUNT_URL
+      DB_CONNECTION_STRING      = local.CONNECTION_STRING
+      AZURE_STORAGE_ACCOUNT_URL = local.AZURE_STORAGE_ACCOUNT_URL
 
       # File storage
       FileStorage__StorageAccountUrl = local.AZURE_STORAGE_ACCOUNT_URL
@@ -40,9 +40,9 @@ locals {
       IntegrationEvents__TopicName        = local.INTEGRATION_EVENTS_TOPIC_NAME
       IntegrationEvents__SubscriptionName = module.sbtsub_edi_integration_event_listener.name
 
-      ProcessManagerServiceBusClient__TopicName   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
+      ProcessManagerServiceBusClient__TopicName = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
 
-      EdiTopic__Name = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-edi-name)"
+      EdiTopic__Name                                                 = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-edi-name)"
       EdiTopic__EnqueueBrs_023_027_SubscriptionName                  = module.sbtsub_edi_enqueue_brs_023_027.name
       EdiTopic__EnqueueBrs_026_SubscriptionName                      = module.sbtsub_edi_enqueue_brs_026.name
       EdiTopic__EnqueueBrs_028_SubscriptionName                      = module.sbtsub_edi_enqueue_brs_028.name
@@ -54,7 +54,7 @@ locals {
       WarehouseId                = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-wholesale-warehouse-id)"
       EdiDatabricks__CatalogName = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=shared-unity-catalog-name)"
       # DatabricksCatalogName is used in CalculationResults (actor requests copied from Wholesale)
-      DatabricksCatalogName      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=shared-unity-catalog-name)"
+      DatabricksCatalogName = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=shared-unity-catalog-name)"
 
 
       # Dead-letter logs
