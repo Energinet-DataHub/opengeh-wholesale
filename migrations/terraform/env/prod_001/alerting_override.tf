@@ -12,6 +12,7 @@ module "monitor_action_group_mig" {
         exceptions
         | where cloud_RoleName in ("${module.func_dropzoneunzipper.name}")
         | where not(details has_any ("The operation was canceled"))
+        | where type !contains "System.Runtime.InteropServices.COMException"
         | summarize exceptionCount = count() by type
         | order by exceptionCount desc
         QUERY
@@ -28,6 +29,7 @@ module "monitor_action_group_mig" {
         traces
         | where cloud_RoleName in ("${module.func_dropzoneunzipper.name}")
         | where severityLevel == 3
+        | where message !contains ("An unhandled host error has occurred.")
         | where tostring(customDimensions["EventName"]) !in ("EventReceiveError", "EventProcessorPartitionProcessingError", "FunctionCompleted")
         | summarize eventCount = count() by tostring(customDimensions["EventName"])
         | order by eventCount desc
@@ -49,6 +51,7 @@ module "monitor_action_group_mig" {
         | where innermostMessage !contains "Non-Deterministic workflow detected: A previous execution of this orchestration scheduled an activity task with sequence ID 0"
         | where innermostMessage !contains "The operation was canceled"
         | where not(details has_any ("The operation was canceled"))
+        | where type !contains "System.Runtime.InteropServices.COMException"
         | summarize exceptionCount = count() by type
         | order by exceptionCount desc
         QUERY
@@ -65,6 +68,7 @@ module "monitor_action_group_mig" {
         traces
         | where cloud_RoleName in ("${module.func_timeseriesretriever.name}")
         | where severityLevel == 3
+        | where message !contains ("An unhandled host error has occurred.")
         | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "HealthCheckEnd")
         | where tostring(customDimensions["prop__reason"]) !contains ("DurableTask.Core.Exceptions.OrchestrationFailureException")
         | where tostring(customDimensions["prop__reason"]) !contains ("Microsoft.Azure.WebJobs.Host.FunctionInvocationException")
@@ -87,6 +91,7 @@ module "monitor_action_group_mig" {
         | where innermostMessage !contains "Non-Deterministic workflow detected: A previous execution of this orchestration scheduled an activity task with sequence ID 0"
         | where innermostMessage !contains "The operation was canceled."
         | where tostring(customDimensions["EventName"]) !in ("ProcessWorkItemFailed")
+        | where type !contains "System.Runtime.InteropServices.COMException"
         | summarize exceptionCount = count() by type
         | order by exceptionCount desc
         QUERY
@@ -104,6 +109,7 @@ module "monitor_action_group_mig" {
         | where cloud_RoleName in ("${module.func_timeseriesprocessor.name}")
         | where severityLevel == 3
         | where message !contains (".json to dh2-timeseries-synchronization: The operation was canceled")
+        | where message !contains ("An unhandled host error has occurred.")
         | where tostring(customDimensions["EventName"]) !in ("OrchestrationProcessingFailure", "FunctionCompleted", "TaskActivityDispatcherError", "ProcessWorkItemFailed", "HealthCheckEnd", "PartitionManagerError")
         | where tostring(customDimensions["prop__reason"]) !contains ("DurableTask.Core.Exceptions.OrchestrationFailureException")
         | where tostring(customDimensions["prop__reason"]) !contains ("Microsoft.Azure.WebJobs.Host.FunctionInvocationException")
