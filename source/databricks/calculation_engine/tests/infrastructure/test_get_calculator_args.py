@@ -12,17 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import patch
 
+from pydantic import ValidationError
 import pytest
 
-from package.calculator_job_args import (
-    parse_job_arguments,
-    parse_command_line_arguments,
-)
 from package.codelists import CalculationType
 from package.infrastructure.environment_variables import EnvironmentVariable
+from package.calculation.calculator_args import CalculatorArgs, CalculatorArgsValidation
+from package.infrastructure.infrastructure_settings import InfrastructureSettings
+
 
 DEFAULT_CALCULATION_ID = "the-calculation-id"
 
@@ -109,20 +109,29 @@ def job_environment_variables() -> dict:
     }
 
 
+@pytest.fixture(scope="session")
+def job_environment_excluded_variables() -> list:
+    return [
+        EnvironmentVariable.CATALOG_NAME.name,
+        EnvironmentVariable.TIME_ZONE.name,
+        EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.name,
+        EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME.name,
+        EnvironmentVariable.QUARTERLY_RESOLUTION_TRANSITION_DATETIME.name,
+    ]
+
+
 class TestWhenInvokedWithIncorrectParameters:
     def test_fails(
         self,
         job_environment_variables: dict,
     ) -> None:
         # Arrange
-        with pytest.raises(SystemExit) as excinfo:
+        with pytest.raises(ValidationError) as excinfo:
             with patch("sys.argv", ["dummy_script", "--unexpected-arg"]):
                 with patch.dict("os.environ", job_environment_variables):
-                    # Act
-                    parse_command_line_arguments()
-
-        # Assert
-        assert excinfo.value.code == 2
+                    # Act and Assert
+                    CalculatorArgs()
+                    InfrastructureSettings()
 
 
 class TestWhenInvokedWithValidParameters:
@@ -138,9 +147,10 @@ class TestWhenInvokedWithValidParameters:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
-                command_line_args = parse_command_line_arguments()
                 # Act
-                actual_args, actual_settings = parse_job_arguments(command_line_args)
+                actual_args = CalculatorArgs()
+                actual_settings = InfrastructureSettings()
+                print(actual_args)
 
         # Assert
 
@@ -148,9 +158,11 @@ class TestWhenInvokedWithValidParameters:
         assert actual_args.calculation_id == DEFAULT_CALCULATION_ID
         assert actual_args.calculation_grid_areas == ["805", "806", "033"]
         assert actual_args.calculation_period_start_datetime == datetime(
-            2022, 5, 31, 22
+            2022, 5, 31, 22, tzinfo=timezone.utc
         )
-        assert actual_args.calculation_period_end_datetime == datetime(2022, 6, 1, 22)
+        assert actual_args.calculation_period_end_datetime == datetime(
+            2022, 6, 1, 22, tzinfo=timezone.utc
+        )
         assert actual_args.calculation_type == CalculationType.BALANCE_FIXING
         assert isinstance(actual_args.calculation_execution_time_start, datetime)
         assert actual_args.time_zone == "Europe/Copenhagen"
@@ -181,9 +193,8 @@ class TestWhenInvokedWithValidParameters:
         ]
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
-                command_line_args = parse_command_line_arguments()
                 # Act
-                _, actual_settings = parse_job_arguments(command_line_args)
+                actual_settings = InfrastructureSettings()
 
         # Assert
         assert actual_settings.time_series_points_table_name == expected
@@ -196,9 +207,8 @@ class TestWhenInvokedWithValidParameters:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
-                command_line_args = parse_command_line_arguments()
                 # Act
-                _, actual = parse_job_arguments(command_line_args)
+                actual = InfrastructureSettings()
 
         # Assert
         assert actual.time_series_points_table_name is None
@@ -221,13 +231,11 @@ class TestWhenUnknownCalculationType:
 
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
-                with pytest.raises(SystemExit) as error:
-                    command_line_args = parse_command_line_arguments()
-                    # Act
-                    parse_job_arguments(command_line_args)
+                with pytest.raises(ValidationError) as error:
 
-        # Assert
-        assert error.value.code != 0
+                    # Act
+                    CalculatorArgs()
+                    InfrastructureSettings()
 
 
 class TestWhenCalculationPeriodIsNotOneCalendarMonth:
@@ -279,17 +287,19 @@ class TestWhenCalculationPeriodIsNotOneCalendarMonth:
 
         with patch("sys.argv", sys_argv):
             with patch.dict("os.environ", job_environment_variables):
-                with pytest.raises(Exception) as error:
-                    command_line_args = parse_command_line_arguments()
-                    # Act
-                    parse_job_arguments(command_line_args)
 
-        # Assert
-        actual_error_message = str(error.value)
-        assert (
-            "The calculation period for wholesale calculation types must be a full month"
-            in actual_error_message
-        )
+                with pytest.raises(Exception) as error:
+                    # Act
+                    actual_args = CalculatorArgs()
+                    CalculatorArgsValidation(actual_args)
+
+                # Assert
+                actual_error_message = str(error.value)
+
+                assert (
+                    "The calculation period for wholesale calculation types must be a full month"
+                    in actual_error_message
+                )
 
     @pytest.mark.parametrize(
         "calculation_type",
@@ -315,9 +325,11 @@ class TestWhenCalculationPeriodIsNotOneCalendarMonth:
 
         with patch("sys.argv", sys_argv):
             with patch.dict("os.environ", job_environment_variables):
-                command_line_args = parse_command_line_arguments()
+
                 # Act & Assert
-                parse_job_arguments(command_line_args)
+                actual_args = CalculatorArgs()
+                InfrastructureSettings()
+                CalculatorArgsValidation(actual_args)
 
 
 class TestWhenCalculationPeriodIsOneCalendarMonth:
@@ -363,31 +375,34 @@ class TestWhenCalculationPeriodIsOneCalendarMonth:
 
         with patch("sys.argv", sys_argv):
             with patch.dict("os.environ", job_environment_variables):
-                command_line_args = parse_command_line_arguments()
                 # Act & Assert
-                parse_job_arguments(command_line_args)
+                actual_args = CalculatorArgs()
+                InfrastructureSettings()
+                CalculatorArgsValidation(actual_args)
 
 
 class TestWhenMissingEnvVariables:
     def test_raise_system_exit_with_non_zero_code(
-        self, job_environment_variables: dict, sys_argv_from_contract
+        self,
+        job_environment_variables: dict,
+        job_environment_excluded_variables: list,
+        sys_argv_from_contract,
     ) -> None:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):
-            for excluded_env_var in job_environment_variables.keys():
+            for excluded_env_var in job_environment_excluded_variables:
                 env_variables_with_one_missing = {
                     key: value
                     for key, value in job_environment_variables.items()
                     if key != excluded_env_var
                 }
-
                 with patch.dict("os.environ", env_variables_with_one_missing):
-                    with pytest.raises(ValueError) as error:
-                        command_line_args = parse_command_line_arguments()
-                        # Act
-                        parse_job_arguments(command_line_args)
-
-                assert str(error.value).startswith("Environment variable not found")
+                    with pytest.raises(ValidationError) as error:
+                        # Act & Assert
+                        CalculatorArgs()
+                        InfrastructureSettings()
+                    assert str(error.value).startswith("1 validation error for")
+                    assert excluded_env_var.lower() in str(error.value)
 
 
 class TestWhenQuarterlyResolutionTransitionDatetimeIsValid:
@@ -428,8 +443,9 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsValid:
             with patch.dict("os.environ", job_environment_variables):
                 # Act
                 try:
-                    command_line_args = parse_command_line_arguments()
-                    parse_job_arguments(command_line_args)
+                    actual_args = CalculatorArgs()
+                    CalculatorArgsValidation(actual_args)
+                    InfrastructureSettings()
                 except Exception as error:
                     # If an exception is raised, this will fail the test
                     pytest.fail(f"An unexpected exception was raised: {error}")
@@ -444,11 +460,8 @@ class TestWhenIsControlCalculationFlagPresent:
         # Arrange
         with patch("sys.argv", sys_argv_from_internal_contract):
             with patch.dict("os.environ", job_environment_variables):
-                command_line_args = parse_command_line_arguments()
-
                 # Act
-                actual_args, actual_settings = parse_job_arguments(command_line_args)
-
+                actual_args = CalculatorArgs()
         # Assert
         assert actual_args.is_internal_calculation
 
@@ -462,10 +475,9 @@ class TestWhenIsControlCalculationFlagNotPresent:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
-                command_line_args = parse_command_line_arguments()
 
                 # Act
-                actual_args, actual_settings = parse_job_arguments(command_line_args)
+                actual_args = CalculatorArgs()
 
         # Assert
         assert not actual_args.is_internal_calculation
@@ -491,9 +503,9 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
         with patch("sys.argv", sys_argv):
             with patch.dict("os.environ", job_environment_variables):
                 with pytest.raises(Exception) as error:
-                    command_line_args = parse_command_line_arguments()
                     # Act
-                    parse_job_arguments(command_line_args)
+                    actual_args = CalculatorArgs()
+                    CalculatorArgsValidation(actual_args)
 
         # Assert
         actual_error_message = str(error.value)
@@ -525,9 +537,9 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
         with patch("sys.argv", sys_argv):
             with patch.dict("os.environ", job_environment_variables):
                 with pytest.raises(Exception) as error:
-                    command_line_args = parse_command_line_arguments()
                     # Act
-                    parse_job_arguments(command_line_args)
+                    actual_args = CalculatorArgs()
+                    CalculatorArgsValidation(actual_args)
 
         # Assert
         actual_error_message = str(error.value)
@@ -564,17 +576,15 @@ class TestWhenInternalCalculation:
 
         with patch("sys.argv", sys_argv):
             with patch.dict("os.environ", job_environment_variables):
-                command_line_args = parse_command_line_arguments()
-                command_line_args.is_internal_calculation = True
 
                 if calculation_type == CalculationType.AGGREGATION:
                     # Act
-                    parse_job_arguments(command_line_args)
+                    CalculatorArgs(is_internal_calculation=True)
                     assert True
                 else:
                     with pytest.raises(Exception) as error:
                         # Act
-                        parse_job_arguments(command_line_args)
-
+                        actual_args = CalculatorArgs(is_internal_calculation=True)
+                        CalculatorArgsValidation(actual_args)
                     # Assert
                     assert error.value != 0
