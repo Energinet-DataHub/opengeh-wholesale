@@ -45,7 +45,7 @@ resource "databricks_job" "bronze_submitted_transactions_to_silver" {
     python_wheel_task {
       package_name = "core"
       # The entry point is defined in pyproject.toml
-      entry_point  = "stream_submitted_transactios_to_silver"
+      entry_point  = "stream_submitted_transactions_to_silver"
     }
   }
 }
