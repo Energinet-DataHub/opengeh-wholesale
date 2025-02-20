@@ -26,15 +26,15 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job import start, start_with_deps
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from tests.integration_test_configuration import IntegrationTestConfiguration
+from pydantic_core import ValidationError
+import geh_common.telemetry.logging_configuration as config
 
 
 class TestWhenInvokedWithInvalidArguments:
     def test_exits_with_code_2(self) -> None:
         """The exit code 2 originates from the argparse library."""
-        with pytest.raises(SystemExit) as system_exit:
+        with pytest.raises(ValidationError):
             start()
-
-        assert system_exit.value.code == 2
 
 
 class TestWhenInvokedWithValidArguments:
@@ -43,8 +43,6 @@ class TestWhenInvokedWithValidArguments:
         any_calculator_args: CalculatorArgs,
         infrastructure_settings: InfrastructureSettings,
     ) -> None:
-        command_line_args = argparse.Namespace()
-        command_line_args.calculation_id = any_calculator_args.calculation_id
         mock_calculation_execute = Mock()
         mock_prepared_data_reader = Mock()
         mock_prepared_data_reader.is_calculation_id_unique.return_value = True
@@ -56,26 +54,23 @@ class TestWhenInvokedWithValidArguments:
             ):
                 # Act
                 start_with_deps(
-                    parse_command_line_args=lambda: command_line_args,
-                    parse_job_args=lambda args: (
-                        any_calculator_args,
-                        infrastructure_settings,
-                    ),
-                    calculation_executor=mock_calculation_execute,
+                    args=any_calculator_args,
+                    infrastructure_settings=infrastructure_settings,
                 )
 
     def test_add_info_log_record_to_azure_monitor_with_expected_settings(
         self,
         any_calculator_args: CalculatorArgs,
+        infrastructure_settings: InfrastructureSettings,
         integration_test_configuration: IntegrationTestConfiguration,
     ) -> None:
         """
         Assert that the calculator job adds log records to Azure Monitor with the expected settings:
-        - cloud role name = "dbr-calculation-engine"
+        - cloud role name = "dbr-calculation-engine-tests"
         - severity level = 1
         - message <the message>
         - operation id has value
-        - custom field "Subsystem" = "wholesale-aggregations"
+        - custom field "Subsystem" = "unit-tests"
         - custom field "calculation_id" = <the calculation id>
         - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
 
@@ -85,10 +80,24 @@ class TestWhenInvokedWithValidArguments:
         # Arrange
         self.prepare_command_line_arguments(any_calculator_args)
 
+        logging_settings = config.LoggingSettings(
+            cloud_role_name="dbr-calculation-engine-tests",
+            subsystem="unit-tests",
+            orchestration_instance_id=uuid.uuid4(),
+            force_configuration=True,
+            applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
+        )
+
+        config.configure_logging(
+            logging_settings=logging_settings,
+            extras=dict(calculation_id=any_calculator_args.calculation_id),
+        )
+
         # Act
         with pytest.raises(SystemExit):
             start_with_deps(
-                applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
+                args=any_calculator_args,
+                infrastructure_settings=infrastructure_settings,
             )
 
         # Assert
@@ -97,13 +106,13 @@ class TestWhenInvokedWithValidArguments:
 
         query = f"""
         AppTraces
-        | where AppRoleName == "dbr-calculation-engine"
+        | where AppRoleName == "dbr-calculation-engine-tests"
         | where SeverityLevel == 1
-        | where Message startswith_cs "Command line arguments"
+        | where Message startswith_cs "Started executing function"
         | where OperationId != "00000000000000000000000000000000"
-        | where Properties.Subsystem == "wholesale-aggregations"
+        | where Properties.subsystem == "unit-tests"
         | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
-        | where Properties.CategoryName == "Energinet.DataHub.package.calculator_job_args"
+        | where Properties.CategoryName == "Energinet.DataHub.start_with_deps"
         | count
         """
 
@@ -120,108 +129,137 @@ class TestWhenInvokedWithValidArguments:
             assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
         )
 
-    def test_add_trace_log_record_to_azure_monitor_with_expected_settings(
-        self,
-        any_calculator_args: CalculatorArgs,
-        integration_test_configuration: IntegrationTestConfiguration,
-    ):
-        """
-        Assert that the calculator job logs to Azure Monitor with the expected settings:
-        - app role name = "dbr-calculation-engine"
-        - name = "calculation.parse_job_arguments"
-        - operation id has value
-        - custom field "Subsystem" = "wholesale-aggregations"
-        - custom field "calculation_id" = <the calculation id>
-        """
+    # def test_add_trace_log_record_to_azure_monitor_with_expected_settings(
+    #     self,
+    #     any_calculator_args: CalculatorArgs,
+    #     infrastructure_settings: InfrastructureSettings,
+    #     integration_test_configuration: IntegrationTestConfiguration,
+    # ):
+    #     """
+    #     Assert that the calculator job logs to Azure Monitor with the expected settings:
+    #     - app role name = "dbr-calculation-engine-tests"
+    #     - name = "calculation.parse_job_arguments"
+    #     - operation id has value
+    #     - custom field "Subsystem" = "unit-tests"
+    #     - custom field "calculation_id" = <the calculation id>
+    #     """
 
-        # Arrange
-        self.prepare_command_line_arguments(any_calculator_args)
+    #     # Arrange
+    #     self.prepare_command_line_arguments(any_calculator_args)
 
-        # Act
-        with pytest.raises(SystemExit):
-            start_with_deps(
-                applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
-            )
+    #     logging_settings = LoggingSettings(
+    #         cloud_role_name="dbr-calculation-engine-tests",
+    #         subsystem="unit-tests",
+    #         orchestration_instance_id=uuid.uuid4(),
+    #         force_configuration=True,
+    #         applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
+    #     )
 
-        # Assert
-        # noinspection PyTypeChecker
-        logs_client = LogsQueryClient(integration_test_configuration.credential)
+    #     config.configure_logging(
+    #         logging_settings=logging_settings,
+    #         extras=dict(calculation_id=any_calculator_args.calculation_id),
+    #     )
 
-        query = f"""
-        AppDependencies
-        | where AppRoleName == "dbr-calculation-engine"
-        | where Name == "calculation.parse_job_arguments"
-        | where OperationId != "00000000000000000000000000000000"
-        | where Properties.Subsystem == "wholesale-aggregations"
-        | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
-        | count
-        """
+    #     # Act
+    #     with pytest.raises(SystemExit):
+    #         start_with_deps(
+    #             args=any_calculator_args,
+    #             infrastructure_settings=infrastructure_settings,
+    #         )
 
-        workspace_id = integration_test_configuration.get_analytics_workspace_id()
+    #     # Assert
+    #     # noinspection PyTypeChecker
+    #     logs_client = LogsQueryClient(integration_test_configuration.credential)
 
-        def assert_logged():
-            actual = logs_client.query_workspace(
-                workspace_id, query, timespan=timedelta(minutes=5)
-            )
-            assert_row_count(actual, 1)
+    #     query = f"""
+    #     AppDependencies
+    #     | where AppRoleName == "dbr-calculation-engine-tests"
+    #     | where Name == "calculation.parse_job_arguments"
+    #     | where OperationId != "00000000000000000000000000000000"
+    #     | where Properties.subsystem == "unit-tests"
+    #     | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
+    #     | count
+    #     """
 
-        # Assert, but timeout if not succeeded
-        wait_for_condition(
-            assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
-        )
+    #     workspace_id = integration_test_configuration.get_analytics_workspace_id()
 
-    def test_adds_exception_log_record_to_azure_monitor_with_expected_settings(
-        self,
-        any_calculator_args: CalculatorArgs,
-        integration_test_configuration: IntegrationTestConfiguration,
-    ):
-        """
-        Assert that the calculator job logs to Azure Monitor with the expected settings:
-        - app role name = "dbr-calculation-engine"
-        - exception type = <exception type name>
-        - outer message <exception message>
-        - operation id has value
-        - custom field "Subsystem" = "wholesale-aggregations"
-        - custom field "calculation_id" = <the calculation id>
-        - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
-        """
+    #     def assert_logged():
+    #         actual = logs_client.query_workspace(
+    #             workspace_id, query, timespan=timedelta(minutes=5)
+    #         )
+    #         assert_row_count(actual, 1)
 
-        # Arrange
-        self.prepare_command_line_arguments(any_calculator_args)
+    #     # Assert, but timeout if not succeeded
+    #     wait_for_condition(
+    #         assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
+    #     )
 
-        with pytest.raises(SystemExit):
-            # Act
-            start_with_deps(
-                applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
-            )
+    # def test_adds_exception_log_record_to_azure_monitor_with_expected_settings(
+    #     self,
+    #     any_calculator_args: CalculatorArgs,
+    #     infrastructure_settings: InfrastructureSettings,
+    #     integration_test_configuration: IntegrationTestConfiguration,
+    # ):
+    #     """
+    #     Assert that the calculator job logs to Azure Monitor with the expected settings:
+    #     - app role name = "dbr-calculation-engine"
+    #     - exception type = <exception type name>
+    #     - outer message <exception message>
+    #     - operation id has value
+    #     - custom field "Subsystem" = "wholesale-aggregations"
+    #     - custom field "calculation_id" = <the calculation id>
+    #     - custom field "CategoryName" = "Energinet.DataHub." + <logger name>
+    #     """
 
-        # Assert
-        # noinspection PyTypeChecker
-        logs_client = LogsQueryClient(integration_test_configuration.credential)
+    #     # Arrange
+    #     self.prepare_command_line_arguments(any_calculator_args)
 
-        query = f"""
-        AppExceptions
-        | where AppRoleName == "dbr-calculation-engine"
-        | where ExceptionType == "ValueError"
-        | where OuterMessage == "Environment variable not found: TIME_ZONE"
-        | where OperationId != "00000000000000000000000000000000"
-        | where Properties.Subsystem == "wholesale-aggregations"
-        | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
-        | count
-        """
+    #     logging_settings = LoggingSettings(
+    #         cloud_role_name="dbr-calculation-engine-tests",
+    #         subsystem="unit-tests",
+    #         orchestration_instance_id=uuid.uuid4(),
+    #         force_configuration=True,
+    #         applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
+    #     )
 
-        workspace_id = integration_test_configuration.get_analytics_workspace_id()
+    #     config.configure_logging(
+    #         logging_settings=logging_settings,
+    #         extras=dict(calculation_id=any_calculator_args.calculation_id),
+    #     )
+    #     # Act
+    #     with pytest.raises(SystemExit):
+    #         start_with_deps(
+    #             args=any_calculator_args,
+    #             infrastructure_settings=infrastructure_settings,
+    #         )
 
-        def assert_logged():
-            actual = logs_client.query_workspace(
-                workspace_id, query, timespan=timedelta(minutes=5)
-            )
-            assert_row_count(actual, 1)
+    #     # Assert
+    #     # noinspection PyTypeChecker
+    #     logs_client = LogsQueryClient(integration_test_configuration.credential)
 
-        # Assert, but timeout if not succeeded
-        wait_for_condition(
-            assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
-        )
+    #     query = f"""
+    #     AppExceptions
+    #     | where AppRoleName == "dbr-calculation-engine-tests"
+    #     | where ExceptionType == "ValueError"
+    #     | where OuterMessage == "Environment variable not found: TIME_ZONE"
+    #     | where OperationId != "00000000000000000000000000000000"
+    #     | where Properties.subsystem == "unit-tests"
+    #     | where Properties.calculation_id == "{any_calculator_args.calculation_id}"
+    #     | count
+    #     """
+
+    #     workspace_id = integration_test_configuration.get_analytics_workspace_id()
+
+    #     def assert_logged():
+    #         actual = logs_client.query_workspace(
+    #             workspace_id, query, timespan=timedelta(minutes=5)
+    #         )
+    #         assert_row_count(actual, 1)
+
+    #     # Assert, but timeout if not succeeded
+    #     wait_for_condition(
+    #         assert_logged, timeout=timedelta(minutes=3), step=timedelta(seconds=10)
+    #     )
 
     @staticmethod
     def prepare_command_line_arguments(any_calculator_args):

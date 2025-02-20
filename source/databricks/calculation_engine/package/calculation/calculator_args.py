@@ -15,11 +15,17 @@
 from datetime import datetime, timezone
 from package.codelists.calculation_type import (
     CalculationType,
+    is_wholesale_calculation_type,
 )
-
+from typing import Any
 from pydantic import AliasChoices, Field
 
 from geh_common.parsing.pydantic_settings_parsing import PydanticParsingSettings
+
+from package.common.datetime_utils import (
+    is_exactly_one_calendar_month,
+    is_midnight_in_time_zone,
+)
 
 
 class CalculatorArgs(PydanticParsingSettings):
@@ -60,3 +66,55 @@ class CalculatorArgs(PydanticParsingSettings):
     time_zone: str  # From ENVIRONMENT
     quarterly_resolution_transition_datetime: datetime  # From ENVIRONMENT
     is_internal_calculation: bool = Field(default=False)
+
+
+class CalculatorArgsValidation:
+    def __init__(self, args: CalculatorArgs):
+        self.args = args
+        self.validate()
+
+    def _validate_quarterly_resolution_transition_datetime(self) -> None:
+        if (
+            is_midnight_in_time_zone(
+                self.args.quarterly_resolution_transition_datetime, self.args.time_zone
+            )
+            is False
+        ):
+            raise Exception(
+                f"The quarterly resolution transition datetime must be at midnight local time ({self.args.time_zone})."
+            )
+        if (
+            self.args.calculation_period_start_datetime
+            < self.args.quarterly_resolution_transition_datetime
+            < self.args.calculation_period_end_datetime
+        ):
+            raise Exception(
+                "The calculation period must not cross the quarterly resolution transition datetime."
+            )
+
+    def _validate_period_for_wholesale_calculation(self) -> None:
+        is_valid_period = is_exactly_one_calendar_month(
+            self.args.calculation_period_start_datetime,
+            self.args.calculation_period_end_datetime,
+            self.args.time_zone,
+        )
+        if is_wholesale_calculation_type(self.args.calculation_type):
+            if not is_valid_period:
+                raise Exception(
+                    f"The calculation period for wholesale calculation types must be a full month starting and ending at midnight local time ({self.args.time_zone}))."
+                )
+
+    def _throw_exception_if_internal_calculation_and_not_aggregation_calculation_type(
+        self,
+    ) -> None:
+        if (
+            self.args.is_internal_calculation
+            and self.args.calculation_type != CalculationType.AGGREGATION
+        ):
+            raise Exception("Internal calculations must be of type AGGREGATION. ")
+
+    def validate(self) -> None:
+        """Runs all validation methods."""
+        self._validate_quarterly_resolution_transition_datetime()
+        self._validate_period_for_wholesale_calculation()
+        self._throw_exception_if_internal_calculation_and_not_aggregation_calculation_type()

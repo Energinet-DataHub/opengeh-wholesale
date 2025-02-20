@@ -31,7 +31,7 @@ from package.infrastructure.paths import WholesaleInternalDatabase
     "calculation_id_already_used",
     [True, False],
 )
-@patch("package.calculator_job.calculation")
+@patch("package.calculator_job.calculation.execute")
 def test_start_with_deps__throws_exception_when_calculation_id_already_used(
     calculation_executor_mock,
     calculator_args_balance_fixing: CalculatorArgs,
@@ -39,6 +39,7 @@ def test_start_with_deps__throws_exception_when_calculation_id_already_used(
     any_calculator_args: CalculatorArgs,
     infrastructure_settings: InfrastructureSettings,
     calculation_id_already_used: bool,
+    migrations_executed: bool,
 ) -> None:
 
     # Arrange
@@ -60,9 +61,9 @@ def test_start_with_deps__throws_exception_when_calculation_id_already_used(
 
     # Assert
     if calculation_id_already_used:
-        calculation_executor_mock.execute.assert_not_called()
+        calculation_executor_mock.assert_not_called()
     else:
-        calculation_executor_mock.execute.assert_called()
+        calculation_executor_mock.assert_called()
 
 
 def add_calculation_row(
@@ -82,6 +83,7 @@ def add_calculation_row(
             is_internal_calculation=True,
         )
     ]
+
     calculations_df = spark.createDataFrame(data, calculations_schema)
     calculations_df.write.format("delta").mode("append").saveAsTable(
         f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
