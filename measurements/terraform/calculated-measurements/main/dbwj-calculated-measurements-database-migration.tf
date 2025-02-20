@@ -1,10 +1,10 @@
-resource "databricks_job" "electrical_heating_database_migration" {
+resource "databricks_job" "calculated_measurements_database_migration" {
   provider            = databricks.dbw
-  name                = "Electrical Heating Database Migration"
+  name                = "Calculated Measurements Database Migration"
   max_concurrent_runs = 1
 
   job_cluster {
-    job_cluster_key = "electrical_heating_database_migration_cluster"
+    job_cluster_key = "calculated_measurements_database_migration_cluster"
 
     new_cluster {
       spark_version  = local.spark_version
@@ -27,12 +27,12 @@ resource "databricks_job" "electrical_heating_database_migration" {
   }
 
   task {
-    task_key        = "electrical_heating_database_migration_task"
+    task_key        = "calculated_measurements_database_migration_task"
     max_retries     = 1
-    job_cluster_key = "electrical_heating_database_migration_cluster"
+    job_cluster_key = "calculated_measurements_database_migration_cluster"
 
     library {
-      whl = "/Workspace/Shared/PythonWheels/electrical_heating/geh_calculated_measurements-0.1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/geh_calculated_measurements/geh_calculated_measurements-0.1.0-py3-none-any.whl"
     }
 
     python_wheel_task {
@@ -51,9 +51,9 @@ resource "databricks_job" "electrical_heating_database_migration" {
   }
 }
 
-resource "databricks_permissions" "electrical_heating_database_migration" {
+resource "databricks_permissions" "calculated_measurements_database_migration" {
   provider = databricks.dbw
-  job_id   = databricks_job.electrical_heating_database_migration.id
+  job_id   = databricks_job.calculated_measurements_database_migration.id
 
   access_control {
     group_name       = var.databricks_contributor_dataplane_group.name
