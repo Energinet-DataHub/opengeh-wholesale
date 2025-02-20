@@ -76,6 +76,7 @@ jobs:
               - '.docker/requirements.txt'
               - 'source/databricks/**'
             calculator_job:
+              - '.github/workflows/ci-databricks.yml'
               - 'source/databricks/calculation_engine/**'
             delta_migrations:
               - 'source/databricks/calculation_engine/package/datamigration/**'
