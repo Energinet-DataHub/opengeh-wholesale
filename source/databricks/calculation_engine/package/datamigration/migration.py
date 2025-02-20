@@ -1,5 +1,4 @@
 from geh_common.migrations import (
-    create_and_configure_container,
     schema_migration_pipeline,
     SparkSqlMigrationsConfiguration,
 )
@@ -24,9 +23,7 @@ def migrate_data_lake(
     print(f"Executing Unity Catalog migrations for catalog {catalog_name}")
 
     spark_config = _create_spark_config(catalog_name, is_testing)
-
-    create_and_configure_container(spark_config)
-    schema_migration_pipeline.migrate()
+    schema_migration_pipeline.migrate(spark_config)
 
 
 def _create_spark_config(
