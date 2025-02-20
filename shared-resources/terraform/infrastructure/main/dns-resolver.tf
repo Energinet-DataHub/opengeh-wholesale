@@ -28,6 +28,75 @@ resource "azurerm_subnet" "outbounddns" {
   }
 }
 
+resource "azurerm_network_security_group" "dns_resolver" {
+  name                = "nsg-dns-resolver"
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+
+  # INBOUND
+  security_rule {
+    name                       = "IBA-DNS"
+    priority                   = 1000
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "53"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "VirtualNetwork"
+  }
+
+  # Add all rules before the deny all rule
+  security_rule {
+    name                       = "deny_inbound_traffic"
+    priority                   = 4096
+    direction                  = "Inbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  # OUTBOUND
+  security_rule {
+    name                       = "OBA-DNS"
+    priority                   = 1000
+    direction                  = "Outbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "53"
+    source_address_prefix      = "VirtualNetwork"
+    destination_address_prefix = "VirtualNetwork"
+  }
+  # Add all rules before the deny all rule
+  security_rule {
+    name                       = "deny_outbound_traffic"
+    priority                   = 4096
+    direction                  = "Outbound"
+    access                     = "Deny"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  tags = local.tags
+}
+
+resource "azurerm_subnet_network_security_group_association" "inbounddns" {
+  subnet_id                 = azurerm_subnet.inbounddns.id
+  network_security_group_id = azurerm_network_security_group.dns_resolver.id
+}
+
+resource "azurerm_subnet_network_security_group_association" "outbounddns" {
+  subnet_id                 = azurerm_subnet.outbounddns.id
+  network_security_group_id = azurerm_network_security_group.dns_resolver.id
+}
+
 resource "azurerm_private_dns_resolver" "this" {
   name                = "dnspr-${local.resources_suffix}"
   resource_group_name = azurerm_resource_group.this.name
@@ -69,11 +138,11 @@ resource "azurerm_private_dns_resolver_dns_forwarding_ruleset" "outbounddns" {
 
 resource "azurerm_private_dns_resolver_forwarding_rule" "cp_dns" {
   for_each = tomap({
-    blob        = "privatelink.blob.core.windows.net."
-    dfs         = "privatelink.dfs.core.windows.net."
-    queue       = "privatelink.queue.core.windows.net."
-    database    = "privatelink.database.windows.net."
-    servicebus  = "privatelink.servicebus.windows.net."
+    blob       = "privatelink.blob.core.windows.net."
+    dfs        = "privatelink.dfs.core.windows.net."
+    queue      = "privatelink.queue.core.windows.net."
+    database   = "privatelink.database.windows.net."
+    servicebus = "privatelink.servicebus.windows.net."
   })
 
   name                      = "fr-${each.key}"
