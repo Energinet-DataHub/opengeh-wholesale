@@ -1,5 +1,5 @@
 module "func_timeseriesretriever" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_7.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app-elastic-durable?ref=function-app-elastic-durable_7.2.0"
 
   name                                   = "timeseriesretriever"
   project_name                           = var.domain_name_short
