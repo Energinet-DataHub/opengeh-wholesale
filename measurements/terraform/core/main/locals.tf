@@ -20,4 +20,13 @@ locals {
   spark_version = "15.4.x-scala2.12"
 
   TIME_ZONE = "Europe/Copenhagen"
+
+  ################################## Core ##################################
+
+  ### .Net
+
+  # Logging
+  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MEASUREMENTS_CORE = "Information"
+  LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE              = "Information"
+  LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT                             = "Warning"
 }
