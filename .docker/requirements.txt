@@ -39,4 +39,4 @@ configargparse==1.7.0
 pytest-mock==3.14.0
 
 # Custom packages
-geh_common @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@geh_common_4.0.0
+geh_common @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@geh_common_5.0.0
