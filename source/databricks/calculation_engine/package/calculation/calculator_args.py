@@ -20,7 +20,7 @@ from package.codelists.calculation_type import (
 from typing import Any
 from pydantic import AliasChoices, Field
 
-from geh_common.parsing.pydantic_settings_parsing import PydanticParsingSettings
+from geh_common.application.settings import ApplicationSettings
 
 from package.common.datetime_utils import (
     is_exactly_one_calendar_month,
@@ -28,7 +28,7 @@ from package.common.datetime_utils import (
 )
 
 
-class CalculatorArgs(PydanticParsingSettings):
+class CalculatorArgs(ApplicationSettings):
     """
     CalculatorArgs class uses Pydantic BaseSettings to configure and validate parameters.
     Parameters can come from both runtime (CLI) or from environment variables.

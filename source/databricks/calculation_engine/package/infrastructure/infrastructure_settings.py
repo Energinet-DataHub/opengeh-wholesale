@@ -16,10 +16,10 @@ from azure.identity import ClientSecretCredential
 from pydantic import AliasChoices, Field
 
 from package.infrastructure import paths
-from geh_common.parsing.pydantic_settings_parsing import PydanticParsingSettings
+from geh_common.application.settings import ApplicationSettings
 
 
-class InfrastructureSettings(PydanticParsingSettings, cli_kebab_case=False):
+class InfrastructureSettings(ApplicationSettings, cli_kebab_case=False):
     """
     InfrastructureSettings class uses Pydantic BaseSettings to configure and validate parameters.
     Parameters can come from both runtime (CLI) or from environment variables.
