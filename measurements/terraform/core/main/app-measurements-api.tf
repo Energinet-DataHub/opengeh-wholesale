@@ -1,5 +1,5 @@
 module "app_measurements_api" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_8.2.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/app-service?ref=app-service_8.0.0"
 
   name                                   = "measurementsapi"
   project_name                           = var.domain_name_short
