@@ -8,6 +8,7 @@ module "st_data_lake" {
   resource_group_name        = azurerm_resource_group.this.name
   location                   = azurerm_resource_group.this.location
   account_replication_type   = "LRS"
+  prevent_deletion           = false
   private_endpoint_subnet_id = azurerm_subnet.privateendpoints.id
   ip_rules                   = local.ip_restrictions_as_string
   audit_storage_account = var.enable_audit_logs ? {
