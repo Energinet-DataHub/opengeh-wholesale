@@ -29,7 +29,7 @@ resource "databricks_job" "electrical_heating" {
     job_cluster_key = "electrical_heating_cluster"
 
     library {
-      whl = "/Workspace/Shared/PythonWheels/electrical_heating/geh_calculated_measurements-0.1.0-py3-none-any.whl"
+      whl = "/Workspace/Shared/PythonWheels/geh_calculated_measurements/geh_calculated_measurements-0.1.0-py3-none-any.whl"
     }
 
     python_wheel_task {
