@@ -364,3 +364,9 @@ variable "app_configuration_sku" {
   description = "The SKU of the App Configuration instance"
   default     = "standard"
 }
+
+variable "git_pat" {
+  type        = string
+  description = "Personal Access Token for accessing the github container registry"
+  sensitive   = true
+}

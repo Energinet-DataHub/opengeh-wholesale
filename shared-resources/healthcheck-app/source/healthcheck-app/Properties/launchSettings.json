@@ -1,9 +1,0 @@
-{
-    "profiles": {
-        "healthcheck-app": {
-            "commandName": "Project",
-            "commandLineArgs": "--port 7262",
-            "launchBrowser": false
-        }
-    }
-}

@@ -68,14 +68,6 @@ jobs:
         run: |
           cp -fR ${{ inputs.b2c_path }} ${{ env.RELEASE_FOLDER_PATH }} 2>/dev/null || :
 
-      - name: Publish healthcheckapp function
-        shell: bash
-        run: |
-          dotnet publish \
-            '${{ inputs.healthcheckapp_path }}\source\healthcheck-app\healthcheck-app.csproj' \
-            --configuration Release \
-            --output '${{ env.RELEASE_FOLDER_PATH }}\functions\healthchecks'
-
       - name: Get releaseversion strings
         id: get_releaseversion_strings
         uses: Energinet-Datahub/.github/.github/actions/github-get-releaseversion-strings@v14

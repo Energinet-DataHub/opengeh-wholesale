@@ -7,7 +7,8 @@ module "webapp_service_plan" {
   environment_instance = var.environment_instance
   resource_group_name  = azurerm_resource_group.this.name
   location             = azurerm_resource_group.this.location
-  sku_name             = "P0v3"
+  os_type              = "Linux"
+  sku_name             = "P1v2"
 
   monitor_alerts_action_group_id = length(module.monitor_action_group_shres) != 1 ? null : module.monitor_action_group_shres[0].id
 

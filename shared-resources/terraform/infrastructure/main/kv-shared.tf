@@ -17,3 +17,12 @@ module "kv_shared" {
     id = module.st_audit_logs.id
   } : null
 }
+
+# Used for authenticating to GitHub Container Registry
+module "kvs_pat_token" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "github-pat-token"
+  value        = var.git_pat
+  key_vault_id = module.kv_shared.id
+}

@@ -1,5 +1,5 @@
-module "func_healthchecks" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=function-app_9.0.0"
+module "func_healthchecks_container" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/container-function-app?ref=container-function-app_1.3.0"
 
   name                                   = "healthchecks"
   project_name                           = var.domain_name_short
@@ -9,17 +9,15 @@ module "func_healthchecks" {
   location                               = azurerm_resource_group.this.location
   vnet_integration_subnet_id             = azurerm_subnet.vnetintegrations.id
   private_endpoint_subnet_id             = azurerm_subnet.privateendpoints.id
-  app_service_plan_id                    = module.webapp_service_plan.id
+  service_plan_id                        = module.webapp_service_plan.id
   ip_restrictions                        = var.ip_restrictions
   scm_ip_restrictions                    = var.ip_restrictions
   always_on                              = true
-  dotnet_framework_version               = "v8.0"
   application_insights_connection_string = module.appi_shared.connection_string
-
-  health_check_alert = length(module.monitor_action_group_shres) != 1 ? null : {
-    enabled         = true
-    action_group_id = module.monitor_action_group_shres[0].id
-  }
+  docker_registry_server_username        = "PerTHenriksen"
+  docker_registry_server_password        = local.pat_token_secret
+  docker_registry_server_url             = "https://ghcr.io"
+  health_check_path                      = "/api/monitor/ready"
 
   role_assignments = [
     {
@@ -39,8 +37,8 @@ module "func_healthchecks" {
   }
 }
 
-resource "azurerm_role_assignment" "func_healthchecks_read_access_to_stdatalake" {
+resource "azurerm_role_assignment" "func_healthchecks_read_access_to_stdatalake_container" {
   scope                = module.st_data_lake.id
   role_definition_name = "Reader"
-  principal_id         = module.func_healthchecks.identity.0.principal_id
+  principal_id         = module.func_healthchecks_container.identity.0.principal_id
 }

@@ -29,14 +29,6 @@ jobs:
       dh3serviceaccount_privatekey: ${{ secrets.dh3serviceaccount_privatekey }}
 
   #
-  # CodeQL Check
-  #
-  ci_codeql:
-    needs: changes
-    if: ${{ needs.changes.outputs.shared_resources_healthcheck_app_ci == 'true' }}
-    uses: ./.github/workflows/codeql.yml
-
-  #
   # Detect changes to start relevant workflows
   #
   changes:
@@ -246,7 +238,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       [
-        ci_codeql,
         ci_base,
         edi_ci,
         market_participant_ci,
