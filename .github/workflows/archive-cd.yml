@@ -16,5 +16,5 @@ jobs:
     with:
       release_name_prefix: archive_infrastructure
       event_type: archive-deployment-request-infrastructure
-      team_name: TheOutlaws
+      team_name: TeamFusion
     secrets: inherit
