@@ -41,6 +41,15 @@ from tests.integration_test_configuration import IntegrationTestConfiguration
 from tests.testsession_configuration import (
     TestSessionConfiguration,
 )
+from unittest.mock import patch
+
+
+def cleanup_logging() -> None:
+    config.set_extras({})
+    config.set_is_instrumented(False)
+    config.set_tracer(None)
+    config.set_tracer_name("")
+    os.environ.pop("OTEL_SERVICE_NAME", None)
 
 
 @pytest.fixture(scope="session")
@@ -420,17 +429,43 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
     )
 
 
-@pytest.fixture(scope="session", autouse=True)
-def configure_logging() -> None:
+@pytest.fixture(scope="function", autouse=True)
+def configure_logging_dummy(request):
     """
     Configures the logging initially.
     """
+    if "disable_autouse" in request.keywords:
+        yield
+    else:
+
+        # patch to avoid error when trying to configure azure monitor
+        with patch(
+            "geh_common.telemetry.logging_configuration.configure_azure_monitor"
+        ):
+            logging_settings = config.LoggingSettings(
+                cloud_role_name="dbr-calculation-engine-tests",
+                subsystem="unit-tests",
+                orchestration_instance_id=uuid.uuid4(),
+                applicationinsights_connection_string="connectionString",
+            )
+            yield config.configure_logging(logging_settings=logging_settings)
+        cleanup_logging()
+
+
+@pytest.fixture(scope="function")
+def configure_logging(integration_test_configuration):
+    """
+    Configures the logging initially.
+    """
+    # patch to avoid error when trying to configure azure monitor
     logging_settings = config.LoggingSettings(
         cloud_role_name="dbr-calculation-engine-tests",
         subsystem="unit-tests",
         orchestration_instance_id=uuid.uuid4(),
+        applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
     )
-    config.configure_logging(logging_settings=logging_settings)
+    yield config.configure_logging(logging_settings=logging_settings)
+    cleanup_logging()
 
 
 @pytest.fixture(scope="session")

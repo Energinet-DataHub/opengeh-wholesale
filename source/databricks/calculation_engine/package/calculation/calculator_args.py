@@ -26,6 +26,7 @@ from package.common.datetime_utils import (
     is_exactly_one_calendar_month,
     is_midnight_in_time_zone,
 )
+import re
 
 
 class CalculatorArgs(ApplicationSettings):
@@ -36,12 +37,9 @@ class CalculatorArgs(ApplicationSettings):
     """
 
     calculation_id: str  # From CLI
-    calculation_grid_areas: list[str] = Field(
-        ...,
-        validation_alias=AliasChoices(
-            "grid_areas", "grid-areas", "calculation_grid_areas"
-        ),
-    )  # From CLI
+    grid_areas: str | None = Field(default=None)  # From CLI
+    calculation_grid_areas: list[str] | None = Field(default=None)
+
     calculation_period_start_datetime: datetime = Field(
         ...,
         validation_alias=AliasChoices(
@@ -66,6 +64,13 @@ class CalculatorArgs(ApplicationSettings):
     time_zone: str  # From ENVIRONMENT
     quarterly_resolution_transition_datetime: datetime  # From ENVIRONMENT
     is_internal_calculation: bool = Field(default=False)
+
+    def model_post_init(self, __context) -> None:
+        if not self.calculation_grid_areas:
+            if isinstance(self.grid_areas, str):
+                self.calculation_grid_areas = re.findall(r"\d+", self.grid_areas)
+            if isinstance(self.grid_areas, list):
+                self.calculation_grid_areas = [str(item) for item in self.grid_areas]
 
 
 class CalculatorArgsValidation:

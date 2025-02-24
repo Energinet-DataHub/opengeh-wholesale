@@ -6,7 +6,7 @@
 # Empty lines and lines starting with '#' are ignores in the tests.
 
 --calculation-id={calculation-id}
---grid-areas=["805", "806", "033"]
+--grid-areas=[805, 806, 033]
 --period-start-datetime=2022-05-31T22:00:00Z
 --period-end-datetime=2022-06-01T22:00:00Z
 --calculation-type=aggregation
