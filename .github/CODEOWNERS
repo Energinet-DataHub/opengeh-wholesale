@@ -1,71 +1,71 @@
-* @Energinet-DataHub/TheOutlaws
-/docs/diagrams @Energinet-DataHub/TheOutlaws @Energinet-DataHub/team-raccoons @Energinet-DataHub/Mandalorian @Energinet-DataHub/spectrum @Energinet-DataHub/volt @Energinet-DataHub/team-mosaic
+* @Energinet-DataHub/TeamFusion
+/docs/diagrams @Energinet-DataHub/TeamFusion @Energinet-DataHub/team-raccoons @Energinet-DataHub/Mandalorian @Energinet-DataHub/spectrum @Energinet-DataHub/volt @Energinet-DataHub/team-mosaic
 
 # market-participant configurations
-market-participant/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-market-participant/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-market-participant/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+market-participant/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+market-participant/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+market-participant/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
 
 # dh2-bridge configurations
-dh2-bridge/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-dh2-bridge/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-dh2-bridge/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+dh2-bridge/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+dh2-bridge/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+dh2-bridge/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
 
 # esett-exchange configurations
-esett-exchange/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-esett-exchange/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-esett-exchange/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+esett-exchange/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+esett-exchange/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+esett-exchange/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
 
 # edi configurations
-edi/terraform/**/app-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
-edi/terraform/**/func-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
-edi/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
-edi/terraform/main/dashboard-templates/*.tpl @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
+edi/terraform/**/app-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TeamFusion
+edi/terraform/**/func-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TeamFusion
+edi/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-mosaic @Energinet-DataHub/TeamFusion
+edi/terraform/main/dashboard-templates/*.tpl @Energinet-DataHub/team-mosaic @Energinet-DataHub/TeamFusion
 
 # process-manager configurations
-process-manager/terraform/**/app-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
-process-manager/terraform/**/func-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
-process-manager/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
-process-manager/terraform/core/main/dashboard-templates/*.tpl @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
+process-manager/terraform/**/app-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TeamFusion
+process-manager/terraform/**/func-*.config*.tf @Energinet-DataHub/team-mosaic @Energinet-DataHub/TeamFusion
+process-manager/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-mosaic @Energinet-DataHub/TeamFusion
+process-manager/terraform/core/main/dashboard-templates/*.tpl @Energinet-DataHub/team-mosaic @Energinet-DataHub/TeamFusion
 
 # revision-log configurations
-revision-log/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-revision-log/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-revision-log/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+revision-log/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+revision-log/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+revision-log/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
 
 # wholesale app settings
-wholesale/terraform/**/app-*.config*.tf @Energinet-DataHub/mandalorian @Energinet-DataHub/TheOutlaws
-wholesale/terraform/**/func-*.config*.tf @Energinet-DataHub/mandalorian @Energinet-DataHub/TheOutlaws
-wholesale/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/mandalorian @Energinet-DataHub/TheOutlaws
+wholesale/terraform/**/app-*.config*.tf @Energinet-DataHub/mandalorian @Energinet-DataHub/TeamFusion
+wholesale/terraform/**/func-*.config*.tf @Energinet-DataHub/mandalorian @Energinet-DataHub/TeamFusion
+wholesale/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/mandalorian @Energinet-DataHub/TeamFusion
 
 # grid-loss-imbalance-prices configurations
-grid-loss-imbalance-prices/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-grid-loss-imbalance-prices/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-grid-loss-imbalance-prices/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+grid-loss-imbalance-prices/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+grid-loss-imbalance-prices/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+grid-loss-imbalance-prices/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
 
 # migrations
-migrations/terraform/**/app-*.config*.tf @Energinet-DataHub/volt @Energinet-DataHub/TheOutlaws
-migrations/terraform/**/func-*.config*.tf @Energinet-DataHub/volt @Energinet-DataHub/TheOutlaws
-migrations/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/volt @Energinet-DataHub/TheOutlaws
-migrations/terraform/main/dbw-job-names.tf @Energinet-DataHub/volt @Energinet-DataHub/TheOutlaws
-migrations/terraform/main/dashboard-templates/*.tpl @Energinet-DataHub/volt @Energinet-DataHub/TheOutlaws
+migrations/terraform/**/app-*.config*.tf @Energinet-DataHub/volt @Energinet-DataHub/TeamFusion
+migrations/terraform/**/func-*.config*.tf @Energinet-DataHub/volt @Energinet-DataHub/TeamFusion
+migrations/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/volt @Energinet-DataHub/TeamFusion
+migrations/terraform/main/dbw-job-names.tf @Energinet-DataHub/volt @Energinet-DataHub/TeamFusion
+migrations/terraform/main/dashboard-templates/*.tpl @Energinet-DataHub/volt @Energinet-DataHub/TeamFusion
 
 # settlement-report
-settlement-report/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-settlement-report/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-settlement-report/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+settlement-report/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+settlement-report/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+settlement-report/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
 
 # notifications
-notifications/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-notifications/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-notifications/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+notifications/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+notifications/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+notifications/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
 
 # electricity-market
-electricity-market/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-electricity-market/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
-electricity-market/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TheOutlaws
+electricity-market/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+electricity-market/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
+electricity-market/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/TeamFusion
 
 # UI
-ui/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/Mandalorian @Energinet-DataHub/volt @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
-ui/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/Mandalorian @Energinet-DataHub/volt @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
-ui/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/Mandalorian @Energinet-DataHub/volt @Energinet-DataHub/team-mosaic @Energinet-DataHub/TheOutlaws
+ui/terraform/**/app-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/Mandalorian @Energinet-DataHub/volt @Energinet-DataHub/team-mosaic @Energinet-DataHub/TeamFusion
+ui/terraform/**/func-*.config*.tf @Energinet-DataHub/team-raccoons @Energinet-DataHub/Mandalorian @Energinet-DataHub/volt @Energinet-DataHub/team-mosaic @Energinet-DataHub/TeamFusion
+ui/terraform/**/subsystem*.auto.tfvars @Energinet-DataHub/team-raccoons @Energinet-DataHub/Mandalorian @Energinet-DataHub/volt @Energinet-DataHub/team-mosaic @Energinet-DataHub/TeamFusion
