@@ -126,7 +126,7 @@ class TestWhenInvokedWithIncorrectParameters:
         job_environment_variables: dict,
     ) -> None:
         # Arrange
-        with pytest.raises(ValidationError) as excinfo:
+        with pytest.raises(ValidationError):
             with patch("sys.argv", ["dummy_script", "--unexpected-arg"]):
                 with patch.dict("os.environ", job_environment_variables):
                     # Act and Assert
@@ -231,7 +231,7 @@ class TestWhenUnknownCalculationType:
 
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
-                with pytest.raises(ValidationError) as error:
+                with pytest.raises(ValidationError):
 
                     # Act
                     CalculatorArgs()
