@@ -28,3 +28,4 @@ inbounddns_address_prefixes       = ["10.141.102.16/28"]
 outbounddns_address_prefixes      = ["10.141.102.32/28"]
 enable_autoscale_apim             = true
 app_configuration_sku             = "premium"
+release_toggle_group_name         = "SEC-G-DataHub-Release-Toggle-Managers-preprod"

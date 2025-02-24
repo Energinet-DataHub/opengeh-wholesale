@@ -26,3 +26,4 @@ apim_next_hop_ip_address          = "10.142.96.196"
 udr_firewall_next_hop_ip_address  = "10.142.65.196"
 inbounddns_address_prefixes       = ["10.143.118.16/28"]
 outbounddns_address_prefixes      = ["10.143.118.32/28"]
+release_toggle_group_name         = "SEC-G-Datahub-DevelopersAzure"

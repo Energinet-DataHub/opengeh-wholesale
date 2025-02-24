@@ -370,3 +370,8 @@ variable "git_pat" {
   description = "Personal Access Token for accessing the github container registry"
   sensitive   = true
 }
+
+variable "release_toggle_group_name" {
+  type        = string
+  description = "Name of the group that can manage release toggles"
+}

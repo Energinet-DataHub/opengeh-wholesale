@@ -19,6 +19,6 @@ data "azuread_group" "pim_approvers" {
 }
 
 data "azuread_group" "release_toggle_managers" {
-  display_name     = "SEC-G-DataHub-Release-Toggle-Managers"
+  display_name     = var.release_toggle_group_name
   security_enabled = true
 }
