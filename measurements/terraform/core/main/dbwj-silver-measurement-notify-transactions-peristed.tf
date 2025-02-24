@@ -1,10 +1,10 @@
-resource "databricks_job" "bronze_notify_transactions_persisted_stream" {
+resource "databricks_job" "silver_notify_transactions_persisted_stream" {
   provider            = databricks.dbw
-  name                = "Bronze Notify Transactions Persisted Stream"
+  name                = "Silver Notify Transactions Persisted Stream"
   max_concurrent_runs = 1
 
   job_cluster {
-    job_cluster_key = "bronze_notify_transactions_persisted_stream_cluster"
+    job_cluster_key = "silver_notify_transactions_persisted_stream_cluster"
 
     new_cluster {
       spark_version  = local.spark_version
@@ -40,9 +40,9 @@ resource "databricks_job" "bronze_notify_transactions_persisted_stream" {
   }
 
   task {
-    task_key        = "bronze_notify_transactions_persisted_stream_task"
+    task_key        = "silver_notify_transactions_persisted_stream_task"
     max_retries     = 1
-    job_cluster_key = "bronze_notify_transactions_persisted_stream_cluster"
+    job_cluster_key = "silver_notify_transactions_persisted_stream_cluster"
 
     library {
       whl = "/Workspace/Shared/PythonWheels/core/core-0.1.0-py3-none-any.whl"
@@ -64,9 +64,9 @@ resource "databricks_job" "bronze_notify_transactions_persisted_stream" {
   }
 }
 
-resource "databricks_permissions" "bronze_notify_transactions_persisted_stream" {
+resource "databricks_permissions" "silver_notify_transactions_persisted_stream" {
   provider = databricks.dbw
-  job_id   = databricks_job.bronze_notify_transactions_persisted_stream.id
+  job_id   = databricks_job.silver_notify_transactions_persisted_stream.id
 
   access_control {
     group_name       = var.databricks_contributor_dataplane_group.name
