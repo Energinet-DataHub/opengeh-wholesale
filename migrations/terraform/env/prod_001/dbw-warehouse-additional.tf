@@ -11,7 +11,7 @@ resource "databricks_job" "ts_api_sql_warehouse_keep_alive" {
   name     = "ts_api_sql_warehouse_keep_alive"
 
   schedule {
-    quartz_cron_expression = "0 0 7-16 ? * MON-FRI"
+    quartz_cron_expression = "0 0 * * * ?"
     timezone_id            = "Europe/Copenhagen"
   }
 

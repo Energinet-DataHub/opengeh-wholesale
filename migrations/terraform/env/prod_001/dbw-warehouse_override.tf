@@ -7,6 +7,6 @@ resource "databricks_sql_endpoint" "investigate_sql_endpoint" {
 }
 
 resource "databricks_sql_endpoint" "ts_api_sql_endpoint" {
-  max_num_clusters = 2
-  auto_stop_mins   = 60
+  max_num_clusters = 3
+  auto_stop_mins   = 61
 }
