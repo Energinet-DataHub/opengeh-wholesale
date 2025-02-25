@@ -3,6 +3,10 @@ resource "databricks_job" "core_database_migration" {
   name                = "Core Database Migration"
   max_concurrent_runs = 1
 
+  tags = {
+    owner       = "Team Volt"
+  }
+
   job_cluster {
     job_cluster_key = "core_database_migration_cluster"
 

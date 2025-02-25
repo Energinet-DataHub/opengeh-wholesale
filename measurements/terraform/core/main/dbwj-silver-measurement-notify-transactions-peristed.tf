@@ -3,6 +3,10 @@ resource "databricks_job" "silver_notify_transactions_persisted_stream" {
   name                = "Silver Notify Transactions Persisted Stream"
   max_concurrent_runs = 1
 
+  tags = {
+    owner       = "Team Volt"
+  }
+
   job_cluster {
     job_cluster_key = "silver_notify_transactions_persisted_stream_cluster"
 

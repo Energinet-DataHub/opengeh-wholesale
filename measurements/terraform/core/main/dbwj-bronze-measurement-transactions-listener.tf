@@ -3,6 +3,10 @@ resource "databricks_job" "bronze_submitted_transactions_ingestion_stream" {
   name                = "Bronze Submitted Transactions Ingestion Stream"
   max_concurrent_runs = 1
 
+  tags = {
+    owner       = "Team Volt"
+  }
+
   job_cluster {
     job_cluster_key = "bronze_submitted_transactions_ingestion_stream_cluster"
 

@@ -3,6 +3,10 @@ resource "databricks_job" "bronze_calculated_to_silver" {
   name                = "Bronze to Silver Calculated Measurements"
   max_concurrent_runs = 1
 
+  tags = {
+    owner       = "Team Volt"
+  }
+
   job_cluster {
     job_cluster_key = "bronze_to_silver_cluster"
 

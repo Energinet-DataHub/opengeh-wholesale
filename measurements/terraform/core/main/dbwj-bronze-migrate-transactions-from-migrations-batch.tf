@@ -3,6 +3,10 @@ resource "databricks_job" "bronze_migrate_transactions_batch_job" {
   name                = "Migrate Transactions To Bronze Measurements"
   max_concurrent_runs = 1
 
+  tags = {
+    owner       = "Team Volt"
+  }
+
   job_cluster {
     job_cluster_key = "migrations_to_bronze_cluster"
 

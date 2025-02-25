@@ -3,6 +3,9 @@ resource "databricks_job" "bronze_submitted_transactions_to_silver" {
   name                = "Bronze Submitted Transactions to Silver Measurements"
   max_concurrent_runs = 1
 
+  tags = {
+    owner       = "Team Volt"
+  }
   job_cluster {
     job_cluster_key = "bronze_to_silver_cluster"
 
