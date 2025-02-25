@@ -1,0 +1,64 @@
+resource "databricks_job" "bronze_migrate_transactions_batch_job" {
+  provider            = databricks.dbw
+  name                = "Migrate Transactions To Bronze Measurements"
+  max_concurrent_runs = 1
+
+  job_cluster {
+    job_cluster_key = "migrations_to_bronze_cluster"
+
+    new_cluster {
+      spark_version  = local.spark_version
+      node_type_id   = "Standard_D8ads_v5"
+      runtime_engine = "PHOTON"
+      autoscale {
+        min_workers = 1
+        max_workers = 1
+      }
+      spark_conf = {
+        "spark.databricks.sql.initial.catalog.name" = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+      }
+
+      spark_env_vars = {
+        "CATALOG_NAME"                          = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
+        "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+        "DATALAKE_STORAGE_ACCOUNT"              = module.st_measurements.name
+        "BRONZE_CONTAINER_NAME"                 = azurerm_storage_container.bronze.name
+        "BRONZE_DATABASE_NAME"                  = databricks_schema.measurements_bronze.name
+        "MIGRATIONS_SILVER_DATABASE_NAME"       = "migrations_silver" # Taken from migrations domain
+      }
+    }
+  }
+
+  task {
+    task_key        = "migrate_from_migrations"
+    max_retries     = 1
+    job_cluster_key = "migrations_to_bronze_cluster"
+
+    library {
+      whl = "/Workspace/Shared/PythonWheels/core/core-0.1.0-py3-none-any.whl"
+    }
+
+    python_wheel_task {
+      package_name = "core"
+      # The entry point is defined in pyproject.toml
+      entry_point  = "migrate_time_series_from_migrations"
+    }
+  }
+}
+
+resource "databricks_permissions" "bronze_migrate_transactions_batch_job" {
+  provider = databricks.dbw
+  job_id   = databricks_job.bronze_migrate_transactions_batch_job.id
+
+  access_control {
+    group_name       = var.databricks_contributor_dataplane_group.name
+    permission_level = "CAN_MANAGE"
+  }
+  dynamic "access_control" {
+    for_each = local.readers
+    content {
+      group_name       = access_control.key
+      permission_level = "CAN_VIEW"
+    }
+  }
+}
