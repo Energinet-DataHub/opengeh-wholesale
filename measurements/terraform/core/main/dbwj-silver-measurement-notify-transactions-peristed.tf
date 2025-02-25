@@ -29,12 +29,10 @@ resource "databricks_job" "silver_notify_transactions_persisted_stream" {
         "SPN_APP_SECRET"                            = databricks_secret.spn_app_secret.config_reference
         "DATALAKE_STORAGE_ACCOUNT"                  = module.st_measurements.name
         "CONTINUOUS_STREAMING_ENABLED"              = var.enable_continuous_streaming
-        "BRONZE_CONTAINER_NAME"                     = azurerm_storage_container.bronze.name
-        "SILVER_CONTAINER_NAME"                     = azurerm_storage_container.silver.name
-        "GOLD_CONTAINER_NAME"                       = azurerm_storage_container.gold.name
         "BRONZE_DATABASE_NAME"                      = databricks_schema.measurements_bronze.name
+        "BRONZE_CONTAINER_NAME"                     = azurerm_storage_container.bronze.name
         "SILVER_DATABASE_NAME"                      = databricks_schema.measurements_silver.name
-        "GOLD_DATABASE_NAME"                        = databricks_schema.measurements_gold.name
+        "SILVER_CONTAINER_NAME"                     = azurerm_storage_container.silver.name
       }
     }
   }
