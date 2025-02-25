@@ -26,7 +26,7 @@ energy_per_brp_v1 = t.StructType(
         # EIC or GLN number
         t.StructField("balance_responsible_party_id", t.StringType(), not nullable),
         #
-        # 'consumption' | 'production' | 'exchange'
+        # 'consumption' | 'production'
         t.StructField("metering_point_type", t.StringType(), not nullable),
         #
         # 'flex' | 'non_profiled'
