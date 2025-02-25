@@ -28,6 +28,7 @@ from package.infrastructure.infrastructure_settings import InfrastructureSetting
 from tests.integration_test_configuration import IntegrationTestConfiguration
 from pydantic_core import ValidationError
 import geh_common.telemetry.logging_configuration as config
+import os
 
 
 class TestWhenInvokedWithInvalidArguments:
@@ -64,7 +65,6 @@ class TestWhenInvokedWithValidArguments:
         any_calculator_args: CalculatorArgs,
         infrastructure_settings: InfrastructureSettings,
         integration_test_configuration: IntegrationTestConfiguration,
-        configure_logging,
     ) -> None:
         """
         Assert that the calculator job adds log records to Azure Monitor with the expected settings:
@@ -78,7 +78,14 @@ class TestWhenInvokedWithValidArguments:
 
         Debug level is not tested as it is not intended to be logged by default.
         """
-
+        cleanup_logging()
+        logging_settings = config.LoggingSettings(
+            cloud_role_name="dbr-calculation-engine-tests",
+            subsystem="unit-tests",
+            orchestration_instance_id=uuid.uuid4(),
+            applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
+        )
+        config.configure_logging(logging_settings=logging_settings)
         # Arrange
         self.prepare_command_line_arguments(any_calculator_args)
 
@@ -166,3 +173,11 @@ def assert_row_count(actual, expected_count):
     value = row["Count"]
     count = cast(int, value)
     assert count == expected_count
+
+
+def cleanup_logging() -> None:
+    config.set_extras({})
+    config.set_is_instrumented(False)
+    config.set_tracer(None)
+    config.set_tracer_name("")
+    os.environ.pop("OTEL_SERVICE_NAME", None)

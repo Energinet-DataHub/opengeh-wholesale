@@ -44,14 +44,6 @@ from tests.testsession_configuration import (
 from unittest.mock import patch
 
 
-def cleanup_logging() -> None:
-    config.set_extras({})
-    config.set_is_instrumented(False)
-    config.set_tracer(None)
-    config.set_tracer_name("")
-    os.environ.pop("OTEL_SERVICE_NAME", None)
-
-
 @pytest.fixture(scope="session")
 def test_files_folder_path(tests_path: str) -> str:
     return f"{tests_path}/test_files"
@@ -449,23 +441,6 @@ def configure_logging_dummy(request):
                 applicationinsights_connection_string="connectionString",
             )
             yield config.configure_logging(logging_settings=logging_settings)
-        cleanup_logging()
-
-
-@pytest.fixture(scope="function")
-def configure_logging(integration_test_configuration):
-    """
-    Configures the logging initially.
-    """
-    # patch to avoid error when trying to configure azure monitor
-    logging_settings = config.LoggingSettings(
-        cloud_role_name="dbr-calculation-engine-tests",
-        subsystem="unit-tests",
-        orchestration_instance_id=uuid.uuid4(),
-        applicationinsights_connection_string=integration_test_configuration.get_applicationinsights_connection_string(),
-    )
-    yield config.configure_logging(logging_settings=logging_settings)
-    cleanup_logging()
 
 
 @pytest.fixture(scope="session")
