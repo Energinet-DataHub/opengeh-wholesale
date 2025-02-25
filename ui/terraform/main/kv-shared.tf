@@ -87,3 +87,8 @@ data "azurerm_key_vault_secret" "appi_shared_id" {
   name         = "appi-shared-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "processmanager_sp_object_id" {
+  name         = "processmanager-sp-object-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}

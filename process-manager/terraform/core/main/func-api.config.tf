@@ -12,12 +12,16 @@ locals {
       "ProcessManagerTaskHubName"             = local.OrchestrationsTaskHubName
       "ProcessManagerStorageConnectionString" = module.st_taskhub.primary_connection_string
 
+      # Authentication
+      "Auth__ApplicationIdUri" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=processmanager-application-id-uri)"
+      "Auth__Issuer"           = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/"
+
       # Database
       "ProcessManager__SqlDatabaseConnectionString" = local.DatabaseConnectionString
 
       # NotifyOrchestrationInstance subscription
-      "ServiceBus__FullyQualifiedNamespace"     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
-      "NotifyOrchestrationInstance__TopicName"  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
+      "ServiceBus__FullyQualifiedNamespace"                                      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
+      "NotifyOrchestrationInstance__TopicName"                                   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
       "NotifyOrchestrationInstance__NotifyOrchestrationInstanceSubscriptionName" = module.sbtsub_pm_notify_orchestration.name
 
       # Timer triggers

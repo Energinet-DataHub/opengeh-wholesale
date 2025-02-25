@@ -8,14 +8,6 @@ module "kvs_processmanager_application_id_uri" {
   key_vault_id = module.kv_shared.id
 }
 
-module "kvs_processmanager_sp_object_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
-
-  name         = "processmanager-sp-object-id"
-  value        = azuread_service_principal.sp_process_manager.object_id
-  key_vault_id = module.kv_shared.id
-}
-
 resource "azuread_application" "this" {
   identifier_uris = [module.kvs_processmanager_application_id_uri.value]
   display_name    = "sp-datahub3-processmanager-${var.environment_short}-${var.environment_instance}"
@@ -80,13 +72,6 @@ resource "azuread_application_pre_authorized" "vscode" {
   ]
 }
 
-// Add the deployment service principal to processmanager service principal
-resource "azuread_app_role_assignment" "consumer_role_assignment" {
-  app_role_id         = "00000000-0000-0000-0000-000000000000" // default role
-  resource_object_id  = azuread_service_principal.sp_process_manager.object_id
-  principal_object_id = data.azuread_client_config.current_client.object_id
-}
-
 resource "azuread_service_principal" "sp_process_manager" {
   client_id = azuread_application.this.client_id
   owners = [
@@ -99,4 +84,20 @@ resource "azuread_service_principal" "sp_process_manager" {
     hide       = true
     enterprise = true
   }
+}
+
+// Add the deployment service principal to processmanager service principal
+// This enables the SP to get accesstokens and thus run systemtests against the processmanager API
+resource "azuread_app_role_assignment" "deployment_sp_role_assignment" {
+  app_role_id         = "00000000-0000-0000-0000-000000000000" // default role
+  resource_object_id  = azuread_service_principal.sp_process_manager.object_id
+  principal_object_id = data.azuread_client_config.current_client.object_id
+}
+
+module "kvs_processmanager_sp_object_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "processmanager-sp-object-id"
+  value        = azuread_service_principal.sp_process_manager.object_id
+  key_vault_id = module.kv_shared.id
 }
