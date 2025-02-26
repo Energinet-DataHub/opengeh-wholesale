@@ -44,6 +44,14 @@ from tests.testsession_configuration import (
 from unittest.mock import patch
 
 
+# def cleanup_logging() -> None:
+#     config.set_extras({})
+#     config.set_is_instrumented(False)
+#     config.set_tracer(None)
+#     config.set_tracer_name("")
+#     os.environ.pop("OTEL_SERVICE_NAME", None)
+
+
 @pytest.fixture(scope="session")
 def test_files_folder_path(tests_path: str) -> str:
     return f"{tests_path}/test_files"
@@ -421,26 +429,25 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
     )
 
 
-@pytest.fixture(scope="function", autouse=True)
-def configure_logging_dummy(request):
+@pytest.fixture(scope="session", autouse=True)
+def configure_logging_dummy():
     """
     Configures the logging initially.
     """
-    if "disable_autouse" in request.keywords:
-        yield
-    else:
+    # cleanup_logging()
+    # if "disable_autouse" in request.keywords:
+    #     yield
+    # else:
 
-        # patch to avoid error when trying to configure azure monitor
-        with patch(
-            "geh_common.telemetry.logging_configuration.configure_azure_monitor"
-        ):
-            logging_settings = config.LoggingSettings(
-                cloud_role_name="dbr-calculation-engine-tests",
-                subsystem="unit-tests",
-                orchestration_instance_id=uuid.uuid4(),
-                applicationinsights_connection_string="connectionString",
-            )
-            yield config.configure_logging(logging_settings=logging_settings)
+    # patch to avoid error when trying to configure azure monitor
+    with patch("geh_common.telemetry.logging_configuration.configure_azure_monitor"):
+        logging_settings = config.LoggingSettings(
+            cloud_role_name="dbr-calculation-engine-tests",
+            subsystem="unit-tests",
+            orchestration_instance_id=uuid.uuid4(),
+            applicationinsights_connection_string="connectionString",
+        )
+        yield config.configure_logging(logging_settings=logging_settings)
 
 
 @pytest.fixture(scope="session")
