@@ -14,6 +14,10 @@ locals {
       "ProcessManagerTaskHubName"             = local.OrchestrationsTaskHubName
       "ProcessManagerStorageConnectionString" = data.azurerm_key_vault_secret.st_taskhub_primary_connection_string.value
 
+      # Authentication
+      "Auth__ApplicationIdUri" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=processmanager-application-id-uri)"
+      "Auth__Issuer"           = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/"
+
       # Database
       "ProcessManager__SqlDatabaseConnectionString" = data.azurerm_key_vault_secret.mssqldb_connection_string.value
 
