@@ -44,7 +44,8 @@ locals {
       "MeasurementsEventHub__EventHubName"  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=evh-measurement-transactions-name)"
 
       # Electricity Market client
-      "ApiClientOptions__BaseUrl" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mp-data-api-base-url)"
+      "ApiClientOptions__BaseUrl"                 = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mp-data-api-base-url)"
+      "ElectricityMarketClient__ApplicationIdUri" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=electricitymarket-application-id-uri)"
 
       # Wholesale database
       "WholesaleDatabase__SqlDatabaseConnectionString" = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${local.wholesale_db_name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"

@@ -57,3 +57,8 @@ data "azurerm_key_vault_secret" "sbt_domainrelay_integrationevent_received_id" {
   name         = "sbt-shres-integrationevent-received-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "electricitymarket_sp_object_id" {
+  name         = "electricitymarket-sp-object-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
