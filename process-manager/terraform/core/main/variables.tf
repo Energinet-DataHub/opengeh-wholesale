@@ -110,3 +110,9 @@ variable "budget_alert_amount" {
   type        = number
   description = "The budget amount for this subproduct"
 }
+
+variable "feature_management_silent_mode" {
+  type        = bool
+  description = "Used to enable silent mode."
+  default     = false
+}

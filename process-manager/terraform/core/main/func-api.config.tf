@@ -28,6 +28,9 @@ locals {
       # IMPORTANT: Override settings to enable them i development/tests environments
       "AzureWebJobs.StartScheduledOrchestrationInstances.Disabled" = true
       "AzureWebJobs.PerformRecurringPlanning.Disabled"             = true
+
+      # FeatureManagement
+      FeatureManagement__SilentMode = var.feature_management_silent_mode
     }
   }
 }

@@ -109,3 +109,9 @@ variable "monitor_action_group_exists" {
   description = "Flag to determine if the monitor action group exists."
   default     = false
 }
+
+variable "feature_management_silent_mode" {
+  type        = bool
+  description = "Used to enable silent mode."
+  default     = false
+}
