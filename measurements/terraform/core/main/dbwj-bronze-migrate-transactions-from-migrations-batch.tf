@@ -28,7 +28,7 @@ resource "databricks_job" "bronze_migrate_transactions_batch_job" {
         "DATALAKE_STORAGE_ACCOUNT"              = module.st_measurements.name
         "BRONZE_CONTAINER_NAME"                 = azurerm_storage_container.bronze.name
         "BRONZE_DATABASE_NAME"                  = databricks_schema.measurements_bronze.name
-        "MIGRATIONS_SILVER_DATABASE_NAME"       = "migrations_silver" # Taken from migrations domain
+        "SILVER_DATABASE_NAME"                  = "migrations_silver" # Taken from migrations domain
       }
     }
   }
