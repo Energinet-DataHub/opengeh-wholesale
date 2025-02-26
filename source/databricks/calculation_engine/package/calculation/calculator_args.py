@@ -18,7 +18,7 @@ from package.codelists.calculation_type import (
     is_wholesale_calculation_type,
 )
 from typing import Any
-from pydantic import AliasChoices, Field
+from pydantic import AliasChoices, Field, field_validator
 
 from geh_common.application.settings import ApplicationSettings
 
@@ -37,8 +37,11 @@ class CalculatorArgs(ApplicationSettings):
     """
 
     calculation_id: str  # From CLI
-    grid_areas: str | None = Field(default=None)  # From CLI
-    calculation_grid_areas: list[str] | None = Field(default=None)
+    calculation_grid_areas: str | list[str] = Field(
+        validation_alias=AliasChoices(
+            "calculation_grid_areas", "grid_areas", "grid-areas"
+        )
+    )  # From CLI
 
     calculation_period_start_datetime: datetime = Field(
         ...,
@@ -65,12 +68,13 @@ class CalculatorArgs(ApplicationSettings):
     quarterly_resolution_transition_datetime: datetime  # From ENVIRONMENT
     is_internal_calculation: bool = Field(default=False)
 
-    def model_post_init(self, __context) -> None:
-        if not self.calculation_grid_areas:
-            if isinstance(self.grid_areas, str):
-                self.calculation_grid_areas = re.findall(r"\d+", self.grid_areas)
-            if isinstance(self.grid_areas, list):
-                self.calculation_grid_areas = [str(item) for item in self.grid_areas]
+    @field_validator("calculation_grid_areas", mode="before")
+    @classmethod
+    def ensure_list(cls, value: str) -> list[str]:
+        if isinstance(value, str):
+            return re.findall(r"\d+", value)
+        if isinstance(value, list):
+            return [str(item) for item in value]
 
 
 class CalculatorArgsValidation:
