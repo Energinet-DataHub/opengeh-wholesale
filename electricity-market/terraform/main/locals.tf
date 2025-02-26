@@ -6,6 +6,12 @@ locals {
   ip_restrictions_as_string               = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
   ENV_DESC                                = "${var.environment}_${var.environment_instance}"
 
+  # Databricks permissions
+  # Local readers determines if the provided reader security group should be assigned permissions or grants.
+  # This is necessary as reader and contributor groups may be the same on the development and test environments. In Databricks, the grants and permissions of a security group can't be be managed by multiple resources.
+  readers = var.databricks_readers_group.name == var.databricks_contributor_dataplane_group.name ? {} : { "${var.databricks_readers_group.name}" = "${var.databricks_readers_group.id}" }
+
+
   # Database
   TIME_ZONE = "Europe/Copenhagen"
 
