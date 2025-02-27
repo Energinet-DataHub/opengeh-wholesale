@@ -44,10 +44,10 @@ resource "databricks_sql_endpoint" "measurements_api_sql_endpoint" {
   enable_serverless_compute = false
 }
 
-module "kvs_databricks_measurements_api_sql_endpoint_id" {
+module "kvs_databricks_core_measurements_api_sql_endpoint_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
-  name         = "dbw-databricks-measurements-api-sql-endpoint-id"
+  name         = "measurements-api-sql-endpoint-id"
   value        = resource.databricks_sql_endpoint.measurements_api_sql_endpoint.id
   key_vault_id = module.kv_internal.id
 }
