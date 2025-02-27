@@ -25,6 +25,7 @@ module "apima_health_api" {
                 <allowed-origins>
                     <origin>https://sauron.datahub3.dk</origin>
                     <origin>https://sauron.test002.datahub3.dk</origin>
+                    <origin>https://localhost:3000</origin>
                 </allowed-origins>
                 <allowed-methods preflight-result-max-age="300">
                     <method>*</method>

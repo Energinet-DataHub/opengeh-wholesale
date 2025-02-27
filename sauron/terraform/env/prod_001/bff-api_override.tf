@@ -13,6 +13,7 @@ module "apima_bff_api" {
                 <allowed-origins>
                     <origin>https://${local.frontend_url}</origin>
                     <origin>https://sauron.test002.datahub3.dk</origin>
+                    <origin>https://localhost:3000</origin>
                 </allowed-origins>
                 <allowed-methods preflight-result-max-age="300">
                     <method>*</method>
