@@ -22,3 +22,9 @@ data "azuread_group" "release_toggle_managers" {
   display_name     = var.release_toggle_group_name
   security_enabled = true
 }
+
+data "azuread_group" "pim_contributor_data_plane_group" {
+  count            = var.pim_contributor_data_plane_group_name != "" ? 1 : 0
+  display_name     = var.pim_contributor_data_plane_group_name
+  security_enabled = true
+}
