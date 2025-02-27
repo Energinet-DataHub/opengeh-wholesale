@@ -94,15 +94,6 @@ resource "azuread_app_role_assignment" "processmanager_deployment_sp_role_assign
   principal_object_id = data.azuread_client_config.current_client.object_id
 }
 
-// Add developer group to processmanager service principal on test environments
-// This enables the user to get accesstokens and thus debug the processmanager API
-resource "azuread_app_role_assignment" "processmanager_developer_sp_role_assignment" {
-  count               = var.environment_instance != "001" ? 1 : 0
-  app_role_id         = "00000000-0000-0000-0000-000000000000" // default role
-  resource_object_id  = azuread_service_principal.sp_process_manager.object_id
-  principal_object_id = data.azuread_group.developers.object_id
-}
-
 module "kvs_processmanager_sp_object_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
