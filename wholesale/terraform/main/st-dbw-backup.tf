@@ -76,29 +76,6 @@ locals {
   backup_set = var.activate_backup == true ? toset([local.backup_key]) : toset([])
 }
 
-data "databricks_spark_version" "latest_lts" {
-  provider          = databricks.dbw
-  long_term_support = true
-}
-
-resource "databricks_cluster" "backup_cluster" {
-  for_each = local.backup_set
-  provider = databricks.dbw
-
-  cluster_name   = "Shared backup cluster"
-  spark_version  = data.databricks_spark_version.latest_lts.id
-  node_type_id   = "Standard_DS3_v2"
-  runtime_engine = "STANDARD"
-  autoscale {
-    min_workers = 1
-    max_workers = 4
-  }
-  autotermination_minutes = 10
-  data_security_mode      = "USER_ISOLATION"
-
-  depends_on = [module.dbw]
-}
-
 module "st_dbw_backup" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/storage-account-dfs?ref=storage-account-dfs_10.0.0"
 

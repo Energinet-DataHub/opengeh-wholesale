@@ -1,5 +1,5 @@
 module "results_internal_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
   providers = { # The module requires a databricks provider, as it uses databricks resources
     databricks = databricks.dbw
   }
@@ -12,7 +12,6 @@ module "results_internal_backup" {
   backup_schema_comment         = databricks_schema.results_internal.comment
   tables                        = local.results_internal_schema
   source_schema_name            = databricks_schema.results_internal.name
-  backup_cluster_id             = databricks_cluster.backup_cluster[local.backup_key].id
   access_control                = local.backup_access_control
   backup_email_on_failure       = var.alert_email_address != null ? [var.alert_email_address] : []
 
@@ -20,7 +19,7 @@ module "results_internal_backup" {
 }
 
 module "basis_data_internal_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
   providers = { # The module requires a databricks provider, as it uses databricks resources
     databricks = databricks.dbw
   }
@@ -33,7 +32,6 @@ module "basis_data_internal_backup" {
   backup_schema_comment         = databricks_schema.basis_data_internal.comment
   tables                        = local.basis_data_internal_schema
   source_schema_name            = databricks_schema.basis_data_internal.name
-  backup_cluster_id             = databricks_cluster.backup_cluster[local.backup_key].id
   access_control                = local.backup_access_control
   backup_email_on_failure       = var.alert_email_address != null ? [var.alert_email_address] : []
 
@@ -41,7 +39,7 @@ module "basis_data_internal_backup" {
 }
 
 module "internal_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
   providers = { # The module requires a databricks provider, as it uses databricks resources
     databricks = databricks.dbw
   }
@@ -54,7 +52,6 @@ module "internal_backup" {
   backup_schema_comment         = databricks_schema.internal.comment
   tables                        = local.internal_schema
   source_schema_name            = databricks_schema.internal.name
-  backup_cluster_id             = databricks_cluster.backup_cluster[local.backup_key].id
   access_control                = local.backup_access_control
   backup_email_on_failure       = var.alert_email_address != null ? [var.alert_email_address] : []
 

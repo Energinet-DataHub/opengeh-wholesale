@@ -1,27 +1,5 @@
-data "databricks_spark_version" "latest_lts" {
-  provider          = databricks.dbw
-  long_term_support = true
-}
-
-resource "databricks_cluster" "backup_cluster" {
-  provider = databricks.dbw
-
-  cluster_name   = "Shared backup cluster"
-  spark_version  = data.databricks_spark_version.latest_lts.id
-  node_type_id   = "Standard_DS3_v2"
-  runtime_engine = "STANDARD"
-  autoscale {
-    min_workers = 1
-    max_workers = 4
-  }
-  autotermination_minutes = 15
-  data_security_mode      = "USER_ISOLATION"
-
-  depends_on = [module.dbw]
-}
-
 module "internal_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.1.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
   providers = {
     databricks = databricks.dbw
   }
@@ -38,7 +16,6 @@ module "internal_backup" {
     }
   }
   source_schema_name                     = databricks_schema.migrations_internal.name
-  backup_cluster_id                      = databricks_cluster.backup_cluster.id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 * ? * *"
@@ -47,7 +24,7 @@ module "internal_backup" {
 }
 
 module "bronze_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.1.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
   providers = {
     databricks = databricks.dbw
   }
@@ -79,7 +56,6 @@ module "bronze_backup" {
     }
   }
   source_schema_name                     = databricks_schema.migrations_bronze.name
-  backup_cluster_id                      = databricks_cluster.backup_cluster.id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0/15 * ? * *"
@@ -88,7 +64,7 @@ module "bronze_backup" {
 }
 
 module "silver_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.1.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
   providers = {
     databricks = databricks.dbw
   }
@@ -123,7 +99,6 @@ module "silver_backup" {
     }
   }
   source_schema_name                     = databricks_schema.migrations_silver.name
-  backup_cluster_id                      = databricks_cluster.backup_cluster.id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 0/4 ? * *"
@@ -132,7 +107,7 @@ module "silver_backup" {
 }
 
 module "gold_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.1.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
   providers = {
     databricks = databricks.dbw
   }
@@ -152,7 +127,6 @@ module "gold_backup" {
     }
   }
   source_schema_name                     = databricks_schema.migrations_gold.name
-  backup_cluster_id                      = databricks_cluster.backup_cluster.id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 0/12 ? * *"
@@ -161,7 +135,7 @@ module "gold_backup" {
 }
 
 module "shared_wholesale_input_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.1.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
   providers = {
     databricks = databricks.dbw
   }
@@ -181,7 +155,6 @@ module "shared_wholesale_input_backup" {
     }
   }
   source_schema_name                     = databricks_schema.shared_wholesale_input.name
-  backup_cluster_id                      = databricks_cluster.backup_cluster.id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 0/12 ? * *"
@@ -190,7 +163,7 @@ module "shared_wholesale_input_backup" {
 }
 
 module "eloverblik_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_8.1.1"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
   providers = {
     databricks = databricks.dbw
   }
@@ -207,7 +180,6 @@ module "eloverblik_backup" {
     }
   }
   source_schema_name                     = databricks_schema.migrations_eloverblik.name
-  backup_cluster_id                      = databricks_cluster.backup_cluster.id
   access_control                         = local.backup_access_control
   backup_email_on_failure                = var.alert_email_address != null ? [var.alert_email_address] : []
   backup_schedule_quartz_cron_expression = "0 0 0/12 ? * *"
