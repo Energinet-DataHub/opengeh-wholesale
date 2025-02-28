@@ -1,9 +1,36 @@
+locals {
+  # Product goals to be in App Configuration is defined by Kristian Brønner (XKVBR)
+  # Description for each product goal can be found here: https://energinet.atlassian.net/wiki/spaces/DataHub/pages/1410236417/Release+Toggles+i+Azure
+  # Key = ID, value = Description consisting of title - description
+  product_goals = {
+    "PM25-CIM"                 = "PM25: Modtagelse af måledata (CIM JSON & CIM XML) - Denne toggle dækker over det samlede scope for funktionaliteten, der omhandler 'Modtagelse af måledata'. Toggles skal sikre, at vi kan teste funktionaliteten i PreProd, inden den bliver aktiveret i produktion.",
+    "PM25-EBIX"                = "PM25: Indsendelse af måledata (eBix) - Denne toggle skal isolere formatet eBix. På den måde kan vi udgive 'Indsendelse af måledata' i andre formater, inden vi er færdige med at udvikle på eBix-formatet.",
+    "PM25-MESSAGES"            = "PM25: Hentning af måledatabeskeder - Denne toggle skal styre, hvor og hvornår vi aktiverer muligheden for, at brugerne kan hente deres måledatabeskeder i produktion.",
+    "PM25-PROCESSMANAGER"      = "PM25: Skift pegepind til procesmanageren - Denne toggle skal styre at vi kan skifte pegepind fra DataHub 2 til procesmanageren.",
+    "PM34-MISSINGDATALOG"      = "PM34: Send hullerlog til netvirksomheder - Denne toggle skal gøre, at vi kan styre, hvornår funktionaliteten kan aktiveres i produktion, samt hjælpe os med at teste funktionaliteten i PreProd, før den bliver aktiv i produktion.",
+    "PM27-ELECTRICALHEATING"   = "PM27: Udsendelse af beregnet ElVarme - Denne toggle skal sikre, at vi kan køre vores beregner i produktion, men samtidig have kontrol over, hvornår selve udsendelsesfunktionen bliver aktiveret.",
+    "PM11-CAPACITYSETTLEMENT"  = "PM11: Udsendelse af beregnet Effektbetaling - Denne toggle skal sikre, at vi kan køre vores beregner i produktion, men samtidig have kontrol over, hvornår selve udsendelsesfunktionen bliver aktiveret.",
+    "PM26-NETSETTLEMENT"       = "PM26: Udsendelse af beregnet Nettoafregning - Denne toggle skal sikre, at vi kan køre vores beregner i produktion, men samtidig have kontrol over, hvornår selve udsendelsesfunktionen bliver aktiveret.",
+    "PM31-REPORTS"             = "PM31: Rapporter til aktører - Denne toggle skal sikre, at vi kan styre, hvornår vi ønsker at frigive funktionaliteten i frontenden.",
+    "PM88-INTERNALREPORTS"     = "PM88: Interne rapporter til support af Datahub-drift - Denne toggle skal sikre, at vi kan styre, hvornår vi ønsker at frigive funktionaliteten i frontenden.",
+    "PM28-CIM"                 = "PM28: Anmodning om måledata Årssum og variable opløsninger (perioder) B2B (CIM JSON & CIM XML) - Denne toggle skal isolere formaterne CIM JSON & CIM XML. På den måde kan vi udgive 'Anmodning om måledata, Årssum og variable opløsninger' i andre formater, inden vi er færdige med at udvikle på eBix-formatet.",
+    "PM28-EBIX"                = "PM28: Anmodning om måledata Årssum og variable opløsninger (perioder) B2B (eBix) - Denne toggle skal isolere formatet eBix. På den måde kan vi udgive 'Anmodning om måledata, Årssum og variable opløsninger' i andre formater, inden vi er færdige med at udvikle på eBix-formatet.",
+    "PM96-SHAREMEASUREDATA"    = "PM96: Fremsend måledata via UI - Denne toggle skal sikre, at vi kan teste funktionaliteten i PreProd, samt styre hvornår vi ønsker at frigive den i produktion.",
+    "MEASUREDATA-MIGRATION"    = "Måledata fra Migration - Denne toggle skal sikre, at vi kan lave en 'cutover' fra, at data kommer fra subsystemet 'Migration' til 'Measurement'.",
+    "MEASUREDATA-MEASUREMENTS" = "Måledata fra Measurements - Denne toggle skal sikre, at vi kan lave en 'cutover' fra, at data kommer fra subsystemet 'Migration' til 'Measurement'."
+  }
+}
+
 resource "azurerm_app_configuration" "release" {
-  name                = "appcs-${local.resources_suffix}"
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  sku                 = var.app_configuration_sku
-  local_auth_enabled  = false
+  name                  = "appcs-${local.resources_suffix}"
+  resource_group_name   = azurerm_resource_group.this.name
+  location              = azurerm_resource_group.this.location
+  sku                   = var.app_configuration_sku
+  local_auth_enabled    = false
+  public_network_access = "Enabled" # Allows management to access the App Configuration from the Azure Portal
+
+  # When provider is updated to 4.19.0 or later enable this to follow best practices - it won't affect the functionality
+  # data_plane_proxy_authentication_mode = "Pass-through"
 
   identity {
     type = "SystemAssigned"
@@ -29,27 +56,6 @@ resource "azurerm_role_assignment" "release_toggle_managers_read" {
   scope                = azurerm_app_configuration.release.id
   role_definition_name = "App Configuration Reader"
   principal_id         = data.azuread_group.release_toggle_managers.object_id
-}
-
-locals {
-  # Product goals to be in App Configuration is defined by Kristian Brønner (XKVBR)
-  # Description for each product goal can be found here: https://energinet.atlassian.net/wiki/spaces/DataHub/pages/1235615745/DataHub+-+2025+Leverancer
-  product_goals = {
-    "PM22" = "Afvikling af anmodninger og beregninger i ProcessManager",
-    "PM47" = "Anmodninger om måledata for aggregerede værdier fra DataHub2",
-    "PM36" = "Sammenlægning af netområder",
-    "PM41" = "Målepunktstamdata og leverandør forhold til måledata",
-    "PM25" = "Fremsendelse af måledata",
-    "PM27" = "Beregninger af elvarmemålepunktet",
-    "PM11" = "Effektbetaling",
-    "PM26" = "Beregning af estimeret årsnettoforbrug og slutopgørelse (Solcelle afregning)",
-    "PM28" = "Anmodning om måledata -Årssum og variable opløsninger (perioder)",
-    "PM29" = "Tillægsmodtagere af måledata",
-    "PM31" = "Rapporter til aktører (kontrolrapporter, Måledatarapporter)",
-    "PM33" = "Måledata til Energy T&T",
-    "PM34" = "Send rykkere til netvirksomheden",
-    "PM32" = "Måledata til SAP"
-  }
 }
 
 resource "azurerm_app_configuration_feature" "features" {
