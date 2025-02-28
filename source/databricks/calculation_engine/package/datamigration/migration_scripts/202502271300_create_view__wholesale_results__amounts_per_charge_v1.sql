@@ -24,3 +24,4 @@ SELECT c.calculation_id,
        apc.amount
 FROM {CATALOG_NAME}.{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}.amounts_per_charge as apc
 INNER JOIN {CATALOG_NAME}.{WHOLESALE_INTERNAL_DATABASE_NAME}.succeeded_external_calculations_v1 AS c ON c.calculation_id = apc.calculation_id
+WHERE apc.metering_point_type != 'surplus_production'
