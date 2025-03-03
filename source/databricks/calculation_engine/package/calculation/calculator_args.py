@@ -72,7 +72,10 @@ class CalculatorArgs(ApplicationSettings):
     @field_validator("calculation_grid_areas", mode="before")
     @classmethod
     def _validate_myvar(cls, value: Any) -> list[str]:
-        return re.findall(r"\d+", value)
+        if isinstance(value, list):
+            return [str(item) for item in value]
+        else:
+            return re.findall(r"\d+", value)
 
 
 class CalculatorArgsValidation:

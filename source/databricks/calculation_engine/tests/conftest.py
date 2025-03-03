@@ -349,7 +349,7 @@ def any_calculator_args() -> CalculatorArgs:
     return CalculatorArgs(
         calculation_id="foo",
         calculation_type=CalculationType.AGGREGATION,
-        calculation_grid_areas='["805", "806"]',
+        calculation_grid_areas=["805", "806"],
         calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
         calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
@@ -365,7 +365,7 @@ def any_calculator_args_for_wholesale() -> CalculatorArgs:
     return CalculatorArgs(
         calculation_id="foo",
         calculation_type=CalculationType.WHOLESALE_FIXING,
-        calculation_grid_areas='["805", "806"]',
+        calculation_grid_areas=["805", "806"],
         calculation_period_start_datetime=datetime(2022, 6, 30, 22, 0, 0),
         calculation_period_end_datetime=datetime(2022, 7, 31, 22, 0, 0),
         calculation_execution_time_start=datetime(2022, 8, 1, 22, 0, 0),
