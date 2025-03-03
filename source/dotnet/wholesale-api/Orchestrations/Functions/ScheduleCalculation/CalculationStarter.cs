@@ -31,48 +31,48 @@ public class CalculationStarter(
     private readonly CalculationOrchestrationMonitorOptions _orchestrationMonitorOptions = orchestrationMonitorOptions;
     private readonly DurableTaskClient _durableTaskClient = durableTaskClient;
 
-    /// <summary>
-    /// Start a calculation orchestration for the given calculation id with the given orchestration instance id.
-    /// If an orchestration already exists for the given calculation, then an exception is thrown.
-    /// </summary>
-    /// <param name="calculationToStart">The calculation to start (calculation id and orchestration instance id).</param>
-    /// <exception cref="InvalidOperationException">Throws an InvalidOperationException if an orchestration with
-    /// the given orchestration instance id already exists</exception>
-    public async Task StartCalculationAsync(ScheduledCalculation calculationToStart)
-    {
-        var orchestrationInput = new CalculationOrchestrationInput(
-            _orchestrationMonitorOptions,
-            calculationToStart.CalculationId,
-            calculationToStart.IsInternalCalculation);
-
-        var alreadyStarted = await OrchestrationIsAlreadyStartedAsync(calculationToStart.OrchestrationInstanceId)
-            .ConfigureAwait(false);
-
-        if (alreadyStarted)
-        {
-            throw new InvalidOperationException($"Cannot start already existing calculation orchestration " +
-                                                $"(calculation id = {calculationToStart.CalculationId.Id}, " +
-                                                $"orchestration instance id = {calculationToStart.OrchestrationInstanceId.Id})");
-        }
-
-        var orchestrationInstanceId = await _durableTaskClient
-            .ScheduleNewOrchestrationInstanceAsync(
-                nameof(CalculationOrchestration),
-                orchestrationInput,
-                new StartOrchestrationOptions(calculationToStart.OrchestrationInstanceId.Id))
-            .ConfigureAwait(false);
-
-        _logger.LogInformation(
-            "Started new orchestration for calculation id = {calculationId} with instance id = {instanceId}",
-            calculationToStart.CalculationId.Id,
-            orchestrationInstanceId);
-    }
-
-    private async Task<bool> OrchestrationIsAlreadyStartedAsync(OrchestrationInstanceId orchestrationInstanceId)
-    {
-        var existingInstance = await _durableTaskClient.GetInstanceAsync(orchestrationInstanceId.Id)
-            .ConfigureAwait(false);
-
-        return existingInstance != null;
-    }
+    // /// <summary>
+    // /// Start a calculation orchestration for the given calculation id with the given orchestration instance id.
+    // /// If an orchestration already exists for the given calculation, then an exception is thrown.
+    // /// </summary>
+    // /// <param name="calculationToStart">The calculation to start (calculation id and orchestration instance id).</param>
+    // /// <exception cref="InvalidOperationException">Throws an InvalidOperationException if an orchestration with
+    // /// the given orchestration instance id already exists</exception>
+    // public async Task StartCalculationAsync(ScheduledCalculation calculationToStart)
+    // {
+    //     var orchestrationInput = new CalculationOrchestrationInput(
+    //         _orchestrationMonitorOptions,
+    //         calculationToStart.CalculationId,
+    //         calculationToStart.IsInternalCalculation);
+    //
+    //     var alreadyStarted = await OrchestrationIsAlreadyStartedAsync(calculationToStart.OrchestrationInstanceId)
+    //         .ConfigureAwait(false);
+    //
+    //     if (alreadyStarted)
+    //     {
+    //         throw new InvalidOperationException($"Cannot start already existing calculation orchestration " +
+    //                                             $"(calculation id = {calculationToStart.CalculationId.Id}, " +
+    //                                             $"orchestration instance id = {calculationToStart.OrchestrationInstanceId.Id})");
+    //     }
+    //
+    //     var orchestrationInstanceId = await _durableTaskClient
+    //         .ScheduleNewOrchestrationInstanceAsync(
+    //             nameof(CalculationOrchestration),
+    //             orchestrationInput,
+    //             new StartOrchestrationOptions(calculationToStart.OrchestrationInstanceId.Id))
+    //         .ConfigureAwait(false);
+    //
+    //     _logger.LogInformation(
+    //         "Started new orchestration for calculation id = {calculationId} with instance id = {instanceId}",
+    //         calculationToStart.CalculationId.Id,
+    //         orchestrationInstanceId);
+    // }
+    //
+    // private async Task<bool> OrchestrationIsAlreadyStartedAsync(OrchestrationInstanceId orchestrationInstanceId)
+    // {
+    //     var existingInstance = await _durableTaskClient.GetInstanceAsync(orchestrationInstanceId.Id)
+    //         .ConfigureAwait(false);
+    //
+    //     return existingInstance != null;
+    // }
 }
