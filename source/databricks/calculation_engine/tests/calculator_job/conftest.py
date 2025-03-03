@@ -38,7 +38,7 @@ def calculator_args_balance_fixing() -> CalculatorArgs:
     return CalculatorArgs(
         calculation_id=C.executed_balance_fixing_calculation_id,
         calculation_type=CalculationType.BALANCE_FIXING,
-        calculation_grid_areas=["805", "806"],
+        calculation_grid_areas='["805", "806"]',
         calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
         calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
         calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
