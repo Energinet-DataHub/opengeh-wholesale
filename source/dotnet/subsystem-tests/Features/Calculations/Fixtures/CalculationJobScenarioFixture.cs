@@ -50,10 +50,6 @@ public sealed class CalculationJobScenarioFixture : LazyFixtureBase
         var runParameters = new DatabricksCalculationParametersFactory()
             .CreateParameters(calculationJobInput);
 
-        runParameters.PythonParams.Add("--metering_point_periods_table_name=metering_point_periods_performance_test");
-        runParameters.PythonParams.Add("--time_series_points_table_name=time_series_points_for_performance_test");
-        runParameters.PythonParams.Add("--grid_loss_metering_points_table_name=grid_loss_responsible_performance_test");
-
         var runId = await DatabricksClient
             .Jobs
             .RunNow(calculatorJobId, runParameters);

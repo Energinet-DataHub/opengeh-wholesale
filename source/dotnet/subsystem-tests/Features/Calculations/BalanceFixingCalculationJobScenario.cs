@@ -43,10 +43,10 @@ public class BalanceFixingCalculationJobScenario : SubsystemTestsBase<Calculatio
         var createdByUserId = Guid.Parse("DED7734B-DD56-43AD-9EE8-0D7EFDA6C783");
         Fixture.ScenarioState.CalculationJobInput = new Calculation(
             createdTime: createdTime,
-            calculationType: Common.Interfaces.Models.CalculationType.Aggregation,
-            gridAreaCodes: new List<GridAreaCode> { new("791") },
-            periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 11, 30, 23, 0, 0, TimeSpan.Zero)),
-            periodEnd: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 12, 11, 23, 0, 0, TimeSpan.Zero)),
+            calculationType: Common.Interfaces.Models.CalculationType.BalanceFixing,
+            gridAreaCodes: new List<GridAreaCode> { new("543") },
+            periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero)),
+            periodEnd: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero)),
             scheduledAt: createdTime, // Schedule to run immediately
             dateTimeZone: DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             createdByUserId: createdByUserId,
@@ -75,25 +75,24 @@ public class BalanceFixingCalculationJobScenario : SubsystemTestsBase<Calculatio
     {
         var (isCompleted, run) = await Fixture.WaitForCalculationJobCompletedAsync(
             Fixture.ScenarioState.CalculationJobId,
-            waitTimeLimit: TimeSpan.FromMinutes(75));
+            waitTimeLimit: TimeSpan.FromMinutes(21));
 
         Fixture.ScenarioState.Run = run;
 
         // Assert
         using var assertionScope = new AssertionScope();
-        isCompleted.Should().BeTrue();
+        isCompleted.Should().BeTrue("because calculation job should complete within time limit.");
         run.Should().NotBeNull();
     }
 
     /// <summary>
     /// In this step we verify the 'duration' of the calculation job is within our 'performance goal'.
-    /// This 'duration' is the time we want to reduce during our performance workshop.
     /// </summary>
     [ScenarioStep(3)]
     [SubsystemFact]
     public void AndThen_CalculationJobDurationIsLessThanOrEqualToTimeLimit()
     {
-        var calculationJobTimeLimit = TimeSpan.FromMinutes(70);
+        var calculationJobTimeLimit = TimeSpan.FromMinutes(18);
 
         var actualCalculationJobDuration =
             Fixture.ScenarioState.Run.EndTime - Fixture.ScenarioState.Run.StartTime;
