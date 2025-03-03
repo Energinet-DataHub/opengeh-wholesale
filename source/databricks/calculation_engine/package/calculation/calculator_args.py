@@ -38,7 +38,6 @@ class CalculatorArgs(ApplicationSettings):
 
     calculation_id: str  # From CLI
     calculation_grid_areas: Annotated[list[str], NoDecode] = Field(
-        init=False,
         validation_alias=AliasChoices(
             "calculation_grid_areas", "grid_areas", "grid-areas"
         ),

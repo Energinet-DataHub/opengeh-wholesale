@@ -588,3 +588,52 @@ class TestWhenInternalCalculation:
                         CalculatorArgsValidation(actual_args)
                     # Assert
                     assert error.value != 0
+
+
+class TestValidationOfInputParams:
+    @pytest.mark.parametrize(
+        "sys_argvs",
+        [
+            (
+                [
+                    "dummy program name",
+                    "--calculation-id=calc_id123",
+                    "--grid-areas=[805, 806, 033, 099]",
+                    "--period-start-datetime=2022-05-31T22:00:00Z",
+                    "--period-end-datetime=2022-06-01T22:00:00Z",
+                    "--calculation-type=balance_fixing",
+                    "--created-by-user-id=c2975345-d935-44a2-b7bf-2629db4aa8bf",
+                ]
+            ),
+            (
+                [
+                    "dummy program name",
+                    "--calculation-id=calc_id123",
+                    "--grid-areas=['805', '806', '033', '099']",
+                    "--period-start-datetime=2022-05-31T22:00:00Z",
+                    "--period-end-datetime=2022-06-01T22:00:00Z",
+                    "--calculation-type=balance_fixing",
+                    "--created-by-user-id=c2975345-d935-44a2-b7bf-2629db4aa8bf",
+                ]
+            ),
+        ],
+    )
+    def test_grid_areas_as_list_and_str(
+        self,
+        job_environment_variables: dict,
+        sys_argvs,
+    ) -> None:
+        # Arrange
+
+        with patch("sys.argv", sys_argvs):
+            with patch.dict("os.environ", job_environment_variables):
+                # Act
+
+                actual_args = CalculatorArgs()
+                # Assert
+                assert actual_args.calculation_grid_areas == [
+                    "805",
+                    "806",
+                    "033",
+                    "099",
+                ]
