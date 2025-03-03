@@ -14,6 +14,7 @@
 
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
+using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
 
@@ -29,10 +30,22 @@ public class CalculationJobScenarioConfiguration : SubsystemTestConfiguration
     {
         var secretsConfiguration = Root.BuildSecretsConfiguration();
         DatabricksWorkspace = DatabricksWorkspaceConfiguration.CreateFromConfiguration(secretsConfiguration);
+        LogAnalyticsWorkspaceId = secretsConfiguration.GetValue<string>("log-shared-workspace-id")!;
+        DatabricksCatalogName = Root.GetValue<string>("DATABRICKS_CATALOG_NAME")!;
     }
 
     /// <summary>
     /// Settings necessary to manage the Databricks workspace.
     /// </summary>
     public DatabricksWorkspaceConfiguration DatabricksWorkspace { get; }
+
+    /// <summary>
+    /// Setting necessary to use the shared Log Analytics workspace.
+    /// </summary>
+    public string LogAnalyticsWorkspaceId { get; }
+
+    /// <summary>
+    /// Setting necessary for specifying the Databricks test catalog.
+    /// </summary>
+    public string DatabricksCatalogName { get; }
 }

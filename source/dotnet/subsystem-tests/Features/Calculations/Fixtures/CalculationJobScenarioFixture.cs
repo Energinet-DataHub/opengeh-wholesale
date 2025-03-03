@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Concurrent;
+using Azure;
+using Azure.Identity;
+using Azure.Monitor.Query;
+using Azure.Monitor.Query.Models;
+using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
@@ -22,6 +28,8 @@ using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
@@ -33,6 +41,8 @@ public sealed class CalculationJobScenarioFixture : LazyFixtureBase
     {
         Configuration = new CalculationJobScenarioConfiguration();
         ScenarioState = new CalculationJobScenarioState();
+        LogsQueryClient = new LogsQueryClient(new DefaultAzureCredential());
+        DatabricksSqlWarehouseQueryExecutor = GetDatabricksSqlWarehouseQueryExecutor();
     }
 
     public CalculationJobScenarioState ScenarioState { get; }
@@ -43,6 +53,10 @@ public sealed class CalculationJobScenarioFixture : LazyFixtureBase
     /// The actual client is not created until <see cref="OnInitializeAsync"/> has been called by the base class.
     /// </summary>
     private DatabricksClient DatabricksClient { get; set; } = null!;
+
+    private LogsQueryClient LogsQueryClient { get; }
+
+    private DatabricksSqlWarehouseQueryExecutor DatabricksSqlWarehouseQueryExecutor { get; }
 
     public async Task<CalculationJobId> StartCalculationJobAsync(Calculation calculationJobInput)
     {
@@ -86,6 +100,45 @@ public sealed class CalculationJobScenarioFixture : LazyFixtureBase
         return (calculationState == CalculationState.Completed, runState.Item1);
     }
 
+    public async Task<Response<LogsQueryResult>> QueryLogAnalyticsAsync(string query, QueryTimeRange queryTimeRange)
+    {
+        return await LogsQueryClient.QueryWorkspaceAsync(Configuration.LogAnalyticsWorkspaceId, query, queryTimeRange);
+    }
+
+    public async Task<IReadOnlyList<(bool IsAccessible, string ErrorMessage)>> ArePublicDataModelsAccessibleAsync(
+        IReadOnlyList<(string ModelName, string TableName)> modelsAndTables)
+    {
+        var results = new ConcurrentBag<(bool IsAccessible, string ErrorMessage)>();
+        var tasks = modelsAndTables.Select(async item =>
+        {
+            try
+            {
+                var statement = DatabricksStatement.FromRawSql($"SELECT * FROM {Configuration.DatabricksCatalogName}.{item.ModelName}.{item.TableName} LIMIT 1");
+                var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
+                var list = await queryResult.ToListAsync();
+                if (list.Count == 0)
+                {
+                    results.Add(new(
+                        false,
+                        $"Table '{item.TableName}' in model '{item.ModelName}' doesn't contain data."));
+                }
+                else
+                {
+                    results.Add(new(true, string.Empty));
+                }
+            }
+            catch (Exception e)
+            {
+                results.Add(new(
+                    false,
+                    $"Table '{item.TableName}' in model '{item.ModelName}' is missing. Exception: {e.Message}"));
+            }
+        }).ToList();
+
+        await Task.WhenAll(tasks);
+        return results.ToList();
+    }
+
     protected override Task OnInitializeAsync()
     {
         DatabricksClient = DatabricksClient.CreateClient(Configuration.DatabricksWorkspace.BaseUrl, Configuration.DatabricksWorkspace.Token);
@@ -122,5 +175,24 @@ public sealed class CalculationJobScenarioFixture : LazyFixtureBase
             },
             _ => throw new ArgumentOutOfRangeException(nameof(run.State)),
         };
+    }
+
+    private DatabricksSqlWarehouseQueryExecutor GetDatabricksSqlWarehouseQueryExecutor()
+    {
+        var inMemorySettings = new Dictionary<string, string>
+        {
+            { "WorkspaceUrl", Configuration.DatabricksWorkspace.BaseUrl },
+            { "WorkspaceToken", Configuration.DatabricksWorkspace.Token },
+            { "WarehouseId", Configuration.DatabricksWorkspace.WarehouseId },
+        };
+
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(inMemorySettings!)
+            .Build();
+
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddDatabricksSqlStatementExecution(configuration);
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        return serviceProvider.GetRequiredService<DatabricksSqlWarehouseQueryExecutor>();
     }
 }

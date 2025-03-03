@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Monitor.Query;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
@@ -100,5 +101,73 @@ public class WholesaleFixingCalculationJobScenario : SubsystemTestsBase<Calculat
         // Assert
         actualCalculationJobDuration.Should().BeGreaterThan(TimeSpan.Zero);
         actualCalculationJobDuration.Should().BeLessThanOrEqualTo(calculationJobTimeLimit);
+    }
+
+    [ScenarioStep(4)]
+    [SubsystemFact]
+    public async Task AndThen_ACalculationTelemetryLogIsCreated()
+    {
+        var query = $@"
+     AppTraces
+     | where AppRoleName == ""dbr-calculation-engine""
+     | where SeverityLevel == 1 // Information
+     | where Message startswith_cs ""Command line arguments:""
+     | where OperationId != ""00000000000000000000000000000000""
+     | where Properties.Subsystem == ""wholesale-aggregations""
+     | where Properties.calculation_id == ""{Fixture.ScenarioState.CalculationJobInput.Id}""
+     | where Properties.CategoryName == ""Energinet.DataHub.package.calculator_job_args""
+     | count";
+
+        // Assert
+        var actual = await Fixture.QueryLogAnalyticsAsync(query, new QueryTimeRange(TimeSpan.FromMinutes(60)));
+
+        using var assertionScope = new AssertionScope();
+        actual.Value.Table.Rows[0][0].Should().Be(1); // count == 1
+    }
+
+    [ScenarioStep(5)]
+    [SubsystemFact]
+    public async Task AndThen_ACalculationTelemetryTraceWithASpanIsCreated()
+    {
+        var query = $@"
+     AppDependencies
+     | where Target == ""energy""
+     | where Name == ""energy""
+     | where DependencyType == ""InProc""
+     | where Success == true
+     | where ResultCode == 0
+     | where AppRoleName == ""dbr-calculation-engine""
+     | where Properties.Subsystem == ""wholesale-aggregations""
+     | where Properties.calculation_id == ""{Fixture.ScenarioState.CalculationJobInput.Id}""
+     | count";
+
+        // Assert
+        var actual = await Fixture.QueryLogAnalyticsAsync(query, new QueryTimeRange(TimeSpan.FromMinutes(60)));
+
+        using var assertionScope = new AssertionScope();
+        actual.Value.Table.Rows[0][0].Should().Be(1); // count == 1
+    }
+
+    [ScenarioStep(6)]
+    [SubsystemFact]
+    public async Task AndThen_OneViewOrTableInEachPublicDataModelMustExistsAndContainData()
+    {
+        // Arrange
+        var publicDataModelsAndTables = new List<(string ModelName, string TableName)>
+             {
+                 new("wholesale_sap", "energy_v1"),
+                 new("wholesale_results", "energy_v1"),
+                 new("wholesale_basis_data", "metering_point_periods_v1"),
+             };
+
+        // Act
+        var results = await Fixture.ArePublicDataModelsAccessibleAsync(publicDataModelsAndTables);
+
+        // Assert
+        using var assertionScope = new AssertionScope();
+        foreach (var actual in results)
+        {
+            actual.IsAccessible.Should().Be(true, actual.ErrorMessage);
+        }
     }
 }
