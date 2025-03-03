@@ -75,7 +75,7 @@ public class CalculationSchedulerHandler(
 
     public Task CancelScheduledCalculationAsync(DurableTaskClient durableTaskClient, CalculationId calculationId)
     {
-        return Task.CompletedTask;
+        throw new InvalidOperationException("Cancelling calculations in Wholesale is not allowed, the Process Manager should be used instead.");
         // var scheduledCalculation = await _calculationRepository.GetAsync(calculationId.Id)
         //     .ConfigureAwait(false);
         //
