@@ -17,9 +17,9 @@ from package.codelists.calculation_type import (
     CalculationType,
     is_wholesale_calculation_type,
 )
-from typing import Any
+from typing import Any, Annotated
 from pydantic import AliasChoices, Field, field_validator
-
+from pydantic_settings import NoDecode
 from geh_common.application.settings import ApplicationSettings
 
 from package.common.datetime_utils import (
@@ -37,11 +37,13 @@ class CalculatorArgs(ApplicationSettings):
     """
 
     calculation_id: str  # From CLI
-    calculation_grid_areas: str | list[str] = Field(
+    calculation_grid_areas: Annotated[list[str], NoDecode] = Field(
+        init=False,
         validation_alias=AliasChoices(
             "calculation_grid_areas", "grid_areas", "grid-areas"
-        )
-    )  # From CLI
+        ),
+    )
+    # From CLI
 
     calculation_period_start_datetime: datetime = Field(
         ...,
@@ -70,11 +72,8 @@ class CalculatorArgs(ApplicationSettings):
 
     @field_validator("calculation_grid_areas", mode="before")
     @classmethod
-    def ensure_list(cls, value: str) -> list[str]:
-        if isinstance(value, str):
-            return re.findall(r"\d+", value)
-        if isinstance(value, list):
-            return [str(item) for item in value]
+    def _validate_myvar(cls, value: Any) -> list[str]:
+        return re.findall(r"\d+", value)
 
 
 class CalculatorArgsValidation:
