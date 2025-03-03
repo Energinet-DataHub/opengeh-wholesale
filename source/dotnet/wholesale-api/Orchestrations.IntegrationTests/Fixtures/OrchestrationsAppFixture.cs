@@ -233,46 +233,45 @@ public class OrchestrationsAppFixture : IAsyncLifetime
         TestLogger.TestOutputHelper = testOutputHelper;
     }
 
-    /// <summary>
-    /// Calls the <see cref="AppHostManager"/> to send a post request to start the
-    /// calculation.
-    /// </summary>
-    /// <returns>Calculation id of the started calculation.</returns>
-    public async Task<Guid> StartCalculationAsync(bool isInternalCalculation = false)
-    {
-        var dateTimeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
-        var dateAtMidnight = new LocalDate(2024, 5, 17)
-            .AtMidnight()
-            .InZoneStrictly(dateTimeZone)
-            .ToDateTimeOffset();
-
-        // Input parameters
-        var requestDto = new StartCalculationRequestDto(
-            CalculationType.Aggregation,
-            GridAreaCodes: ["256", "512"],
-            StartDate: dateAtMidnight,
-            EndDate: dateAtMidnight.AddDays(2),
-            ScheduledAt: DateTimeOffset.UtcNow,
-            IsInternalCalculation: isInternalCalculation);
-
-        return await StartCalculationAsync(requestDto);
-    }
-
-    public async Task<Guid> StartCalculationAsync(StartCalculationRequestDto requestDto)
-    {
-        var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
-        request.Content = new StringContent(
-            JsonConvert.SerializeObject(requestDto),
-            Encoding.UTF8,
-            "application/json");
-
-        request.Headers.Authorization = await CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync();
-
-        using var startCalculationResponse = await AppHostManager.HttpClient.SendAsync(request);
-        startCalculationResponse.EnsureSuccessStatusCode();
-
-        return await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
-    }
+    // /// <summary>
+    // /// Calls the <see cref="AppHostManager"/> to send a post request to start the
+    // /// calculation.
+    // /// </summary>
+    // /// <returns>Calculation id of the started calculation.</returns>
+    // public async Task<Guid> StartCalculationAsync(bool isInternalCalculation = false)
+    // {
+    //     var dateTimeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
+    //     var dateAtMidnight = new LocalDate(2024, 5, 17)
+    //         .AtMidnight()
+    //         .InZoneStrictly(dateTimeZone)
+    //         .ToDateTimeOffset();
+    //
+    //     // Input parameters
+    //     var requestDto = new StartCalculationRequestDto(
+    //         CalculationType.Aggregation,
+    //         GridAreaCodes: ["256", "512"],
+    //         StartDate: dateAtMidnight,
+    //         EndDate: dateAtMidnight.AddDays(2),
+    //         ScheduledAt: DateTimeOffset.UtcNow,
+    //         IsInternalCalculation: isInternalCalculation);
+    //
+    //     return await StartCalculationAsync(requestDto);
+    // }
+    // public async Task<Guid> StartCalculationAsync(StartCalculationRequestDto requestDto)
+    // {
+    //     var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
+    //     request.Content = new StringContent(
+    //         JsonConvert.SerializeObject(requestDto),
+    //         Encoding.UTF8,
+    //         "application/json");
+    //
+    //     request.Headers.Authorization = await CreateInternalTokenAuthenticationHeaderForEnergySupplierAsync();
+    //
+    //     using var startCalculationResponse = await AppHostManager.HttpClient.SendAsync(request);
+    //     startCalculationResponse.EnsureSuccessStatusCode();
+    //
+    //     return await startCalculationResponse.Content.ReadFromJsonAsync<Guid>();
+    // }
 
     /// <summary>
     /// Calls the <see cref="OpenIdJwtManager"/> on to create an "internal token"
