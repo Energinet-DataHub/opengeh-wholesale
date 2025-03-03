@@ -39,68 +39,70 @@ public class CalculationSchedulerHandler(
     private readonly ICalculationRepository _calculationRepository = calculationRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task StartScheduledCalculationsAsync(DurableTaskClient durableTaskClient)
+    public Task StartScheduledCalculationsAsync(DurableTaskClient durableTaskClient)
     {
-        var now = _clock.GetCurrentInstant();
-        var scheduledCalculationIds = await _calculationRepository
-            .GetScheduledCalculationsAsync(scheduledToRunBefore: now)
-            .ConfigureAwait(false);
-
-        var calculationStarter = new CalculationStarter(
-            _logger,
-            _orchestrationMonitorOptions,
-            durableTaskClient);
-
-        foreach (var calculationToStart in scheduledCalculationIds)
-        {
-            try
-            {
-                await calculationStarter
-                    .StartCalculationAsync(calculationToStart)
-                    .ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                // Log error if orchestration did not start successfully.
-                // Does not throw exception since we want to continue processing the next scheduled calculations.
-                _logger.LogError(
-                    e,
-                    "Failed to start calculation with id = {CalculationId} and orchestration instance id = {OrchestrationInstanceId}",
-                    calculationToStart.CalculationId.Id,
-                    calculationToStart.OrchestrationInstanceId.Id);
-            }
-        }
+        return Task.CompletedTask;
+        // var now = _clock.GetCurrentInstant();
+        // var scheduledCalculationIds = await _calculationRepository
+        //     .GetScheduledCalculationsAsync(scheduledToRunBefore: now)
+        //     .ConfigureAwait(false);
+        //
+        // var calculationStarter = new CalculationStarter(
+        //     _logger,
+        //     _orchestrationMonitorOptions,
+        //     durableTaskClient);
+        //
+        // foreach (var calculationToStart in scheduledCalculationIds)
+        // {
+        //     try
+        //     {
+        //         await calculationStarter
+        //             .StartCalculationAsync(calculationToStart)
+        //             .ConfigureAwait(false);
+        //     }
+        //     catch (Exception e)
+        //     {
+        //         // Log error if orchestration did not start successfully.
+        //         // Does not throw exception since we want to continue processing the next scheduled calculations.
+        //         _logger.LogError(
+        //             e,
+        //             "Failed to start calculation with id = {CalculationId} and orchestration instance id = {OrchestrationInstanceId}",
+        //             calculationToStart.CalculationId.Id,
+        //             calculationToStart.OrchestrationInstanceId.Id);
+        //     }
+        // }
     }
 
-    public async Task CancelScheduledCalculationAsync(DurableTaskClient durableTaskClient, CalculationId calculationId)
+    public Task CancelScheduledCalculationAsync(DurableTaskClient durableTaskClient, CalculationId calculationId)
     {
-        var scheduledCalculation = await _calculationRepository.GetAsync(calculationId.Id)
-            .ConfigureAwait(false);
-
-        if (!scheduledCalculation.CanCancel())
-        {
-            throw new InvalidOperationException($"Unable to cancel calculation with id = {scheduledCalculation.Id} " +
-                                                $"and status = {scheduledCalculation.OrchestrationState}");
-        }
-
-        var existingOrchestration = await durableTaskClient
-            .GetInstanceAsync(scheduledCalculation.OrchestrationInstanceId.Id)
-            .ConfigureAwait(false);
-
-        if (existingOrchestration != null)
-        {
-            throw new InvalidOperationException($"Unable to cancel calculation with id = {scheduledCalculation.Id} " +
-                                                $"and orchestration id = {scheduledCalculation.OrchestrationInstanceId.Id} " +
-                                                $"since the orchestration is already started");
-        }
-
-        scheduledCalculation.MarkAsCanceled(_userContext.CurrentUser.UserId);
-
-        await _unitOfWork.CommitAsync()
-            .ConfigureAwait(false);
-
-        _logger.LogInformation(
-            "Calculation with id {calculationId} was cancelled",
-            calculationId.Id);
+        throw new InvalidOperationException("Cancelling calculations in Wholesale is not allowed, the Process Manager should be used instead.");
+        // var scheduledCalculation = await _calculationRepository.GetAsync(calculationId.Id)
+        //     .ConfigureAwait(false);
+        //
+        // if (!scheduledCalculation.CanCancel())
+        // {
+        //     throw new InvalidOperationException($"Unable to cancel calculation with id = {scheduledCalculation.Id} " +
+        //                                         $"and status = {scheduledCalculation.OrchestrationState}");
+        // }
+        //
+        // var existingOrchestration = await durableTaskClient
+        //     .GetInstanceAsync(scheduledCalculation.OrchestrationInstanceId.Id)
+        //     .ConfigureAwait(false);
+        //
+        // if (existingOrchestration != null)
+        // {
+        //     throw new InvalidOperationException($"Unable to cancel calculation with id = {scheduledCalculation.Id} " +
+        //                                         $"and orchestration id = {scheduledCalculation.OrchestrationInstanceId.Id} " +
+        //                                         $"since the orchestration is already started");
+        // }
+        //
+        // scheduledCalculation.MarkAsCanceled(_userContext.CurrentUser.UserId);
+        //
+        // await _unitOfWork.CommitAsync()
+        //     .ConfigureAwait(false);
+        //
+        // _logger.LogInformation(
+        //     "Calculation with id {calculationId} was cancelled",
+        //     calculationId.Id);
     }
 }
