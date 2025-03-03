@@ -26,10 +26,10 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation;
 internal class CalculationOrchestration
 {
     [Function(nameof(CalculationOrchestration))]
-    public async Task<string> Run(
+    public Task<string> Run(
         [OrchestrationTrigger] TaskOrchestrationContext context)
     {
-        throw new Exception("Calculations should no longer run in Wholesale, they should run in the Process Manager subsystem instead");
+        throw new Exception("Calculations should no longer run using Wholesale, they should run in the Process Manager subsystem instead");
         // var input = context.GetInput<CalculationOrchestrationInput>();
         // if (input == null)
         // {
