@@ -29,4 +29,13 @@ locals {
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MEASUREMENTS_CORE = "Information"
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE              = "Information"
   LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT                             = "Warning"
+
+  # All Databricks jobs that should stream in our workspaces
+  databricks_jobs_string = join(",", [
+    databricks_job.bronze_submitted_transactions_to_silver.name,
+    databricks_job.bronze_submitted_transactions_ingestion_stream.name,
+    databricks_job.silver_to_gold_measurements.name,
+    databricks_job.silver_notify_transactions_persisted_stream.name,
+    databricks_job.bronze_migrate_transactions_batch_job.name
+  ])
 }

@@ -32,6 +32,9 @@ resource "databricks_job" "core_database_migration" {
         "BRONZE_DATABASE_NAME"                      = databricks_schema.measurements_bronze.name
         "SILVER_DATABASE_NAME"                      = databricks_schema.measurements_silver.name
         "GOLD_DATABASE_NAME"                        = databricks_schema.measurements_gold.name
+        "DATABRICKS_WORKSPACE_URL"                  = module.dbw.workspace_url
+        "DATABRICKS_TOKEN"                          = module.dbw.databricks_token
+        "DATABRICKS_JOBS"                           = local.databricks_jobs_string
       }
     }
   }
