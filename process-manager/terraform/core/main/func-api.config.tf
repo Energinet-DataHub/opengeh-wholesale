@@ -19,10 +19,12 @@ locals {
       # Database
       "ProcessManager__SqlDatabaseConnectionString" = local.DatabaseConnectionString
 
-      # NotifyOrchestrationInstance subscription
+      # Process Manager Notify topic/subscription
       "ServiceBus__FullyQualifiedNamespace"                                      = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
       "NotifyOrchestrationInstance__TopicName"                                   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
       "NotifyOrchestrationInstance__NotifyOrchestrationInstanceSubscriptionName" = module.sbtsub_pm_notify_orchestration.name
+      "ProcessManagerNotifyTopic__TopicName"                                     = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanagernotify-name)"
+      "ProcessManagerNotifyTopic__SubscriptionName"                              = module.sbtsub_pmnotify_notify_orchestration.name
 
       # Timer triggers
       # IMPORTANT: Override settings to enable them i development/tests environments

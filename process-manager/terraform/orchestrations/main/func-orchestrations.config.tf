@@ -21,13 +21,17 @@ locals {
       # Database
       "ProcessManager__SqlDatabaseConnectionString" = data.azurerm_key_vault_secret.mssqldb_connection_string.value
 
-      # PM Topic subscriptions
+      # Service Bus
       "ServiceBus__FullyQualifiedNamespace" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
 
+      # Process Manager Start topic/subscriptions
       "ProcessManagerTopic__TopicName"                                = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
       "ProcessManagerTopic__Brs026SubscriptionName"                   = module.sbtsub_pm_brs_026.name
       "ProcessManagerTopic__Brs028SubscriptionName"                   = module.sbtsub_pm_brs_028.name
       "ProcessManagerTopic__Brs021ForwardMeteredDataSubscriptionName" = module.sbtsub_pm_brs_021_forward_metered_data.name
+      "ProcessManagerStartTopic__TopicName"                           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanagerstart-name)"
+      "ProcessManagerStartTopic__Brs026SubscriptionName"              = module.sbtsub_pmstart_brs_026.name
+      "ProcessManagerStartTopic__Brs028SubscriptionName"              = module.sbtsub_pmstart_brs_028.name
 
       # BRS-021 (FMD) topic subscriptions
       "Brs021ForwardMeteredDataTopic__StartTopicName"         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-brs021forwardmetereddatastart-name)"
@@ -50,8 +54,8 @@ locals {
       "MeasurementsEventHub__EventHubName"  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=evh-measurement-transactions-name)"
 
       # Electricity Market client
-      "ElectricityMarketClientOptions__BaseUrl"           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mp-data-api-base-url)"
-      "ElectricityMarketClientOptions__ApplicationIdUri"  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=electricitymarket-application-id-uri)"
+      "ElectricityMarketClientOptions__BaseUrl"          = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mp-data-api-base-url)"
+      "ElectricityMarketClientOptions__ApplicationIdUri" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=electricitymarket-application-id-uri)"
 
       # Wholesale database
       "WholesaleDatabase__SqlDatabaseConnectionString" = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${local.wholesale_db_name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"

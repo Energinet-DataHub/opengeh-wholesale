@@ -50,6 +50,11 @@ module "func_orchestrations" {
       role_definition_name = "Azure Service Bus Data Owner"
     },
     {
+      // ServiceBus Process Manager Start Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_processmanagerstart_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
+    },
+    {
       // ServiceBus EDI Topic
       resource_id          = data.azurerm_key_vault_secret.sbt_edi_id.value
       role_definition_name = "Azure Service Bus Data Owner"
