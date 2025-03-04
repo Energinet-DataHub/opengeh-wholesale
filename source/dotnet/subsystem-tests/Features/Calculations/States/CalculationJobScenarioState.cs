@@ -21,6 +21,9 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.State
 public class CalculationJobScenarioState
 {
     [NotNull]
+    public long? LatestCalculationVersion { get; set; }
+
+    [NotNull]
     public Calculation? CalculationJobInput { get; set; }
 
     [NotNull]

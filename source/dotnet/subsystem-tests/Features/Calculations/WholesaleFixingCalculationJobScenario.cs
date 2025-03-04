@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using AutoFixture;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
@@ -38,7 +39,18 @@ public class WholesaleFixingCalculationJobScenario : SubsystemTestsBase<Calculat
 
     [ScenarioStep(0)]
     [SubsystemFact]
-    public void Given_CalculationJobInput()
+    public async Task Given_LatestCalculationVersionBeforeANewCalculationIsStarted()
+    {
+        var (calculationVersion, message) = await Fixture.GetLatestCalculationVersionFromCalculationsAsync();
+        Fixture.ScenarioState.LatestCalculationVersion = calculationVersion;
+
+        // Assert
+        calculationVersion.Should().NotBeNull(message);
+    }
+
+    [ScenarioStep(1)]
+    [SubsystemFact]
+    public void AndGiven_CalculationJobInput()
     {
         var createdTime = SystemClock.Instance.GetCurrentInstant();
         var createdByUserId = Guid.Parse("DED7734B-DD56-43AD-9EE8-0D7EFDA6C783");
@@ -55,7 +67,7 @@ public class WholesaleFixingCalculationJobScenario : SubsystemTestsBase<Calculat
             false);
     }
 
-    [ScenarioStep(1)]
+    [ScenarioStep(2)]
     [SubsystemFact]
     public async Task When_CalculationJobIsStarted()
     {
@@ -70,7 +82,7 @@ public class WholesaleFixingCalculationJobScenario : SubsystemTestsBase<Calculat
     /// This is not an exact time for how long it took to perform the calculation,
     /// but the time it took for our retry loop to determine that the calculation has completed.
     /// </summary>
-    [ScenarioStep(2)]
+    [ScenarioStep(3)]
     [SubsystemFact]
     public async Task Then_CalculationJobIsCompletedWithinWaitTime()
     {
@@ -89,7 +101,7 @@ public class WholesaleFixingCalculationJobScenario : SubsystemTestsBase<Calculat
     /// <summary>
     /// In this step we verify the 'duration' of the calculation job is within our 'performance goal'.
     /// </summary>
-    [ScenarioStep(3)]
+    [ScenarioStep(4)]
     [SubsystemFact]
     public void AndThen_CalculationJobDurationIsLessThanOrEqualToTimeLimit()
     {
@@ -103,7 +115,7 @@ public class WholesaleFixingCalculationJobScenario : SubsystemTestsBase<Calculat
         actualCalculationJobDuration.Should().BeLessThanOrEqualTo(calculationJobTimeLimit);
     }
 
-    [ScenarioStep(4)]
+    [ScenarioStep(5)]
     [SubsystemFact]
     public async Task AndThen_ACalculationTelemetryLogIsCreated()
     {
@@ -125,7 +137,7 @@ public class WholesaleFixingCalculationJobScenario : SubsystemTestsBase<Calculat
         actual.Value.Table.Rows[0][0].Should().Be(1); // count == 1
     }
 
-    [ScenarioStep(5)]
+    [ScenarioStep(6)]
     [SubsystemFact]
     public async Task AndThen_ACalculationTelemetryTraceWithASpanIsCreated()
     {
@@ -148,7 +160,7 @@ public class WholesaleFixingCalculationJobScenario : SubsystemTestsBase<Calculat
         actual.Value.Table.Rows[0][0].Should().Be(1); // count == 1
     }
 
-    [ScenarioStep(6)]
+    [ScenarioStep(7)]
     [SubsystemFact]
     public async Task AndThen_OneViewOrTableInEachPublicDataModelMustExistsAndContainData()
     {
@@ -169,5 +181,19 @@ public class WholesaleFixingCalculationJobScenario : SubsystemTestsBase<Calculat
         {
             actual.IsAccessible.Should().Be(true, actual.ErrorMessage);
         }
+    }
+
+    [ScenarioStep(8)]
+    [SubsystemFact]
+    public async Task AndThen_CheckThatIdentityColumnOnCalculationsIsWorkingCorrectly()
+    {
+        // Arrange
+        var previousCalculationVersion = Fixture.ScenarioState.LatestCalculationVersion;
+
+        // Act
+        var (calculationVersion, message) = await Fixture.GetCalculationVersionOfCalculationIdFromCalculationsAsync(Fixture.ScenarioState.CalculationJobInput.Id);
+
+        // Assert
+        (calculationVersion > previousCalculationVersion).Should().BeTrue(message);
     }
 }

@@ -139,6 +139,51 @@ public sealed class CalculationJobScenarioFixture : LazyFixtureBase
         return results.ToList();
     }
 
+    public async Task<(long? CalculationVersion, string Message)> GetLatestCalculationVersionFromCalculationsAsync()
+    {
+        try
+        {
+            var statement = DatabricksStatement.FromRawSql(
+                $"SELECT calculation_version FROM {Configuration.DatabricksCatalogName}.wholesale_internal.calculations ORDER BY calculation_version DESC LIMIT 1");
+            var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
+            var item = await queryResult.FirstAsync();
+
+            if (item.calculation_version != null)
+            {
+                return (item.calculation_version, "Calculation version retrieved successfully");
+            }
+
+            return (null, "No data found in the table");
+        }
+        catch (Exception e)
+        {
+            return (null, $"An error occurred: {e.Message}");
+        }
+    }
+
+    public async Task<(long? CalculationVersion, string Message)> GetCalculationVersionOfCalculationIdFromCalculationsAsync(
+        Guid calculationId)
+    {
+        try
+        {
+            var statement = DatabricksStatement.FromRawSql(
+                $"SELECT calculation_version FROM {Configuration.DatabricksCatalogName}.wholesale_internal.calculations WHERE calculation_id = '{calculationId}'");
+            var queryResult = DatabricksSqlWarehouseQueryExecutor.ExecuteStatementAsync(statement.Build());
+            var item = await queryResult.FirstAsync();
+
+            if (item.calculation_version != null)
+            {
+                return (item.calculation_version, "Calculation ID retrieved successfully");
+            }
+
+            return (null, "No data found in the table");
+        }
+        catch (Exception e)
+        {
+            return (null, $"An error occurred: {e.Message}");
+        }
+    }
+
     protected override Task OnInitializeAsync()
     {
         DatabricksClient = DatabricksClient.CreateClient(Configuration.DatabricksWorkspace.BaseUrl, Configuration.DatabricksWorkspace.Token);
