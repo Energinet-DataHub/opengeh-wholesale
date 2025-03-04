@@ -29,6 +29,12 @@ locals {
       "ProcessManagerTopic__Brs028SubscriptionName"                   = module.sbtsub_pm_brs_028.name
       "ProcessManagerTopic__Brs021ForwardMeteredDataSubscriptionName" = module.sbtsub_pm_brs_021_forward_metered_data.name
 
+      # BRS-021 (FMD) topic subscriptions
+      "Brs021ForwardMeteredDataTopic__StartTopicName"         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-brs021forwardmetereddatastart-name)"
+      "Brs021ForwardMeteredDataTopic__NotifyTopicName"        = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-brs021forwardmetereddatanotify-name)"
+      "Brs021ForwardMeteredDataTopic__StartSubscriptionName"  = module.sbtsub_pm_brs_021_forward_metered_data_start.name
+      "Brs021ForwardMeteredDataTopic__NotifySubscriptionName" = module.sbtsub_pm_brs_021_forward_metered_data_notify.name
+
       # Subsystem Topics
       "EdiTopic__Name"              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-edi-name)"
       "IntegrationEventTopic__Name" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-shres-integrationevent-received-name)"

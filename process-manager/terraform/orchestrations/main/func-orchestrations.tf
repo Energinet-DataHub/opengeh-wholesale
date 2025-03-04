@@ -64,6 +64,16 @@ module "func_orchestrations" {
       resource_id          = data.azurerm_key_vault_secret.sbt_domainrelay_integrationevent_received_id.value
       role_definition_name = "Azure Service Bus Data Owner"
     },
+    {
+      // ServiceBus Brs-021 (FMD) Start Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_brs021forwardmetereddatastart_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
+    },
+    {
+      // ServiceBus Brs-021 (FMD) Notify Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_brs021forwardmetereddatanotify_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
+    },
   ]
 }
 

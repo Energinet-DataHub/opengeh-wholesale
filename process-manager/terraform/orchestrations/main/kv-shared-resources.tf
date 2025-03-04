@@ -43,6 +43,16 @@ data "azurerm_key_vault_secret" "sbt_processmanager_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
+data "azurerm_key_vault_secret" "sbt_brs021forwardmetereddatastart_id" {
+  name         = "sbt-brs021forwardmetereddatastart-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "sbt_brs021forwardmetereddatanotify_id" {
+  name         = "sbt-brs021forwardmetereddatanotify-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
 data "azurerm_key_vault_secret" "sbt_edi_id" {
   name         = "sbt-edi-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
