@@ -62,3 +62,13 @@ data "azurerm_key_vault_secret" "apim_oauth_server_name" {
   name         = "apim-oauth-server-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+data "azurerm_key_vault_secret" "log_analytics_id" {
+  name         = "log-shared-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "log_analytics_workspace_id" {
+  name         = "log-shared-workspace-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}

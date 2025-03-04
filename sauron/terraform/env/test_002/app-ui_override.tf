@@ -8,6 +8,9 @@ module "app_ui" {
 
 resource "azuread_application" "sauron" {
   single_page_application {
-    redirect_uris = ["https://app-ui-${local.name_suffix}.azurewebsites.net/"]
+    redirect_uris = [
+      "https://app-ui-${local.name_suffix}.azurewebsites.net/",
+      "https://sauron.test002.datahub3.dk/"
+    ]
   }
 }

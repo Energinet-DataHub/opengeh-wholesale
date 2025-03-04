@@ -22,5 +22,12 @@ module "func_bff_api" {
   dotnet_framework_version = "v8.0"
   app_settings = {
     CONNECTION_STRING_DATABASE = "Server=tcp:${data.azurerm_key_vault_secret.mssql_data_url.value},1433;Initial Catalog=${module.mssqldb.name};Persist Security Info=False;Authentication=Active Directory Managed Identity;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=120;"
+    LOG_ANALYTICS_WORKSPACE_ID = data.azurerm_key_vault_secret.log_analytics_workspace_id.value
   }
+}
+
+resource "azurerm_role_assignment" "func_bff_api_log_analytics_reader" {
+  principal_id         = module.func_bff_api.identity[0].principal_id
+  role_definition_name = "Log Analytics Reader"
+  scope                = data.azurerm_key_vault_secret.log_analytics_id.value
 }
