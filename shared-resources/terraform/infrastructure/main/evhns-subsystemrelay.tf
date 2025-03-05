@@ -14,20 +14,6 @@ module "evhns_subsystemrelay" {
   }
 }
 
-module "kvs_evhns_measurements_id" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
-  name         = "evhns-measurements-id"
-  value        = module.evhns_subsystemrelay.id
-  key_vault_id = module.kv_shared.id
-}
-
-module "kvs_evhns_measurements_name" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
-  name         = "evhns-measurements-name"
-  value        = module.evhns_subsystemrelay.name
-  key_vault_id = module.kv_shared.id
-}
-
 module "kvs_evhns_subsystemrelay_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
   name         = "evhns-subsystemrelay-id"
