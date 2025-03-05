@@ -1,0 +1,33 @@
+coverage_mapping:
+  notes: |
+    ## Purpose
+    The purpose is checking the latest calculation by day and grid area.
+    
+    ## DESIGN CONSIDERATIONS
+    
+    GA      | Type              | Day 1     | Day 2     | Day 3     |
+    ---------------------------------------------------------
+                                    calculation_id: 1
+    001     | aggregation       |-----------------------|
+    
+                                    calculation_id: 2
+    001     | balance_fixing    |-----------------------|
+    
+                                    calculation_id: 2
+    002     | balance_fixing    |-----------------------|
+    
+                                    calculation_id: 3
+    001     | balance_fixing    |-----------------------|
+    
+                                    calculation_id: 4
+    001     | balance_fixing                |-----------------------|
+    
+                                    calculation_id: 5 (calculation not succeeded)
+    001     | balance_fixing    |-----------------------|
+
+  cases_tested:
+    "Data Product Tests":
+      - "Latest Calculation By Day Splits Period In Correct Amount Of Days"
+      - "Latest Calculation By Day Sets Correct Latest Calculation When Periods Overlap"
+      - "Latest Calculation By Day Includes Correct Calculation Ids In Output"
+      - "Latest Calculation By Day Only Includes Succeeded External Calculations"

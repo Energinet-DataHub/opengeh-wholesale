@@ -1,0 +1,16 @@
+coverage_mapping:
+  notes: |
+    ## Purpose
+    The purpose is checking views related to energy results.
+    
+    ## DESIGN CONSIDERATIONS
+    - wholesale_internal.calculations table has three calculation_id's, only one of which is valid.
+    - The two others are either internal or don't have an end date.
+
+  cases_tested:
+    "Data Product Tests":
+      "Wholesale Results Tests":
+        - "Only Calculation Ids In Internal Calculations Included"
+        - "Only External Calculation Ids Included"
+        - "Calculation Ids Without Calculation Succeeded Time Not Included"
+        - "Correct Mp Types Included In Energy V1 Output"
