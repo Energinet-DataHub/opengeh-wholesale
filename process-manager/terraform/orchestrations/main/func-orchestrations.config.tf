@@ -50,7 +50,7 @@ locals {
       "MeasurementsWorkspace__Token"   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-measurements-workspace-token)"
 
       # Measurements EventHub
-      "MeasurementsEventHub__NamespaceName" = "${data.azurerm_key_vault_secret.evhns_subsystemrelay_name.value}.servicebus.windows.net"
+      "MeasurementsEventHub__NamespaceName" = "${data.azurerm_key_vault_secret.evhns_subsystemrelay_name.value}"
       "MeasurementsEventHub__FullyQualifiedNamespace" = "${data.azurerm_key_vault_secret.evhns_subsystemrelay_name.value}.servicebus.windows.net"
       "MeasurementsEventHub__EventHubName"            = data.azurerm_key_vault_secret.evh_submitted_transactions_name.value
 
