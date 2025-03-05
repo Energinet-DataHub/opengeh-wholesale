@@ -22,12 +22,12 @@ locals {
       RevisionLogOptions__ApiAddress = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=func-log-ingestion-api-url)"
 
       # FeatureManagement
-      FeatureManagement__UsePeekMessages                                      = var.feature_management_use_peek_messages
-      FeatureManagement__ReceiveMeteredDataForMeasurementPoints               = var.feature_management_receive_metered_data_for_measurement_points
-      FeatureManagement__UsePeekTimeSeriesMessages                            = var.feature_management_use_peek_time_series_messages
-      FeatureManagement__UseRequestWholesaleServicesProcessOrchestration      = var.feature_management_use_request_wholesale_services_process_orchestration
-      FeatureManagement__UseRequestAggregatedMeasureDataProcessOrchestration  = var.feature_management_use_request_aggregated_measure_data_process_orchestration
-      FeatureManagement__UseProcessManagerToEnqueueBrs023027Messages          = var.feature_management_use_process_manager_to_enqueue_brs023027_messages
+      FeatureManagement__UsePeekMessages                                     = var.feature_management_use_peek_messages
+      FeatureManagement__ReceiveMeteredDataForMeasurementPoints              = var.feature_management_receive_metered_data_for_measurement_points
+      FeatureManagement__UsePeekTimeSeriesMessages                           = var.feature_management_use_peek_time_series_messages
+      FeatureManagement__UseRequestWholesaleServicesProcessOrchestration     = var.feature_management_use_request_wholesale_services_process_orchestration
+      FeatureManagement__UseRequestAggregatedMeasureDataProcessOrchestration = var.feature_management_use_request_aggregated_measure_data_process_orchestration
+      FeatureManagement__UseProcessManagerToEnqueueBrs023027Messages         = var.feature_management_use_process_manager_to_enqueue_brs023027_messages
 
       # Service Bus
       ServiceBus__FullyQualifiedNamespace = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
@@ -40,7 +40,10 @@ locals {
       IntegrationEvents__TopicName        = local.INTEGRATION_EVENTS_TOPIC_NAME
       IntegrationEvents__SubscriptionName = module.sbtsub_edi_integration_event_listener.name
 
-      ProcessManagerServiceBusClient__TopicName = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
+      # Process Manager
+      ProcessManagerServiceBusClient__TopicName       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
+      ProcessManagerServiceBusClient__StartTopicName  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanagerstart-name)"
+      ProcessManagerServiceBusClient__NotifyTopicName = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanagernotify-name)"
 
       EdiTopic__Name                                                 = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-edi-name)"
       EdiTopic__EnqueueBrs_023_027_SubscriptionName                  = module.sbtsub_edi_enqueue_brs_023_027.name
@@ -55,7 +58,6 @@ locals {
       EdiDatabricks__CatalogName = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=shared-unity-catalog-name)"
       # DatabricksCatalogName is used in CalculationResults (actor requests copied from Wholesale)
       DatabricksCatalogName = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=shared-unity-catalog-name)"
-
 
       # Dead-letter logs
       DeadLetterLogging__StorageAccountUrl = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=st-deadltr-shres-blob-url)"
