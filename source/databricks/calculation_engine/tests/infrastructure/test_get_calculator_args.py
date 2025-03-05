@@ -20,7 +20,7 @@ import pytest
 
 from package.codelists import CalculationType
 from package.infrastructure.environment_variables import EnvironmentVariable
-from package.calculation.calculator_args import CalculatorArgs, CalculatorArgsValidation
+from package.calculation.calculator_args import CalculatorArgs
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
@@ -291,7 +291,6 @@ class TestWhenCalculationPeriodIsNotOneCalendarMonth:
                 with pytest.raises(Exception) as error:
                     # Act
                     actual_args = CalculatorArgs()
-                    CalculatorArgsValidation(actual_args)
 
                 # Assert
                 actual_error_message = str(error.value)
@@ -327,9 +326,8 @@ class TestWhenCalculationPeriodIsNotOneCalendarMonth:
             with patch.dict("os.environ", job_environment_variables):
 
                 # Act & Assert
-                actual_args = CalculatorArgs()
+                CalculatorArgs()
                 InfrastructureSettings()
-                CalculatorArgsValidation(actual_args)
 
 
 class TestWhenCalculationPeriodIsOneCalendarMonth:
@@ -376,9 +374,8 @@ class TestWhenCalculationPeriodIsOneCalendarMonth:
         with patch("sys.argv", sys_argv):
             with patch.dict("os.environ", job_environment_variables):
                 # Act & Assert
-                actual_args = CalculatorArgs()
+                CalculatorArgs()
                 InfrastructureSettings()
-                CalculatorArgsValidation(actual_args)
 
 
 class TestWhenMissingEnvVariables:
@@ -443,8 +440,7 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsValid:
             with patch.dict("os.environ", job_environment_variables):
                 # Act
                 try:
-                    actual_args = CalculatorArgs()
-                    CalculatorArgsValidation(actual_args)
+                    CalculatorArgs()
                     InfrastructureSettings()
                 except Exception as error:
                     # If an exception is raised, this will fail the test
@@ -504,8 +500,7 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
             with patch.dict("os.environ", job_environment_variables):
                 with pytest.raises(Exception) as error:
                     # Act
-                    actual_args = CalculatorArgs()
-                    CalculatorArgsValidation(actual_args)
+                    CalculatorArgs()
 
         # Assert
         actual_error_message = str(error.value)
@@ -538,8 +533,7 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
             with patch.dict("os.environ", job_environment_variables):
                 with pytest.raises(Exception) as error:
                     # Act
-                    actual_args = CalculatorArgs()
-                    CalculatorArgsValidation(actual_args)
+                    CalculatorArgs()
 
         # Assert
         actual_error_message = str(error.value)
@@ -585,7 +579,6 @@ class TestWhenInternalCalculation:
                     with pytest.raises(Exception) as error:
                         # Act
                         actual_args = CalculatorArgs(is_internal_calculation=True)
-                        CalculatorArgsValidation(actual_args)
                     # Assert
                     assert error.value != 0
 

@@ -28,15 +28,16 @@ class InfrastructureSettings(ApplicationSettings, cli_kebab_case=False):  # type
     The priority is CLI parameters first and then environment variables.
     """
 
-    catalog_name: str  # From ENVIRONMENT
-    calculation_input_database_name: str  # From ENVIRONMENT
-    data_storage_account_name: str  # From ENVIRONMENT
+    catalog_name: str = Field(init=False)  # From ENVIRONMENT
+    calculation_input_database_name: str = Field(init=False)  # From ENVIRONMENT
+    data_storage_account_name: str = Field(init=False)  # From ENVIRONMENT
     # Prevent the credentials from being printed or logged (using e.g., print() or repr())
     tenant_id: str = Field(repr=False, init=False)  # Ud? #From ENVIRONMENT
     spn_app_id: str = Field(repr=False, init=False)  # Ud? #From ENVIRONMENT
     spn_app_secret: str = Field(repr=False, init=False)  # Ud? #From ENVIRONMENT
 
     calculation_input_folder_name: str | None = Field(
+        init=False,
         default=None,
         validation_alias=AliasChoices(
             "calculation_input_folder_name", "calculation-input-folder-name"
@@ -44,18 +45,21 @@ class InfrastructureSettings(ApplicationSettings, cli_kebab_case=False):  # type
     )  # Ud? From CLI/ENVIRONMENT
 
     time_series_points_table_name: str | None = Field(
+        init=False,
         default=None,
         validation_alias=AliasChoices(
             "time_series_points_table_name", "time-series-points-table-name"
         ),
     )  # From CLI
     metering_point_periods_table_name: str | None = Field(
+        init=False,
         default=None,
         validation_alias=AliasChoices(
             "metering_point_periods_table_name", "metering-point-periods-table-name"
         ),
     )  # From CLI
     grid_loss_metering_point_ids_table_name: str | None = Field(
+        init=False,
         default=None,
         validation_alias=AliasChoices(
             "grid_loss_metering_points_table_name",

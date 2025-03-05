@@ -23,7 +23,7 @@ from package import calculation
 from package.calculation import CalculationCore
 from package.calculation.calculation_metadata_service import CalculationMetadataService
 from package.calculation.calculation_output_service import CalculationOutputService
-from package.calculation.calculator_args import CalculatorArgs, CalculatorArgsValidation
+from package.calculation.calculator_args import CalculatorArgs
 
 from package.container import create_and_configure_container
 from package.databases import migrations_wholesale, wholesale_internal
@@ -47,9 +47,6 @@ def start() -> None:
     # Parse params for CalculatorArgs and InfrastructureSettings
     args = CalculatorArgs()
     infrastructure_settings = InfrastructureSettings()
-
-    # Extra validation of Params
-    CalculatorArgsValidation(args)
 
     config.configure_logging(
         logging_settings=logging_settings,
