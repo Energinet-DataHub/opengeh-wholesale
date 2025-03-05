@@ -63,8 +63,28 @@ data "azurerm_key_vault_secret" "sbt_edi_id" {
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 
-data "azurerm_key_vault_secret" "evh_measurement_transactions_id" {
-  name         = "evh-measurement-transactions-id"
+data "azurerm_key_vault_secret" "evh_submitted_transactions_id" {
+  name         = "evh-submitted-transactions-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "evh_brs021forwardmetereddatanotify_id" {
+  name         = "evh-brs021forwardmetereddatanotify-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "evhns_subsystemrelay_name" {
+  name         = "evhns-subsystemrelay-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "evh_submitted_transactions_name" {
+  name         = "evh-submitted-transactions-name"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "evh_brs021forwardmetereddatanotify_name" {
+  name         = "evh-brs021forwardmetereddatanotify-name"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
 

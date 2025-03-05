@@ -61,8 +61,13 @@ module "func_orchestrations" {
     },
     {
       // Azure Shared Event Hubs Data Sender
-      resource_id          = data.azurerm_key_vault_secret.evh_measurement_transactions_id.value
+      resource_id          = data.azurerm_key_vault_secret.evh_submitted_transactions_id.value
       role_definition_name = "Azure Event Hubs Data Sender"
+    },
+    {
+      // Azure Shared Event Hubs Data Sender
+      resource_id          = data.azurerm_key_vault_secret.evh_brs021forwardmetereddatanotify_id.value
+      role_definition_name = "Azure Event Hubs Data Receiver"
     },
     {
       // ServiceBus Integration Events Topic

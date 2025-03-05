@@ -29,26 +29,26 @@ module "kvs_app_databricks_password" {
   key_vault_id = module.kv_internal.id
 }
 
-resource "azurerm_role_assignment" "spn_measurement_transactions_eventhub_recevier" {
-  scope                = data.azurerm_key_vault_secret.evh_measurement_transactions_id.value
+resource "azurerm_role_assignment" "spn_submitted_transactions_eventhub_recevier" {
+  scope                = data.azurerm_key_vault_secret.evh_submitted_transactions_id.value
   role_definition_name = "Azure Event Hubs Data Receiver"
   principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
-resource "azurerm_role_assignment" "spn_measurement_transactions_eventhub_sender" {
-  scope                = data.azurerm_key_vault_secret.evh_measurement_transactions_id.value
+resource "azurerm_role_assignment" "spn_submitted_transactions_eventhub_sender" {
+  scope                = data.azurerm_key_vault_secret.evh_submitted_transactions_id.value
   role_definition_name = "Azure Event Hubs Data Sender"
   principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
-resource "azurerm_role_assignment" "spn_measurement_transactions_receipts_eventhub_recevier" {
-  scope                = data.azurerm_key_vault_secret.evh_measurement_transactions_receipts_id.value
+resource "azurerm_role_assignment" "spn_submitted_transactions_notifications_eventhub_recevier" {
+  scope                = data.azurerm_key_vault_secret.evh_brs021forwardmetereddatanotify_id.value
   role_definition_name = "Azure Event Hubs Data Receiver"
   principal_id         = azuread_service_principal.spn_databricks.object_id
 }
 
-resource "azurerm_role_assignment" "spn_measurement_transactions_receipts_eventhub_sender" {
-  scope                = data.azurerm_key_vault_secret.evh_measurement_transactions_receipts_id.value
+resource "azurerm_role_assignment" "spn_submitted_transactions_notifications_eventhub_sender" {
+  scope                = data.azurerm_key_vault_secret.evh_brs021forwardmetereddatanotify_id.value
   role_definition_name = "Azure Event Hubs Data Sender"
   principal_id         = azuread_service_principal.spn_databricks.object_id
 }

@@ -50,8 +50,12 @@ locals {
       "MeasurementsWorkspace__Token"   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-measurements-workspace-token)"
 
       # Measurements EventHub
-      "MeasurementsEventHub__NamespaceName" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=evhns-measurements-name)"
-      "MeasurementsEventHub__EventHubName"  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=evh-measurement-transactions-name)"
+      "MeasurementsEventHub__FullyQualifiedNamespace" = "${data.azurerm_key_vault_secret.evhns_subsystemrelay_name.value}.servicebus.windows.net"
+      "MeasurementsEventHub__EventHubName"            = data.azurerm_key_vault_secret.evh_submitted_transactions_name.value
+
+      # PM EventHub
+      "ProcessManagerEventHub__FullyQualifiedNamespace" = "${data.azurerm_key_vault_secret.evhns_subsystemrelay_name.value}.servicebus.windows.net"
+      "ProcessManagerEventHub__EventHubName"            = data.azurerm_key_vault_secret.evh_brs021forwardmetereddatanotify_name.value
 
       # Electricity Market client
       "ElectricityMarketClientOptions__BaseUrl"          = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=mp-data-api-base-url)"

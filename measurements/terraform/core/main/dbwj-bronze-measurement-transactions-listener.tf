@@ -26,8 +26,8 @@ resource "databricks_job" "bronze_submitted_transactions_ingestion_stream" {
         "spark.databricks.sql.initial.catalog.name" = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "CATALOG_NAME"                              = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "APPLICATIONINSIGHTS_CONNECTION_STRING"     = data.azurerm_key_vault_secret.appi_shared_connection_string.value
-        "EVENT_HUB_NAMESPACE"                       = data.azurerm_key_vault_secret.evhns_measurements_name.value
-        "EVENT_HUB_INSTANCE"                        = data.azurerm_key_vault_secret.evh_measurement_transactions_name.value
+        "EVENT_HUB_NAMESPACE"                       = data.azurerm_key_vault_secret.evhns_subsystemrelay_name.value
+        "EVENT_HUB_INSTANCE"                        = data.azurerm_key_vault_secret.evh_submitted_transactions_name.value
         "TENANT_ID"                                 = var.tenant_id,
         "SPN_APP_ID"                                = databricks_secret.spn_app_id.config_reference
         "SPN_APP_SECRET"                            = databricks_secret.spn_app_secret.config_reference
