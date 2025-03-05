@@ -1,6 +1,6 @@
 resource "azurerm_eventhub" "measurement_transactions_receipts" {
   name                = "evh-measurement-transactions-receipts-${local.resources_suffix}"
-  namespace_name      = module.evhns_measurements.name
+  namespace_name      = module.evhns_subsystemrelay.name
   resource_group_name = azurerm_resource_group.this.name
   partition_count     = 1
   message_retention   = 7

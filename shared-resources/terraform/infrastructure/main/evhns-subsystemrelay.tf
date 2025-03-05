@@ -1,4 +1,4 @@
-module "evhns_measurements" {
+module "evhns_subsystemrelay" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/eventhub-namespace?ref=eventhub-namespace_8.0.0"
 
   project_name               = var.domain_name_short
@@ -16,16 +16,28 @@ module "evhns_measurements" {
 
 module "kvs_evhns_measurements_id" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
-
   name         = "evhns-measurements-id"
-  value        = module.evhns_measurements.id
+  value        = module.evhns_subsystemrelay.id
   key_vault_id = module.kv_shared.id
 }
 
 module "kvs_evhns_measurements_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
-
   name         = "evhns-measurements-name"
-  value        = module.evhns_measurements.name
+  value        = module.evhns_subsystemrelay.name
+  key_vault_id = module.kv_shared.id
+}
+
+module "kvs_evhns_subsystemrelay_id" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+  name         = "evhns-subsystemrelay-id"
+  value        = module.evhns_subsystemrelay.id
+  key_vault_id = module.kv_shared.id
+}
+
+module "kvs_evhns_subsystemrelay_name" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+  name         = "evhns-subsystemrelay-name"
+  value        = module.evhns_subsystemrelay.name
   key_vault_id = module.kv_shared.id
 }
