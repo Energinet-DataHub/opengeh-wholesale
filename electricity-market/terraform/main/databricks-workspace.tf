@@ -42,7 +42,7 @@ module "kvs_databricks_workspace_url" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 
   name         = "dbw-workspace-url"
-  value        = module.dbw.workspace_url
+  value        = "https://${module.dbw.workspace_url}"
   key_vault_id = module.kv_internal.id
 }
 
