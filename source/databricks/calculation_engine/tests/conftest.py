@@ -115,6 +115,7 @@ def spark(
         .config("datanucleus.autoCreateSchema", "true")
         .config("hive.metastore.schema.verification", "false")
         .config("hive.metastore.schema.verification.record.version", "false")
+        .config("spark.sql.session.timeZone", "UTC")
         .enableHiveSupport()
     ).getOrCreate()
 
