@@ -144,9 +144,3 @@ variable "budget_alert_amount" {
   type        = number
   description = "The budget amount for this subproduct"
 }
-
-variable "enable_continuous_streaming" {
-  type        = bool
-  description = "Flag to determine if continuous ingestion of submitted transactions should be enabled."
-  default     = false
-}

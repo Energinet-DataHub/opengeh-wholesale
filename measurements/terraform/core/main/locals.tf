@@ -38,4 +38,7 @@ locals {
     databricks_job.silver_notify_transactions_persisted_stream.name,
     databricks_job.bronze_migrate_transactions_batch_job.name
   ])
+
+  # All Databricks jobs should stream in our workspaces
+  enable_continuous_streaming = true
 }

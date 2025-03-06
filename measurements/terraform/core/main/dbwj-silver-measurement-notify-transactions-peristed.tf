@@ -32,7 +32,7 @@ resource "databricks_job" "silver_notify_transactions_persisted_stream" {
         "SPN_APP_ID"                                = databricks_secret.spn_app_id.config_reference
         "SPN_APP_SECRET"                            = databricks_secret.spn_app_secret.config_reference
         "DATALAKE_STORAGE_ACCOUNT"                  = module.st_measurements.name
-        "CONTINUOUS_STREAMING_ENABLED"              = var.enable_continuous_streaming
+        "CONTINUOUS_STREAMING_ENABLED"              = local.enable_continuous_streaming
         "SILVER_DATABASE_NAME"                      = databricks_schema.measurements_silver.name
         "SILVER_CONTAINER_NAME"                     = azurerm_storage_container.silver.name
       }

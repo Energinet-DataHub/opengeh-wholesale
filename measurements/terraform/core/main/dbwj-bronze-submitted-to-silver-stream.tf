@@ -25,7 +25,7 @@ resource "databricks_job" "bronze_submitted_transactions_to_silver" {
         "CATALOG_NAME"                          = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
         "DATALAKE_STORAGE_ACCOUNT"              = module.st_measurements.name
-        "CONTINUOUS_STREAMING_ENABLED"              = var.enable_continuous_streaming
+        "CONTINUOUS_STREAMING_ENABLED"              = local.enable_continuous_streaming
         "BRONZE_DATABASE_NAME"                      = databricks_schema.measurements_bronze.name
         "BRONZE_CONTAINER_NAME"                     = azurerm_storage_container.bronze.name
         "SILVER_DATABASE_NAME"                      = databricks_schema.measurements_silver.name
