@@ -41,7 +41,6 @@ locals {
       IntegrationEvents__SubscriptionName = module.sbtsub_edi_integration_event_listener.name
 
       # Process Manager
-      ProcessManagerServiceBusClient__TopicName       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
       ProcessManagerServiceBusClient__StartTopicName  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanagerstart-name)"
       ProcessManagerServiceBusClient__NotifyTopicName = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanagernotify-name)"
 

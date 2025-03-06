@@ -20,7 +20,6 @@ locals {
       IncomingMessages__QueueName = azurerm_servicebus_queue.edi_incoming_messages_queue.name
 
       # Process Manager
-      ProcessManagerServiceBusClient__TopicName       = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
       ProcessManagerServiceBusClient__StartTopicName  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanagerstart-name)"
       ProcessManagerServiceBusClient__NotifyTopicName = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanagernotify-name)"
 

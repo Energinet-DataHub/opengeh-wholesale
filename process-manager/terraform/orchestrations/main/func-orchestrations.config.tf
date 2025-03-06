@@ -25,13 +25,9 @@ locals {
       "ServiceBus__FullyQualifiedNamespace" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
 
       # Process Manager Start topic/subscriptions
-      "ProcessManagerTopic__TopicName"                                = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanager-name)"
-      "ProcessManagerTopic__Brs026SubscriptionName"                   = module.sbtsub_pm_brs_026.name
-      "ProcessManagerTopic__Brs028SubscriptionName"                   = module.sbtsub_pm_brs_028.name
-      "ProcessManagerTopic__Brs021ForwardMeteredDataSubscriptionName" = module.sbtsub_pm_brs_021_forward_metered_data.name
-      "ProcessManagerStartTopic__TopicName"                           = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanagerstart-name)"
-      "ProcessManagerStartTopic__Brs026SubscriptionName"              = module.sbtsub_pmstart_brs_026.name
-      "ProcessManagerStartTopic__Brs028SubscriptionName"              = module.sbtsub_pmstart_brs_028.name
+      "ProcessManagerStartTopic__TopicName"              = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanagerstart-name)"
+      "ProcessManagerStartTopic__Brs026SubscriptionName" = module.sbtsub_pmstart_brs_026.name
+      "ProcessManagerStartTopic__Brs028SubscriptionName" = module.sbtsub_pmstart_brs_028.name
 
       # BRS-021 (FMD) topic subscriptions
       "Brs021ForwardMeteredDataTopic__StartTopicName"         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-brs021forwardmetereddatastart-name)"
@@ -50,7 +46,7 @@ locals {
       "MeasurementsWorkspace__Token"   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-measurements-workspace-token)"
 
       # Measurements EventHub
-      "MeasurementsEventHub__NamespaceName" = "${data.azurerm_key_vault_secret.evhns_subsystemrelay_name.value}"
+      "MeasurementsEventHub__NamespaceName"           = "${data.azurerm_key_vault_secret.evhns_subsystemrelay_name.value}"
       "MeasurementsEventHub__FullyQualifiedNamespace" = "${data.azurerm_key_vault_secret.evhns_subsystemrelay_name.value}.servicebus.windows.net"
       "MeasurementsEventHub__EventHubName"            = data.azurerm_key_vault_secret.evh_submitted_transactions_name.value
 
