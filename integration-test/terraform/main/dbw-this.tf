@@ -204,6 +204,7 @@ resource "databricks_job" "migration_workflow" {
         "DATALAKE_SHARED_STORAGE_ACCOUNT"       = azurerm_storage_account.this.name
         "AUDIT_STORAGE_ACCOUNT"                 = azurerm_storage_account.this.name
         "CATALOG_NAME"                          = local.databricks_unity_catalog_name
+        "GDPR_ENSURE_DATA_IS_FICTIVE"           = "false"
       }
     }
   }
@@ -290,7 +291,6 @@ resource "databricks_cluster" "shared_all_purpose_integration_test" {
     "DATALAKE_SHARED_STORAGE_ACCOUNT"       = azurerm_storage_account.this.name
     "AUDIT_STORAGE_ACCOUNT"                 = azurerm_storage_account.this.name
     "CATALOG_NAME"                          = local.databricks_unity_catalog_name
-    "GDPR_ENSURE_DATA_IS_FICTIVE"           = "false"
   }
 
   depends_on = [azurerm_databricks_workspace.this, databricks_token.pat]
