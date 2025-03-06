@@ -150,7 +150,6 @@ class TestWhenInvokedWithValidParameters:
                 # Act
                 actual_args = CalculatorArgs()
                 actual_settings = InfrastructureSettings()
-                print(actual_args)
 
         # Assert
 
@@ -290,7 +289,7 @@ class TestWhenCalculationPeriodIsNotOneCalendarMonth:
 
                 with pytest.raises(Exception) as error:
                     # Act
-                    actual_args = CalculatorArgs()
+                    CalculatorArgs()
 
                 # Assert
                 actual_error_message = str(error.value)
@@ -578,7 +577,7 @@ class TestWhenInternalCalculation:
                 else:
                     with pytest.raises(Exception) as error:
                         # Act
-                        actual_args = CalculatorArgs(is_internal_calculation=True)
+                        CalculatorArgs(is_internal_calculation=True)
                     # Assert
                     assert error.value != 0
 
