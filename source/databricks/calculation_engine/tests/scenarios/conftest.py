@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 from pyspark.sql import SparkSession
@@ -29,8 +29,7 @@ from package.databases.wholesale_internal.schemas import (
 from tests.testsession_configuration import TestSessionConfiguration
 
 
-from datetime import datetime
-
+from datetime import datetime, timezone
 import yaml
 
 from package.calculation.calculator_args import CalculatorArgs
@@ -53,12 +52,14 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
     with open(input_path + "calculation_arguments.yml", "r") as file:
         calculation_args = yaml.safe_load(file)[0]
 
-    quarterly_resolution_transition_datetime = datetime(2023, 1, 31, 23, 0, 0)
+    quarterly_resolution_transition_datetime = datetime(
+        2023, 1, 31, 23, 0, 0, tzinfo=timezone.utc
+    )
     if "quarterly_resolution_transition_datetime" in calculation_args:
         quarterly_resolution_transition_datetime = datetime.strptime(
             calculation_args["quarterly_resolution_transition_datetime"],
             CSV_DATE_FORMAT,
-        )
+        ).replace(tzinfo=timezone.utc)
     time_zone = "Europe/Copenhagen"
     if "time_zone" in calculation_args:
         time_zone = calculation_args["time_zone"]
@@ -68,15 +69,15 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
         calculation_grid_areas=calculation_args[ArgsName.grid_area_codes],
         calculation_period_start_datetime=datetime.strptime(
             calculation_args[ArgsName.period_start], CSV_DATE_FORMAT
-        ),
+        ).replace(tzinfo=timezone.utc),
         calculation_period_end_datetime=datetime.strptime(
             calculation_args[ArgsName.period_end], CSV_DATE_FORMAT
-        ),
+        ).replace(tzinfo=timezone.utc),
         calculation_type=CalculationType(calculation_args[Colname.calculation_type]),
         calculation_execution_time_start=datetime.strptime(
             calculation_args[Colname.calculation_execution_time_start],
             CSV_DATE_FORMAT,
-        ),
+        ).replace(tzinfo=timezone.utc),
         created_by_user_id=calculation_args[Colname.created_by_user_id],
         time_zone=time_zone,
         quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
@@ -158,9 +159,7 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         migrations_wholesale_repository.read_charge_link_periods.return_value = (
             charge_link_periods
         )
-        migrations_wholesale_repository.read_charge_price_information_periods.return_value = (
-            charge_price_information_periods
-        )
+        migrations_wholesale_repository.read_charge_price_information_periods.return_value = charge_price_information_periods
         migrations_wholesale_repository.read_charge_price_points.return_value = (
             charge_price_points
         )

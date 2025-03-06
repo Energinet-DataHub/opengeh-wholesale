@@ -35,7 +35,6 @@ def is_exactly_one_calendar_month(
 def get_number_of_days_in_period(
     period_start: datetime, period_end: datetime, time_zone: str
 ) -> int:
-
     time_zone_info = ZoneInfo(time_zone)
     period_start_local_time = period_start.astimezone(time_zone_info)
     period_end_local_time = period_end.astimezone(time_zone_info)
@@ -49,7 +48,7 @@ def get_number_of_days_in_period(
     return (period_end_local_time - period_start_local_time).days
 
 
-def is_midnight_in_time_zone(time: datetime, time_zone: str) -> bool:
+def is_midnight_in_time_zone(time: datetime, time_zone: str) -> tuple[bool, datetime]:
     local_time = time.astimezone(ZoneInfo(time_zone))
     midnight = local_time.replace(hour=0, minute=0, second=0, microsecond=0)
-    return (midnight - local_time).total_seconds() == 0
+    return (midnight - local_time).total_seconds() == 0, local_time

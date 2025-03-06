@@ -82,14 +82,13 @@ class CalculatorArgs(ApplicationSettings):
 
     @model_validator(mode="after")
     def _validate_quarterly_resolution_transition_datetime(self) -> "CalculatorArgs":
-        if (
-            is_midnight_in_time_zone(
-                self.quarterly_resolution_transition_datetime, self.time_zone
-            )
-            is False
-        ):
+        is_midnight, local_time = is_midnight_in_time_zone(
+            self.quarterly_resolution_transition_datetime, self.time_zone
+        )
+        if not is_midnight:
             raise Exception(
-                f"The quarterly resolution transition datetime must be at midnight local time ({self.time_zone})."
+                "The quarterly resolution transition datetime must be at midnight local time.",
+                f"{self.quarterly_resolution_transition_datetime} coverted to '{self.time_zone}' is {local_time}",
             )
         if (
             self.calculation_period_start_datetime

@@ -103,7 +103,6 @@ def test__is_exactly_one_calendar_month__when_not_one_month__returns_false(
 def test__is_exactly_one_calendar_month__when_exactly_one_month__returns_true(
     period_start: datetime, period_end: datetime
 ) -> None:
-
     # Act
     actual = is_exactly_one_calendar_month(
         period_start, period_end, COPENHAGEN_TIME_ZONE
@@ -270,7 +269,7 @@ def test__is_midnight_in_time_zone__when_time_and_time_zone__returns_expected_bo
     time: datetime, time_zone: str, expected: bool
 ) -> None:
     # Arrange + Act
-    actual = is_midnight_in_time_zone(time, time_zone)
+    is_midnight, _ = is_midnight_in_time_zone(time, time_zone)
 
     # Assert
-    assert actual is expected
+    assert is_midnight is expected
