@@ -50,7 +50,6 @@ def get_number_of_days_in_period(
 
 
 def is_midnight_in_time_zone(time: datetime, time_zone: str) -> bool:
-    time_zone_info = ZoneInfo(time_zone)
-    time_local_time = time.astimezone(time_zone_info)
-
-    return time_local_time.time() == datetime.min.time()
+    local_time = time.astimezone(ZoneInfo(time_zone))
+    midnight = local_time.replace(hour=0, minute=0, second=0, microsecond=0)
+    return (midnight - local_time).total_seconds() == 0

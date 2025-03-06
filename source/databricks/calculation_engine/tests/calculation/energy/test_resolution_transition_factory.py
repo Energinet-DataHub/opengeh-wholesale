@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 from pyspark.sql import SparkSession
@@ -61,21 +61,21 @@ class TestEnergyResultResolutionAdjustedMeteringPointTimeSeries:
         "transition_datetime, start_datetime, end_datetime, expected_rows",
         [
             (
-                datetime(2023, 4, 30, 23),
-                datetime(2023, 2, 28, 22),
-                datetime(2023, 3, 31, 22),
+                datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
+                datetime(2023, 2, 28, 21, tzinfo=timezone.utc),
+                datetime(2023, 3, 31, 21, tzinfo=timezone.utc),
                 2,
             ),
             (
-                datetime(2023, 4, 30, 23),
-                datetime(2023, 4, 30, 23),
-                datetime(2023, 5, 31, 23),
+                datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
+                datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
+                datetime(2023, 5, 31, 22, tzinfo=timezone.utc),
                 8,
             ),
             (
-                datetime(2023, 4, 30, 23),
-                datetime(2023, 3, 31, 22),
-                datetime(2023, 4, 30, 23),
+                datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
+                datetime(2023, 3, 31, 21, tzinfo=timezone.utc),
+                datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
                 2,
             ),
         ],
@@ -93,7 +93,7 @@ class TestEnergyResultResolutionAdjustedMeteringPointTimeSeries:
             calculation_id="test_id",
             calculation_grid_areas=["123"],
             calculation_type=CalculationType.BALANCE_FIXING,
-            calculation_execution_time_start=datetime.utcnow(),
+            calculation_execution_time_start=datetime.now(timezone.utc),
             created_by_user_id="test_user",
             time_zone="Europe/Copenhagen",
             calculation_period_start_datetime=start_datetime,
