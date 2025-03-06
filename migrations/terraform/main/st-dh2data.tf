@@ -16,6 +16,31 @@ module "st_dh2data" {
   } : null
 }
 
+# Automatically delete storage account blobs after 1 days according to the retention policy
+resource "azurerm_storage_management_policy" "remove_sensitive_data" {
+  storage_account_id = module.st_dh2data.id
+
+  rule {
+    name    = "remove_sensitive_data"
+    enabled = local.remove_sensitive_data
+    filters {
+      prefix_match = [azurerm_storage_container.dh2_metering_point_history.name]
+      blob_types   = ["blockBlob"]
+    }
+    actions {
+      base_blob {
+        delete_after_days_since_creation_greater_than = 1
+      }
+      snapshot {
+        delete_after_days_since_creation_greater_than = 1
+      }
+      version {
+        delete_after_days_since_creation = 1
+      }
+    }
+  }
+}
+
 module "kvs_st_dh2_data_lake_name" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
 

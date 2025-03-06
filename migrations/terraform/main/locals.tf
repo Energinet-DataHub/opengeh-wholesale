@@ -7,6 +7,9 @@ locals {
   ip_restrictions_as_string       = join(",", [for rule in var.ip_restrictions : "${rule.ip_address}"])
   databricks_runtime_version      = "15.4.x-scala2.12"
 
+  # Remove sensitive data from storage account
+  remove_sensitive_data = false
+
   # Logging (worker)
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_MIGRATIONS = "Information" # From opengeh-migration
   LOGGING_APPINSIGHTS_LOGLEVEL_ENERGINET_DATAHUB_CORE       = "Information" # From geh-core
