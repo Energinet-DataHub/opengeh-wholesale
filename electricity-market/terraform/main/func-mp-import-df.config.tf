@@ -1,6 +1,7 @@
 locals {
   func_mp_import_df = {
     app_settings = {
+      FeatureManagement__ActorTestModeEnabled = false
 
       # Timeout, required for initial import
       "AzureFunctionsJobHost__functionTimeout" = "2:00:00"
