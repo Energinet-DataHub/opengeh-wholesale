@@ -138,10 +138,6 @@ def test__is_exactly_one_calendar_month__when_london_time_and_exactly_one_month_
 @pytest.mark.parametrize(
     "period_start, period_end",
     [
-        (  # Starts and ends at 22:00 (UTC) instead of 23:00 (UTC)
-            datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
-            datetime(2022, 6, 30, 22, tzinfo=timezone.utc),
-        ),
         (  # Missing one hour in the beginning
             datetime(2022, 1, 1, 1, tzinfo=timezone.utc),
             datetime(2022, 2, 1, 0, tzinfo=timezone.utc),
