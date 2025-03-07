@@ -87,8 +87,7 @@ class CalculatorArgs(ApplicationSettings):
         )
         if not is_midnight:
             raise Exception(
-                "The quarterly resolution transition datetime must be at midnight local time.",
-                f"{self.quarterly_resolution_transition_datetime} coverted to '{self.time_zone}' is {local_time}",
+                f"The quarterly resolution transition datetime must be at midnight local time. {self.quarterly_resolution_transition_datetime} coverted to '{self.time_zone}' is {local_time}",
             )
         if (
             self.calculation_period_start_datetime
