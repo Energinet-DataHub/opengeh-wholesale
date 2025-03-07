@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 
@@ -29,40 +29,40 @@ LONDON_TIME_ZONE = "Europe/London"
     "period_start, period_end",
     [
         (  # Missing one day in the beginning
-            datetime(2022, 6, 1, 22),
-            datetime(2022, 6, 30, 22),
+            datetime(2022, 6, 1, 22, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 22, tzinfo=timezone.utc),
         ),
         (  # Missing one day at the end
-            datetime(2022, 5, 31, 22),
-            datetime(2022, 6, 29, 22),
+            datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
+            datetime(2022, 6, 29, 22, tzinfo=timezone.utc),
         ),
         (  # Missing one hour in the beginning
-            datetime(2022, 5, 31, 23),
-            datetime(2022, 6, 30, 22),
+            datetime(2022, 5, 31, 23, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 22, tzinfo=timezone.utc),
         ),
         (  # Missing one hour at the end
-            datetime(2022, 5, 31, 22),
-            datetime(2022, 6, 30, 21),
+            datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 21, tzinfo=timezone.utc),
         ),
         (  # One hour too much in the beginning
-            datetime(2022, 5, 31, 21),
-            datetime(2022, 6, 30, 22),
+            datetime(2022, 5, 31, 21, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 22, tzinfo=timezone.utc),
         ),
         (  # One hour too much at the end
-            datetime(2022, 5, 31, 22),
-            datetime(2022, 6, 30, 23),
+            datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 23, tzinfo=timezone.utc),
         ),
         (  # Two months
-            datetime(2022, 5, 31, 22),
-            datetime(2022, 7, 31, 22),
+            datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
+            datetime(2022, 7, 31, 22, tzinfo=timezone.utc),
         ),
         (  # Entering daylights saving time - not ending at midnight
-            datetime(2022, 2, 28, 23, 0),
-            datetime(2022, 3, 31, 23, 0),
+            datetime(2022, 2, 28, 23, 0, tzinfo=timezone.utc),
+            datetime(2022, 3, 31, 23, 0, tzinfo=timezone.utc),
         ),
         (  # Exiting daylights saving time - not ending at midnight
-            datetime(2022, 9, 30, 22, 0),
-            datetime(2022, 10, 31, 22, 0),
+            datetime(2022, 9, 30, 22, 0, tzinfo=timezone.utc),
+            datetime(2022, 10, 31, 22, 0, tzinfo=timezone.utc),
         ),
     ],
 )
@@ -83,20 +83,20 @@ def test__is_exactly_one_calendar_month__when_not_one_month__returns_false(
     "period_start, period_end",
     [
         (  # Summer in Copenhagen
-            datetime(2022, 5, 31, 22),
-            datetime(2022, 6, 30, 22),
+            datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 22, tzinfo=timezone.utc),
         ),
         (  # Crossing year boundary
-            datetime(2021, 12, 31, 23),
-            datetime(2022, 1, 31, 23),
+            datetime(2021, 12, 31, 23, tzinfo=timezone.utc),
+            datetime(2022, 1, 31, 23, tzinfo=timezone.utc),
         ),
         (  # Entering daylights saving time - not ending at midnight
-            datetime(2020, 2, 29, 23),
-            datetime(2020, 3, 31, 22),
+            datetime(2020, 2, 29, 23, tzinfo=timezone.utc),
+            datetime(2020, 3, 31, 22, tzinfo=timezone.utc),
         ),
         (  # Exiting daylights saving time - not ending at midnight
-            datetime(2020, 9, 30, 22),
-            datetime(2020, 10, 31, 23),
+            datetime(2020, 9, 30, 22, tzinfo=timezone.utc),
+            datetime(2020, 10, 31, 23, tzinfo=timezone.utc),
         ),
     ],
 )
@@ -116,12 +116,12 @@ def test__is_exactly_one_calendar_month__when_exactly_one_month__returns_true(
     "period_start, period_end",
     [
         (  # Summer in London
-            datetime(2022, 5, 31, 23),
-            datetime(2022, 6, 30, 23),
+            datetime(2022, 5, 31, 23, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 23, tzinfo=timezone.utc),
         ),
         (  # Winter in London
-            datetime(2021, 1, 1, 0),
-            datetime(2022, 2, 1, 0),
+            datetime(2021, 1, 1, 0, tzinfo=timezone.utc),
+            datetime(2022, 2, 1, 0, tzinfo=timezone.utc),
         ),
     ],
 )
@@ -139,16 +139,16 @@ def test__is_exactly_one_calendar_month__when_london_time_and_exactly_one_month_
     "period_start, period_end",
     [
         (  # Starts and ends at 22:00 (UTC) instead of 23:00 (UTC)
-            datetime(2022, 5, 31, 22),
-            datetime(2022, 6, 30, 22),
+            datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 22, tzinfo=timezone.utc),
         ),
         (  # Missing one hour in the beginning
-            datetime(2022, 1, 1, 1),
-            datetime(2022, 2, 1, 0),
+            datetime(2022, 1, 1, 1, tzinfo=timezone.utc),
+            datetime(2022, 2, 1, 0, tzinfo=timezone.utc),
         ),
         (  # Two months
-            datetime(2022, 1, 1, 1),
-            datetime(2022, 3, 1, 1),
+            datetime(2022, 1, 1, 1, tzinfo=timezone.utc),
+            datetime(2022, 3, 1, 1, tzinfo=timezone.utc),
         ),
     ],
 )
@@ -166,28 +166,28 @@ def test__is_exactly_one_calendar_month__when_london_time_and_not_exactly_one_mo
     "period_start, period_end, expected",
     [
         (  # Summer in Copenhagen
-            datetime(2022, 5, 31, 22),
-            datetime(2022, 6, 30, 22),
+            datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 22, tzinfo=timezone.utc),
             30,
         ),
         (  # Crossing year boundary
-            datetime(2021, 12, 31, 23),
-            datetime(2022, 1, 31, 23),
+            datetime(2021, 12, 31, 23, tzinfo=timezone.utc),
+            datetime(2022, 1, 31, 23, tzinfo=timezone.utc),
             31,
         ),
         (  # February in a leap year
-            datetime(2020, 1, 31, 23),
-            datetime(2020, 2, 29, 23),
+            datetime(2020, 1, 31, 23, tzinfo=timezone.utc),
+            datetime(2020, 2, 29, 23, tzinfo=timezone.utc),
             29,
         ),
         (  # Entering daylights saving time - not ending at midnight
-            datetime(2020, 2, 29, 23),
-            datetime(2020, 3, 31, 22),
+            datetime(2020, 2, 29, 23, tzinfo=timezone.utc),
+            datetime(2020, 3, 31, 22, tzinfo=timezone.utc),
             31,
         ),
         (  # Exiting daylights saving time - not ending at midnight
-            datetime(2020, 9, 30, 22),
-            datetime(2020, 10, 31, 23),
+            datetime(2020, 9, 30, 22, tzinfo=timezone.utc),
+            datetime(2020, 10, 31, 23, tzinfo=timezone.utc),
             31,
         ),
     ],
@@ -210,33 +210,33 @@ def test__get_number_of_days_in_period__returns_expected_days(
     "period_start, period_end, time_zone",
     [
         (  # Starts after midnight
-            datetime(2022, 5, 31, 23),
-            datetime(2022, 6, 30, 22),
+            datetime(2022, 5, 31, 23, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 22, tzinfo=timezone.utc),
             COPENHAGEN_TIME_ZONE,
         ),
         (  # Stops after midnight
-            datetime(2022, 5, 31, 22),
-            datetime(2022, 6, 30, 23),
+            datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 23, tzinfo=timezone.utc),
             COPENHAGEN_TIME_ZONE,
         ),
         (  # Starts before midnight
-            datetime(2022, 5, 31, 21),
-            datetime(2022, 6, 30, 22),
+            datetime(2022, 5, 31, 21, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 22, tzinfo=timezone.utc),
             COPENHAGEN_TIME_ZONE,
         ),
         (  # Stops before midnight
-            datetime(2022, 5, 31, 22),
-            datetime(2022, 6, 30, 21),
+            datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
+            datetime(2022, 6, 30, 21, tzinfo=timezone.utc),
             COPENHAGEN_TIME_ZONE,
         ),
         (  # Daylight saving time
-            datetime(2022, 1, 29, 23),
-            datetime(2022, 3, 31, 23),
+            datetime(2022, 1, 29, 23, tzinfo=timezone.utc),
+            datetime(2022, 3, 31, 23, tzinfo=timezone.utc),
             COPENHAGEN_TIME_ZONE,
         ),
         (  # Other time zone
-            datetime(2021, 1, 1, 0),
-            datetime(2022, 2, 1, 1),
+            datetime(2021, 1, 1, 0, tzinfo=timezone.utc),
+            datetime(2022, 2, 1, 1, tzinfo=timezone.utc),
             LONDON_TIME_ZONE,
         ),
     ],
@@ -259,10 +259,10 @@ def test__get_number_of_days_in_period__when_time_of_day_differs__raise_exceptio
 @pytest.mark.parametrize(
     "time, time_zone, expected",
     [
-        (datetime(2023, 1, 31, 23), COPENHAGEN_TIME_ZONE, True),
-        (datetime(2023, 1, 31, 0), COPENHAGEN_TIME_ZONE, False),
-        (datetime(2023, 1, 31, 23), LONDON_TIME_ZONE, False),
-        (datetime(2023, 1, 31, 0), LONDON_TIME_ZONE, True),
+        (datetime(2023, 1, 31, 23, tzinfo=timezone.utc), COPENHAGEN_TIME_ZONE, True),
+        (datetime(2023, 1, 31, 0, tzinfo=timezone.utc), COPENHAGEN_TIME_ZONE, False),
+        (datetime(2023, 1, 31, 23, tzinfo=timezone.utc), LONDON_TIME_ZONE, False),
+        (datetime(2023, 1, 31, 0, tzinfo=timezone.utc), LONDON_TIME_ZONE, True),
     ],
 )
 def test__is_midnight_in_time_zone__when_time_and_time_zone__returns_expected_bool(
