@@ -231,7 +231,6 @@ class TestWhenUnknownCalculationType:
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
                 with pytest.raises(ValidationError):
-
                     # Act
                     CalculatorArgs()
                     InfrastructureSettings()
@@ -244,21 +243,24 @@ class TestWhenCalculationPeriodIsNotOneCalendarMonth:
             (start, end, calc_type)
             for start, end in [
                 (  # Missing one day at the end
-                    datetime(2022, 5, 31, 22),
-                    datetime(2022, 6, 29, 22),
+                    datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
+                    datetime(2022, 6, 29, 22, tzinfo=timezone.utc),
                 ),
                 (  # Missing one day in the beginning
-                    datetime(2022, 6, 1, 22),
-                    datetime(2022, 6, 30, 22),
+                    datetime(2022, 6, 1, 22, tzinfo=timezone.utc),
+                    datetime(2022, 6, 30, 22, tzinfo=timezone.utc),
                 ),
-                (datetime(2022, 5, 31, 22), datetime(2022, 7, 31, 22)),  # Two months
+                (
+                    datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
+                    datetime(2022, 7, 31, 22, tzinfo=timezone.utc),
+                ),  # Two months
                 (  # Entering daylights saving time - not ending at midnight
-                    datetime(2020, 2, 29, 23, 0),
-                    datetime(2020, 3, 31, 23, 0),
+                    datetime(2020, 2, 29, 23, 0, tzinfo=timezone.utc),
+                    datetime(2020, 3, 31, 23, 0, tzinfo=timezone.utc),
                 ),
                 (  # Exiting daylights saving time - not ending at midnight
-                    datetime(2020, 9, 30, 22, 0),
-                    datetime(2020, 10, 31, 22, 0),
+                    datetime(2020, 9, 30, 22, 0, tzinfo=timezone.utc),
+                    datetime(2020, 10, 31, 22, 0, tzinfo=timezone.utc),
                 ),
             ]
             for calc_type in [
@@ -286,7 +288,6 @@ class TestWhenCalculationPeriodIsNotOneCalendarMonth:
 
         with patch("sys.argv", sys_argv):
             with patch.dict("os.environ", job_environment_variables):
-
                 with pytest.raises(Exception) as error:
                     # Act
                     CalculatorArgs()
@@ -313,8 +314,8 @@ class TestWhenCalculationPeriodIsNotOneCalendarMonth:
         sys_argv_from_contract: list[str],
     ) -> None:
         # Arrange
-        period_start_datetime = datetime(2022, 5, 31, 22)
-        period_end_datetime = datetime(2022, 6, 30, 22)
+        period_start_datetime = datetime(2022, 5, 31, 22, tzinfo=timezone.utc)
+        period_end_datetime = datetime(2022, 6, 30, 22, tzinfo=timezone.utc)
         sys_argv = sys_argv_from_contract
         sys_argv = _substitute_calculation_type(sys_argv, calculation_type)
         sys_argv = _substitute_period(
@@ -323,7 +324,6 @@ class TestWhenCalculationPeriodIsNotOneCalendarMonth:
 
         with patch("sys.argv", sys_argv):
             with patch.dict("os.environ", job_environment_variables):
-
                 # Act & Assert
                 CalculatorArgs()
                 InfrastructureSettings()
@@ -336,20 +336,20 @@ class TestWhenCalculationPeriodIsOneCalendarMonth:
             (start, end, calc_type)
             for start, end in [
                 (
-                    datetime(2022, 5, 31, 22),
-                    datetime(2022, 6, 30, 22),
+                    datetime(2022, 5, 31, 22, tzinfo=timezone.utc),
+                    datetime(2022, 6, 30, 22, tzinfo=timezone.utc),
                 ),
                 (  # New year
-                    datetime(2021, 12, 31, 23),
-                    datetime(2022, 1, 31, 23),
+                    datetime(2021, 12, 31, 23, tzinfo=timezone.utc),
+                    datetime(2022, 1, 31, 23, tzinfo=timezone.utc),
                 ),
                 (  # Enter daylight saving time
-                    datetime(2022, 2, 28, 23),
-                    datetime(2022, 3, 31, 22),
+                    datetime(2022, 2, 28, 23, tzinfo=timezone.utc),
+                    datetime(2022, 3, 31, 22, tzinfo=timezone.utc),
                 ),
                 (  # Exit daylight saving time
-                    datetime(2022, 9, 30, 22),
-                    datetime(2022, 10, 31, 23),
+                    datetime(2022, 9, 30, 22, tzinfo=timezone.utc),
+                    datetime(2022, 10, 31, 23, tzinfo=timezone.utc),
                 ),
             ]
             for calc_type in CalculationType
@@ -406,16 +406,16 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsValid:
         "period_start_datetime, period_end_datetime",
         [
             (
-                datetime(2023, 1, 31, 23),
-                datetime(2023, 2, 2, 23),
+                datetime(2023, 1, 31, 23, tzinfo=timezone.utc),
+                datetime(2023, 2, 2, 23, tzinfo=timezone.utc),
             ),
             (
-                datetime(2023, 1, 29, 23),
-                datetime(2023, 1, 31, 23),
+                datetime(2023, 1, 29, 23, tzinfo=timezone.utc),
+                datetime(2023, 1, 31, 23, tzinfo=timezone.utc),
             ),
             (
-                datetime(2023, 1, 31, 23),
-                datetime(2023, 1, 31, 23),
+                datetime(2023, 1, 31, 23, tzinfo=timezone.utc),
+                datetime(2023, 1, 31, 23, tzinfo=timezone.utc),
             ),
         ],
     )
@@ -470,7 +470,6 @@ class TestWhenIsControlCalculationFlagNotPresent:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):
             with patch.dict("os.environ", job_environment_variables):
-
                 # Act
                 actual_args = CalculatorArgs()
 
@@ -485,8 +484,8 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
         sys_argv_from_contract: list[str],
     ) -> None:
         # Arrange
-        period_start_datetime = datetime(2023, 1, 30, 23)
-        period_end_datetime = datetime(2023, 2, 2, 23)
+        period_start_datetime = datetime(2023, 1, 30, 23, tzinfo=timezone.utc)
+        period_end_datetime = datetime(2023, 2, 2, 23, tzinfo=timezone.utc)
         sys_argv = sys_argv_from_contract
         sys_argv = _substitute_calculation_type(
             sys_argv, CalculationType.BALANCE_FIXING
@@ -515,8 +514,8 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
     ) -> None:
         # Arrange
         quarter_transition_datetime = "2023-01-31T22:00:00Z"
-        period_start_datetime = datetime(2023, 1, 30, 23)
-        period_end_datetime = datetime(2023, 2, 2, 23)
+        period_start_datetime = datetime(2023, 1, 30, 23, tzinfo=timezone.utc)
+        period_end_datetime = datetime(2023, 2, 2, 23, tzinfo=timezone.utc)
         sys_argv = sys_argv_from_contract
         sys_argv = _substitute_calculation_type(
             sys_argv, CalculationType.BALANCE_FIXING
@@ -543,7 +542,6 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
 
 
 class TestWhenInternalCalculation:
-
     @pytest.mark.parametrize("index, calculation_type", enumerate(CalculationType))
     def test_raise_exception_when_calculation_is_not_aggregation(
         self,
@@ -561,15 +559,14 @@ class TestWhenInternalCalculation:
             sys_argv_from_contract, calculation_type
         )
 
-        period_start_datetime = datetime(2022, 5, 31, 22)
-        period_end_datetime = datetime(2022, 6, 30, 22)
+        period_start_datetime = datetime(2022, 5, 31, 22, tzinfo=timezone.utc)
+        period_end_datetime = datetime(2022, 6, 30, 22, tzinfo=timezone.utc)
         sys_argv = _substitute_period(
             sys_argv, period_start_datetime, period_end_datetime
         )
 
         with patch("sys.argv", sys_argv):
             with patch.dict("os.environ", job_environment_variables):
-
                 if calculation_type == CalculationType.AGGREGATION:
                     # Act
                     CalculatorArgs(is_internal_calculation=True)
