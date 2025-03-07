@@ -4,7 +4,7 @@ locals {
       FeatureManagement__ActorTestModeEnabled = false
 
       # Timeout, required for initial import
-      "AzureFunctionsJobHost__functionTimeout" = "2:00:00"
+      "AzureFunctionsJobHost__functionTimeout" = "24:00:00"
 
       # Databricks
       "Databricks:WorkspaceUrl"   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-migration-workspace-url)"
