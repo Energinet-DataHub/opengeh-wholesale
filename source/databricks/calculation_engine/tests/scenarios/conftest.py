@@ -165,7 +165,9 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         migrations_wholesale_repository.read_charge_link_periods.return_value = (
             charge_link_periods
         )
-        migrations_wholesale_repository.read_charge_price_information_periods.return_value = charge_price_information_periods
+        migrations_wholesale_repository.read_charge_price_information_periods.return_value = (
+            charge_price_information_periods
+        )
         migrations_wholesale_repository.read_charge_price_points.return_value = (
             charge_price_points
         )
