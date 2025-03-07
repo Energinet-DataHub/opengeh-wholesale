@@ -13,6 +13,7 @@
 # limitations under the License.
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from dateutil.relativedelta import relativedelta
 
 
 def is_exactly_one_calendar_month(
@@ -21,6 +22,16 @@ def is_exactly_one_calendar_month(
     time_zone_info = ZoneInfo(time_zone)
     period_start_local_time = period_start.astimezone(time_zone_info)
     period_end_local_time = period_end.astimezone(time_zone_info)
+    delta = relativedelta(period_end_local_time, period_start_local_time)
+    print(delta, period_start_local_time, period_end_local_time)
+    return (
+        delta.months == 1
+        and delta.days == 0
+        and delta.hours == 0
+        and delta.minutes == 0
+        and delta.seconds == 0
+        and delta.microseconds == 0
+    )
 
     return (
         period_start_local_time.time()
