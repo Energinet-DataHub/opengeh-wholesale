@@ -100,7 +100,13 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
 
     # Get the path to the scenario
     scenario_path = str(Path(request.module.__file__).parent)
-    calculation_args = create_calculation_args(f"{scenario_path}/when/")
+
+    # To avoid creating data for a full month, we mock the function is_exactly_one_calendar_month
+    with patch(
+        "package.calculation.calculator_args.is_exactly_one_calendar_month"
+    ) as mock:
+        mock.return_value = True
+        calculation_args = create_calculation_args(f"{scenario_path}/when/")
 
     # Read input data
     time_series_points = read_csv(
@@ -159,9 +165,7 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         migrations_wholesale_repository.read_charge_link_periods.return_value = (
             charge_link_periods
         )
-        migrations_wholesale_repository.read_charge_price_information_periods.return_value = (
-            charge_price_information_periods
-        )
+        migrations_wholesale_repository.read_charge_price_information_periods.return_value = charge_price_information_periods
         migrations_wholesale_repository.read_charge_price_points.return_value = (
             charge_price_points
         )
