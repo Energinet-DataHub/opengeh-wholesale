@@ -10,6 +10,7 @@ locals {
       "Databricks:WorkspaceUrl"   = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-migration-workspace-url)"
       "Databricks:WorkspaceToken" = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-migration-workspace-token)"
       "Databricks:WarehouseId"    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=dbw-migration-warehouse-id)"
+      "DatabricksCatalog:Name"    = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=shared-unity-catalog-name)"
 
       # Database
       "Database:ConnectionString" = local.MS_MARKPART_DB_CONNECTION_STRING
