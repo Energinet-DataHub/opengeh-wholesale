@@ -31,12 +31,6 @@ resource "azurerm_storage_management_policy" "remove_sensitive_data" {
       base_blob {
         delete_after_days_since_creation_greater_than = 1
       }
-      snapshot {
-        delete_after_days_since_creation_greater_than = 1
-      }
-      version {
-        delete_after_days_since_creation = 1
-      }
     }
   }
 }

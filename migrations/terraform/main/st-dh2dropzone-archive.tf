@@ -16,6 +16,25 @@ module "st_dh2dropzone_archive" {
   } : null
 }
 
+# Automatically delete storage account blobs after 1 days according to the retention policy
+resource "azurerm_storage_management_policy" "dropzone_archive_remove_sensitive_data" {
+  storage_account_id = module.st_dh2dropzone_archive.id
+
+  rule {
+    name    = "remove_sensitive_data"
+    enabled = local.remove_sensitive_data
+    filters {
+      prefix_match = ["dropzonearchive/MD"]
+      blob_types   = ["blockBlob"]
+    }
+    actions {
+      base_blob {
+        delete_after_days_since_creation_greater_than = 1
+      }
+    }
+  }
+}
+
 #---- Role assignments
 
 resource "azurerm_role_assignment" "ra_dh2dropzonearch_contributor" {
