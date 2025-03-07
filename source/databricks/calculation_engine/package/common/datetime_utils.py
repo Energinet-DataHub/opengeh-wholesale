@@ -23,7 +23,6 @@ def is_exactly_one_calendar_month(
     period_start_local_time = period_start.astimezone(time_zone_info)
     period_end_local_time = period_end.astimezone(time_zone_info)
     delta = relativedelta(period_end_local_time, period_start_local_time)
-    print(delta, period_start_local_time, period_end_local_time)
     return (
         delta.months == 1
         and delta.days == 0
