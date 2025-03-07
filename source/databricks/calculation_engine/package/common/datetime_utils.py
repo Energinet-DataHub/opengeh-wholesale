@@ -33,15 +33,6 @@ def is_exactly_one_calendar_month(
         and delta.microseconds == 0
     )
 
-    return (
-        period_start_local_time.time()
-        == period_end_local_time.time()
-        == datetime.min.time()
-        and period_start_local_time.day == 1
-        and period_end_local_time.day == 1
-        and period_end_local_time.month == (period_start_local_time.month % 12) + 1
-    )
-
 
 def get_number_of_days_in_period(
     period_start: datetime, period_end: datetime, time_zone: str
