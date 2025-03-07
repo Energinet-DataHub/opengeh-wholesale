@@ -536,7 +536,7 @@ class TestWhenQuarterlyResolutionTransitionDatetimeIsInvalid:
         # Assert
         actual_error_message = str(error.value)
         assert (
-            "The quarterly resolution transition datetime must be at midnight local time (Europe/Copenhagen)."
+            "The quarterly resolution transition datetime must be at midnight local time."
             in actual_error_message
         )
 
