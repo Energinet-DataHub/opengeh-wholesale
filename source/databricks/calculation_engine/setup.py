@@ -38,7 +38,7 @@ setup(
         "azure-monitor-opentelemetry==1.6.4",
         "azure-core==1.32.0",
         "pytest-xdist",
-        "geh_common @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@geh_common_5.0.1",
+        "geh_common @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@bjarke/improve-scenario-tests-assertions-performance#subdirectory=source/geh_common",
     ],
     entry_points={
         "console_scripts": [
