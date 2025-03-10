@@ -17,7 +17,8 @@ locals {
       "Auth__Issuer"           = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/"
 
       # Database
-      "ProcessManager__SqlDatabaseConnectionString" = local.DatabaseConnectionString
+      "ProcessManager__SqlDatabaseConnectionString"                 = local.DatabaseConnectionString
+      "ProcessManager__AllowStartingOrchestrationsUnderDevelopment" = var.allow_starting_orchestrations_under_development
 
       # Process Manager Notify topic/subscription
       "ServiceBus__FullyQualifiedNamespace"         = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"

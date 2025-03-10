@@ -115,3 +115,9 @@ variable "feature_management_silent_mode" {
   description = "Used to enable silent mode."
   default     = false
 }
+
+variable "allow_starting_orchestrations_under_development" {
+  type        = bool
+  description = "Allow starting/scheduling orchestration instances where the orchestration description is marked as under development."
+  default     = true
+}
