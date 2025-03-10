@@ -18,6 +18,7 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
         "TIME_ZONE"                             = local.TIME_ZONE
         "CATALOG_NAME"                          = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+        "SETTLEMENT_REPORTS_OUTPUT_PATH"         = "/Volumes/${data.azurerm_key_vault_secret.shared_unity_catalog_name.value}/wholesale_settlement_report_output/settlement_reports"
       }
     }
   }
@@ -37,6 +38,7 @@ resource "databricks_job" "settlement_report_job_balance_fixing" {
         "TIME_ZONE"                             = local.TIME_ZONE
         "CATALOG_NAME"                          = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+        "SETTLEMENT_REPORTS_OUTPUT_PATH"         = "/Volumes/${data.azurerm_key_vault_secret.shared_unity_catalog_name.value}/wholesale_settlement_report_output/settlement_reports"
       }
     }
   }
@@ -162,6 +164,7 @@ resource "databricks_job" "settlement_report_job_wholesale" {
         "TIME_ZONE"                             = local.TIME_ZONE
         "CATALOG_NAME"                          = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+        "SETTLEMENT_REPORTS_OUTPUT_PATH"         = "/Volumes/${data.azurerm_key_vault_secret.shared_unity_catalog_name.value}/wholesale_settlement_report_output/settlement_reports"
       }
     }
   }
@@ -182,6 +185,7 @@ resource "databricks_job" "settlement_report_job_wholesale" {
         "TIME_ZONE"                             = local.TIME_ZONE
         "CATALOG_NAME"                          = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
         "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+        "SETTLEMENT_REPORTS_OUTPUT_PATH"         = "/Volumes/${data.azurerm_key_vault_secret.shared_unity_catalog_name.value}/wholesale_settlement_report_output/settlement_reports"
       }
     }
   }
