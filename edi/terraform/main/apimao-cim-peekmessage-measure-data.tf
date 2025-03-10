@@ -1,13 +1,13 @@
-module "apimao_cim_peek_message_time_series" {
+module "apimao_cim_peek_message_measure_data" {
   source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/api-management-api-operation?ref=api-management-api-operation_7.0.0"
 
-  operation_id            = "cim-peek-message-time-series"
+  operation_id            = "cim-peek-message-measure-data"
   api_management_api_name = module.apima_b2b.name
   resource_group_name     = data.azurerm_key_vault_secret.apim_instance_resource_group_name.value
   api_management_name     = data.azurerm_key_vault_secret.apim_instance_name.value
-  display_name            = "EDI: CIM Peek Time Series Message"
+  display_name            = "EDI: CIM Peek Measure Data Message"
   method                  = "GET"
-  url_template            = "/v1.0/cim/timeseries"
+  url_template            = "/v1.0/cim/measuredata"
   policies = [
     {
       xml_content = <<XML
@@ -18,7 +18,7 @@ module "apimao_cim_peek_message_time_series" {
                 <openid-config url="https://login.microsoftonline.com/${data.azurerm_key_vault_secret.apim_b2c_tenant_id.value}/v2.0/.well-known/openid-configuration" />
             </validate-jwt>
             <set-backend-service backend-id="${azurerm_api_management_backend.edi.name}" />
-            <rewrite-uri template="/api/peek/TimeSeries" />
+            <rewrite-uri template="/api/peek/MeasureData" />
           </inbound>
         </policies>
       XML
