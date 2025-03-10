@@ -30,6 +30,7 @@ resource "databricks_job" "silver_to_gold_measurements" {
         "GOLD_CONTAINER_NAME"                       = azurerm_storage_container.gold.name
         "SILVER_DATABASE_NAME"                      = databricks_schema.measurements_silver.name
         "GOLD_DATABASE_NAME"                        = databricks_schema.measurements_gold.name
+        "CONTINUOUS_STREAMING_ENABLED"              = local.enable_continuous_streaming
       }
     }
   }
