@@ -31,6 +31,18 @@ module "dbw" {
 }
 
 #
+# Place Databricks streaming jobs in internal key vault.
+#
+
+module "kva_databricks_jobs" {
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/key-vault-secret?ref=key-vault-secret_6.0.0"
+
+  name         = "dbw-workspace-jobs"
+  value        = local.databricks_streaming_jobs_string
+  key_vault_id = module.kv_internal.id
+}
+
+#
 # Places Databricks secrets in internal key vault
 #
 

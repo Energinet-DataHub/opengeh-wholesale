@@ -34,7 +34,7 @@ resource "databricks_job" "core_database_migration" {
         "GOLD_DATABASE_NAME"                        = databricks_schema.measurements_gold.name
         "DATABRICKS_WORKSPACE_URL"                  = module.dbw.workspace_url
         "DATABRICKS_TOKEN"                          = module.dbw.databricks_token
-        "DATABRICKS_JOBS"                           = local.databricks_jobs_string
+        "DATABRICKS_JOBS"                           = local.databricks_streaming_jobs_string
       }
     }
   }
