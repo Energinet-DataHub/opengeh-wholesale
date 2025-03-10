@@ -22,6 +22,8 @@ locals {
       # Process Manager
       ProcessManagerServiceBusClient__StartTopicName  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanagerstart-name)"
       ProcessManagerServiceBusClient__NotifyTopicName = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-processmanagernotify-name)"
+      ProcessManagerServiceBusClient__Brs021ForwardMeteredDataStartTopicName  = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-brs021forwardmetereddatastart-name)"
+      ProcessManagerServiceBusClient__Brs021ForwardMeteredDataNotifyTopicName = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sbt-brs021forwardmetereddatanotify-name)"
 
       # Logging
       "Logging__ApplicationInsights__LogLevel__Default"                = local.LOGGING_APPINSIGHTS_LOGLEVEL_DEFAULT
