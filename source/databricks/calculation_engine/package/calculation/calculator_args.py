@@ -74,11 +74,15 @@ class CalculatorArgs(ApplicationSettings):
 
     @field_validator("calculation_grid_areas", mode="before")
     @classmethod
-    def _validate_myvar(cls, value: Any) -> list[str]:
+    def _validate_grid_areas(cls, value: Any) -> list[str]:
         if isinstance(value, list):
             return [str(item) for item in value]
-        else:
+        elif isinstance(value, str):
             return re.findall(r"\d+", value)
+        else:
+            raise ValueError(
+                f"The grid areas must be a list of strings or a string, not {type(value)}"
+            )
 
     @model_validator(mode="after")
     def _validate_quarterly_resolution_transition_datetime(self) -> "CalculatorArgs":
