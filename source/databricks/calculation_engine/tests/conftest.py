@@ -44,14 +44,6 @@ from tests.testsession_configuration import (
 from unittest.mock import patch
 
 
-# def cleanup_logging() -> None:
-#     config.set_extras({})
-#     config.set_is_instrumented(False)
-#     config.set_tracer(None)
-#     config.set_tracer_name("")
-#     os.environ.pop("OTEL_SERVICE_NAME", None)
-
-
 @pytest.fixture(scope="session")
 def test_files_folder_path(tests_path: str) -> str:
     return f"{tests_path}/test_files"
@@ -61,7 +53,7 @@ def test_files_folder_path(tests_path: str) -> str:
 def spark(
     test_session_configuration: TestSessionConfiguration,
     tests_path: str,
-) -> SparkSession:
+) -> Generator[SparkSession, None, None]:
     warehouse_location = f"{tests_path}/__spark-warehouse__"
     metastore_path = f"{tests_path}/__metastore_db__"
 
