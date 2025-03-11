@@ -115,9 +115,9 @@ class TestWhenValidInput:
         self,
         actual_positive_grid_loss: EnergyResults,
     ) -> None:
-        actual_row = actual_positive_grid_loss.df.collect()[1]
+        actual_row = actual_positive_grid_loss.df.collect()[1].asDict()
 
-        expected = {
+        expected_row = {
             Colname.grid_area_code: "002",
             Colname.to_grid_area_code: None,
             Colname.from_grid_area_code: None,
@@ -130,6 +130,5 @@ class TestWhenValidInput:
             Colname.qualities: [QuantityQuality.CALCULATED.value],
             Colname.metering_point_id: "b",
         }
-        expected_row = Row(**expected)
 
         assert actual_row == expected_row
