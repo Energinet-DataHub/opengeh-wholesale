@@ -52,6 +52,16 @@ module "b2c_web_api" {
       // ServiceBus Process Manager Notify Topic
       resource_id          = data.azurerm_key_vault_secret.sbt_processmanagernotify_id.value
       role_definition_name = "Azure Service Bus Data Owner"
+    },
+    {
+      // ServiceBus Process Manager Start Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_brs021forwardmetereddatastart_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
+    },
+    {
+      // ServiceBus Process Manager Notify Topic
+      resource_id          = data.azurerm_key_vault_secret.sbt_brs021forwardmetereddatanotify_id.value
+      role_definition_name = "Azure Service Bus Data Owner"
     }
   ]
 }
