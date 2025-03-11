@@ -11,8 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
+import sys
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pyspark.sql.functions as F
 import pytest
@@ -32,35 +34,64 @@ from package.databases.table_column_names import TableColumnNames
 from package.infrastructure import paths
 from . import configuration as C
 
+DEFAULT_ARGS = {
+    "calculation-id": str(uuid.uuid4()),
+    "calculation-type": CalculationType.BALANCE_FIXING.value,
+    "grid-areas": ["805", "806"],
+    "period-start-datetime": datetime(
+        2018, 1, 1, 23, 0, 0, tzinfo=timezone.utc
+    ).isoformat(),
+    "period-end-datetime": datetime(
+        2018, 1, 3, 23, 0, 0, tzinfo=timezone.utc
+    ).isoformat(),
+    "created-by-user-id": str(uuid.uuid4()),
+}
+
+DEFAULT_ENV = {
+    "TIME_ZONE": "Europe/Copenhagen",
+    "QUARTERLY_RESOLUTION_TRANSITION_DATETIME": datetime(
+        2023, 1, 31, 23, 0, 0, tzinfo=timezone.utc
+    ).isoformat(),
+}
+
+
+def _to_args_list(args: dict) -> str:
+    return [CalculatorArgs.model_config.get("cli_prog_name", "calculator")] + [
+        f"--{k}={v}" for k, v in args.items()
+    ]
+
 
 @pytest.fixture(scope="session")
-def calculator_args_balance_fixing() -> CalculatorArgs:
-    return CalculatorArgs(
-        calculation_id=C.executed_balance_fixing_calculation_id,
-        calculation_type=CalculationType.BALANCE_FIXING,
-        calculation_grid_areas=["805", "806"],
-        calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
-        calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
-        calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
-        created_by_user_id=str(uuid.uuid4()),
-        time_zone="Europe/Copenhagen",
-        quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
-        is_internal_calculation=False,
+def calculator_args_balance_fixing(monkeysession) -> CalculatorArgs:
+    args_dict = DEFAULT_ARGS.copy()
+    args_dict["calculation-id"] = C.executed_balance_fixing_calculation_id
+    monkeysession.setattr(
+        sys,
+        "argv",
+        _to_args_list(args_dict),
     )
+    monkeysession.setattr(os, "environ", DEFAULT_ENV)
+    return CalculatorArgs()
 
 
 @pytest.fixture(scope="session")
-def calculator_args_wholesale_fixing(
-    calculator_args_balance_fixing: CalculatorArgs,
-) -> CalculatorArgs:
-    args = calculator_args_balance_fixing
-    args.calculation_id = C.executed_wholesale_calculation_id
-    args.calculation_type = CalculationType.WHOLESALE_FIXING
-    args.calculation_period_start_datetime = datetime(2017, 12, 31, 23, 0, 0)
-    args.calculation_period_end_datetime = datetime(2018, 1, 31, 23, 0, 0)
-    args.calculation_execution_time_start = datetime(2018, 2, 1, 15, 0, 0)
-
-    return args
+def calculator_args_wholesale_fixing(monkeysession) -> CalculatorArgs:
+    args_dict = DEFAULT_ARGS.copy()
+    args_dict["calculation-id"] = C.executed_wholesale_calculation_id
+    args_dict["calculation-type"] = CalculationType.WHOLESALE_FIXING.value
+    args_dict["period-start-datetime"] = datetime(
+        2017, 12, 31, 23, 0, 0, tzinfo=timezone.utc
+    ).isoformat()
+    args_dict["period-end-datetime"] = datetime(
+        2018, 1, 31, 23, 0, 0, tzinfo=timezone.utc
+    ).isoformat()
+    monkeysession.setattr(
+        sys,
+        "argv",
+        _to_args_list(args_dict),
+    )
+    monkeysession.setattr(os, "environ", DEFAULT_ENV)
+    return CalculatorArgs()
 
 
 @pytest.fixture(scope="session")

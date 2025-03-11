@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
@@ -43,7 +43,7 @@ class DefaultValues:
     CHARGE_CODE = "4000"
     CHARGE_OWNER = "001"
     CHARGE_TAX = True
-    CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
+    CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
     CHARGE_PRICE = Decimal("2.000005")
     CHARGE_QUANTITY = 1
     ENERGY_SUPPLIER_ID = "1234567890123"
@@ -51,16 +51,16 @@ class DefaultValues:
     METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
     SETTLEMENT_METHOD = e.SettlementMethod.FLEX
     QUANTITY = Decimal("1.005")
-    PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
-    FROM_DATE: datetime = datetime(2019, 12, 31, 23)
-    TO_DATE: datetime = datetime(2020, 1, 31, 23)
+    PERIOD_START_DATETIME = datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
+    FROM_DATE: datetime = datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
+    TO_DATE: datetime = datetime(2020, 1, 31, 23, tzinfo=timezone.utc)
 
 
 def create_time_series_row(
     metering_point_id: str = DefaultValues.METERING_POINT_ID,
     quantity: Decimal = DefaultValues.QUANTITY,
     quality: e.QuantityQuality = e.QuantityQuality.CALCULATED,
-    observation_time: datetime = datetime(2019, 12, 31, 23),
+    observation_time: datetime = datetime(2019, 12, 31, 23, tzinfo=timezone.utc),
 ) -> Row:
     return prepared_metering_point_time_series_factory.create_row(
         metering_point_id=metering_point_id,
@@ -136,8 +136,8 @@ def create_charge_link_metering_point_periods_row(
         Colname.charge_type: charge_type.value,
         Colname.metering_point_id: metering_point_id,
         Colname.quantity: quantity,
-        Colname.from_date: from_date,
-        Colname.to_date: to_date,
+        Colname.from_date: from_date.astimezone(timezone.utc),
+        Colname.to_date: to_date.astimezone(timezone.utc) if to_date else None,
         Colname.metering_point_type: metering_point_type.value,
         Colname.settlement_method: (
             settlement_method.value if settlement_method else None

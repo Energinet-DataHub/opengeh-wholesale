@@ -11,10 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import timezone
 from decimal import Decimal
 
 import pytest
-from pyspark.sql import SparkSession, Row
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 
 from tests.calculation.energy import grid_loss_metering_point_periods_factories
@@ -115,21 +116,23 @@ class TestWhenValidInput:
         self,
         actual_negative_grid_loss: EnergyResults,
     ) -> None:
-        actual_row = actual_negative_grid_loss.df.collect()[0]
+        actual_row = actual_negative_grid_loss.df.collect()[0].asDict()
+        actual_row[Colname.observation_time] = actual_row[
+            Colname.observation_time
+        ].replace(tzinfo=timezone.utc)
 
-        expected = {
+        expected_row = {
             Colname.grid_area_code: "001",
             Colname.to_grid_area_code: None,
             Colname.from_grid_area_code: None,
             Colname.balance_responsible_party_id: grid_loss_metering_point_periods_factories.DEFAULT_BALANCE_RESPONSIBLE_ID,
             Colname.energy_supplier_id: grid_loss_metering_point_periods_factories.DEFAULT_ENERGY_SUPPLIER_ID,
             Colname.observation_time: grid_loss_metering_point_periods_factories.DEFAULT_FROM_DATE.replace(
-                tzinfo=None
+                tzinfo=timezone.utc
             ),
             Colname.quantity: Decimal("12.567000"),
             Colname.qualities: [QuantityQuality.CALCULATED.value],
             Colname.metering_point_id: "a",
         }
-        expected_row = Row(**expected)
 
         assert actual_row == expected_row

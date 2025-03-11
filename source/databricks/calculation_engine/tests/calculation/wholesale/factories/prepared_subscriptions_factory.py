@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
@@ -34,14 +34,14 @@ class DefaultValues:
     GRID_AREA = "543"
     CHARGE_CODE = "4000"
     CHARGE_OWNER = "001"
-    CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0)
+    CHARGE_TIME_HOUR_0 = datetime(2020, 1, 1, 0, tzinfo=timezone.utc)
     CHARGE_PRICE = Decimal("2.000005")
     QUANTITY = 1
     ENERGY_SUPPLIER_ID = "1234567890123"
     METERING_POINT_ID = "123456789012345678901234567"
     METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
     SETTLEMENT_METHOD = SettlementMethod.FLEX
-    PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
+    PERIOD_START_DATETIME = datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
 
 
 def create_row(

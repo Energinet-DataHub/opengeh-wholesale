@@ -249,7 +249,7 @@ def test__get_number_of_days_in_period__when_time_of_day_differs__raise_exceptio
         )
 
     # Assert
-    assert str(exc_info.value) == "Period must start and end at midnight."
+    assert "Period must start and end at midnight." in str(exc_info.value)
 
 
 @pytest.mark.parametrize(

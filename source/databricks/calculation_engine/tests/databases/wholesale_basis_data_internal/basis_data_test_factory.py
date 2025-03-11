@@ -198,9 +198,9 @@ def create_calculation_args() -> CalculatorArgs:
     return CalculatorArgs(
         calculation_id=DefaultValues.CALCULATION_ID,
         calculation_type=e.CalculationType.AGGREGATION,
-        calculation_grid_areas=DefaultValues.CALCULATION_GRID_AREAS,
-        calculation_period_start_datetime=DefaultValues.CALCULATION_PERIOD_START_DATETIME,
-        calculation_period_end_datetime=DefaultValues.CALCULATION_PERIOD_END_DATETIME,
+        grid_areas=DefaultValues.CALCULATION_GRID_AREAS,
+        period_start_datetime=DefaultValues.CALCULATION_PERIOD_START_DATETIME,
+        period_end_datetime=DefaultValues.CALCULATION_PERIOD_END_DATETIME,
         calculation_execution_time_start=DefaultValues.CALCULATION_EXECUTION_TIME_START,
         time_zone=DefaultValues.TIME_ZONE,
         quarterly_resolution_transition_datetime=DefaultValues.QUARTERLY_RESOLUTION_TRANSITION_DATETIME,

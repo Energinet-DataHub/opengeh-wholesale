@@ -34,14 +34,12 @@ from package.infrastructure.paths import WholesaleInternalDatabase
 @patch("package.calculator_job.calculation.execute")
 def test_start_with_deps__throws_exception_when_calculation_id_already_used(
     calculation_executor_mock,
-    calculator_args_balance_fixing: CalculatorArgs,
     spark: SparkSession,
     any_calculator_args: CalculatorArgs,
     infrastructure_settings: InfrastructureSettings,
     calculation_id_already_used: bool,
     migrations_executed: bool,
 ) -> None:
-
     # Arrange
     calculation_id = str(uuid.uuid4())
     any_calculator_args.calculation_id = calculation_id

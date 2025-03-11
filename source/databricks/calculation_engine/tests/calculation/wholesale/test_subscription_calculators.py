@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from decimal import Decimal
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -30,8 +30,8 @@ import tests.calculation.wholesale.factories.prepared_subscriptions_factory as f
 
 
 class DefaultValues:
-    CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0)
-    CALCULATION_PERIOD_END = datetime(2020, 2, 29, 23, 0)
+    CALCULATION_PERIOD_START = datetime(2020, 1, 31, 23, 0, tzinfo=timezone.utc)
+    CALCULATION_PERIOD_END = datetime(2020, 2, 29, 23, 0, tzinfo=timezone.utc)
     DAYS_IN_MONTH = 29
     TIME_ZONE = "Europe/Copenhagen"
 
@@ -49,14 +49,14 @@ class TestWhenValidInput:
         "period_start, period_end, input_charge_price, expected_output_charge_price",
         [
             (  # month with 29 days
-                datetime(2020, 1, 31, 23, 0),
-                datetime(2020, 2, 29, 23, 0),
+                datetime(2020, 1, 31, 23, 0, tzinfo=timezone.utc),
+                datetime(2020, 2, 29, 23, 0, tzinfo=timezone.utc),
                 Decimal("10"),
                 Decimal("0.344828"),  # 10 / 29 (days)
             ),
             (  # month with 31 days
-                datetime(2020, 4, 30, 22, 0),
-                datetime(2020, 5, 31, 22, 0),
+                datetime(2020, 4, 30, 22, 0, tzinfo=timezone.utc),
+                datetime(2020, 5, 31, 22, 0, tzinfo=timezone.utc),
                 Decimal("10"),
                 Decimal("0.322581"),  # 10 / 31 (days)
             ),
@@ -214,14 +214,14 @@ class TestWhenDayLightSavingTime:
         "period_start, period_end, input_charge_price, expected_output_charge_price",
         [
             (  # Entering daylight saving time
-                datetime(2020, 2, 29, 23, 0),
-                datetime(2020, 3, 31, 22, 0),
+                datetime(2020, 2, 29, 23, 0, tzinfo=timezone.utc),
+                datetime(2020, 3, 31, 22, 0, tzinfo=timezone.utc),
                 Decimal("0.31"),
                 Decimal("0.010"),  # 0.31 / 31
             ),
             (  # month with 31 days
-                datetime(2020, 9, 30, 22, 0),
-                datetime(2020, 10, 31, 23, 0),
+                datetime(2020, 9, 30, 22, 0, tzinfo=timezone.utc),
+                datetime(2020, 10, 31, 23, 0, tzinfo=timezone.utc),
                 Decimal("0.31"),
                 Decimal("0.010"),  # 10 / 31 (days)
             ),

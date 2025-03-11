@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime, timezone
+import sys
 
 import pytest
 from pyspark.sql import SparkSession
@@ -87,20 +88,27 @@ class TestEnergyResultResolutionAdjustedMeteringPointTimeSeries:
         end_datetime: datetime,
         expected_rows: int,
         spark: SparkSession,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         # Arrange
-        args = CalculatorArgs(
-            calculation_id="test_id",
-            calculation_grid_areas=["123"],
-            calculation_type=CalculationType.BALANCE_FIXING,
-            calculation_execution_time_start=datetime.now(timezone.utc),
-            created_by_user_id="test_user",
-            time_zone="Europe/Copenhagen",
-            calculation_period_start_datetime=start_datetime,
-            calculation_period_end_datetime=end_datetime,
-            quarterly_resolution_transition_datetime=transition_datetime,
-            is_internal_calculation=False,
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                CalculatorArgs.model_config.get("cli_prog_name", "calculator"),
+                "--calculation-id=test_id",
+                "--grid-areas=[123]",
+                f"--calculation-type={CalculationType.BALANCE_FIXING.value}",
+                f"--calculation-execution-time-start={datetime.now(timezone.utc)}",
+                "--created-by-user-id=test_user",
+                f"--period-start-datetime={start_datetime}",
+                f"--period-end-datetime={end_datetime}",
+                f"--calculation-period-end-datetime={end_datetime}",
+                f"--quarterly-resolution-transition-datetime={transition_datetime}",
+            ],
         )
+        monkeypatch.setenv("TIME_ZONE", "Europe/Copenhagen")
+        args = CalculatorArgs()
         rows = [
             factory.create_row(
                 resolution=MeteringPointResolution.HOUR,

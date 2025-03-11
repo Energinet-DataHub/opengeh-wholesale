@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from pyspark.sql import Row, SparkSession
 
@@ -25,8 +26,12 @@ from package.constants import Colname
 
 DEFAULT_METERING_POINT_ID = "1234567890123"
 DEFAULT_GRID_AREA = "100"
-DEFAULT_FROM_DATE = datetime.strptime("2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
-DEFAULT_TO_DATE = datetime.strptime("2020-01-02T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
+DEFAULT_FROM_DATE = datetime.strptime(
+    "2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
+).replace(tzinfo=ZoneInfo("Europe/Copenhagen"))
+DEFAULT_TO_DATE = datetime.strptime(
+    "2020-01-02T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
+).replace(tzinfo=ZoneInfo("Europe/Copenhagen"))
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "2345678901234"

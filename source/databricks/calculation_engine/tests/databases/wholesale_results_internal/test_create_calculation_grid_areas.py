@@ -30,11 +30,11 @@ def test__when_valid_input__creates_calculation_grid_areas_with_expected_schema(
     # Arrange
     row1 = Row(
         calculation_id=any_calculator_args.calculation_id,
-        grid_area_code=any_calculator_args.calculation_grid_areas[0],
+        grid_area_code=any_calculator_args.grid_areas[0],
     )
     row2 = Row(
         calculation_id=any_calculator_args.calculation_id,
-        grid_area_code=any_calculator_args.calculation_grid_areas[1],
+        grid_area_code=any_calculator_args.grid_areas[1],
     )
     expected = spark.createDataFrame([row1, row2], calculation_grid_areas_schema)
 

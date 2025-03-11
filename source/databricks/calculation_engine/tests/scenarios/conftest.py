@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Generator
 from unittest.mock import Mock, patch
 
 import pytest
@@ -66,11 +67,11 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
 
     return CalculatorArgs(
         calculation_id=calculation_args[ArgsName.calculation_id],
-        calculation_grid_areas=calculation_args[ArgsName.grid_area_codes],
-        calculation_period_start_datetime=datetime.strptime(
+        grid_areas=calculation_args[ArgsName.grid_area_codes],
+        period_start_datetime=datetime.strptime(
             calculation_args[ArgsName.period_start], CSV_DATE_FORMAT
         ).replace(tzinfo=timezone.utc),
-        calculation_period_end_datetime=datetime.strptime(
+        period_end_datetime=datetime.strptime(
             calculation_args[ArgsName.period_end], CSV_DATE_FORMAT
         ).replace(tzinfo=timezone.utc),
         calculation_type=CalculationType(calculation_args[Colname.calculation_type]),
@@ -88,7 +89,7 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
 
 
 @pytest.fixture(scope="module", autouse=True)
-def clear_cache(spark: SparkSession) -> None:
+def clear_cache(spark: SparkSession) -> Generator[None]:
     yield
     # Clear the cache after each test module to avoid memory issues
     spark.catalog.clearCache()
@@ -165,9 +166,7 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         migrations_wholesale_repository.read_charge_link_periods.return_value = (
             charge_link_periods
         )
-        migrations_wholesale_repository.read_charge_price_information_periods.return_value = (
-            charge_price_information_periods
-        )
+        migrations_wholesale_repository.read_charge_price_information_periods.return_value = charge_price_information_periods
         migrations_wholesale_repository.read_charge_price_points.return_value = (
             charge_price_points
         )

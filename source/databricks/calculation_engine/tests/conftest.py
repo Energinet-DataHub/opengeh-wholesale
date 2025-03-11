@@ -7,8 +7,9 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Generator, Callable, Optional
 
@@ -182,7 +183,9 @@ def timestamp_factory() -> Callable[[str], Optional[datetime]]:
         date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%fZ"
         if date_time_string is None:
             return None
-        return datetime.strptime(date_time_string, date_time_formatting_string)
+        return datetime.strptime(date_time_string, date_time_formatting_string).replace(
+            tzinfo=timezone.utc
+        )
 
     return factory
 
@@ -338,35 +341,31 @@ def _load_settings_from_file(file_path: Path) -> dict:
 
 
 @pytest.fixture(scope="session")
-def any_calculator_args() -> CalculatorArgs:
-    return CalculatorArgs(
-        calculation_id="foo",
-        calculation_type=CalculationType.AGGREGATION,
-        calculation_grid_areas=["805", "806"],
-        calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
-        calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
-        calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
-        created_by_user_id=str(uuid.uuid4()),
-        time_zone="Europe/Copenhagen",
-        quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
-        is_internal_calculation=False,
-    )
+def monkeysession():
+    with pytest.MonkeyPatch.context() as mp:
+        yield mp
 
 
 @pytest.fixture(scope="session")
-def any_calculator_args_for_wholesale() -> CalculatorArgs:
-    return CalculatorArgs(
-        calculation_id="foo",
-        calculation_type=CalculationType.WHOLESALE_FIXING,
-        calculation_grid_areas=["805", "806"],
-        calculation_period_start_datetime=datetime(2022, 6, 30, 22, 0, 0),
-        calculation_period_end_datetime=datetime(2022, 7, 31, 22, 0, 0),
-        calculation_execution_time_start=datetime(2022, 8, 1, 22, 0, 0),
-        created_by_user_id=str(uuid.uuid4()),
-        time_zone="Europe/Copenhagen",
-        quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
-        is_internal_calculation=False,
+def any_calculator_args(monkeysession: pytest.MonkeyPatch) -> CalculatorArgs:
+    monkeysession.setattr(
+        sys,
+        "argv",
+        [
+            CalculatorArgs.model_config.get("cli_prog_name", "calculator"),
+            "--calculation-id=foo",
+            f"--calculation-type={CalculationType.AGGREGATION.value}",
+            "--grid-areas=[805,806]",
+            "--period-start-datetime=2018-01-01T23:00:00Z",
+            "--period-end-datetime=2018-01-03T23:00:00Z",
+            f"--created-by-user-id={uuid.uuid4()}",
+        ],
     )
+    monkeysession.setenv("TIME_ZONE", "Europe/Copenhagen")
+    monkeysession.setenv(
+        "QUARTERLY_RESOLUTION_TRANSITION_DATETIME", "2023-01-31T23:00:00Z"
+    )
+    return CalculatorArgs()
 
 
 @pytest.fixture(scope="session")

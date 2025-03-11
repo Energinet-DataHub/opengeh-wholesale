@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
@@ -44,7 +44,7 @@ class DefaultValues:
     SETTLEMENT_METHOD = SettlementMethod.FLEX
     QUANTITY = Decimal("1.005")
     QUALITY = ChargeQuality.CALCULATED
-    PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
+    PERIOD_START_DATETIME = datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
 
 
 def create_row(

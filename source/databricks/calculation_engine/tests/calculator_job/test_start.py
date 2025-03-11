@@ -11,24 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import argparse
-import sys
-import time
-import uuid
-from datetime import timedelta
-from typing import cast, Callable
 from unittest.mock import Mock, patch
 
 import pytest
-from azure.monitor.query import LogsQueryClient, LogsQueryResult
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.calculator_job import start, start_with_deps
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
-from tests.integration_test_configuration import IntegrationTestConfiguration
 from pydantic_core import ValidationError
-import geh_common.telemetry.logging_configuration as config
-import os
 
 
 class TestWhenInvokedWithInvalidArguments:

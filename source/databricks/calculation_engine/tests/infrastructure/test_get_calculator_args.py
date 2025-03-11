@@ -155,11 +155,11 @@ class TestWhenInvokedWithValidParameters:
 
         # Assert - Calculation arguments
         assert actual_args.calculation_id == DEFAULT_CALCULATION_ID
-        assert actual_args.calculation_grid_areas == ["805", "806", "033"]
-        assert actual_args.calculation_period_start_datetime == datetime(
+        assert actual_args.grid_areas == ["805", "806", "033"]
+        assert actual_args.period_start_datetime == datetime(
             2022, 5, 31, 22, tzinfo=timezone.utc
         )
-        assert actual_args.calculation_period_end_datetime == datetime(
+        assert actual_args.period_end_datetime == datetime(
             2022, 6, 1, 22, tzinfo=timezone.utc
         )
         assert actual_args.calculation_type == CalculationType.BALANCE_FIXING
@@ -620,7 +620,7 @@ class TestValidationOfInputParams:
 
                 actual_args = CalculatorArgs()
                 # Assert
-                assert actual_args.calculation_grid_areas == [
+                assert actual_args.grid_areas == [
                     "805",
                     "806",
                     "033",
