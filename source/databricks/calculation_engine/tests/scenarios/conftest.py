@@ -89,7 +89,7 @@ def create_calculation_args(input_path: str) -> CalculatorArgs:
 
 
 @pytest.fixture(scope="module", autouse=True)
-def clear_cache(spark: SparkSession) -> Generator[None]:
+def clear_cache(spark: SparkSession) -> Generator[None, None, None]:
     yield
     # Clear the cache after each test module to avoid memory issues
     spark.catalog.clearCache()
