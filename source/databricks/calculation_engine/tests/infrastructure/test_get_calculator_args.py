@@ -24,7 +24,7 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
-DEFAULT_CALCULATION_ID = "the-calculation-id"
+DEFAULT_CALCULATION_ID = "12345678-9fc8-409a-a169-fbd49479d718"
 
 
 def _get_contract_parameters(filename: str) -> list[str]:
