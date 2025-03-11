@@ -142,7 +142,7 @@ def _calculate_exchange(
     energy_results_output: EnergyResultsOutput,
 ) -> EnergyResults:
     exchange_per_neighbor = exchange_aggr.aggregate_exchange_per_neighbor(
-        metering_point_time_series, args.calculation_grid_areas
+        metering_point_time_series, args.grid_areas
     )
 
     # exchange_per_neighbor is a result for eSett.

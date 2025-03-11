@@ -11,16 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from datetime import datetime, timezone
 from package.codelists.calculation_type import (
     CalculationType,
     is_wholesale_calculation_type,
 )
 from typing import Any, Annotated
-from pydantic import AliasChoices, Field, field_validator, model_validator
-from pydantic_settings import NoDecode
-from geh_common.application.settings import ApplicationSettings
+from pydantic import Field, field_validator, model_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 from package.common.datetime_utils import (
     is_exactly_one_calendar_month,
@@ -29,52 +27,44 @@ from package.common.datetime_utils import (
 import re
 
 
-class CalculatorArgs(ApplicationSettings):
+class CalculatorArgs(BaseSettings):
     """
     CalculatorArgs class uses Pydantic BaseSettings to configure and validate parameters.
     Parameters can come from both runtime (CLI) or from environment variables.
     The priority is CLI parameters first and then environment variables.
     """
 
-    calculation_id: str = Field(init=False)  # From CLI
-    calculation_grid_areas: Annotated[list[str], NoDecode] = Field(
-        init=False,
-        validation_alias=AliasChoices(
-            "calculation_grid_areas", "grid_areas", "grid-areas"
-        ),
+    model_config = SettingsConfigDict(
+        cli_prog_name="calculator",
+        cli_parse_args=True,
+        cli_kebab_case=True,
+        cli_ignore_unknown_args=True,
+        cli_implicit_flags=True,
     )
-    # From CLI
 
-    calculation_period_start_datetime: datetime = Field(
-        init=False,
-        validation_alias=AliasChoices(
-            "period_start_datetime",
-            "period-start-datetime",
-            "calculation_period_start_datetime",
-        ),
-    )  # From CLI
-    calculation_period_end_datetime: datetime = Field(
-        init=False,
-        validation_alias=AliasChoices(
-            "period_end_datetime",
-            "period-end-datetime",
-            "calculation_period_end_datetime",
-        ),
-    )  # From CLI
-    calculation_type: CalculationType = Field(init=False)  # From CLI
+    # Required CLI parameters
+    calculation_id: str = Field(init=False)
+    grid_areas: Annotated[list[str], NoDecode] = Field(init=False)
+    period_start_datetime: datetime = Field(init=False)
+    period_end_datetime: datetime = Field(init=False)
+    calculation_type: CalculationType = Field(init=False)
+    created_by_user_id: str = Field(init=False)
+
+    # Optional CLI parameters
+    is_internal_calculation: bool = Field(init=False, default=False)
+
+    # Environment variables
+    time_zone: str = Field(init=False)
+    quarterly_resolution_transition_datetime: datetime = Field(init=False)
+
+    # Default values
     calculation_execution_time_start: datetime = Field(
-        default=datetime.now(timezone.utc)
+        init=False, default=datetime.now(timezone.utc)
     )
-    created_by_user_id: str = Field(init=False)  # From CLI
-    time_zone: str = Field(init=False)  # From ENVIRONMENT
-    quarterly_resolution_transition_datetime: datetime = Field(
-        init=False
-    )  # From ENVIRONMENT
-    is_internal_calculation: bool = Field(default=False, init=False)
 
-    @field_validator("calculation_grid_areas", mode="before")
+    @field_validator("grid_areas", mode="before")
     @classmethod
-    def _validate_grid_areas(cls, value: Any) -> list[str]:
+    def _convert_grid_area_codes(cls, value: Any) -> list[str]:
         if isinstance(value, list):
             return [str(item) for item in value]
         elif isinstance(value, str):
@@ -94,9 +84,9 @@ class CalculatorArgs(ApplicationSettings):
                 f"The quarterly resolution transition datetime must be at midnight local time. {self.quarterly_resolution_transition_datetime} coverted to '{self.time_zone}' is {local_time}",
             )
         if (
-            self.calculation_period_start_datetime
+            self.period_start_datetime
             < self.quarterly_resolution_transition_datetime
-            < self.calculation_period_end_datetime
+            < self.period_end_datetime
         ):
             raise Exception(
                 "The calculation period must not cross the quarterly resolution transition datetime."
@@ -106,8 +96,8 @@ class CalculatorArgs(ApplicationSettings):
     @model_validator(mode="after")
     def _validate_period_for_wholesale_calculation(self) -> "CalculatorArgs":
         is_valid_period = is_exactly_one_calendar_month(
-            self.calculation_period_start_datetime,
-            self.calculation_period_end_datetime,
+            self.period_start_datetime,
+            self.period_end_datetime,
             self.time_zone,
         )
         if is_wholesale_calculation_type(self.calculation_type):

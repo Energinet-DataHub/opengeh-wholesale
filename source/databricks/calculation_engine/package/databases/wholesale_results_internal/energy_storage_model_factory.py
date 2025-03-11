@@ -35,7 +35,6 @@ def create(
     energy_results: EnergyResults,
     time_series_type: TimeSeriesType,
 ) -> DataFrame:
-
     df = _add_aggregation_level_and_time_series_type(
         energy_results.df, time_series_type
     )
@@ -47,7 +46,7 @@ def create(
     )
     metering_point_resolution = get_energy_result_resolution(
         args.quarterly_resolution_transition_datetime,
-        args.calculation_period_end_datetime,
+        args.period_end_datetime,
     )
     df = df.withColumn(Colname.resolution, f.lit(metering_point_resolution.value))
     df = _map_to_storage_dataframe(df)

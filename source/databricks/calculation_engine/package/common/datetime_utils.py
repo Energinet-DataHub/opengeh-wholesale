@@ -36,15 +36,17 @@ def is_exactly_one_calendar_month(
 def get_number_of_days_in_period(
     period_start: datetime, period_end: datetime, time_zone: str
 ) -> int:
-    time_zone_info = ZoneInfo(time_zone)
-    period_start_local_time = period_start.astimezone(time_zone_info)
-    period_end_local_time = period_end.astimezone(time_zone_info)
+    start_at_midnight, period_start_local_time = is_midnight_in_time_zone(
+        period_start, time_zone
+    )
+    end_at_midnight, period_end_local_time = is_midnight_in_time_zone(
+        period_end, time_zone
+    )
 
-    if (
-        period_start_local_time.time() != period_end_local_time.time()
-        or period_start_local_time.time() != datetime.min.time()
-    ):
-        raise Exception("Period must start and end at midnight.")
+    if start_at_midnight is False or end_at_midnight is False:
+        raise Exception(
+            f"Period must start and end at midnight. Got: start={period_start_local_time}, end={period_end_local_time}"
+        )
 
     return (period_end_local_time - period_start_local_time).days
 
