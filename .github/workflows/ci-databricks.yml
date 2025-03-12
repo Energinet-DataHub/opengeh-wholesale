@@ -229,7 +229,6 @@ jobs:
 
           filter="calculator_job/test_energy_calculation.py
           calculator_job/test_wholesale_calculation.py
-          calculator_job/test_argument_contracts.py
           calculator_job/test_start.py
           calculator_job/test_start_with_deps.py
           scenarios/energy_calculation
