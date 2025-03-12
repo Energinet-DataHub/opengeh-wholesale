@@ -11,6 +11,8 @@ import pytest
 from package.calculation.calculator_args import CalculatorArgs
 from tests import PROJECT_PATH
 
+DEFAULT_CALCULATION_ID = "12345678-9fc8-409a-a169-fbd49479d718"
+
 
 @dataclass
 class Contract:
@@ -31,7 +33,9 @@ def _load_contract(path: Path):
             mode = "optional"
             continue
         if mode == "required" and line.startswith("--"):
-            required_params.append(line)
+            required_params.append(
+                line.replace("{calculation-id}", DEFAULT_CALCULATION_ID)
+            )
         if mode == "optional" and line.startswith("--"):
             optional_params.append(line)
     return Contract(required_params, optional_params)
