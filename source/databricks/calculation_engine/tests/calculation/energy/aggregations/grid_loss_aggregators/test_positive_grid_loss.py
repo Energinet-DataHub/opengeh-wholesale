@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from decimal import Decimal
+from zoneinfo import ZoneInfo
 
 import pytest
 from pyspark.sql import SparkSession, Row
@@ -116,6 +117,9 @@ class TestWhenValidInput:
         actual_positive_grid_loss: EnergyResults,
     ) -> None:
         actual_row = actual_positive_grid_loss.df.collect()[1].asDict()
+        actual_row[Colname.observation_time] = actual_row[
+            Colname.observation_time
+        ].astimezone(ZoneInfo("Europe/Copenhagen"))
 
         expected_row = {
             Colname.grid_area_code: "002",
@@ -123,9 +127,7 @@ class TestWhenValidInput:
             Colname.from_grid_area_code: None,
             Colname.balance_responsible_party_id: grid_loss_metering_point_periods_factories.DEFAULT_BALANCE_RESPONSIBLE_ID,
             Colname.energy_supplier_id: grid_loss_metering_point_periods_factories.DEFAULT_ENERGY_SUPPLIER_ID,
-            Colname.observation_time: grid_loss_metering_point_periods_factories.DEFAULT_FROM_DATE.replace(
-                tzinfo=None
-            ),
+            Colname.observation_time: grid_loss_metering_point_periods_factories.DEFAULT_FROM_DATE,
             Colname.quantity: Decimal("34.320000"),
             Colname.qualities: [QuantityQuality.CALCULATED.value],
             Colname.metering_point_id: "b",
