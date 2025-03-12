@@ -28,6 +28,7 @@ locals {
       FeatureManagement__UseRequestWholesaleServicesProcessOrchestration     = var.feature_management_use_request_wholesale_services_process_orchestration
       FeatureManagement__UseRequestAggregatedMeasureDataProcessOrchestration = var.feature_management_use_request_aggregated_measure_data_process_orchestration
       FeatureManagement__UseProcessManagerToEnqueueBrs023027Messages         = var.feature_management_use_process_manager_to_enqueue_brs023027_messages
+      FeatureManagement__ArchiveBrs021Messages                               = var.feature_management_archive_brs021_messages
 
       # Service Bus
       ServiceBus__FullyQualifiedNamespace = "@Microsoft.KeyVault(VaultName=${data.azurerm_key_vault.kv_shared_resources.name};SecretName=sb-domain-relay-namespace-endpoint)"
