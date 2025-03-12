@@ -37,6 +37,9 @@ locals {
       # Feature flags
       FeatureManagement__UseRequestWholesaleServicesProcessOrchestration     = var.feature_management_use_request_wholesale_services_process_orchestration
       FeatureManagement__UseRequestAggregatedMeasureDataProcessOrchestration = var.feature_management_use_request_aggregated_measure_data_process_orchestration
+
+      # App Configuration Feature Toggling
+      AppConfigEndpoint                       = data.azurerm_key_vault_secret.app_configuration_endpoint.value
     }
   }
 }

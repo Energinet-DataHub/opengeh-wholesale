@@ -67,9 +67,12 @@ locals {
       # Durable Functions
       # => Task Hub Name
       # See naming constraints: https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-task-hubs?tabs=csharp#task-hub-names
-      "OrchestrationsTaskHubName" = "Edi01"
+      "OrchestrationsTaskHubName"             = "Edi01"
       # => Task Hub Storage account connection string
       "OrchestrationsStorageConnectionString" = module.taskhub_storage_account.primary_connection_string
+
+      # App Configuration Feature Toggling
+      AppConfigEndpoint                       = data.azurerm_key_vault_secret.app_configuration_endpoint.value
     }
   }
 }

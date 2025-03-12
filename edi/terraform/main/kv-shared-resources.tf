@@ -176,3 +176,17 @@ data "azurerm_key_vault_secret" "bvault_vault_principal_id" {
   name         = "bvault-vault-principal-id"
   key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
 }
+
+//
+// App Configuration Feature Toggling
+//
+
+data "azurerm_key_vault_secret" "app_configuration_id" {
+  name         = "app-configuration-shared-id"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
+
+data "azurerm_key_vault_secret" "app_configuration_endpoint" {
+  name         = "app-configuration-shared-endpoint"
+  key_vault_id = data.azurerm_key_vault.kv_shared_resources.id
+}
