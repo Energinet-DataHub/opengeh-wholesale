@@ -74,13 +74,28 @@ class CalculatorArgs(BaseSettings):
                 f"The grid areas must be a list of strings or a string, not {type(value)}"
             )
 
+    @field_validator("grid_areas", mode="after")
+    @classmethod
+    def validate_grid_area_codes(cls, v: list[str] | None) -> list[str] | None:
+        if v is None:
+            return v
+        for code in v:
+            assert isinstance(code, str), (
+                f"Grid area codes must be strings, not {type(code)}"
+            )
+            if len(code) != 3 or not code.isdigit():
+                raise ValueError(
+                    f"Unknown grid area code: '{code}'. Grid area codes must consist of 3 digits (000-999)."
+                )
+        return v
+
     @model_validator(mode="after")
     def _validate_quarterly_resolution_transition_datetime(self) -> "CalculatorArgs":
         is_midnight, local_time = is_midnight_in_time_zone(
             self.quarterly_resolution_transition_datetime, self.time_zone
         )
         if not is_midnight:
-            raise Exception(
+            raise ValueError(
                 f"The quarterly resolution transition datetime must be at midnight local time. {self.quarterly_resolution_transition_datetime} coverted to '{self.time_zone}' is {local_time}",
             )
         if (
@@ -88,7 +103,7 @@ class CalculatorArgs(BaseSettings):
             < self.quarterly_resolution_transition_datetime
             < self.period_end_datetime
         ):
-            raise Exception(
+            raise ValueError(
                 "The calculation period must not cross the quarterly resolution transition datetime."
             )
         return self
@@ -102,7 +117,7 @@ class CalculatorArgs(BaseSettings):
         )
         if is_wholesale_calculation_type(self.calculation_type):
             if not is_valid_period:
-                raise Exception(
+                raise ValueError(
                     f"The calculation period for wholesale calculation types must be a full month starting and ending at midnight local time ({self.time_zone}))."
                 )
         return self
@@ -115,5 +130,7 @@ class CalculatorArgs(BaseSettings):
             self.is_internal_calculation
             and self.calculation_type != CalculationType.AGGREGATION
         ):
-            raise Exception("Internal calculations must be of type AGGREGATION. ")
+            raise ValueError(
+                f"Internal calculations must be of type {CalculationType.AGGREGATION.value}. Got: {self.calculation_type}"
+            )
         return self

@@ -11,8 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import copy
 import re
 from datetime import datetime, timezone
+import sys
 from unittest.mock import patch
 
 from pydantic import ValidationError
@@ -25,6 +27,17 @@ from package.infrastructure.infrastructure_settings import InfrastructureSetting
 
 
 DEFAULT_CALCULATION_ID = "12345678-9fc8-409a-a169-fbd49479d718"
+DEFAULT_ENV_VARS = {
+    EnvironmentVariable.CATALOG_NAME.name: "some_catalog",
+    EnvironmentVariable.TIME_ZONE.name: "Europe/Copenhagen",
+    EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.name: "some_storage_account_name",
+    EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.name: "input",
+    EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME.name: "input_database",
+    EnvironmentVariable.TENANT_ID.name: "550e8400-e29b-41d4-a716-446655440000",
+    EnvironmentVariable.SPN_APP_ID.name: "some_spn_app_id",
+    EnvironmentVariable.SPN_APP_SECRET.name: "some_spn_app_secret",
+    EnvironmentVariable.QUARTERLY_RESOLUTION_TRANSITION_DATETIME.name: "2023-01-31T23:00:00Z",
+}
 
 
 def _get_contract_parameters(filename: str) -> list[str]:
@@ -383,6 +396,7 @@ class TestWhenMissingEnvVariables:
         job_environment_variables: dict,
         job_environment_excluded_variables: list,
         sys_argv_from_contract,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         # Arrange
         with patch("sys.argv", sys_argv_from_contract):
