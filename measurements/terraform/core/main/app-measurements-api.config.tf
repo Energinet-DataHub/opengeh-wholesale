@@ -7,10 +7,7 @@ locals {
       # Databricks
       "DatabricksOptions__WorkspaceToken"       = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-token)"
       "DatabricksOptions__WarehouseId"          = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=measurements-api-sql-endpoint-id)"
-      "DatabricksOptions__WorkspaceUrl"         = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=dbw-workspace-url)"
-      "DatabricksOptions__CoreWarehouseId"      = "@Microsoft.KeyVault(VaultName=${module.kv_internal.name};SecretName=core-warehouse-id)"
-      "DatabricksOptions__HealthCheckStartHour" = 5
-      "DatabricksOptions__HealthCheckEndHour"   = 16
+      "DatabricksOptions__WorkspaceUrl"         = "https://${module.dbw.workspace_url}"
 
       # Unity Catalog
       "DatabricksSchemaOptions__SchemaName" = databricks_schema.measurements_gold.name
