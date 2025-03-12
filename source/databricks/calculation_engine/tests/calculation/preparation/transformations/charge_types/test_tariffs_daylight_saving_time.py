@@ -170,14 +170,18 @@ class TestWhenEnteringDaylightSavingTime:
         assert actual.df.count() == 2
         actual_df = actual.df.orderBy(Colname.charge_time).collect()
         # Day with transition into daylight saving time
-        assert actual_df[0][Colname.charge_time] == datetime(
-            2021, 3, 27, 23, tzinfo=timezone.utc
-        ).astimezone(ZoneInfo(DEFAULT_TIME_ZONE)).replace(tzinfo=None)
+        assert actual_df[0][Colname.charge_time].astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        ) == datetime(2021, 3, 27, 23, tzinfo=timezone.utc).astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        )
         assert actual_df[0][Colname.quantity] == 23 * factory.DefaultValues.QUANTITY
         # Normal day within daylight saving time (no transition)
-        assert actual_df[1][Colname.charge_time] == datetime(
-            2021, 3, 28, 22, tzinfo=timezone.utc
-        ).astimezone(ZoneInfo(DEFAULT_TIME_ZONE)).replace(tzinfo=None)
+        assert actual_df[1][Colname.charge_time].astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        ) == datetime(2021, 3, 28, 22, tzinfo=timezone.utc).astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        )
         assert actual_df[1][Colname.quantity] == 24 * factory.DefaultValues.QUANTITY
 
 

@@ -486,13 +486,13 @@ def test__get_prepared_tariffs__when_tariff_stops_and_starts_on_same_day__return
     # Assert
     assert actual.df.count() == 2
     actual_df = actual.df.orderBy(Colname.charge_time).collect()
-    assert actual_df[0][Colname.charge_time] == FEB_1ST.astimezone(
+    assert actual_df[0][Colname.charge_time].astimezone(
         ZoneInfo(DEFAULT_TIME_ZONE)
-    ).replace(tzinfo=None)
+    ) == FEB_1ST.astimezone(ZoneInfo(DEFAULT_TIME_ZONE))
     assert actual_df[0][Colname.quantity] == quantity_feb_1st
-    assert actual_df[1][Colname.charge_time] == FEB_2ND.astimezone(
+    assert actual_df[1][Colname.charge_time].astimezone(
         ZoneInfo(DEFAULT_TIME_ZONE)
-    ).replace(tzinfo=None)
+    ) == FEB_2ND.astimezone(ZoneInfo(DEFAULT_TIME_ZONE))
     assert actual_df[1][Colname.quantity] == quantity_feb_2nd
 
 

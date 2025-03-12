@@ -582,13 +582,11 @@ class TestWhenDaylightSavingTimeChanges:
         ).collect()
 
         assert actual_subscription.df.count() == expected_day_count
-        assert actual_charge_times[0][
-            Colname.charge_time
-        ] == expected_first_charge_time.astimezone(ZoneInfo(DEFAULT_TIME_ZONE)).replace(
-            tzinfo=None
-        )
+        assert actual_charge_times[0][Colname.charge_time].astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        ) == expected_first_charge_time.astimezone(ZoneInfo(DEFAULT_TIME_ZONE))
         assert actual_charge_times[expected_day_count - 1][
             Colname.charge_time
-        ] == expected_last_charge_time.astimezone(ZoneInfo(DEFAULT_TIME_ZONE)).replace(
-            tzinfo=None
-        )
+        ].astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        ) == expected_last_charge_time.astimezone(ZoneInfo(DEFAULT_TIME_ZONE))
