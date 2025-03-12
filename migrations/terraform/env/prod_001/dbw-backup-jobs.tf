@@ -1,5 +1,5 @@
 module "internal_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.1.0"
   providers = {
     databricks = databricks.dbw
   }
@@ -24,7 +24,7 @@ module "internal_backup" {
 }
 
 module "bronze_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.1.0"
   providers = {
     databricks = databricks.dbw
   }
@@ -64,7 +64,7 @@ module "bronze_backup" {
 }
 
 module "silver_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.1.0"
   providers = {
     databricks = databricks.dbw
   }
@@ -107,7 +107,7 @@ module "silver_backup" {
 }
 
 module "gold_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.1.0"
   providers = {
     databricks = databricks.dbw
   }
@@ -135,7 +135,7 @@ module "gold_backup" {
 }
 
 module "shared_wholesale_input_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.1.0"
   providers = {
     databricks = databricks.dbw
   }
@@ -163,7 +163,7 @@ module "shared_wholesale_input_backup" {
 }
 
 module "eloverblik_backup" {
-  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.0.0"
+  source = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/databricks-storage-backup?ref=databricks-storage-backup_9.1.0"
   providers = {
     databricks = databricks.dbw
   }
