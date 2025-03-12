@@ -589,4 +589,6 @@ class TestWhenDaylightSavingTimeChanges:
             Colname.charge_time
         ].astimezone(
             ZoneInfo(DEFAULT_TIME_ZONE)
-        ) == expected_last_charge_time.astimezone(ZoneInfo(DEFAULT_TIME_ZONE))
+        ) == expected_last_charge_time.astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        )
