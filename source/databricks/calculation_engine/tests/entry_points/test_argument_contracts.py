@@ -147,7 +147,7 @@ def test_calculator_args_required_args_missing(
 
 
 @pytest.mark.parametrize(
-    ["reason", "args"],
+    ["_", "args"],
     [
         (
             "short_grid_area_code",
@@ -174,7 +174,7 @@ def test_calculator_args_required_args_missing(
     ],
 )
 def test_grid_area_code_validation(
-    reason, args, environment_variables: dict, monkeypatch: pytest.MonkeyPatch
+    _, args, environment_variables: dict, monkeypatch: pytest.MonkeyPatch
 ):
     sys_args = [f"--{k}={v}" for k, v in args.items()]
     monkeypatch.setattr(sys, "argv", ["calculators"] + sys_args)
