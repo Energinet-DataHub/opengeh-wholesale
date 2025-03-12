@@ -306,11 +306,15 @@ class TestWhenExitingDaylightSavingTime:
         actual_df = actual.df.orderBy(Colname.charge_time).collect()
         # Day with transition out of daylight saving time
         assert actual_df[0][Colname.quantity] == 25 * factory.DefaultValues.QUANTITY
-        assert actual_df[0][Colname.charge_time] == datetime(
-            2021, 10, 30, 22, tzinfo=timezone.utc
-        ).astimezone(ZoneInfo(DEFAULT_TIME_ZONE)).replace(tzinfo=None)
+        assert actual_df[0][Colname.charge_time].astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        ) == datetime(2021, 10, 30, 22, tzinfo=timezone.utc).astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        )
         # Normal day not in daylight saving time and no transition
         assert actual_df[1][Colname.quantity] == 24 * factory.DefaultValues.QUANTITY
-        assert actual_df[1][Colname.charge_time] == datetime(
-            2021, 10, 31, 23, tzinfo=timezone.utc
-        ).astimezone(ZoneInfo(DEFAULT_TIME_ZONE)).replace(tzinfo=None)
+        assert actual_df[1][Colname.charge_time].astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        ) == datetime(2021, 10, 31, 23, tzinfo=timezone.utc).astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        )
