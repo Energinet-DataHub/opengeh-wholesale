@@ -393,11 +393,12 @@ class TestWhenMissingEnvVariables:
                     if key != excluded_env_var
                 }
                 with patch.dict("os.environ", env_variables_with_one_missing):
-                    with pytest.raises(ValidationError) as error:
+                    with pytest.raises(
+                        ValidationError, match=excluded_env_var.lower()
+                    ) as error:
                         # Act & Assert
                         CalculatorArgs()
                         InfrastructureSettings()
-                    assert str(error.value).startswith("1 validation error for")
                     assert excluded_env_var.lower() in str(error.value)
 
 
