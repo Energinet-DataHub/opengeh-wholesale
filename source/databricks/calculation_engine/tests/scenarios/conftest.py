@@ -39,14 +39,6 @@ from package.calculation.calculator_args import CalculatorArgs
 from package.constants import Colname
 
 
-class ArgsName:
-    calculation_id = "calculation_id"
-    period_start = "period_start"
-    period_end = "period_end"
-    grid_area_codes = "grid_areas"
-    is_internal_calculation = "is_internal_calculation"
-
-
 CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 DEFAULT_QUARTERLY_RESOLUTION = datetime(2023, 1, 31, 23, 0, 0, tzinfo=timezone.utc)
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
@@ -72,31 +64,15 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
     ) as mock:
         mock.return_value = True
         with open(f"{scenario_path}/when/calculation_arguments.yml", "r") as file:
-            _args = yaml.safe_load(file)[0]
-        sys_args = {
-            ArgsName.calculation_id.replace("_", "-"): _args[ArgsName.calculation_id],
-            ArgsName.period_start.replace("_", "-") + "-datetime": _args[
-                ArgsName.period_start
-            ],
-            ArgsName.period_end.replace("_", "-") + "-datetime": _args[
-                ArgsName.period_end
-            ],
-            ArgsName.grid_area_codes.replace("_", "-"): _args[ArgsName.grid_area_codes],
-            ArgsName.is_internal_calculation.replace("_", "-"): _args.get(
-                ArgsName.is_internal_calculation, False
-            ),
-            "calculation-type": _args[Colname.calculation_type],
-            "created-by-user-id": _args[Colname.created_by_user_id],
-            "calculation_execution_time_start": _args[
-                "calculation_execution_time_start"
-            ],
-        }
+            sys_args = yaml.safe_load(file)[0]
+        quarterly_resolution_transition_datetime = sys_args.pop(
+            "quarterly-resolution-transition-datetime",
+            DEFAULT_QUARTERLY_RESOLUTION.strftime(CSV_DATE_FORMAT),
+        )
+        time_zone = sys_args.pop("time_zone", DEFAULT_TIME_ZONE)
         env_vars = {
-            "TIME_ZONE": _args.get("time_zone", DEFAULT_TIME_ZONE),
-            "QUARTERLY_RESOLUTION_TRANSITION_DATETIME": _args.get(
-                "quarterly_resolution_transition_datetime",
-                DEFAULT_QUARTERLY_RESOLUTION.strftime(CSV_DATE_FORMAT),
-            ),
+            "TIME_ZONE": time_zone,
+            "QUARTERLY_RESOLUTION_TRANSITION_DATETIME": quarterly_resolution_transition_datetime,
         }
         with pytest.MonkeyPatch.context() as monkeypatch:
             monkeypatch.setattr(
