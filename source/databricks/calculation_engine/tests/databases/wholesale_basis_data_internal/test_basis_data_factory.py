@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
+import sys
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import (
@@ -21,6 +23,8 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
+from package.calculation.calculator_args import CalculatorArgs
+from package.codelists.calculation_type import CalculationType
 from package.databases.table_column_names import TableColumnNames
 from package.databases.wholesale_basis_data_internal.schemas import (
     charge_price_information_periods_schema,
@@ -34,6 +38,7 @@ from package.databases.wholesale_basis_data_internal.schemas.metering_point_peri
     metering_point_periods_schema_basis_data,
 )
 from tests.databases.wholesale_basis_data_internal.basis_data_test_factory import (
+    DefaultValues,
     create_basis_data_factory,
 )
 
@@ -80,9 +85,28 @@ def test__basis_data_uses_correct_schema(
     spark: SparkSession,
     basis_data_table_property_name: str,
     expected_schema: StructType,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    sys_args = {
+        "calculation-id": DefaultValues.CALCULATION_ID,
+        "calculation-type": CalculationType.AGGREGATION.value,
+        "grid-areas": DefaultValues.CALCULATION_GRID_AREAS,
+        "period-start-datetime": DefaultValues.CALCULATION_PERIOD_START_DATETIME,
+        "period-end-datetime": DefaultValues.CALCULATION_PERIOD_END_DATETIME,
+        "calculation-execution-time-start": DefaultValues.CALCULATION_EXECUTION_TIME_START,
+        "created-by-user-id": DefaultValues.CREATED_BY_USER_ID,
+    }
+    env_vars = {
+        "TIME_ZONE": DefaultValues.TIME_ZONE,
+        "QUARTERLY_RESOLUTION_TRANSITION_DATETIME": DefaultValues.QUARTERLY_RESOLUTION_TRANSITION_DATETIME,
+    }
+    monkeypatch.setattr(
+        sys, "argv", ["calculator"] + [f"--{k}={v}" for k, v in sys_args.items()]
+    )
+    monkeypatch.setattr(os, "environ", env_vars)
+    args = CalculatorArgs()
     # Arrange
-    basis_data_container = create_basis_data_factory(spark)
+    basis_data_container = create_basis_data_factory(spark, args)
 
     # Act
     # Refer to the property so we can use parameterization

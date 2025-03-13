@@ -66,6 +66,7 @@ class CalculatorArgs(BaseSettings):
         "period_start_datetime",
         "period_end_datetime",
         "quarterly_resolution_transition_datetime",
+        "calculation_execution_time_start",
         mode="after",
     )
     @classmethod

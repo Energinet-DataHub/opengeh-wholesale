@@ -247,7 +247,9 @@ def virtual_environment() -> Generator:
     activating the virtual environment from pytest."""
 
     # Create and activate the virtual environment
-    subprocess.call(["virtualenv", ".wholesale-pytest"])
+    subprocess.call(
+        ["virtualenv", ".wholesale-pytest"], shell=True, executable="/bin/bash"
+    )
     subprocess.call(
         "source .wholesale-pytest/bin/activate", shell=True, executable="/bin/bash"
     )

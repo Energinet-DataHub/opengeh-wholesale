@@ -36,7 +36,6 @@ from datetime import datetime, timezone
 import yaml
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.constants import Colname
 
 
 CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
