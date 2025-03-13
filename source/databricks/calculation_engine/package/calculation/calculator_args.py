@@ -70,7 +70,7 @@ class CalculatorArgs(BaseSettings):
     )
     @classmethod
     def _to_utc_datetime(cls, value: datetime) -> datetime:
-        return value.astimezone(timezone.utc)
+        return value.replace(tzinfo=timezone.utc)
 
     @field_validator("grid_areas", mode="before")
     @classmethod
