@@ -62,36 +62,38 @@ def _to_args_list(args: dict) -> str:
 
 
 @pytest.fixture(scope="session")
-def calculator_args_balance_fixing(monkeysession) -> CalculatorArgs:
-    args_dict = DEFAULT_ARGS.copy()
-    args_dict["calculation-id"] = C.executed_balance_fixing_calculation_id
-    monkeysession.setattr(
-        sys,
-        "argv",
-        _to_args_list(args_dict),
-    )
-    monkeysession.setattr(os, "environ", DEFAULT_ENV)
-    return CalculatorArgs()
+def calculator_args_balance_fixing() -> CalculatorArgs:
+    with pytest.MonkeyPatch.context() as mp:
+        args_dict = DEFAULT_ARGS.copy()
+        args_dict["calculation-id"] = C.executed_balance_fixing_calculation_id
+        mp.setattr(
+            sys,
+            "argv",
+            _to_args_list(args_dict),
+        )
+        mp.setattr(os, "environ", DEFAULT_ENV)
+        return CalculatorArgs()
 
 
 @pytest.fixture(scope="session")
-def calculator_args_wholesale_fixing(monkeysession) -> CalculatorArgs:
-    args_dict = DEFAULT_ARGS.copy()
-    args_dict["calculation-id"] = C.executed_wholesale_calculation_id
-    args_dict["calculation-type"] = CalculationType.WHOLESALE_FIXING.value
-    args_dict["period-start-datetime"] = datetime(
-        2017, 12, 31, 23, 0, 0, tzinfo=timezone.utc
-    ).isoformat()
-    args_dict["period-end-datetime"] = datetime(
-        2018, 1, 31, 23, 0, 0, tzinfo=timezone.utc
-    ).isoformat()
-    monkeysession.setattr(
-        sys,
-        "argv",
-        _to_args_list(args_dict),
-    )
-    monkeysession.setattr(os, "environ", DEFAULT_ENV)
-    return CalculatorArgs()
+def calculator_args_wholesale_fixing() -> CalculatorArgs:
+    with pytest.MonkeyPatch.context() as mp:
+        args_dict = DEFAULT_ARGS.copy()
+        args_dict["calculation-id"] = C.executed_wholesale_calculation_id
+        args_dict["calculation-type"] = CalculationType.WHOLESALE_FIXING.value
+        args_dict["period-start-datetime"] = datetime(
+            2017, 12, 31, 23, 0, 0, tzinfo=timezone.utc
+        ).isoformat()
+        args_dict["period-end-datetime"] = datetime(
+            2018, 1, 31, 23, 0, 0, tzinfo=timezone.utc
+        ).isoformat()
+        mp.setattr(
+            sys,
+            "argv",
+            _to_args_list(args_dict),
+        )
+        mp.setattr(os, "environ", DEFAULT_ENV)
+        return CalculatorArgs()
 
 
 @pytest.fixture(scope="session")

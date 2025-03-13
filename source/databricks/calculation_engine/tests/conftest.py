@@ -344,51 +344,45 @@ def _load_settings_from_file(file_path: Path) -> dict:
 
 
 @pytest.fixture(scope="session")
-def monkeysession():
+def any_calculator_args() -> CalculatorArgs:
     with pytest.MonkeyPatch.context() as mp:
-        yield mp
-
-
-@pytest.fixture(scope="session")
-def any_calculator_args(monkeysession: pytest.MonkeyPatch) -> CalculatorArgs:
-    monkeysession.setattr(
-        sys,
-        "argv",
-        [
-            CalculatorArgs.model_config.get("cli_prog_name", "calculator"),
-            "--calculation-id=foo",
-            f"--calculation-type={CalculationType.AGGREGATION.value}",
-            "--grid-areas=[805,806]",
-            "--period-start-datetime=2018-01-01T23:00:00Z",
-            "--period-end-datetime=2018-01-03T23:00:00Z",
-            f"--created-by-user-id={uuid.uuid4()}",
-        ],
-    )
-    monkeysession.setenv("TIME_ZONE", "Europe/Copenhagen")
-    monkeysession.setenv(
-        "QUARTERLY_RESOLUTION_TRANSITION_DATETIME", "2023-01-31T23:00:00Z"
-    )
-    return CalculatorArgs()
+        mp.setattr(
+            sys,
+            "argv",
+            [
+                CalculatorArgs.model_config.get("cli_prog_name", "calculator"),
+                "--calculation-id=foo",
+                f"--calculation-type={CalculationType.AGGREGATION.value}",
+                "--grid-areas=[805,806]",
+                "--period-start-datetime=2018-01-01T23:00:00Z",
+                "--period-end-datetime=2018-01-03T23:00:00Z",
+                f"--created-by-user-id={uuid.uuid4()}",
+            ],
+        )
+        mp.setenv("TIME_ZONE", "Europe/Copenhagen")
+        mp.setenv("QUARTERLY_RESOLUTION_TRANSITION_DATETIME", "2023-01-31T23:00:00Z")
+        return CalculatorArgs()
 
 
 @pytest.fixture(scope="session")
 def infrastructure_settings(
-    data_lake_path: str, calculation_input_path: str, monkeysession: pytest.MonkeyPatch
+    data_lake_path: str, calculation_input_path: str
 ) -> InfrastructureSettings:
-    monkeysession.setattr(
-        os,
-        "environ",
-        {
-            EnvironmentVariable.CATALOG_NAME.value: "spark_catalog",
-            EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME.value: "wholesale_migrations_wholesale",
-            EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.value: "foo",
-            EnvironmentVariable.TENANT_ID.value: "tenant_id",
-            EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
-            EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
-            EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
-        },
-    )
-    return InfrastructureSettings()
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(
+            os,
+            "environ",
+            {
+                EnvironmentVariable.CATALOG_NAME.value: "spark_catalog",
+                EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME.value: "wholesale_migrations_wholesale",
+                EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.value: "foo",
+                EnvironmentVariable.TENANT_ID.value: "tenant_id",
+                EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
+                EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
+                EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
+            },
+        )
+        return InfrastructureSettings()
 
 
 @pytest.fixture(scope="session", autouse=True)
