@@ -75,15 +75,13 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
             "QUARTERLY_RESOLUTION_TRANSITION_DATETIME": quarterly_resolution_transition_datetime,
         }
         with pytest.MonkeyPatch.context() as monkeypatch:
-            monkeypatch.setattr(
-                sys,
-                "argv",
-                ["calculator"]
-                + [
-                    f"--{k}={v}" if k != "is-internal-calculation" else f"--{k}"
-                    for k, v in sys_args.items()
-                ],
-            )
+            args = ["calculator"]
+            for k, v in sys_args.items():
+                if k == "is-internal-calculation" and v is True:
+                    args.append(f"--{k}")
+                else:
+                    args.append(f"--{k}={v}")
+            monkeypatch.setattr(sys, "argv", args)
             monkeypatch.setattr(os, "environ", env_vars)
             calculation_args = CalculatorArgs()
 
@@ -144,9 +142,7 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         migrations_wholesale_repository.read_charge_link_periods.return_value = (
             charge_link_periods
         )
-        migrations_wholesale_repository.read_charge_price_information_periods.return_value = (
-            charge_price_information_periods
-        )
+        migrations_wholesale_repository.read_charge_price_information_periods.return_value = charge_price_information_periods
         migrations_wholesale_repository.read_charge_price_points.return_value = (
             charge_price_points
         )

@@ -343,31 +343,52 @@ def _load_settings_from_file(file_path: Path) -> dict:
         return {}
 
 
-@pytest.fixture(scope="session")
-def any_calculator_args() -> CalculatorArgs:
-    with pytest.MonkeyPatch.context() as mp:
-        mp.setattr(
-            sys,
-            "argv",
-            [
-                CalculatorArgs.model_config.get("cli_prog_name", "calculator"),
-                "--calculation-id=foo",
-                f"--calculation-type={CalculationType.AGGREGATION.value}",
-                "--grid-areas=[805,806]",
-                "--period-start-datetime=2018-01-01T23:00:00Z",
-                "--period-end-datetime=2018-01-03T23:00:00Z",
-                f"--created-by-user-id={uuid.uuid4()}",
-            ],
-        )
-        mp.setenv("TIME_ZONE", "Europe/Copenhagen")
-        mp.setenv("QUARTERLY_RESOLUTION_TRANSITION_DATETIME", "2023-01-31T23:00:00Z")
-        return CalculatorArgs()
+@pytest.fixture(scope="function")
+def any_calculator_args(monkeypatch: pytest.MonkeyPatch) -> CalculatorArgs:
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            CalculatorArgs.model_config.get("cli_prog_name", "calculator"),
+            "--calculation-id=foo",
+            f"--calculation-type={CalculationType.AGGREGATION.value}",
+            "--grid-areas=[805,806]",
+            "--period-start-datetime=2018-01-01T23:00:00Z",
+            "--period-end-datetime=2018-01-03T23:00:00Z",
+            f"--created-by-user-id={uuid.uuid4()}",
+        ],
+    )
+    monkeypatch.setenv("TIME_ZONE", "Europe/Copenhagen")
+    monkeypatch.setenv(
+        "QUARTERLY_RESOLUTION_TRANSITION_DATETIME", "2023-01-31T23:00:00Z"
+    )
+    return CalculatorArgs()
 
 
-@pytest.fixture(scope="session")
-def infrastructure_settings(
-    data_lake_path: str, calculation_input_path: str
-) -> InfrastructureSettings:
+@pytest.fixture(scope="function")
+def infrastructure_settings(monkeypatch: pytest.MonkeyPatch) -> InfrastructureSettings:
+    monkeypatch.setattr(
+        os,
+        "environ",
+        {
+            EnvironmentVariable.CATALOG_NAME.value: "spark_catalog",
+            EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME.value: "wholesale_migrations_wholesale",
+            EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.value: "foo",
+            EnvironmentVariable.TENANT_ID.value: "tenant_id",
+            EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
+            EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
+            EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
+        },
+    )
+    return InfrastructureSettings()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dependency_injection_container(spark: SparkSession) -> Container:
+    """
+    This enables the use of dependency injection in all tests.
+    The container is created once for the entire test suite.
+    """
     with pytest.MonkeyPatch.context() as mp:
         mp.setattr(
             os,
@@ -382,18 +403,7 @@ def infrastructure_settings(
                 EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
             },
         )
-        return InfrastructureSettings()
-
-
-@pytest.fixture(scope="session", autouse=True)
-def dependency_injection_container(
-    spark: SparkSession,
-    infrastructure_settings: InfrastructureSettings,
-) -> Container:
-    """
-    This enables the use of dependency injection in all tests.
-    The container is created once for the entire test suite.
-    """
+        infrastructure_settings = InfrastructureSettings()
     return create_and_configure_container(spark, infrastructure_settings)
 
 
