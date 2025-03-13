@@ -21,6 +21,7 @@ from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
+from package.infrastructure.environment_variables import EnvironmentVariable
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists import CalculationType
@@ -370,23 +371,22 @@ def any_calculator_args(monkeysession: pytest.MonkeyPatch) -> CalculatorArgs:
 
 @pytest.fixture(scope="session")
 def infrastructure_settings(
-    data_lake_path: str, calculation_input_path: str
+    data_lake_path: str, calculation_input_path: str, monkeysession: pytest.MonkeyPatch
 ) -> InfrastructureSettings:
-    return InfrastructureSettings(
-        catalog_name="spark_catalog",
-        calculation_input_database_name="wholesale_migrations_wholesale",
-        data_storage_account_name="foo",
-        data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
-        tenant_id="foo",
-        spn_app_id="foo",
-        spn_app_secret="foo",
-        wholesale_container_path=data_lake_path,
-        calculation_input_path=calculation_input_path,
-        time_series_points_table_name=None,
-        metering_point_periods_table_name=None,
-        grid_loss_metering_point_ids_table_name=None,
-        calculation_input_folder_name="foo",
+    monkeysession.setattr(
+        os,
+        "environ",
+        {
+            EnvironmentVariable.CATALOG_NAME.value: "spark_catalog",
+            EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME.value: "wholesale_migrations_wholesale",
+            EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.value: "foo",
+            EnvironmentVariable.TENANT_ID.value: "tenant_id",
+            EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
+            EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
+            EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
+        },
     )
+    return InfrastructureSettings()
 
 
 @pytest.fixture(scope="session", autouse=True)
