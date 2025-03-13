@@ -39,7 +39,7 @@ class CalculatorArgs(BaseSettings):
         cli_parse_args=True,
         cli_kebab_case=True,
         cli_ignore_unknown_args=True,
-        cli_implicit_flags=True,
+        cli_implicit_flags=False,
     )
 
     # Required CLI parameters
@@ -61,6 +61,16 @@ class CalculatorArgs(BaseSettings):
     calculation_execution_time_start: datetime = Field(
         init=False, default=datetime.now(timezone.utc)
     )
+
+    @field_validator(
+        "period_start_datetime",
+        "period_end_datetime",
+        "quarterly_resolution_transition_datetime",
+        mode="after",
+    )
+    @classmethod
+    def _to_utc_datetime(cls, value: datetime) -> datetime:
+        return value.astimezone(timezone.utc)
 
     @field_validator("grid_areas", mode="before")
     @classmethod
