@@ -13,6 +13,7 @@
 # limitations under the License.
 from datetime import datetime, timezone
 import sys
+from zoneinfo import ZoneInfo
 
 import pytest
 from pyspark.sql import SparkSession
@@ -63,8 +64,8 @@ class TestEnergyResultResolutionAdjustedMeteringPointTimeSeries:
         [
             (
                 datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
-                datetime(2023, 2, 28, 21, tzinfo=timezone.utc),
-                datetime(2023, 3, 31, 21, tzinfo=timezone.utc),
+                datetime(2023, 2, 28, 23, tzinfo=timezone.utc),
+                datetime(2023, 3, 31, 22, tzinfo=timezone.utc),
                 2,
             ),
             (
@@ -75,7 +76,7 @@ class TestEnergyResultResolutionAdjustedMeteringPointTimeSeries:
             ),
             (
                 datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
-                datetime(2023, 3, 31, 21, tzinfo=timezone.utc),
+                datetime(2023, 3, 31, 22, tzinfo=timezone.utc),
                 datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
                 2,
             ),
@@ -112,23 +113,33 @@ class TestEnergyResultResolutionAdjustedMeteringPointTimeSeries:
         rows = [
             factory.create_row(
                 resolution=MeteringPointResolution.HOUR,
-                observation_time=datetime(2023, 4, 1, 0, 0),
+                observation_time=datetime(
+                    2023, 4, 1, 0, 0, tzinfo=ZoneInfo("Europe/Copenhagen")
+                ),
             ),
             factory.create_row(
                 resolution=MeteringPointResolution.QUARTER,
-                observation_time=datetime(2023, 4, 1, 0, 0),
+                observation_time=datetime(
+                    2023, 4, 1, 0, 0, tzinfo=ZoneInfo("Europe/Copenhagen")
+                ),
             ),
             factory.create_row(
                 resolution=MeteringPointResolution.QUARTER,
-                observation_time=datetime(2023, 4, 1, 0, 15),
+                observation_time=datetime(
+                    2023, 4, 1, 0, 15, tzinfo=ZoneInfo("Europe/Copenhagen")
+                ),
             ),
             factory.create_row(
                 resolution=MeteringPointResolution.QUARTER,
-                observation_time=datetime(2023, 4, 1, 0, 30),
+                observation_time=datetime(
+                    2023, 4, 1, 0, 30, tzinfo=ZoneInfo("Europe/Copenhagen")
+                ),
             ),
             factory.create_row(
                 resolution=MeteringPointResolution.QUARTER,
-                observation_time=datetime(2023, 4, 1, 0, 45),
+                observation_time=datetime(
+                    2023, 4, 1, 0, 45, tzinfo=ZoneInfo("Europe/Copenhagen")
+                ),
             ),
         ]
         prepared_metering_point_time_series = factory.create(spark, rows)
