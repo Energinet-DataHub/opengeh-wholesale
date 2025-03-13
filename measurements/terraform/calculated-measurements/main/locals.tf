@@ -20,4 +20,9 @@ locals {
   spark_version = "15.4.x-scala2.12"
 
   TIME_ZONE = "Europe/Copenhagen"
+  
+  # Database Names TODO: Currently these values are also hardcoded into unity.tf within the core project.
+  # However that part needs to be migrated to calculated-measurements.
+  database_measurements_calculated_internal = "measurements_calculated_internal"
+  database_measurements_calculated = "measurements_calculated"
 }
