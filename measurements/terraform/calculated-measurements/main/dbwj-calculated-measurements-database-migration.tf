@@ -24,7 +24,7 @@ resource "databricks_job" "calculated_measurements_database_migration" {
         "APPLICATIONINSIGHTS_CONNECTION_STRING"     = data.azurerm_key_vault_secret.appi_shared_connection_string.value
         "MEASUREMENTS_CALCULATED_INTERNAL_DATABASE" = "measurements_calculated_internal"
         "MEASUREMENTS_INTERNAL_DATABASE"            = "measurements_internal"
-        "MEASUREMENTS_CALCULATED_DATABASE"          = "measurements_calculated"
+        "MEASUREMENTS_CALCULATED_DATABASE"          = "measurements_calculated" 
       }
     }
   }
