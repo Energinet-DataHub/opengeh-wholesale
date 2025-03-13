@@ -77,8 +77,9 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         with pytest.MonkeyPatch.context() as monkeypatch:
             args = ["calculator"]
             for k, v in sys_args.items():
-                if k == "is-internal-calculation" and v is True:
-                    args.append(f"--{k}")
+                if k == "is-internal-calculation":
+                    if v is True:
+                        args.append(f"--{k}")
                 else:
                     args.append(f"--{k}={v}")
             monkeypatch.setattr(sys, "argv", args)
@@ -142,9 +143,7 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         migrations_wholesale_repository.read_charge_link_periods.return_value = (
             charge_link_periods
         )
-        migrations_wholesale_repository.read_charge_price_information_periods.return_value = (
-            charge_price_information_periods
-        )
+        migrations_wholesale_repository.read_charge_price_information_periods.return_value = charge_price_information_periods
         migrations_wholesale_repository.read_charge_price_points.return_value = (
             charge_price_points
         )
