@@ -10,12 +10,13 @@ import pytest
 
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists.calculation_type import CalculationType
+from package.infrastructure.environment_variables import EnvironmentVariable
 from tests import PROJECT_PATH
 
 DEFAULT_CALCULATION_ID = "12345678-9fc8-409a-a169-fbd49479d718"
 DEFAULT_ENV_VARS = {
-    "TIME_ZONE": "Europe/Copenhagen",
-    "QUARTERLY_RESOLUTION_TRANSITION_DATETIME": "2023-01-31T23:00:00Z",
+    EnvironmentVariable.TIME_ZONE.value: "Europe/Copenhagen",
+    EnvironmentVariable.QUARTERLY_RESOLUTION_TRANSITION_DATETIME.value: "2023-01-31T23:00:00Z",
 }
 DEFAULT_ARGS = {
     "calculation-id": "12345678-9fc8-409a-a169-fbd49479d718",
@@ -277,15 +278,9 @@ def test_validate_period_for_wholesale_calculation(
     [
         (
             c,
-            None,
+            match,
         )
-        for c in CalculationType
-    ]
-    + [
-        (
-            c,
-            "Internal calculations must be of type",
-        )
+        for match in [None, "Internal calculations must be of type"]
         for c in CalculationType
     ],
 )
