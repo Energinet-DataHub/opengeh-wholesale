@@ -1,4 +1,6 @@
+import os
 from pathlib import Path
+import sys
 from typing import Generator
 from unittest.mock import Mock, patch
 
@@ -34,7 +36,6 @@ from datetime import datetime, timezone
 import yaml
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.codelists import CalculationType
 from package.constants import Colname
 
 
@@ -47,45 +48,8 @@ class ArgsName:
 
 
 CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-
-
-def create_calculation_args(input_path: str) -> CalculatorArgs:
-    with open(input_path + "calculation_arguments.yml", "r") as file:
-        calculation_args = yaml.safe_load(file)[0]
-
-    quarterly_resolution_transition_datetime = datetime(
-        2023, 1, 31, 23, 0, 0, tzinfo=timezone.utc
-    )
-    if "quarterly_resolution_transition_datetime" in calculation_args:
-        quarterly_resolution_transition_datetime = datetime.strptime(
-            calculation_args["quarterly_resolution_transition_datetime"],
-            CSV_DATE_FORMAT,
-        ).replace(tzinfo=timezone.utc)
-    time_zone = "Europe/Copenhagen"
-    if "time_zone" in calculation_args:
-        time_zone = calculation_args["time_zone"]
-
-    return CalculatorArgs(
-        calculation_id=calculation_args[ArgsName.calculation_id],
-        grid_areas=calculation_args[ArgsName.grid_area_codes],
-        period_start_datetime=datetime.strptime(
-            calculation_args[ArgsName.period_start], CSV_DATE_FORMAT
-        ).replace(tzinfo=timezone.utc),
-        period_end_datetime=datetime.strptime(
-            calculation_args[ArgsName.period_end], CSV_DATE_FORMAT
-        ).replace(tzinfo=timezone.utc),
-        calculation_type=CalculationType(calculation_args[Colname.calculation_type]),
-        calculation_execution_time_start=datetime.strptime(
-            calculation_args[Colname.calculation_execution_time_start],
-            CSV_DATE_FORMAT,
-        ).replace(tzinfo=timezone.utc),
-        created_by_user_id=calculation_args[Colname.created_by_user_id],
-        time_zone=time_zone,
-        quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
-        is_internal_calculation=calculation_args.get(
-            ArgsName.is_internal_calculation, False
-        ),
-    )
+DEFAULT_QUARTERLY_RESOLUTION = datetime(2023, 1, 31, 23, 0, 0, tzinfo=timezone.utc)
+DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -107,7 +71,41 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         "package.calculation.calculator_args.is_exactly_one_calendar_month"
     ) as mock:
         mock.return_value = True
-        calculation_args = create_calculation_args(f"{scenario_path}/when/")
+        with open(f"{scenario_path}/when/calculation_arguments.yml", "r") as file:
+            _args = yaml.safe_load(file)[0]
+        sys_args = {
+            ArgsName.calculation_id.replace("_", "-"): _args[ArgsName.calculation_id],
+            ArgsName.period_start.replace("_", "-") + "-datetime": _args[
+                ArgsName.period_start
+            ],
+            ArgsName.period_end.replace("_", "-") + "-datetime": _args[
+                ArgsName.period_end
+            ],
+            ArgsName.grid_area_codes.replace("_", "-"): _args[ArgsName.grid_area_codes],
+            ArgsName.is_internal_calculation.replace("_", "-"): _args.get(
+                ArgsName.is_internal_calculation, False
+            ),
+            "calculation-type": _args[Colname.calculation_type],
+            "created-by-user-id": _args[Colname.created_by_user_id],
+            "calculation_execution_time_start": _args[
+                "calculation_execution_time_start"
+            ],
+        }
+        env_vars = {
+            "TIME_ZONE": _args.get("time_zone", DEFAULT_TIME_ZONE),
+            "QUARTERLY_RESOLUTION_TRANSITION_DATETIME": _args.get(
+                "quarterly_resolution_transition_datetime",
+                DEFAULT_QUARTERLY_RESOLUTION.strftime(CSV_DATE_FORMAT),
+            ),
+        }
+        with pytest.MonkeyPatch.context() as monkeypatch:
+            monkeypatch.setattr(
+                sys,
+                "argv",
+                ["calculator"] + [f"--{k}={v}" for k, v in sys_args.items()],
+            )
+            monkeypatch.setattr(os, "environ", env_vars)
+            calculation_args = CalculatorArgs()
 
     # Read input data
     time_series_points = read_csv(
@@ -166,9 +164,7 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         migrations_wholesale_repository.read_charge_link_periods.return_value = (
             charge_link_periods
         )
-        migrations_wholesale_repository.read_charge_price_information_periods.return_value = (
-            charge_price_information_periods
-        )
+        migrations_wholesale_repository.read_charge_price_information_periods.return_value = charge_price_information_periods
         migrations_wholesale_repository.read_charge_price_points.return_value = (
             charge_price_points
         )
