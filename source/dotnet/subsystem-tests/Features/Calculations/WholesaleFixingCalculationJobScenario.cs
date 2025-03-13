@@ -127,7 +127,7 @@ public class WholesaleFixingCalculationJobScenario : SubsystemTestsBase<Calculat
      | where OperationId != ""00000000000000000000000000000000""
      | where Properties.Subsystem == ""wholesale-aggregations""
      | where Properties.calculation_id == ""{Fixture.ScenarioState.CalculationJobInput.Id}""
-     | where Properties.CategoryName == ""Energinet.DataHub.package.calculator_job_args""
+     | where Properties.CategoryName == ""Energinet.DataHub.package.calculator_job""
      | count";
 
         // Assert
