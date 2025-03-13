@@ -7,6 +7,8 @@ module "mssqldb_grid_loss_imbalance_prices" {
   environment_short    = var.environment_short
   environment_instance = var.environment_instance
 
+  security_groups = var.environment_instance == "001" ? (contains(["d", "t"], var.environment_short) ? concat(local.pim_security_group_rules_001, local.developer_security_group_rules_001_dev_test) : local.pim_security_group_rules_001) : local.developer_security_group_rules_002
+
   server = {
     name                = data.azurerm_key_vault_secret.mssql_data_name.value
     resource_group_name = data.azurerm_key_vault_secret.mssql_data_resource_group_name.value
