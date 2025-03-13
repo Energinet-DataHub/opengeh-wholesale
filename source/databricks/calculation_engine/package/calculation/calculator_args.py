@@ -91,9 +91,9 @@ class CalculatorArgs(BaseSettings):
         if v is None:
             return v
         for code in v:
-            assert isinstance(code, str), (
-                f"Grid area codes must be strings, not {type(code)}"
-            )
+            assert isinstance(
+                code, str
+            ), f"Grid area codes must be strings, not {type(code)}"
             if len(code) != 3 or not code.isdigit():
                 raise ValueError(
                     f"Unknown grid area code: '{code}'. Grid area codes must consist of 3 digits (000-999)."
