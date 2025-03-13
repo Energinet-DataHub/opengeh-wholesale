@@ -123,7 +123,7 @@ public class WholesaleFixingCalculationJobScenario : SubsystemTestsBase<Calculat
      AppTraces
      | where AppRoleName == ""dbr-calculation-engine""
      | where SeverityLevel == 1 // Information
-     | where Message startswith_cs ""Command line arguments:""
+     | where Message startswith_cs ""Calculator arguments:""
      | where OperationId != ""00000000000000000000000000000000""
      | where Properties.Subsystem == ""wholesale-aggregations""
      | where Properties.calculation_id == ""{Fixture.ScenarioState.CalculationJobInput.Id}""
