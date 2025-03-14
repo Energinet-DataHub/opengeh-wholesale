@@ -1,16 +1,14 @@
-coverage_mapping:
-  notes: |
-    ## Purpose
-    The purpose is checking views related to amount per charge view.
+notes: |
+  ## Purpose
+  The purpose is checking views related to amount per charge view.
+  
+  ## DESIGN CONSIDERATIONS
+  wholesale_internal.calculations table has three calculation_id's, only one of which is valid.
+  The two others are either internal or don't have an end date.
+  These three ids are used across all 6 basis_data tables.
 
-    ## DESIGN CONSIDERATIONS
-    wholesale_internal.calculations table has three calculation_id's, only one of which is valid.
-    The two others are either internal or don't have an end date.
-    These three ids are used across all 6 basis_data tables.
-
-  cases_tested:
-    "Data Product Tests":
-      "Wholesale Basis Data Tests":
-        - "Only Calculation Ids In Internal Calculations Included"
-        - "Only External Calculation Ids Included"
-        - "Calculation Ids Without Calculation Succeeded Time Not Included"
+cases_tested:
+  "Wholesale Basis Data Tests":
+    - "Only Calculation Ids In Internal Calculations Included"
+    - "Only External Calculation Ids Included"
+    - "Calculation Ids Without Calculation Succeeded Time Not Included"

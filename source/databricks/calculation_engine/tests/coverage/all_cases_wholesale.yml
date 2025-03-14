@@ -1,0 +1,79 @@
+"Calculation Tests":
+  "Typical Energy Scenario": true
+  "Typical Wholesale Scenario": true
+  "Calculation Results Are Hourly When Calculation Period Is Before Result Resolution Change": true
+  "Calculation Input Data Includes Other Ga": true
+  "Aggregations Generates Basis Data": true
+
+  "Metering Point Master Data Updates":
+    "Change Of Settlement Method On An Mp": true
+    "Change Of Resolution On An Mp": true
+    "Change Of Balance Responsible On An Mp": true
+    "Change Of Energy Supplier On An Mp": true
+    "Energy Supplier Change On Grid Loss Mp": true
+    "Energy Supplier Change On System Correction Mp": true
+    "Balance Responsible Change On Grid Loss Mp": true
+    "Balance Responsible Change On System Correction Mp": true
+    "Mp Is Shut Down In Calculation Period": true
+    "Mp Starts Up In Calculation Period": true
+
+  "Exchange Cases":
+    "Exchange Between Two Ga Where Exchange Mp Is In Neither Ga": true
+    "Exchange Mp Where From And To Is The Same Grid Area": true
+
+  "Unusual Grid Area Setups":
+    "Grid Area With Only Non Profiled Mp": true
+    "Grid Area With Only Exchange Mp": true
+    "Grid Area With Only Production Mp": true
+    "Energy Supplier Only Has Grid Loss Mp Or System Correction Mp": true
+
+  "Price Element Updates":
+    "Extra Fees Are Added To Mp In Calculation Period": true
+    "Extra Subscriptions Are Added To Mp In Calculation Period": true
+
+  "Price Elements And Mp Periods":
+    "Price Element From Date Inside Calculation Period": true
+    "Price Element To Date Inside Calculation Period": true
+    "No Price Points For Active Price Elements In The Calculation Period": true
+
+  "Multiple Grid Areas In Calculations":
+    "Calculation Covers Multiple Grid Areas": true
+    "Calculation Includes 2 Out Of 3 Mp Grid Areas In Input Data": true
+
+"Data Product Tests":
+  "Wholesale Results Tests":
+    "Only Calculation Ids In Internal Calculations Included": true
+    "Only External Calculation Ids Included": true
+    "Calculation Ids Without Calculation Succeeded Time Not Included": true
+    "Correct Mp Types Included In Energy V1 Output": true
+    "Latest Calculation By Day Splits Period In Correct Amount Of Days": true
+    "Latest Calculation By Day Sets Correct Latest Calculation When Periods Overlap": true
+    "Latest Calculation By Day Includes Correct Calculation Ids In Output": true
+    "Latest Calculation By Day Only Includes Succeeded External Calculations": true
+
+  "Sap Results Tests":
+    "Calculation History Splits Period In Correct Amount Of Days": true
+    "Calculation History Sets Correct Latest Calculation When Periods Overlap": true
+    "Correct Calculation Ids Included In Output": true
+    "Only Calculation Ids With Succeeded Time Included": true
+
+  "Settlement Reports Tests":
+    "Charge Link Period Between Mp Periods": true
+    "Charge Link Period Is A Subset Of The Mp Period": true
+    "Charge Link Periods Have A Gap": true
+    "Charge Link Periods Multiple": true
+    "Charge Link Period Missing": true
+    "Charge Price Information Periods Multiple": true
+    "Mp Period Missing": true
+    "Mp Period Multiple": true
+    "Mp Period And Charge Link Period Do Not Overlap": true
+    "Mp Period And Charge Link Period Overlap": true
+    "Mp Period Subset Of Charge Link Period": true
+    "Mp With Same Masterdata But Different To And From Only One Entry In Charge Prices": true
+    "Calculation Versions Different": true
+    "Calculation Types Different": true
+
+  "Wholesale Basis Data Tests":
+    "Only Calculation Ids In Internal Calculations Included": true
+    "Only External Calculation Ids Included": true
+    "Calculation Ids Without Calculation Succeeded Time Not Included": true
