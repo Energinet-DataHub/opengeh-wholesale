@@ -43,7 +43,7 @@ resource "databricks_external_location" "measurements_calculated_storage" {
 resource "databricks_schema" "measurements_calculated" {
   provider     = databricks.dbw
   catalog_name = data.azurerm_key_vault_secret.shared_unity_catalog_name.value
-  name         = local.measurements_calculated
+  name         = local.database_measurements_calculated
   comment      = "Measurements Calculated Schema"
   storage_root = databricks_external_location.measurements_calculated_storage.url
 }
