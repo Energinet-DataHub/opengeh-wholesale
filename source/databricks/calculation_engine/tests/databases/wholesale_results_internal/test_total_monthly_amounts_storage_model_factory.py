@@ -52,7 +52,7 @@ DEFAULT_CHARGE_OWNER_ID = "5790001330552"
 DEFAULT_TOTAL_AMOUNT = Decimal("123.456")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
     args = copy(any_calculator_args)
 

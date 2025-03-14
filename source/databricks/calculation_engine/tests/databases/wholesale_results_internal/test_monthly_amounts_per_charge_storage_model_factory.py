@@ -60,7 +60,7 @@ DEFAULT_TOTAL_AMOUNT = Decimal("123.456")
 DEFAULT_UNIT = ChargeUnit.KWH
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
     args = copy(any_calculator_args)
 

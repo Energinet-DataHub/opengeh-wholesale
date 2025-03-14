@@ -63,7 +63,7 @@ def append_calculated_grid_loss_to_metering_point_times_series(
             f.lit(
                 get_energy_result_resolution(
                     args.quarterly_resolution_transition_datetime,
-                    args.calculation_period_end_datetime,
+                    args.period_end_datetime,
                 ).value
             ).alias(Colname.resolution),
             f.col(Colname.observation_time),

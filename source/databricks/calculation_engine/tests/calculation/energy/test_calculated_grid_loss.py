@@ -47,9 +47,7 @@ def test__add_calculated_grid_loss_to_metering_point_times_series__returns_corre
 
     mock_calculator_args = Mock(spec=CalculatorArgs)
     mock_calculator_args.quarterly_resolution_transition_datetime = datetime(2023, 5, 1)
-    mock_calculator_args.calculation_period_end_datetime = (
-        calculation_period_end_datetime
-    )
+    mock_calculator_args.period_end_datetime = calculation_period_end_datetime
 
     positive_grid_loss_row = energy_results_factory.create_grid_loss_row()
     negative_grid_loss_row = energy_results_factory.create_grid_loss_row()

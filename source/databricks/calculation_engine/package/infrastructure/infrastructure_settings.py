@@ -12,20 +12,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dataclasses import dataclass, field
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from azure.identity import ClientSecretCredential
 
+class InfrastructureSettings(BaseSettings):  # type: ignore
+    """
+    InfrastructureSettings class uses Pydantic BaseSettings to configure and validate parameters.
+    Parameters can come from both runtime (CLI) or from environment variables.
+    The priority is CLI parameters first and then environment variables.
+    """
 
-@dataclass
-class InfrastructureSettings:
-    catalog_name: str
-    calculation_input_database_name: str
-    data_storage_account_name: str
-    # Prevent the credentials from being printed or logged (using e.g. print() or repr())
-    data_storage_account_credentials: ClientSecretCredential = field(repr=False)
-    wholesale_container_path: str
-    calculation_input_path: str
-    time_series_points_table_name: str | None
-    metering_point_periods_table_name: str | None
-    grid_loss_metering_point_ids_table_name: str | None
+    model_config = SettingsConfigDict(
+        cli_prog_name="infrastructure",
+        cli_parse_args=True,
+        cli_kebab_case=True,
+        cli_ignore_unknown_args=True,
+        cli_implicit_flags=True,
+    )
+
+    catalog_name: str = Field(init=False)
+    calculation_input_database_name: str = Field(init=False)
+    data_storage_account_name: str = Field(init=False)
+
+    # (repr=False) prevents the field from being printed in the repr of the model
+    tenant_id: str = Field(init=False, repr=False)
+    spn_app_id: str = Field(init=False, repr=False)
+    spn_app_secret: str = Field(init=False, repr=False)
+
+    calculation_input_folder_name: str | None = Field(init=False, default=None)
+    time_series_points_table_name: str | None = Field(init=False, default=None)
+    metering_point_periods_table_name: str | None = Field(init=False, default=None)
+    grid_loss_metering_point_ids_table_name: str | None = Field(
+        init=False, default=None
+    )

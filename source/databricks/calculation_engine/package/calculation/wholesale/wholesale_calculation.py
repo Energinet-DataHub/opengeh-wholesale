@@ -89,7 +89,7 @@ def _calculate_fees(
     )
     monthly_fee_per_co_es = sum_within_month(
         fee_per_co_es,
-        args.calculation_period_start_datetime,
+        args.period_start_datetime,
     )
 
     wholesale_results_output.monthly_fee_per_co_es = (
@@ -109,8 +109,8 @@ def _calculate_subscriptions(
 ) -> MonthlyAmountPerCharge:
     subscription_per_co_es = subscription_calculator.calculate(
         prepared_subscriptions,
-        args.calculation_period_start_datetime,
-        args.calculation_period_end_datetime,
+        args.period_start_datetime,
+        args.period_end_datetime,
         args.time_zone,
     )
     wholesale_results_output.subscription_per_co_es = amounts_per_charge_factory.create(
@@ -119,7 +119,7 @@ def _calculate_subscriptions(
 
     monthly_subscription_per_co_es = sum_within_month(
         subscription_per_co_es,
-        args.calculation_period_start_datetime,
+        args.period_start_datetime,
     )
 
     wholesale_results_output.monthly_subscription_per_co_es = (
@@ -152,7 +152,7 @@ def _calculate_hourly_tariffs(
 
     monthly_tariff_from_hourly_per_co_es = sum_within_month(
         hourly_tariff_per_co_es,
-        args.calculation_period_start_datetime,
+        args.period_start_datetime,
     )
 
     wholesale_results_output.monthly_tariff_from_hourly_per_co_es = (
@@ -171,7 +171,6 @@ def _calculate_daily_tariffs(
     prepared_daily_tariffs: d.PreparedTariffs,
     wholesale_results_output: WholesaleResultsOutput,
 ) -> MonthlyAmountPerCharge:
-
     daily_tariff_per_co_es = tariff_calculator.calculate_tariff_price_per_co_es(
         prepared_daily_tariffs
     )
@@ -183,7 +182,7 @@ def _calculate_daily_tariffs(
 
     monthly_tariff_from_daily_per_co_es = sum_within_month(
         daily_tariff_per_co_es,
-        args.calculation_period_start_datetime,
+        args.period_start_datetime,
     )
 
     wholesale_results_output.monthly_tariff_from_daily_per_co_es = (

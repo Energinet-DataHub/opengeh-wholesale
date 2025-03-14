@@ -7,8 +7,9 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Generator, Callable, Optional
 from geh_common.pyspark.read_csv import read_csv_path
@@ -20,6 +21,7 @@ from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
+from package.infrastructure.environment_variables import EnvironmentVariable
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from package.calculation.calculator_args import CalculatorArgs
 from package.codelists import CalculationType
@@ -41,6 +43,7 @@ from tests.integration_test_configuration import IntegrationTestConfiguration
 from tests.testsession_configuration import (
     TestSessionConfiguration,
 )
+from unittest.mock import patch
 
 
 @pytest.fixture(scope="session")
@@ -52,7 +55,7 @@ def test_files_folder_path(tests_path: str) -> str:
 def spark(
     test_session_configuration: TestSessionConfiguration,
     tests_path: str,
-) -> SparkSession:
+) -> Generator[SparkSession, None, None]:
     warehouse_location = f"{tests_path}/__spark-warehouse__"
     metastore_path = f"{tests_path}/__metastore_db__"
 
@@ -106,6 +109,7 @@ def spark(
         .config("datanucleus.autoCreateSchema", "true")
         .config("hive.metastore.schema.verification", "false")
         .config("hive.metastore.schema.verification.record.version", "false")
+        .config("spark.sql.session.timeZone", "UTC")
         .enableHiveSupport()
     ).getOrCreate()
 
@@ -180,7 +184,9 @@ def timestamp_factory() -> Callable[[str], Optional[datetime]]:
         date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%fZ"
         if date_time_string is None:
             return None
-        return datetime.strptime(date_time_string, date_time_formatting_string)
+        return datetime.strptime(date_time_string, date_time_formatting_string).replace(
+            tzinfo=timezone.utc
+        )
 
     return factory
 
@@ -241,7 +247,9 @@ def virtual_environment() -> Generator:
     activating the virtual environment from pytest."""
 
     # Create and activate the virtual environment
-    subprocess.call(["virtualenv", ".wholesale-pytest"])
+    subprocess.call(
+        ["virtualenv", ".wholesale-pytest"], shell=True, executable="/bin/bash"
+    )
     subprocess.call(
         "source .wholesale-pytest/bin/activate", shell=True, executable="/bin/bash"
     )
@@ -335,64 +343,67 @@ def _load_settings_from_file(file_path: Path) -> dict:
         return {}
 
 
-@pytest.fixture(scope="session")
-def any_calculator_args() -> CalculatorArgs:
-    return CalculatorArgs(
-        calculation_id="foo",
-        calculation_type=CalculationType.AGGREGATION,
-        calculation_grid_areas=["805", "806"],
-        calculation_period_start_datetime=datetime(2018, 1, 1, 23, 0, 0),
-        calculation_period_end_datetime=datetime(2018, 1, 3, 23, 0, 0),
-        calculation_execution_time_start=datetime(2018, 1, 5, 23, 0, 0),
-        created_by_user_id=str(uuid.uuid4()),
-        time_zone="Europe/Copenhagen",
-        quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
-        is_internal_calculation=False,
+@pytest.fixture(scope="function")
+def any_calculator_args(monkeypatch: pytest.MonkeyPatch) -> CalculatorArgs:
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            CalculatorArgs.model_config.get("cli_prog_name", "calculator"),
+            "--calculation-id=foo",
+            f"--calculation-type={CalculationType.AGGREGATION.value}",
+            "--grid-areas=[805,806]",
+            "--period-start-datetime=2018-01-01T23:00:00Z",
+            "--period-end-datetime=2018-01-03T23:00:00Z",
+            f"--created-by-user-id={uuid.uuid4()}",
+        ],
     )
-
-
-@pytest.fixture(scope="session")
-def any_calculator_args_for_wholesale() -> CalculatorArgs:
-    return CalculatorArgs(
-        calculation_id="foo",
-        calculation_type=CalculationType.WHOLESALE_FIXING,
-        calculation_grid_areas=["805", "806"],
-        calculation_period_start_datetime=datetime(2022, 6, 30, 22, 0, 0),
-        calculation_period_end_datetime=datetime(2022, 7, 31, 22, 0, 0),
-        calculation_execution_time_start=datetime(2022, 8, 1, 22, 0, 0),
-        created_by_user_id=str(uuid.uuid4()),
-        time_zone="Europe/Copenhagen",
-        quarterly_resolution_transition_datetime=datetime(2023, 1, 31, 23, 0, 0),
-        is_internal_calculation=False,
+    monkeypatch.setenv("TIME_ZONE", "Europe/Copenhagen")
+    monkeypatch.setenv(
+        "QUARTERLY_RESOLUTION_TRANSITION_DATETIME", "2023-01-31T23:00:00Z"
     )
+    return CalculatorArgs()
 
 
-@pytest.fixture(scope="session")
-def infrastructure_settings(
-    data_lake_path: str, calculation_input_path: str
-) -> InfrastructureSettings:
-    return InfrastructureSettings(
-        catalog_name="spark_catalog",
-        calculation_input_database_name="wholesale_migrations_wholesale",
-        data_storage_account_name="foo",
-        data_storage_account_credentials=ClientSecretCredential("foo", "foo", "foo"),
-        wholesale_container_path=data_lake_path,
-        calculation_input_path=calculation_input_path,
-        time_series_points_table_name=None,
-        metering_point_periods_table_name=None,
-        grid_loss_metering_point_ids_table_name=None,
+@pytest.fixture(scope="function")
+def infrastructure_settings(monkeypatch: pytest.MonkeyPatch) -> InfrastructureSettings:
+    monkeypatch.setattr(
+        os,
+        "environ",
+        {
+            EnvironmentVariable.CATALOG_NAME.value: "spark_catalog",
+            EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME.value: "wholesale_migrations_wholesale",
+            EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.value: "foo",
+            EnvironmentVariable.TENANT_ID.value: "tenant_id",
+            EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
+            EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
+            EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
+        },
     )
+    return InfrastructureSettings()
 
 
 @pytest.fixture(scope="session", autouse=True)
-def dependency_injection_container(
-    spark: SparkSession,
-    infrastructure_settings: InfrastructureSettings,
-) -> Container:
+def dependency_injection_container(spark: SparkSession) -> Container:
     """
     This enables the use of dependency injection in all tests.
     The container is created once for the entire test suite.
     """
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(
+            os,
+            "environ",
+            {
+                EnvironmentVariable.CATALOG_NAME.value: "spark_catalog",
+                EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME.value: "wholesale_migrations_wholesale",
+                EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.value: "foo",
+                EnvironmentVariable.TENANT_ID.value: "tenant_id",
+                EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
+                EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
+                EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
+            },
+        )
+        infrastructure_settings = InfrastructureSettings()
     return create_and_configure_container(spark, infrastructure_settings)
 
 
@@ -417,14 +428,24 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
 
 
 @pytest.fixture(scope="session", autouse=True)
-def configure_logging() -> None:
+def configure_logging_dummy():
     """
     Configures the logging initially.
     """
-    config.configure_logging(
-        cloud_role_name="dbr-calculation-engine-tests",
-        tracer_name="unit-tests",
-    )
+    # cleanup_logging()
+    # if "disable_autouse" in request.keywords:
+    #     yield
+    # else:
+
+    # patch to avoid error when trying to configure azure monitor
+    with patch("geh_common.telemetry.logging_configuration.configure_azure_monitor"):
+        logging_settings = config.LoggingSettings(
+            cloud_role_name="dbr-calculation-engine-tests",
+            subsystem="unit-tests",
+            orchestration_instance_id=uuid.uuid4(),
+            applicationinsights_connection_string="connectionString",
+        )
+        yield config.configure_logging(logging_settings=logging_settings)
 
 
 @pytest.fixture(scope="session")

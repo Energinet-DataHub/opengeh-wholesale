@@ -41,7 +41,7 @@ def get_energy_result_resolution_adjusted_metering_point_time_series(
     if (
         get_energy_result_resolution(
             args.quarterly_resolution_transition_datetime,
-            args.calculation_period_end_datetime,
+            args.period_end_datetime,
         )
         == MeteringPointResolution.HOUR
     ):

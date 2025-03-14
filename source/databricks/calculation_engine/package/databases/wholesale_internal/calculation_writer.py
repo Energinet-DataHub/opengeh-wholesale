@@ -39,11 +39,11 @@ def write_calculation(
     ],
 ) -> None:
     """Writes the succeeded calculation to the calculations table. The current time is  added to the calculation before writing."""
-    calculation_period_start_datetime = args.calculation_period_start_datetime.strftime(
+    calculation_period_start_datetime = args.period_start_datetime.strftime(
         timestamp_format
     )[:-3]
 
-    calculation_period_end_datetime = args.calculation_period_end_datetime.strftime(
+    calculation_period_end_datetime = args.period_end_datetime.strftime(
         timestamp_format
     )[:-3]
     calculation_execution_time_start = args.calculation_execution_time_start.strftime(

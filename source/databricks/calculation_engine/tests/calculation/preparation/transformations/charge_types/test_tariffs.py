@@ -11,8 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
+from zoneinfo import ZoneInfo
 
 import pytest
 from pyspark.sql import Row, SparkSession
@@ -31,10 +32,10 @@ from package.calculation.preparation.transformations import (
 from package.constants import Colname
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
-FEB_1ST = datetime(2020, 1, 31, 23)
-FEB_2ND = datetime(2020, 2, 1, 23)
-FEB_3RD = datetime(2020, 2, 2, 23)
-FEB_4TH = datetime(2020, 2, 3, 23)
+FEB_1ST = datetime(2020, 1, 31, 23, tzinfo=timezone.utc)
+FEB_2ND = datetime(2020, 2, 1, 23, tzinfo=timezone.utc)
+FEB_3RD = datetime(2020, 2, 2, 23, tzinfo=timezone.utc)
+FEB_4TH = datetime(2020, 2, 3, 23, tzinfo=timezone.utc)
 
 
 def _create_expected_prepared_tariffs_row(
@@ -136,7 +137,7 @@ def test__get_prepared_tariffs__filters_on_resolution(
     )
 
     # Assert
-    assert actual.df.count() == 1
+    assert actual.df.count() == 1, actual.df.collect()
     assert actual.df.collect()[0][Colname.resolution] == charge_resolution.value
 
 
@@ -485,9 +486,13 @@ def test__get_prepared_tariffs__when_tariff_stops_and_starts_on_same_day__return
     # Assert
     assert actual.df.count() == 2
     actual_df = actual.df.orderBy(Colname.charge_time).collect()
-    assert actual_df[0][Colname.charge_time] == FEB_1ST
+    assert actual_df[0][Colname.charge_time].astimezone(
+        ZoneInfo(DEFAULT_TIME_ZONE)
+    ) == FEB_1ST.astimezone(ZoneInfo(DEFAULT_TIME_ZONE))
     assert actual_df[0][Colname.quantity] == quantity_feb_1st
-    assert actual_df[1][Colname.charge_time] == FEB_2ND
+    assert actual_df[1][Colname.charge_time].astimezone(
+        ZoneInfo(DEFAULT_TIME_ZONE)
+    ) == FEB_2ND.astimezone(ZoneInfo(DEFAULT_TIME_ZONE))
     assert actual_df[1][Colname.quantity] == quantity_feb_2nd
 
 
@@ -566,8 +571,8 @@ def test__get_prepared_tariffs__when_charges_with_specific_charge_resolution_and
     # Arrange
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_point_periods_row(
-            from_date=datetime(2020, 1, 1, 23),
-            to_date=datetime(2020, 1, 3, 23),
+            from_date=datetime(2020, 1, 1, 23, tzinfo=timezone.utc),
+            to_date=datetime(2020, 1, 3, 23, tzinfo=timezone.utc),
         )
     ]
     time_series_rows = []
@@ -576,20 +581,20 @@ def test__get_prepared_tariffs__when_charges_with_specific_charge_resolution_and
     charge_price_information_rows.append(
         factory.create_charge_price_information_row(
             resolution=charge_resolution,
-            from_date=datetime(2020, 1, 1, 23),
-            to_date=datetime(2020, 1, 3, 23),
+            from_date=datetime(2020, 1, 1, 23, tzinfo=timezone.utc),
+            to_date=datetime(2020, 1, 3, 23, tzinfo=timezone.utc),
         )
     )
     for day in range(1, 4):
         for hour in range(0, 24):
             time_series_rows.append(
                 factory.create_time_series_row(
-                    observation_time=datetime(2020, 1, day, hour)
+                    observation_time=datetime(2020, 1, day, hour, tzinfo=timezone.utc)
                 )
             )
             charge_prices_rows.append(
                 factory.create_charge_prices_row(
-                    charge_time=datetime(2020, 1, day, hour),
+                    charge_time=datetime(2020, 1, day, hour, tzinfo=timezone.utc),
                 )
             )
 
@@ -649,8 +654,8 @@ def test__get_prepared_tariffs__when_specific_charge_resolution_and_time_series_
     # Arrange
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_point_periods_row(
-            from_date=datetime(2020, 1, 1, 23),
-            to_date=datetime(2020, 1, 3, 23),
+            from_date=datetime(2020, 1, 1, 23, tzinfo=timezone.utc),
+            to_date=datetime(2020, 1, 3, 23, tzinfo=timezone.utc),
         )
     ]
     time_series_rows = []
@@ -659,8 +664,8 @@ def test__get_prepared_tariffs__when_specific_charge_resolution_and_time_series_
     charge_price_information_rows.append(
         factory.create_charge_price_information_row(
             resolution=charge_resolution,
-            from_date=datetime(2020, 1, 1, 23),
-            to_date=datetime(2020, 1, 3, 23),
+            from_date=datetime(2020, 1, 1, 23, tzinfo=timezone.utc),
+            to_date=datetime(2020, 1, 3, 23, tzinfo=timezone.utc),
         )
     )
     for day in range(1, 4):
@@ -668,12 +673,14 @@ def test__get_prepared_tariffs__when_specific_charge_resolution_and_time_series_
             for minute in range(0, 4):
                 time_series_rows.append(
                     factory.create_time_series_row(
-                        observation_time=datetime(2020, 1, day, hour, minute * 15)
+                        observation_time=datetime(
+                            2020, 1, day, hour, minute * 15, tzinfo=timezone.utc
+                        )
                     )
                 )
             charge_prices_rows.append(
                 factory.create_charge_prices_row(
-                    charge_time=datetime(2020, 1, day, hour),
+                    charge_time=datetime(2020, 1, day, hour, tzinfo=timezone.utc),
                 )
             )
 
@@ -709,23 +716,23 @@ def test__get_prepared_tariffs__when_specific_charge_resolution_and_time_series_
     "date_time_1, date_time_2, expected_rows",
     [
         (
-            datetime(2019, 12, 31, 23),
-            datetime(2020, 1, 1, 23),
+            datetime(2019, 12, 31, 23, tzinfo=timezone.utc),
+            datetime(2020, 1, 1, 23, tzinfo=timezone.utc),
             2,
         ),
         (
-            datetime(2019, 12, 31, 23),
-            datetime(2020, 1, 2, 23),
+            datetime(2019, 12, 31, 23, tzinfo=timezone.utc),
+            datetime(2020, 1, 2, 23, tzinfo=timezone.utc),
             1,
         ),
         (
-            datetime(2020, 1, 1, 23),
-            datetime(2020, 1, 2, 23),
+            datetime(2020, 1, 1, 23, tzinfo=timezone.utc),
+            datetime(2020, 1, 2, 23, tzinfo=timezone.utc),
             1,
         ),
         (
-            datetime(2019, 12, 30, 23),
-            datetime(2020, 1, 3, 23),
+            datetime(2019, 12, 30, 23, tzinfo=timezone.utc),
+            datetime(2020, 1, 3, 23, tzinfo=timezone.utc),
             0,
         ),
     ],
@@ -754,11 +761,12 @@ def test__get_prepared_tariffs__per_day_only_accepts_time_series_and_change_time
     # Arrange
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_point_periods_row(
-            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 23)
+            from_date=datetime(2019, 12, 31, 23, tzinfo=timezone.utc),
+            to_date=datetime(2020, 1, 1, 23, tzinfo=timezone.utc),
         ),
         factory.create_charge_link_metering_point_periods_row(
-            from_date=datetime(2020, 1, 1, 23),
-            to_date=datetime(2020, 1, 2, 23),
+            from_date=datetime(2020, 1, 1, 23, tzinfo=timezone.utc),
+            to_date=datetime(2020, 1, 2, 23, tzinfo=timezone.utc),
             energy_supplier_id="123",
         ),
     ]
@@ -771,8 +779,8 @@ def test__get_prepared_tariffs__per_day_only_accepts_time_series_and_change_time
     charge_price_information_rows = [
         factory.create_charge_price_information_row(
             resolution=e.ChargeResolution.DAY,
-            from_date=datetime(2019, 12, 31, 23),
-            to_date=datetime(2020, 1, 5, 23),
+            from_date=datetime(2019, 12, 31, 23, tzinfo=timezone.utc),
+            to_date=datetime(2020, 1, 5, 23, tzinfo=timezone.utc),
         ),
     ]
     charge_prices_rows = [
@@ -815,16 +823,23 @@ def test__get_prepared_tariffs__can_handle_missing_charge_prices(
 ) -> None:
     # Arrange
     time_series_rows = [
-        factory.create_time_series_row(observation_time=datetime(2019, 12, 31, 23)),
-        factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
+        factory.create_time_series_row(
+            observation_time=datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
+        ),
+        factory.create_time_series_row(
+            observation_time=datetime(2020, 1, 1, 0, tzinfo=timezone.utc)
+        ),
     ]
     charge_price_information_rows = [
         factory.create_charge_price_information_row(
-            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 2, 0)
+            from_date=datetime(2019, 12, 31, 23, tzinfo=timezone.utc),
+            to_date=datetime(2020, 1, 2, 0, tzinfo=timezone.utc),
         ),
     ]
     charge_prices_rows = [
-        factory.create_charge_prices_row(charge_time=datetime(2019, 12, 31, 23)),
+        factory.create_charge_prices_row(
+            charge_time=datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
+        ),
     ]
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_point_periods_row(
@@ -871,12 +886,17 @@ def test__get_prepared_tariffs__can_handle_missing_all_charges_prices(
 ) -> None:
     # Arrange
     time_series_rows = [
-        factory.create_time_series_row(observation_time=datetime(2019, 12, 31, 23)),
-        factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
+        factory.create_time_series_row(
+            observation_time=datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
+        ),
+        factory.create_time_series_row(
+            observation_time=datetime(2020, 1, 1, 0, tzinfo=timezone.utc)
+        ),
     ]
     charge_price_information_rows = [
         factory.create_charge_price_information_row(
-            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 2, 0)
+            from_date=datetime(2019, 12, 31, 23, tzinfo=timezone.utc),
+            to_date=datetime(2020, 1, 2, 0, tzinfo=timezone.utc),
         ),
     ]
     charge_link_metering_points_rows = [
@@ -919,25 +939,38 @@ def test__get_prepared_tariffs__can_handle_missing_charge_links(
 ) -> None:
     # Arrange
     time_series_rows = [
-        factory.create_time_series_row(observation_time=datetime(2019, 12, 31, 23)),
-        factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 0)),
-        factory.create_time_series_row(observation_time=datetime(2020, 1, 1, 1)),
+        factory.create_time_series_row(
+            observation_time=datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
+        ),
+        factory.create_time_series_row(
+            observation_time=datetime(2020, 1, 1, 0, tzinfo=timezone.utc)
+        ),
+        factory.create_time_series_row(
+            observation_time=datetime(2020, 1, 1, 1, tzinfo=timezone.utc)
+        ),
     ]
     charge_price_information_rows = [
         factory.create_charge_price_information_row(
-            from_date=datetime(2019, 12, 31, 23), to_date=datetime(2020, 1, 1, 1)
+            from_date=datetime(2019, 12, 31, 23, tzinfo=timezone.utc),
+            to_date=datetime(2020, 1, 1, 1, tzinfo=timezone.utc),
         ),
     ]
     charge_prices_rows = [
-        factory.create_charge_prices_row(charge_time=datetime(2019, 12, 31, 23)),
-        factory.create_charge_prices_row(charge_time=datetime(2020, 1, 1, 0)),
-        factory.create_charge_prices_row(charge_time=datetime(2020, 1, 1, 1)),
+        factory.create_charge_prices_row(
+            charge_time=datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
+        ),
+        factory.create_charge_prices_row(
+            charge_time=datetime(2020, 1, 1, 0, tzinfo=timezone.utc)
+        ),
+        factory.create_charge_prices_row(
+            charge_time=datetime(2020, 1, 1, 1, tzinfo=timezone.utc)
+        ),
     ]
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_point_periods_row(
             charge_type=e.ChargeType.TARIFF,
-            from_date=datetime(2019, 12, 31, 23),
-            to_date=datetime(2020, 1, 1, 1),
+            from_date=datetime(2019, 12, 31, 23, tzinfo=timezone.utc),
+            to_date=datetime(2020, 1, 1, 1, tzinfo=timezone.utc),
         ),
     ]
 
@@ -972,12 +1005,12 @@ def test__get_prepared_tariffs__can_handle_missing_charge_links(
     "date_time_1, date_time_2",
     [
         (
-            datetime(2020, 3, 28, 23),
-            datetime(2020, 3, 29, 22),
+            datetime(2020, 3, 28, 23, tzinfo=timezone.utc),
+            datetime(2020, 3, 29, 22, tzinfo=timezone.utc),
         ),
         (
-            datetime(2020, 10, 24, 22),
-            datetime(2020, 10, 25, 23),
+            datetime(2020, 10, 24, 22, tzinfo=timezone.utc),
+            datetime(2020, 10, 25, 23, tzinfo=timezone.utc),
         ),
     ],
 )
@@ -1009,7 +1042,7 @@ def test__get_prepared_tariffs__can_handle_daylight_saving_time(
     charge_link_metering_points_rows = [
         factory.create_charge_link_metering_point_periods_row(
             charge_type=e.ChargeType.TARIFF,
-            to_date=datetime(2020, 12, 31, 23),
+            to_date=datetime(2020, 12, 31, 23, tzinfo=timezone.utc),
         ),
     ]
 

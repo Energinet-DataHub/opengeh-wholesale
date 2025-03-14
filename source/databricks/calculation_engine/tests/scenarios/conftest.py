@@ -1,5 +1,8 @@
+import os
 from pathlib import Path
-from unittest.mock import Mock
+import sys
+from typing import Generator
+from unittest.mock import Mock, patch
 
 import pytest
 from pyspark.sql import SparkSession
@@ -30,65 +33,19 @@ from package.databases.wholesale_internal.schemas import (
 from tests.testsession_configuration import TestSessionConfiguration
 
 
-from datetime import datetime
-
+from datetime import datetime, timezone
 import yaml
 
 from package.calculation.calculator_args import CalculatorArgs
-from package.codelists import CalculationType
-from package.constants import Colname
-
-
-class ArgsName:
-    calculation_id = "calculation_id"
-    period_start = "period_start"
-    period_end = "period_end"
-    grid_area_codes = "grid_areas"
-    is_internal_calculation = "is_internal_calculation"
 
 
 CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-
-
-def create_calculation_args(input_path: str) -> CalculatorArgs:
-    with open(input_path + "calculation_arguments.yml", "r") as file:
-        calculation_args = yaml.safe_load(file)[0]
-
-    quarterly_resolution_transition_datetime = datetime(2023, 1, 31, 23, 0, 0)
-    if "quarterly_resolution_transition_datetime" in calculation_args:
-        quarterly_resolution_transition_datetime = datetime.strptime(
-            calculation_args["quarterly_resolution_transition_datetime"],
-            CSV_DATE_FORMAT,
-        )
-    time_zone = "Europe/Copenhagen"
-    if "time_zone" in calculation_args:
-        time_zone = calculation_args["time_zone"]
-
-    return CalculatorArgs(
-        calculation_id=calculation_args[ArgsName.calculation_id],
-        calculation_grid_areas=calculation_args[ArgsName.grid_area_codes],
-        calculation_period_start_datetime=datetime.strptime(
-            calculation_args[ArgsName.period_start], CSV_DATE_FORMAT
-        ),
-        calculation_period_end_datetime=datetime.strptime(
-            calculation_args[ArgsName.period_end], CSV_DATE_FORMAT
-        ),
-        calculation_type=CalculationType(calculation_args[Colname.calculation_type]),
-        calculation_execution_time_start=datetime.strptime(
-            calculation_args[Colname.calculation_execution_time_start],
-            CSV_DATE_FORMAT,
-        ),
-        created_by_user_id=calculation_args[Colname.created_by_user_id],
-        time_zone=time_zone,
-        quarterly_resolution_transition_datetime=quarterly_resolution_transition_datetime,
-        is_internal_calculation=calculation_args.get(
-            ArgsName.is_internal_calculation, False
-        ),
-    )
+DEFAULT_QUARTERLY_RESOLUTION = datetime(2023, 1, 31, 23, 0, 0, tzinfo=timezone.utc)
+DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
 
 @pytest.fixture(scope="module", autouse=True)
-def clear_cache(spark: SparkSession) -> None:
+def clear_cache(spark: SparkSession) -> Generator[None, None, None]:
     yield
     # Clear the cache after each test module to avoid memory issues
     spark.catalog.clearCache()
@@ -100,7 +57,34 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
 
     # Get the path to the scenario
     scenario_path = str(Path(request.module.__file__).parent)
-    calculation_args = create_calculation_args(f"{scenario_path}/when/")
+
+    # To avoid creating data for a full month, we mock the function is_exactly_one_calendar_month
+    with patch(
+        "package.calculation.calculator_args.is_exactly_one_calendar_month"
+    ) as mock:
+        mock.return_value = True
+        with open(f"{scenario_path}/when/calculation_arguments.yml", "r") as file:
+            sys_args = yaml.safe_load(file)[0]
+        quarterly_resolution_transition_datetime = sys_args.pop(
+            "quarterly-resolution-transition-datetime",
+            DEFAULT_QUARTERLY_RESOLUTION.strftime(CSV_DATE_FORMAT),
+        )
+        time_zone = sys_args.pop("time_zone", DEFAULT_TIME_ZONE)
+        env_vars = {
+            "TIME_ZONE": time_zone,
+            "QUARTERLY_RESOLUTION_TRANSITION_DATETIME": quarterly_resolution_transition_datetime,
+        }
+        with pytest.MonkeyPatch.context() as monkeypatch:
+            args = ["calculator"]
+            for k, v in sys_args.items():
+                if k == "is-internal-calculation":
+                    if v is True:
+                        args.append(f"--{k}")
+                else:
+                    args.append(f"--{k}={v}")
+            monkeypatch.setattr(sys, "argv", args)
+            monkeypatch.setattr(os, "environ", env_vars)
+            calculation_args = CalculatorArgs()
 
     # Read input data
     time_series_points = read_csv_path(

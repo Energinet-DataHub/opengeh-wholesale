@@ -38,7 +38,6 @@ from ..constants import Colname
 
 
 class CalculationCore:
-
     @staticmethod
     def execute(
         args: CalculatorArgs,
@@ -67,8 +66,8 @@ class CalculationCore:
 
         metering_point_time_series = (
             prepared_data_reader.get_metering_point_time_series(
-                args.calculation_period_start_datetime,
-                args.calculation_period_end_datetime,
+                args.period_start_datetime,
+                args.period_end_datetime,
                 metering_point_periods__except_grid_loss,
             )
         )
@@ -76,7 +75,7 @@ class CalculationCore:
 
         grid_loss_metering_point_periods = (
             prepared_data_reader.get_grid_loss_metering_point_periods(
-                args.calculation_grid_areas, metering_point_periods
+                args.grid_areas, metering_point_periods
             )
         )
 
@@ -108,8 +107,8 @@ class CalculationCore:
         ).distinct()
 
         input_charges = prepared_data_reader.get_input_charges(
-            args.calculation_period_start_datetime,
-            args.calculation_period_end_datetime,
+            args.period_start_datetime,
+            args.period_end_datetime,
             metering_point_period_ids,
         )
 
@@ -154,14 +153,14 @@ class CalculationCore:
 
         # cache of metering point time series had no effect on performance (01-12-2023)
         parent_metering_point_periods = prepared_data_reader.get_metering_point_periods(
-            args.calculation_period_start_datetime,
-            args.calculation_period_end_datetime,
-            args.calculation_grid_areas,
+            args.period_start_datetime,
+            args.period_end_datetime,
+            args.grid_areas,
         ).where(is_parent_metering_point(Colname.metering_point_type))
 
         grid_loss_metering_point_periods = (
             prepared_data_reader.get_grid_loss_metering_point_periods(
-                args.calculation_grid_areas, parent_metering_point_periods
+                args.grid_areas, parent_metering_point_periods
             )
         )
 
@@ -173,8 +172,8 @@ class CalculationCore:
 
         parent_metering_point_time_series__except_grid_loss = (
             prepared_data_reader.get_metering_point_time_series(
-                args.calculation_period_start_datetime,
-                args.calculation_period_end_datetime,
+                args.period_start_datetime,
+                args.period_end_datetime,
                 metering_point_periods__except_grid_loss,
             )
         )
@@ -222,9 +221,9 @@ def _get_metering_point_periods(
 ) -> DataFrame:
     # cache of metering_point_time_series had no effect on performance (01-12-2023)
     metering_point_periods = prepared_data_reader.get_metering_point_periods(
-        args.calculation_period_start_datetime,
-        args.calculation_period_end_datetime,
-        args.calculation_grid_areas,
+        args.period_start_datetime,
+        args.period_end_datetime,
+        args.grid_areas,
     )
     # Child metering points inherit energy supplier and balance responsible party from
     # their parent metering point. So we add this data to the child metering points.

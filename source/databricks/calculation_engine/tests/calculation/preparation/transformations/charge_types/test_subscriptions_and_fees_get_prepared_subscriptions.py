@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from decimal import Decimal
+from zoneinfo import ZoneInfo
 
 import pytest
-from datetime import datetime
+from datetime import datetime, timezone
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
 
@@ -279,7 +280,6 @@ class TestWhenChargePriceChangesDuringPeriod:
 
 
 class TestWhenChargePriceInformationPeriodStopsAndStartsAgain:
-
     def test__when_charge_resumes_after_one__returns_expected_charge_times(
         self,
         spark: SparkSession,
@@ -510,17 +510,17 @@ class TestWhenDaylightSavingTimeChanges:
         "from_date, to_date, expected_first_charge_time, expected_last_charge_time, expected_day_count",
         [
             (  # Start of daylight saving time
-                datetime(2020, 2, 29, 23),
-                datetime(2020, 3, 31, 22),
-                datetime(2020, 2, 29, 23),
-                datetime(2020, 3, 30, 22),
+                datetime(2020, 2, 29, 23, tzinfo=timezone.utc),
+                datetime(2020, 3, 31, 22, tzinfo=timezone.utc),
+                datetime(2020, 2, 29, 23, tzinfo=timezone.utc),
+                datetime(2020, 3, 30, 22, tzinfo=timezone.utc),
                 31,
             ),
             (  # End of daylight saving time
-                datetime(2020, 9, 30, 22),
-                datetime(2020, 10, 31, 23),
-                datetime(2020, 9, 30, 22),
-                datetime(2020, 10, 30, 23),
+                datetime(2020, 9, 30, 22, tzinfo=timezone.utc),
+                datetime(2020, 10, 31, 23, tzinfo=timezone.utc),
+                datetime(2020, 9, 30, 22, tzinfo=timezone.utc),
+                datetime(2020, 10, 30, 23, tzinfo=timezone.utc),
                 31,
             ),
         ],
@@ -582,8 +582,13 @@ class TestWhenDaylightSavingTimeChanges:
         ).collect()
 
         assert actual_subscription.df.count() == expected_day_count
-        assert actual_charge_times[0][Colname.charge_time] == expected_first_charge_time
-        assert (
-            actual_charge_times[expected_day_count - 1][Colname.charge_time]
-            == expected_last_charge_time
+        assert actual_charge_times[0][Colname.charge_time].astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        ) == expected_first_charge_time.astimezone(ZoneInfo(DEFAULT_TIME_ZONE))
+        assert actual_charge_times[expected_day_count - 1][
+            Colname.charge_time
+        ].astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
+        ) == expected_last_charge_time.astimezone(
+            ZoneInfo(DEFAULT_TIME_ZONE)
         )
