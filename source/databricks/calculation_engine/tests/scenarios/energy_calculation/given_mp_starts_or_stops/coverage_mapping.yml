@@ -1,0 +1,14 @@
+notes: |
+## PURPOSE
+  The purpose is to test that we can handle a metering point being discontinued.
+
+## DESIGN CONSIDERATIONS
+- Input period is two days with four of the metering points ending between the two days
+- On day 2, a new exchange metering point is initiated
+
+cases_tested:
+  "Metering Point Master Data Updates":
+    - "Mp Is Shut Down In Calculation Period"
+    - "Mp Starts Up In Calculation Period"
+  "Unusual Grid Area Setups":
+    - "Energy Supplier Only Has Grid Loss Mp Or System Correction Mp"

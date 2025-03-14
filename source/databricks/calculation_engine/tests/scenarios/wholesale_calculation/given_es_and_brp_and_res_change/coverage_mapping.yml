@@ -1,0 +1,13 @@
+notes: |
+  ## PURPOSE
+  The purpose of this test is to check wholesale calculations when an master data is updated on an MP.
+
+cases_tested:
+  "Metering Point Master Data Updates":
+    - "Change Of Resolution On An MP"
+    - "Change Of Balance Responsible On An MP"
+    - "Change Of Energy Supplier On An MP"
+    - "Energy Supplier Change On Grid Loss MP"
+    - "Energy Supplier Change On System Correction MP"
+    - "Balance Responsible Change On Grid Loss MP"
+    - "Balance Responsible Change On System Correction Mp"

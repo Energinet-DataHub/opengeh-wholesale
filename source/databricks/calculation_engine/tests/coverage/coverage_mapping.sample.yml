@@ -1,0 +1,7 @@
+notes: |
+  These are the notes related to the scenarios presented in this file.
+  These notes can also be split into multiple lines.
+cases_tested:
+  CalculationTests:
+    "Metering Point Master Data Updates":
+      - "Change of settlement method on an MP"
