@@ -15,6 +15,32 @@
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
 import package.infrastructure.environment_variables as env_vars
+from pydantic import Field
+from pydantic_settings import BaseSettings
+
+
+class UnityCatalogDatabaseNames(pydantic_settings):
+    """Configuration class inheriting pydantic's BaseSettings to automatically load environmental variable.
+
+    Used to define and validate settings for the unity catalog used by package.
+    """
+
+    WHOLESALE_RESULTS: str = Field(init=False)
+    WHOLESALE_BASIS_DATA_INTERNAL: str = Field(init=False)
+    WHOLESALE_BASIS_DATA: str = Field(init=False)
+    WHOLESALE_RESULTS_INTERNAL: str = Field(init=False)
+    WHOLESALE_INTERNAL: str = Field(init=False)
+    WHOLESALE_SAP: str = Field(init=False)
+    SHARED_WHOLESALE_INPUT: str = Field(init=False)
+
+    @classmethod
+    def get_names(cls) -> list[str]:
+        values = []
+        for attr in dir(cls):
+            value = getattr(cls, attr)
+            if not attr.startswith("__") and isinstance(value, str):
+                values.append(value)
+        return values
 
 
 class UnityCatalogDatabaseNames:
@@ -26,6 +52,7 @@ class UnityCatalogDatabaseNames:
     WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
     WHOLESALE_INTERNAL = "wholesale_internal"
     WHOLESALE_SAP = "wholesale_sap"
+    SHARED_WHOLESALE_INPUT = "shared_wholesale_input"
 
     @classmethod
     def get_names(cls) -> list[str]:
@@ -38,7 +65,7 @@ class UnityCatalogDatabaseNames:
 
 
 class MigrationsWholesaleDatabase:
-    DATABASE_NAME = "shared_wholesale_input"
+    DATABASE_NAME = UnityCatalogDatabaseNames.SHARED_WHOLESALE_INPUT
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods_view_v1"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_view_v1"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods_view_v1"
