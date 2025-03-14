@@ -1,0 +1,8 @@
+notes: |
+  ## PURPOSE
+  This is a simple check of adding 10 extra fees and subscriptions to a metering point in a calculation period.
+
+cases_tested:
+  "Price Element Updates":
+    - "Extra Fees Are Added To Mp In Calculation Period"
+    - "Extra Subscriptions Are Added To Mp In Calculation Period"

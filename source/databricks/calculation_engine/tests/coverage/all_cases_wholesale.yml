@@ -6,14 +6,14 @@
   "Aggregations Generates Basis Data": true
 
   "Metering Point Master Data Updates":
-    "Change Of Settlement Method On An Mp": true
-    "Change Of Resolution On An Mp": true
-    "Change Of Balance Responsible On An Mp": true
-    "Change Of Energy Supplier On An Mp": true
-    "Energy Supplier Change On Grid Loss Mp": true
-    "Energy Supplier Change On System Correction Mp": true
-    "Balance Responsible Change On Grid Loss Mp": true
-    "Balance Responsible Change On System Correction Mp": true
+    "Change Of Settlement Method On An MP": true
+    "Change Of Resolution On An MP": true
+    "Change Of Balance Responsible On An MP": true
+    "Change Of Energy Supplier On An MP": true
+    "Energy Supplier Change On Grid Loss MP": true
+    "Energy Supplier Change On System Correction MP": true
+    "Balance Responsible Change On Grid Loss MP": true
+    "Balance Responsible Change On System Correction MP": true
     "Mp Is Shut Down In Calculation Period": true
     "Mp Starts Up In Calculation Period": true
 
@@ -22,10 +22,10 @@
     "Exchange Mp Where From And To Is The Same Grid Area": true
 
   "Unusual Grid Area Setups":
-    "Grid Area With Only Non Profiled Mp": true
-    "Grid Area With Only Exchange Mp": true
-    "Grid Area With Only Production Mp": true
-    "Energy Supplier Only Has Grid Loss Mp Or System Correction Mp": true
+    "Grid Area With Only Non Profiled MP": true
+    "Grid Area With Only Exchange MP": true
+    "Grid Area With Only Production MP": true
+    "Energy Supplier Only Has Grid Loss MP Or System Correction MP": true
 
   "Price Element Updates":
     "Extra Fees Are Added To Mp In Calculation Period": true

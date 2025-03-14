@@ -1,0 +1,8 @@
+notes: |
+  ## PURPOSE
+  The purpose of this test is to check calculation results and basis data generation for a calculation that spans multiple grid areas.
+
+cases_tested:
+  "Multiple Grid Areas In Calculations":
+    - "Calculation Covers Multiple Grid Areas"
+    - "Calculation Includes 2 Out Of 3 Mp Grid Areas In Input Data"
