@@ -3,8 +3,9 @@ from unittest.mock import Mock
 
 import pytest
 from pyspark.sql import SparkSession
-from geh_common.testing.dataframes import AssertDataframesConfiguration, read_csv
+from geh_common.testing.dataframes import AssertDataframesConfiguration
 from geh_common.testing.scenario_testing import TestCase, TestCases
+from geh_common.pyspark.read_csv import read_csv_path
 
 from package.calculation import CalculationCore, PreparedDataReader
 from package.codelists.calculation_type import is_wholesale_calculation_type
@@ -102,19 +103,19 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
     calculation_args = create_calculation_args(f"{scenario_path}/when/")
 
     # Read input data
-    time_series_points = read_csv(
+    time_series_points = read_csv_path(
         spark,
         f"{scenario_path}/when/time_series_points.csv",
         time_series_points_schema,
     )
 
-    grid_loss_metering_points = read_csv(
+    grid_loss_metering_points = read_csv_path(
         spark,
         f"{scenario_path}/when/grid_loss_metering_points.csv",
         grid_loss_metering_point_ids_schema,
     )
 
-    metering_point_periods = read_csv(
+    metering_point_periods = read_csv_path(
         spark,
         f"{scenario_path}/when/metering_point_periods.csv",
         metering_point_periods_schema,
@@ -136,19 +137,19 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
 
     # Only for wholesale we need these additional tests
     if is_wholesale_calculation_type(calculation_args.calculation_type):
-        charge_link_periods = read_csv(
+        charge_link_periods = read_csv_path(
             spark,
             f"{scenario_path}/when/charge_link_periods.csv",
             charge_link_periods_schema,
         )
 
-        charge_price_information_periods = read_csv(
+        charge_price_information_periods = read_csv_path(
             spark,
             f"{scenario_path}/when/charge_price_information_periods.csv",
             charge_price_information_periods_schema,
         )
 
-        charge_price_points = read_csv(
+        charge_price_points = read_csv_path(
             spark,
             f"{scenario_path}/when/charge_price_points.csv",
             charge_price_points_schema,

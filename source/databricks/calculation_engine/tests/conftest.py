@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Generator, Callable, Optional
-
+from geh_common.pyspark.read_csv import read_csv_path
 import pytest
 import geh_common.telemetry.logging_configuration as config
 import yaml
@@ -405,9 +405,9 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
     migrations_executed: None,
 ) -> None:
     # grid loss
-    df = spark.read.csv(
+    df = read_csv_path(
+        spark,
         f"{test_files_folder_path}/GridLossMeteringPointIds.csv",
-        header=True,
         schema=grid_loss_metering_point_ids_schema,
         sep=";",
     )
@@ -528,7 +528,7 @@ def _write_input_test_data_to_table(
     table_location: str,
     schema: StructType,
 ) -> None:
-    df = spark.read.csv(file_name, header=True, schema=schema, sep=";")
+    df = read_csv_path(spark, file_name, schema=schema, sep=";")
 
     write_dataframe_to_table(
         spark,
