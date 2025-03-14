@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
+from datetime import datetime, timezone
+import sys
+from zoneinfo import ZoneInfo
 
 import pytest
 from pyspark.sql import SparkSession
@@ -61,21 +63,21 @@ class TestEnergyResultResolutionAdjustedMeteringPointTimeSeries:
         "transition_datetime, start_datetime, end_datetime, expected_rows",
         [
             (
-                datetime(2023, 4, 30, 23),
-                datetime(2023, 2, 28, 22),
-                datetime(2023, 3, 31, 22),
+                datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
+                datetime(2023, 2, 28, 23, tzinfo=timezone.utc),
+                datetime(2023, 3, 31, 22, tzinfo=timezone.utc),
                 2,
             ),
             (
-                datetime(2023, 4, 30, 23),
-                datetime(2023, 4, 30, 23),
-                datetime(2023, 5, 31, 23),
+                datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
+                datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
+                datetime(2023, 5, 31, 22, tzinfo=timezone.utc),
                 8,
             ),
             (
-                datetime(2023, 4, 30, 23),
-                datetime(2023, 3, 31, 22),
-                datetime(2023, 4, 30, 23),
+                datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
+                datetime(2023, 3, 31, 22, tzinfo=timezone.utc),
+                datetime(2023, 4, 30, 22, tzinfo=timezone.utc),
                 2,
             ),
         ],
@@ -87,40 +89,57 @@ class TestEnergyResultResolutionAdjustedMeteringPointTimeSeries:
         end_datetime: datetime,
         expected_rows: int,
         spark: SparkSession,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         # Arrange
-        args = CalculatorArgs(
-            calculation_id="test_id",
-            calculation_grid_areas=["123"],
-            calculation_type=CalculationType.BALANCE_FIXING,
-            calculation_execution_time_start=datetime.utcnow(),
-            created_by_user_id="test_user",
-            time_zone="Europe/Copenhagen",
-            calculation_period_start_datetime=start_datetime,
-            calculation_period_end_datetime=end_datetime,
-            quarterly_resolution_transition_datetime=transition_datetime,
-            is_internal_calculation=False,
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                CalculatorArgs.model_config.get("cli_prog_name", "calculator"),
+                "--calculation-id=test_id",
+                "--grid-areas=[123]",
+                f"--calculation-type={CalculationType.BALANCE_FIXING.value}",
+                f"--calculation-execution-time-start={datetime.now(timezone.utc)}",
+                "--created-by-user-id=test_user",
+                f"--period-start-datetime={start_datetime}",
+                f"--period-end-datetime={end_datetime}",
+                f"--calculation-period-end-datetime={end_datetime}",
+                f"--quarterly-resolution-transition-datetime={transition_datetime}",
+            ],
         )
+        monkeypatch.setenv("TIME_ZONE", "Europe/Copenhagen")
+        args = CalculatorArgs()
         rows = [
             factory.create_row(
                 resolution=MeteringPointResolution.HOUR,
-                observation_time=datetime(2023, 4, 1, 0, 0),
+                observation_time=datetime(
+                    2023, 4, 1, 0, 0, tzinfo=ZoneInfo("Europe/Copenhagen")
+                ),
             ),
             factory.create_row(
                 resolution=MeteringPointResolution.QUARTER,
-                observation_time=datetime(2023, 4, 1, 0, 0),
+                observation_time=datetime(
+                    2023, 4, 1, 0, 0, tzinfo=ZoneInfo("Europe/Copenhagen")
+                ),
             ),
             factory.create_row(
                 resolution=MeteringPointResolution.QUARTER,
-                observation_time=datetime(2023, 4, 1, 0, 15),
+                observation_time=datetime(
+                    2023, 4, 1, 0, 15, tzinfo=ZoneInfo("Europe/Copenhagen")
+                ),
             ),
             factory.create_row(
                 resolution=MeteringPointResolution.QUARTER,
-                observation_time=datetime(2023, 4, 1, 0, 30),
+                observation_time=datetime(
+                    2023, 4, 1, 0, 30, tzinfo=ZoneInfo("Europe/Copenhagen")
+                ),
             ),
             factory.create_row(
                 resolution=MeteringPointResolution.QUARTER,
-                observation_time=datetime(2023, 4, 1, 0, 45),
+                observation_time=datetime(
+                    2023, 4, 1, 0, 45, tzinfo=ZoneInfo("Europe/Copenhagen")
+                ),
             ),
         ]
         prepared_metering_point_time_series = factory.create(spark, rows)

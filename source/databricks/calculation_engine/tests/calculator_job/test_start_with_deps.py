@@ -14,7 +14,7 @@
 import argparse
 import uuid
 from datetime import datetime
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 from pyspark import Row
@@ -31,21 +31,18 @@ from package.infrastructure.paths import WholesaleInternalDatabase
     "calculation_id_already_used",
     [True, False],
 )
+@patch("package.calculator_job.calculation.execute")
 def test_start_with_deps__throws_exception_when_calculation_id_already_used(
-    calculator_args_balance_fixing: CalculatorArgs,
+    calculation_executor_mock,
     spark: SparkSession,
     any_calculator_args: CalculatorArgs,
     infrastructure_settings: InfrastructureSettings,
     calculation_id_already_used: bool,
     migrations_executed: bool,
 ) -> None:
-
     # Arrange
     calculation_id = str(uuid.uuid4())
-    command_line_args = argparse.Namespace()
-    command_line_args.calculation_id = calculation_id
     any_calculator_args.calculation_id = calculation_id
-    calculation_executor_mock = Mock()
 
     # If true add calculation row to fake that the calculation id is already used
     if calculation_id_already_used:
@@ -54,18 +51,17 @@ def test_start_with_deps__throws_exception_when_calculation_id_already_used(
     # Act
     try:
         start_with_deps(
-            parse_command_line_args=lambda: command_line_args,
-            parse_job_args=lambda args: (any_calculator_args, infrastructure_settings),
-            calculation_executor=calculation_executor_mock.execute,
+            args=any_calculator_args,
+            infrastructure_settings=infrastructure_settings,
         )
     except SystemExit as e:
         assert e.code == 4
 
     # Assert
     if calculation_id_already_used:
-        calculation_executor_mock.execute.assert_not_called()
+        calculation_executor_mock.assert_not_called()
     else:
-        calculation_executor_mock.execute.assert_called()
+        calculation_executor_mock.assert_called()
 
 
 def add_calculation_row(
@@ -85,6 +81,7 @@ def add_calculation_row(
             is_internal_calculation=True,
         )
     ]
+
     calculations_df = spark.createDataFrame(data, calculations_schema)
     calculations_df.write.format("delta").mode("append").saveAsTable(
         f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"

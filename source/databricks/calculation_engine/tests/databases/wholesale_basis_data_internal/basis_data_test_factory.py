@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession, DataFrame
@@ -53,7 +53,7 @@ class DefaultValues:
     CHARGE_CODE = "4000"
     CHARGE_OWNER = "001"
     CHARGE_TAX = True
-    CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23)
+    CHARGE_TIME_HOUR_0 = datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
     CHARGE_PRICE = Decimal("2.000005")
     CHARGE_QUANTITY = 1
     ENERGY_SUPPLIER_ID = "1234567890123"
@@ -61,15 +61,23 @@ class DefaultValues:
     METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
     SETTLEMENT_METHOD = e.SettlementMethod.FLEX
     QUANTITY = Decimal("1.005")
-    PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
-    FROM_DATE: datetime = datetime(2019, 12, 31, 23)
-    TO_DATE: datetime = datetime(2020, 1, 31, 23)
+    PERIOD_START_DATETIME = datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
+    FROM_DATE: datetime = datetime(2019, 12, 31, 23, tzinfo=timezone.utc)
+    TO_DATE: datetime = datetime(2020, 1, 31, 23, tzinfo=timezone.utc)
     TIME_ZONE = "Europe/Copenhagen"
     CALCULATION_GRID_AREAS = ["805", "806"]
-    CALCULATION_PERIOD_START_DATETIME = datetime(2018, 1, 1, 23, 0, 0)
-    CALCULATION_PERIOD_END_DATETIME = datetime(2018, 1, 3, 23, 0, 0)
-    CALCULATION_EXECUTION_TIME_START = datetime(2018, 1, 5, 23, 0, 0)
-    QUARTERLY_RESOLUTION_TRANSITION_DATETIME = datetime(2018, 1, 5, 23, 0, 0)
+    CALCULATION_PERIOD_START_DATETIME = datetime(
+        2018, 1, 1, 23, 0, 0, tzinfo=timezone.utc
+    )
+    CALCULATION_PERIOD_END_DATETIME = datetime(
+        2018, 1, 3, 23, 0, 0, tzinfo=timezone.utc
+    )
+    CALCULATION_EXECUTION_TIME_START = datetime(
+        2018, 1, 5, 23, 0, 0, tzinfo=timezone.utc
+    )
+    QUARTERLY_RESOLUTION_TRANSITION_DATETIME = datetime(
+        2018, 1, 5, 23, 0, 0, tzinfo=timezone.utc
+    )
     CREATED_BY_USER_ID = "bar"
 
 
@@ -194,21 +202,6 @@ def create_charge_links(
     return spark.createDataFrame(data, charge_link_periods_schema)
 
 
-def create_calculation_args() -> CalculatorArgs:
-    return CalculatorArgs(
-        calculation_id=DefaultValues.CALCULATION_ID,
-        calculation_type=e.CalculationType.AGGREGATION,
-        calculation_grid_areas=DefaultValues.CALCULATION_GRID_AREAS,
-        calculation_period_start_datetime=DefaultValues.CALCULATION_PERIOD_START_DATETIME,
-        calculation_period_end_datetime=DefaultValues.CALCULATION_PERIOD_END_DATETIME,
-        calculation_execution_time_start=DefaultValues.CALCULATION_EXECUTION_TIME_START,
-        time_zone=DefaultValues.TIME_ZONE,
-        quarterly_resolution_transition_datetime=DefaultValues.QUARTERLY_RESOLUTION_TRANSITION_DATETIME,
-        created_by_user_id=DefaultValues.CREATED_BY_USER_ID,
-        is_internal_calculation=False,
-    )
-
-
 def create_prepared_metering_point_time_series(
     spark: SparkSession,
 ) -> PreparedMeteringPointTimeSeries:
@@ -236,8 +229,9 @@ def create_grid_loss_metering_point_ids(
     )
 
 
-def create_basis_data_factory(spark: SparkSession) -> BasisDataOutput:
-    calculation_args = create_calculation_args()
+def create_basis_data_factory(
+    spark: SparkSession, calculation_args: CalculatorArgs
+) -> BasisDataOutput:
     metering_point_period_df = metering_point_periods_factory.create(spark)
     metering_point_time_series_df = create_prepared_metering_point_time_series(spark)
     grid_loss_metering_point_ids = create_grid_loss_metering_point_ids(spark)

@@ -35,7 +35,7 @@ def test__added_calculation_result_id_is_correct(
 
     row1 = Row(
         calculation_id=any_calculator_args.calculation_id,
-        grid_area_code=any_calculator_args.calculation_grid_areas[0],
+        grid_area_code=any_calculator_args.grid_areas[0],
     )
     df = spark.createDataFrame([row1], calculation_grid_areas_schema)
 

@@ -67,7 +67,7 @@ OTHER_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
 OTHER_SETTLEMENT_METHOD = e.SettlementMethod.NON_PROFILED
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
     args = copy(any_calculator_args)
     args.calculation_type = DEFAULT_CALCULATION_TYPE

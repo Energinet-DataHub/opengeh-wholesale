@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 import pytest
@@ -33,7 +33,7 @@ from package.constants import Colname
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
 default_obs_time = datetime.strptime(
     "2020-01-01T00:00:00+0000", date_time_formatting_string
-)
+).replace(tzinfo=timezone.utc)
 numberOfTestQuarters = 96
 
 ALL_GRID_AREAS = ["A", "B", "C"]
@@ -111,15 +111,13 @@ def test_aggregate_net_exchange_per_neighbor_multi_hour(multi_quarter_test_data)
     assert df.count() == 384
     assert values[0][Colname.to_grid_area_code] == "A"
     assert values[0][Colname.from_grid_area_code] == "B"
-    assert (
-        values[0][Colname.observation_time].strftime(date_time_formatting_string)
-        == "2020-01-01T00:00:00"
-    )
+    assert values[0][Colname.observation_time].astimezone(timezone.utc) == datetime(
+        2020, 1, 1, 0, 0, 0, tzinfo=timezone.utc
+    ), values
     assert values[0][Colname.quantity] == Decimal("10")
     assert values[19][Colname.to_grid_area_code] == "A"
     assert values[19][Colname.from_grid_area_code] == "B"
-    assert (
-        values[19][Colname.observation_time].strftime(date_time_formatting_string)
-        == "2020-01-01T04:45:00"
+    assert values[19][Colname.observation_time].astimezone(timezone.utc) == datetime(
+        2020, 1, 1, 4, 45, 0, tzinfo=timezone.utc
     )
     assert values[19][Colname.quantity] == Decimal("10")

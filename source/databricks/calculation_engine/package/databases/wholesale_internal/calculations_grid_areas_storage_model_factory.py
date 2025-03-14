@@ -34,11 +34,7 @@ def _create_calculation_grid_areas(
     args: CalculatorArgs,
     spark: SparkSession = Provide[Container.spark],
 ) -> DataFrame:
-
     return spark.createDataFrame(
-        [
-            (args.calculation_id, grid_area_code)
-            for grid_area_code in args.calculation_grid_areas
-        ],
+        [(args.calculation_id, grid_area_code) for grid_area_code in args.grid_areas],
         calculation_grid_areas_schema,
     )

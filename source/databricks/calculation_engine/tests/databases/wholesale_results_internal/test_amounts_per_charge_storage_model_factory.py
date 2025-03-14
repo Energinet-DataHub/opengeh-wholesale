@@ -69,14 +69,12 @@ DEFAULT_UNIT = ChargeUnit.KWH
 DEFAULT_QUALITY = ChargeQuality.CALCULATED
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
     args = copy(any_calculator_args)
-
     args.calculation_type = DEFAULT_CALCULATION_TYPE
     args.calculation_id = DEFAULT_CALCULATION_ID
     args.calculation_execution_time_start = DEFAULT_CALCULATION_EXECUTION_START
-
     return args
 
 

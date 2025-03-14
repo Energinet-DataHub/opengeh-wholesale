@@ -32,13 +32,16 @@ def test__balance_fixing_exchange_per_neighbor_result_type__is_created(
 ) -> None:
     actual = spark.read.table(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME}"
-    ).where(
-        f.col(TableColumnNames.calculation_id)
-        == c.executed_balance_fixing_calculation_id
     )
 
     # Assert: Result(s) are created if there are rows
-    assert actual.count() > 0
+    assert (
+        actual.where(
+            f.col(TableColumnNames.calculation_id)
+            == c.executed_balance_fixing_calculation_id
+        ).count()
+        > 0
+    ), actual.collect()
 
 
 @pytest.mark.parametrize(
