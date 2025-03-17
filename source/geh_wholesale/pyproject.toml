@@ -1,0 +1,17 @@
+[project]
+name = "geh-wholesale"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Jens Peder Meldgaard", email = "jpm@halfspace.io" }
+]
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+geh-wholesale = "geh_wholesale:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
