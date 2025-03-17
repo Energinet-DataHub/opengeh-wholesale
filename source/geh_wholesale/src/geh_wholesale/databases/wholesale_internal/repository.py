@@ -14,15 +14,16 @@
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 
-from package.infrastructure.paths import (
+from geh_wholesale.infrastructure.paths import (
     WholesaleInternalDatabase,
 )
-from .schemas import (
-    grid_loss_metering_point_ids_schema,
-    calculations_schema,
-)
+
 from ..repository_helper import read_table
 from ..table_column_names import TableColumnNames
+from .schemas import (
+    calculations_schema,
+    grid_loss_metering_point_ids_schema,
+)
 
 
 class WholesaleInternalRepository:
@@ -35,8 +36,7 @@ class WholesaleInternalRepository:
         self._spark = spark
         self._catalog_name = catalog_name
         self._grid_loss_metering_point_ids_table_name = (
-            grid_loss_metering_point_ids_table_name
-            or WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME
+            grid_loss_metering_point_ids_table_name or WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME
         )
 
     def read_grid_loss_metering_point_ids(self) -> DataFrame:
@@ -58,6 +58,4 @@ class WholesaleInternalRepository:
         )
 
     def get_by_calculation_id(self, calculation_id: str) -> DataFrame:
-        return self.read_calculations().where(
-            col(TableColumnNames.calculation_id) == calculation_id
-        )
+        return self.read_calculations().where(col(TableColumnNames.calculation_id) == calculation_id)

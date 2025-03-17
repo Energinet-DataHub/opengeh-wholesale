@@ -19,19 +19,17 @@ import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession
 
-from package.databases import migrations_wholesale
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from package.databases.migrations_wholesale.schemas import charge_link_periods_schema
-from package.calculation.preparation.transformations import read_charge_links
-from package.codelists import ChargeType
-from package.constants import Colname
+from geh_wholesale.calculation.preparation.transformations import read_charge_links
+from geh_wholesale.codelists import ChargeType
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases import migrations_wholesale
+from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
+from geh_wholesale.databases.migrations_wholesale.schemas import charge_link_periods_schema
 
 DEFAULT_CHARGE_CODE = "4000"
 DEFAULT_CHARGE_OWNER = "001"
 DEFAULT_CHARGE_TYPE = ChargeType.TARIFF.value
-DEFAULT_CHARGE_KEY = (
-    f"{DEFAULT_CHARGE_CODE}-{DEFAULT_CHARGE_OWNER}-{DEFAULT_CHARGE_TYPE}"
-)
+DEFAULT_CHARGE_KEY = f"{DEFAULT_CHARGE_CODE}-{DEFAULT_CHARGE_OWNER}-{DEFAULT_CHARGE_TYPE}"
 DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
 DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
 DEFAULT_QUANTITY = int(1.0)
@@ -139,9 +137,7 @@ class TestWhenChargeLinkPeriodExceedsCalculationPeriod:
         )
 
         # Act
-        actual = read_charge_links(
-            repository_mock, calculation_from_date, calculation_to_date
-        )
+        actual = read_charge_links(repository_mock, calculation_from_date, calculation_to_date)
 
         # Assert
         actual_row = actual.collect()[0]

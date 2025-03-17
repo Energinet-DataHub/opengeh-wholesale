@@ -13,18 +13,18 @@
 # limitations under the License.
 
 import pyspark.sql.functions as f
-from dependency_injector.wiring import inject, Provide
+from dependency_injector.wiring import Provide, inject
+from geh_common.telemetry import logging_configuration, use_span
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType
-from geh_common.telemetry import use_span, logging_configuration
 
-import package.databases.wholesale_results_internal.schemas as schemas
-from package.calculation.calculation_output import EnergyResultsOutput
-from package.codelists import MeteringPointType
-from package.container import Container
-from package.databases.table_column_names import TableColumnNames
-from package.infrastructure.infrastructure_settings import InfrastructureSettings
-from package.infrastructure.paths import (
+import geh_wholesale.databases.wholesale_results_internal.schemas as schemas
+from geh_wholesale.calculation.calculation_output import EnergyResultsOutput
+from geh_wholesale.codelists import MeteringPointType
+from geh_wholesale.container import Container
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
+from geh_wholesale.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
 )
 
@@ -32,7 +32,6 @@ from package.infrastructure.paths import (
 @use_span("calculation.write.energy")
 def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     """Write each energy result to the output table."""
-
     print("Writing energy results to Unity Catalog")
     # Write exchange per neighbor grid area
     _write(
@@ -100,9 +99,7 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
             TableColumnNames.metering_point_type,
             f.lit(MeteringPointType.PRODUCTION.value),
         )
-    grid_loss_metering_point_time_series = _union(
-        positive_grid_loss, negative_grid_loss
-    )
+    grid_loss_metering_point_time_series = _union(positive_grid_loss, negative_grid_loss)
     _write(
         "grid_loss_metering_point_time_series",
         grid_loss_metering_point_time_series,
@@ -112,9 +109,7 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
 
 
 def _union(*dfs: DataFrame) -> DataFrame | None:
-    """
-    Union multiple dataframes, ignoring None values.
-    """
+    """Union multiple dataframes, ignoring None values."""
     not_none_dfs = [df for df in dfs if df is not None]
 
     if len(not_none_dfs) == 0:
@@ -132,12 +127,9 @@ def _write(
     df: DataFrame,
     table_name: str,
     schema: StructType,
-    infrastructure_settings: InfrastructureSettings = Provide[
-        Container.infrastructure_settings
-    ],
+    infrastructure_settings: InfrastructureSettings = Provide[Container.infrastructure_settings],
 ) -> None:
     with logging_configuration.start_span(name):
-
         # Not all energy results have a value - it depends on the type of calculation
         if df is None:
             return None
@@ -145,8 +137,6 @@ def _write(
         # Adjust to match the schema
         df = df.select(schema.fieldNames())
 
-        df.write.format("delta").mode("append").option(
-            "mergeSchema", "false"
-        ).insertInto(
+        df.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}"
         )

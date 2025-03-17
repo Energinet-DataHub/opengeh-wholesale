@@ -15,12 +15,12 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.wholesale.data_structures import MonthlyAmountPerCharge
-from package.constants import Colname
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal.add_meta_data import add_metadata
-from package.infrastructure.paths import WholesaleResultsInternalDatabase
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.wholesale.data_structures import MonthlyAmountPerCharge
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.wholesale_results_internal.add_meta_data import add_metadata
+from geh_wholesale.infrastructure.paths import WholesaleResultsInternalDatabase
 
 
 def create(args: CalculatorArgs, monthly_amounts: MonthlyAmountPerCharge) -> DataFrame:

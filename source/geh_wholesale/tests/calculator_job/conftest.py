@@ -18,47 +18,40 @@ from datetime import datetime, timezone
 
 import pyspark.sql.functions as F
 import pytest
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import DataFrame, SparkSession
 
-import package.calculation as calculation
-from package.calculation import CalculationCore
-from package.calculation.calculation_metadata_service import CalculationMetadataService
-from package.calculation.calculation_output_service import CalculationOutputService
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.preparation import PreparedDataReader
-from package.codelists.calculation_type import (
+import geh_wholesale.calculation as calculation
+from geh_wholesale.calculation import CalculationCore
+from geh_wholesale.calculation.calculation_metadata_service import CalculationMetadataService
+from geh_wholesale.calculation.calculation_output_service import CalculationOutputService
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.preparation import PreparedDataReader
+from geh_wholesale.codelists.calculation_type import (
     CalculationType,
 )
-from package.databases import wholesale_internal, migrations_wholesale
-from package.databases.table_column_names import TableColumnNames
-from package.infrastructure import paths
+from geh_wholesale.databases import migrations_wholesale, wholesale_internal
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.infrastructure import paths
+
 from . import configuration as C
 
 DEFAULT_ARGS = {
     "calculation-id": str(uuid.uuid4()),
     "calculation-type": CalculationType.BALANCE_FIXING.value,
     "grid-areas": ["805", "806"],
-    "period-start-datetime": datetime(
-        2018, 1, 1, 23, 0, 0, tzinfo=timezone.utc
-    ).isoformat(),
-    "period-end-datetime": datetime(
-        2018, 1, 3, 23, 0, 0, tzinfo=timezone.utc
-    ).isoformat(),
+    "period-start-datetime": datetime(2018, 1, 1, 23, 0, 0, tzinfo=timezone.utc).isoformat(),
+    "period-end-datetime": datetime(2018, 1, 3, 23, 0, 0, tzinfo=timezone.utc).isoformat(),
     "created-by-user-id": str(uuid.uuid4()),
 }
 
 DEFAULT_ENV = {
     "TIME_ZONE": "Europe/Copenhagen",
-    "QUARTERLY_RESOLUTION_TRANSITION_DATETIME": datetime(
-        2023, 1, 31, 23, 0, 0, tzinfo=timezone.utc
-    ).isoformat(),
+    "QUARTERLY_RESOLUTION_TRANSITION_DATETIME": datetime(2023, 1, 31, 23, 0, 0, tzinfo=timezone.utc).isoformat(),
 }
 
 
 def _to_args_list(args: dict) -> str:
-    return [CalculatorArgs.model_config.get("cli_prog_name", "calculator")] + [
-        f"--{k}={v}" for k, v in args.items()
-    ]
+    return [CalculatorArgs.model_config.get("cli_prog_name", "calculator")] + [f"--{k}={v}" for k, v in args.items()]
 
 
 @pytest.fixture(scope="session")
@@ -81,12 +74,8 @@ def calculator_args_wholesale_fixing() -> CalculatorArgs:
         args_dict = DEFAULT_ARGS.copy()
         args_dict["calculation-id"] = C.executed_wholesale_calculation_id
         args_dict["calculation-type"] = CalculationType.WHOLESALE_FIXING.value
-        args_dict["period-start-datetime"] = datetime(
-            2017, 12, 31, 23, 0, 0, tzinfo=timezone.utc
-        ).isoformat()
-        args_dict["period-end-datetime"] = datetime(
-            2018, 1, 31, 23, 0, 0, tzinfo=timezone.utc
-        ).isoformat()
+        args_dict["period-start-datetime"] = datetime(2017, 12, 31, 23, 0, 0, tzinfo=timezone.utc).isoformat()
+        args_dict["period-end-datetime"] = datetime(2018, 1, 31, 23, 0, 0, tzinfo=timezone.utc).isoformat()
         mp.setattr(
             sys,
             "argv",
@@ -111,17 +100,11 @@ def executed_balance_fixing(
     and because lots of assertions can be made and split into separate tests
     without awaiting the execution in each test."""
 
-    migrations_wholesale_repository = (
-        migrations_wholesale.MigrationsWholesaleRepository(
-            spark, "spark_catalog", calculation_input_database
-        )
+    migrations_wholesale_repository = migrations_wholesale.MigrationsWholesaleRepository(
+        spark, "spark_catalog", calculation_input_database
     )
-    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(
-        spark, "spark_catalog"
-    )
-    prepared_data_reader = PreparedDataReader(
-        migrations_wholesale_repository, wholesale_internal_repository
-    )
+    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
+    prepared_data_reader = PreparedDataReader(migrations_wholesale_repository, wholesale_internal_repository)
     calculation.execute(
         calculator_args_balance_fixing,
         prepared_data_reader,
@@ -147,17 +130,11 @@ def executed_wholesale_fixing(
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
 
-    migrations_wholesale_repository = (
-        migrations_wholesale.MigrationsWholesaleRepository(
-            spark, "spark_catalog", calculation_input_database
-        )
+    migrations_wholesale_repository = migrations_wholesale.MigrationsWholesaleRepository(
+        spark, "spark_catalog", calculation_input_database
     )
-    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(
-        spark, "spark_catalog"
-    )
-    prepared_data_reader = PreparedDataReader(
-        migrations_wholesale_repository, wholesale_internal_repository
-    )
+    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
+    prepared_data_reader = PreparedDataReader(migrations_wholesale_repository, wholesale_internal_repository)
     calculation.execute(
         calculator_args_wholesale_fixing,
         prepared_data_reader,
@@ -175,9 +152,7 @@ def wholesale_fixing_energy_results_df(
     results_df = spark.read.table(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME}"
     )
-    return results_df.where(
-        F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id
-    )
+    return results_df.where(F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id)
 
 
 @pytest.fixture(scope="session")
@@ -188,9 +163,7 @@ def wholesale_fixing_amounts_per_charge_df(
     results_df = spark.read.table(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
     )
-    return results_df.where(
-        F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id
-    )
+    return results_df.where(F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id)
 
 
 @pytest.fixture(scope="session")
@@ -201,9 +174,7 @@ def wholesale_fixing_total_monthly_amounts_df(
     results_df = spark.read.table(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
-    return results_df.where(
-        F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id
-    )
+    return results_df.where(F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id)
 
 
 @pytest.fixture(scope="session")
@@ -214,6 +185,4 @@ def wholesale_fixing_monthly_amounts_per_charge_df(
     results_df = spark.read.table(
         f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
     )
-    return results_df.where(
-        F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id
-    )
+    return results_df.where(F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id)

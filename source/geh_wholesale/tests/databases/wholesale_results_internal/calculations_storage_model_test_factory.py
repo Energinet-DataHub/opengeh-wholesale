@@ -15,10 +15,9 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession
 
-from package.codelists import CalculationType
-from package.databases.table_column_names import TableColumnNames
-
-from package.databases.wholesale_internal.schemas import (
+from geh_wholesale.codelists import CalculationType
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.wholesale_internal.schemas import (
     calculations_schema,
 )
 
@@ -55,9 +54,7 @@ def create_calculation_row(
     return Row(**calculation)
 
 
-def create_calculations(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> DataFrame:
+def create_calculations(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFrame:
     if data is None:
         data = [create_calculation_row()]
     elif isinstance(data, Row):

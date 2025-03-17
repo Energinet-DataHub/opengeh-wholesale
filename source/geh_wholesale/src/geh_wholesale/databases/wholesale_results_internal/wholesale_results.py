@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from dependency_injector.wiring import inject, Provide
+from dependency_injector.wiring import Provide, inject
+from geh_common.telemetry import logging_configuration, use_span
 from pyspark.sql import DataFrame
-from geh_common.telemetry import use_span, logging_configuration
 
-from package.calculation.calculation_output import WholesaleResultsOutput
-from package.container import Container
-from package.infrastructure.infrastructure_settings import InfrastructureSettings
-from package.infrastructure.paths import (
+from geh_wholesale.calculation.calculation_output import WholesaleResultsOutput
+from geh_wholesale.container import Container
+from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
+from geh_wholesale.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
 )
 
@@ -46,13 +46,9 @@ def write_wholesale_results(wholesale_results_output: WholesaleResultsOutput) ->
 def _write(
     name: str,
     df: DataFrame,
-    infrastructure_settings: InfrastructureSettings = Provide[
-        Container.infrastructure_settings
-    ],
+    infrastructure_settings: InfrastructureSettings = Provide[Container.infrastructure_settings],
 ) -> None:
     with logging_configuration.start_span(name):
-        df.write.format("delta").mode("append").option(
-            "mergeSchema", "false"
-        ).insertInto(
+        df.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
             f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
         )

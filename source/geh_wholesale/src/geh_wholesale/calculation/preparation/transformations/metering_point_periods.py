@@ -17,19 +17,19 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     col,
-    when,
     lit,
+    when,
 )
 
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from package.calculation.preparation.transformations.clamp_period import clamp_period
-from package.codelists import (
+from geh_wholesale.calculation.preparation.transformations.clamp_period import clamp_period
+from geh_wholesale.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
     MeteringPointType,
     SettlementMethod,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
 
 
 def get_metering_point_periods_df(
@@ -82,8 +82,7 @@ def _fix_metering_point_type(df: DataFrame) -> DataFrame:
     return df.withColumn(
         Colname.metering_point_type,
         when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.CONSUMPTION.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.CONSUMPTION.value,
             lit(MeteringPointType.CONSUMPTION.value),
         )
         .when(
@@ -95,63 +94,51 @@ def _fix_metering_point_type(df: DataFrame) -> DataFrame:
             lit(MeteringPointType.EXCHANGE.value),
         )
         .when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.VE_PRODUCTION.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.VE_PRODUCTION.value,
             lit(MeteringPointType.VE_PRODUCTION.value),
         )
         .when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.NET_PRODUCTION.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.NET_PRODUCTION.value,
             lit(MeteringPointType.NET_PRODUCTION.value),
         )
         .when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.SUPPLY_TO_GRID.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.SUPPLY_TO_GRID.value,
             lit(MeteringPointType.SUPPLY_TO_GRID.value),
         )
         .when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.CONSUMPTION_FROM_GRID.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.CONSUMPTION_FROM_GRID.value,
             lit(MeteringPointType.CONSUMPTION_FROM_GRID.value),
         )
         .when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.WHOLESALE_SERVICES_INFORMATION.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.WHOLESALE_SERVICES_INFORMATION.value,
             lit(MeteringPointType.WHOLESALE_SERVICES_INFORMATION.value),
         )
         .when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.OWN_PRODUCTION.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.OWN_PRODUCTION.value,
             lit(MeteringPointType.OWN_PRODUCTION.value),
         )
         .when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.NET_FROM_GRID.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.NET_FROM_GRID.value,
             lit(MeteringPointType.NET_FROM_GRID.value),
         )
         .when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.NET_TO_GRID.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.NET_TO_GRID.value,
             lit(MeteringPointType.NET_TO_GRID.value),
         )
         .when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.TOTAL_CONSUMPTION.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.TOTAL_CONSUMPTION.value,
             lit(MeteringPointType.TOTAL_CONSUMPTION.value),
         )
         .when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.ELECTRICAL_HEATING.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.ELECTRICAL_HEATING.value,
             lit(MeteringPointType.ELECTRICAL_HEATING.value),
         )
         .when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.NET_CONSUMPTION.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.NET_CONSUMPTION.value,
             lit(MeteringPointType.NET_CONSUMPTION.value),
         )
         .when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.CAPACITY_SETTLEMENT.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.CAPACITY_SETTLEMENT.value,
             lit(MeteringPointType.CAPACITY_SETTLEMENT.value),
         )
         .otherwise(lit("Unknown type")),

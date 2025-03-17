@@ -12,16 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import Optional
-from dependency_injector.wiring import inject, Provide
-from pyspark.sql import DataFrame, SparkSession
-from delta.exceptions import MetadataChangedException
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.container import Container
-from package.databases.table_column_names import TableColumnNames
+from delta.exceptions import MetadataChangedException
+from dependency_injector.wiring import Provide, inject
 from geh_common.telemetry import use_span
-from package.infrastructure.infrastructure_settings import InfrastructureSettings
-from package.infrastructure.paths import (
+from pyspark.sql import DataFrame, SparkSession
+
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.container import Container
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
+from geh_wholesale.infrastructure.paths import (
     WholesaleInternalDatabase,
 )
 
@@ -34,21 +35,13 @@ METADATA_CHANGED_RETRIES = 10
 def write_calculation(
     args: CalculatorArgs,
     spark: SparkSession = Provide[Container.spark],
-    infrastructure_settings: InfrastructureSettings = Provide[
-        Container.infrastructure_settings
-    ],
+    infrastructure_settings: InfrastructureSettings = Provide[Container.infrastructure_settings],
 ) -> None:
     """Writes the succeeded calculation to the calculations table. The current time is  added to the calculation before writing."""
-    calculation_period_start_datetime = args.period_start_datetime.strftime(
-        timestamp_format
-    )[:-3]
+    calculation_period_start_datetime = args.period_start_datetime.strftime(timestamp_format)[:-3]
 
-    calculation_period_end_datetime = args.period_end_datetime.strftime(
-        timestamp_format
-    )[:-3]
-    calculation_execution_time_start = args.calculation_execution_time_start.strftime(
-        timestamp_format
-    )[:-3]
+    calculation_period_end_datetime = args.period_end_datetime.strftime(timestamp_format)[:-3]
+    calculation_execution_time_start = args.calculation_execution_time_start.strftime(timestamp_format)[:-3]
 
     # We had to use sql statement to insert the data because the DataFrame.write.insertInto() method does not support IDENTITY columns
     # Also, since IDENTITY COLUMN requires an exclusive lock on the table, we allow up to METADATA_CHANGED_RETRIES retries of the transaction.
@@ -75,15 +68,10 @@ def write_calculation(
 @inject
 def write_calculation_grid_areas(
     calculations_grid_areas: DataFrame,
-    infrastructure_settings: InfrastructureSettings = Provide[
-        Container.infrastructure_settings
-    ],
+    infrastructure_settings: InfrastructureSettings = Provide[Container.infrastructure_settings],
 ) -> None:
     """Writes the calculation grid areas to the calculation grid areas table."""
-
-    calculations_grid_areas.write.format("delta").mode("append").option(
-        "mergeSchema", "false"
-    ).insertInto(
+    calculations_grid_areas.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
         f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME}"
     )
 
@@ -91,12 +79,9 @@ def write_calculation_grid_areas(
 def write_calculation_succeeded_time(
     calculation_id: str,
     spark: SparkSession = Provide[Container.spark],
-    infrastructure_settings: InfrastructureSettings = Provide[
-        Container.infrastructure_settings
-    ],
+    infrastructure_settings: InfrastructureSettings = Provide[Container.infrastructure_settings],
 ) -> None:
     """Writes the succeeded time to the calculation table."""
-
     spark.sql(
         f"""
         UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}

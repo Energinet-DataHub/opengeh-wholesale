@@ -13,25 +13,20 @@
 # limitations under the License.
 
 
+import geh_common.telemetry.logging_configuration as config
+from geh_common.telemetry.decorators import start_trace
+from geh_common.telemetry.logger import Logger
 from pyspark.sql import SparkSession
 
-import geh_common.telemetry.logging_configuration as config
-
-from geh_common.telemetry.logger import Logger
-from geh_common.telemetry.decorators import start_trace
-from package import calculation
-from package.calculation import CalculationCore
-from package.calculation.calculation_metadata_service import CalculationMetadataService
-from package.calculation.calculation_output_service import CalculationOutputService
-from package.calculation.calculator_args import CalculatorArgs
-
-from package.container import create_and_configure_container
-from package.databases import migrations_wholesale, wholesale_internal
-from package.infrastructure import initialize_spark
-from package.infrastructure.infrastructure_settings import InfrastructureSettings
-
-
-from datetime import datetime
+from geh_wholesale import calculation
+from geh_wholesale.calculation import CalculationCore
+from geh_wholesale.calculation.calculation_metadata_service import CalculationMetadataService
+from geh_wholesale.calculation.calculation_output_service import CalculationOutputService
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.container import create_and_configure_container
+from geh_wholesale.databases import migrations_wholesale, wholesale_internal
+from geh_wholesale.infrastructure import initialize_spark
+from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
 # The start() method should only have its name updated in correspondence with the
@@ -89,15 +84,13 @@ def create_prepared_data_reader(
     spark: SparkSession,
 ) -> calculation.PreparedDataReader:
     """Create calculation execution dependencies."""
-    migrations_wholesale_repository = (
-        migrations_wholesale.MigrationsWholesaleRepository(
-            spark,
-            settings.catalog_name,
-            settings.calculation_input_database_name,
-            settings.time_series_points_table_name,
-            settings.metering_point_periods_table_name,
-            settings.grid_loss_metering_point_ids_table_name,
-        )
+    migrations_wholesale_repository = migrations_wholesale.MigrationsWholesaleRepository(
+        spark,
+        settings.catalog_name,
+        settings.calculation_input_database_name,
+        settings.time_series_points_table_name,
+        settings.metering_point_periods_table_name,
+        settings.grid_loss_metering_point_ids_table_name,
     )
 
     wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(

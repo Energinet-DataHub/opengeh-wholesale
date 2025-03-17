@@ -17,11 +17,11 @@ import pytest
 from pyspark.sql import SparkSession
 
 import tests.calculation.energy.energy_results_factories as factories
-from package.calculation.energy.aggregators.grid_loss_aggregators import (
+from geh_wholesale.calculation.energy.aggregators.grid_loss_aggregators import (
     calculate_grid_loss,
 )
-from package.codelists import QuantityQuality
-from package.constants import Colname
+from geh_wholesale.codelists import QuantityQuality
+from geh_wholesale.constants import Colname
 
 
 class TestWhenValidInput:
@@ -73,9 +73,7 @@ class TestWhenValidInput:
 
         # Arrange
         exchange = self._create_energy_results(spark, exchange_qualities)
-        non_profiled = self._create_energy_results(
-            spark, non_profiled_consumption_qualities
-        )
+        non_profiled = self._create_energy_results(spark, non_profiled_consumption_qualities)
         flex = self._create_energy_results(spark, flex_consumption_qualities)
         production = self._create_energy_results(spark, production_qualities)
 
@@ -84,9 +82,7 @@ class TestWhenValidInput:
 
         # Assert
         actual_row = actual.df.collect()[0]
-        assert sorted(actual_row[Colname.qualities]) == [
-            QuantityQuality.CALCULATED.value
-        ]
+        assert sorted(actual_row[Colname.qualities]) == [QuantityQuality.CALCULATED.value]
 
     @staticmethod
     def _create_energy_results(spark, qualities):

@@ -17,21 +17,21 @@ from zoneinfo import ZoneInfo
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
-    grid_loss_metering_point_periods_schema,
+from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
     GridLossMeteringPointPeriods,
+    grid_loss_metering_point_periods_schema,
 )
-from package.codelists import MeteringPointType
-from package.constants import Colname
+from geh_wholesale.codelists import MeteringPointType
+from geh_wholesale.constants import Colname
 
 DEFAULT_METERING_POINT_ID = "1234567890123"
 DEFAULT_GRID_AREA = "100"
-DEFAULT_FROM_DATE = datetime.strptime(
-    "2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
-).replace(tzinfo=ZoneInfo("Europe/Copenhagen"))
-DEFAULT_TO_DATE = datetime.strptime(
-    "2020-01-02T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
-).replace(tzinfo=ZoneInfo("Europe/Copenhagen"))
+DEFAULT_FROM_DATE = datetime.strptime("2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z").replace(
+    tzinfo=ZoneInfo("Europe/Copenhagen")
+)
+DEFAULT_TO_DATE = datetime.strptime("2020-01-02T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z").replace(
+    tzinfo=ZoneInfo("Europe/Copenhagen")
+)
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "2345678901234"
@@ -59,9 +59,7 @@ def create_row(
     return Row(**row)
 
 
-def create(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> GridLossMeteringPointPeriods:
+def create(spark: SparkSession, data: None | Row | list[Row] = None) -> GridLossMeteringPointPeriods:
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):

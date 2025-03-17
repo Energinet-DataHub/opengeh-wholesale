@@ -13,27 +13,26 @@
 # limitations under the License.
 
 import pyspark.sql.functions as f
+from geh_common.testing.dataframes.assert_schemas import assert_schema
 from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
 
-from package.databases.migrations_wholesale.schemas import (
-    time_series_points_schema,
-    metering_point_periods_schema,
-)
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.codelists import MeteringPointResolution, QuantityQuality
-from geh_common.testing.dataframes.assert_schemas import assert_schema
-from package.constants import Colname
+from geh_wholesale.codelists import MeteringPointResolution, QuantityQuality
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.migrations_wholesale.schemas import (
+    metering_point_periods_schema,
+    time_series_points_schema,
+)
 
 
 def get_metering_point_time_series(
     raw_time_series_points_df: DataFrame,
     metering_point_periods_df: DataFrame,
 ) -> PreparedMeteringPointTimeSeries:
-    """
-    Get metering point time-series points - both for metering points with hourly and quarterly resolution.
+    """Get metering point time-series points - both for metering points with hourly and quarterly resolution.
     All missing time series points for a given metering point is added with quantity=0 and quality=MISSING.
     Thus, there will be no missing points for a given metering point when it's connected. It may, however, not be
     connected for the entire period of the calculation.
@@ -43,15 +42,11 @@ def get_metering_point_time_series(
 
     quarterly_mp_df = metering_point_periods_df.where(
         f.col(Colname.resolution) == MeteringPointResolution.QUARTER.value
-    ).withColumn(
-        Colname.to_date, (f.col(Colname.to_date) - f.expr("INTERVAL 1 seconds"))
-    )
+    ).withColumn(Colname.to_date, (f.col(Colname.to_date) - f.expr("INTERVAL 1 seconds")))
 
     hourly_mp_df = metering_point_periods_df.where(
         f.col(Colname.resolution) == MeteringPointResolution.HOUR.value
-    ).withColumn(
-        Colname.to_date, (f.col(Colname.to_date) - f.expr("INTERVAL 1 seconds"))
-    )
+    ).withColumn(Colname.to_date, (f.col(Colname.to_date) - f.expr("INTERVAL 1 seconds")))
 
     quarterly_times_df = (
         quarterly_mp_df.select(
@@ -90,9 +85,7 @@ def get_metering_point_time_series(
         .distinct()
         .withColumn(
             "times",
-            f.expr(
-                f"sequence(to_timestamp({Colname.from_date}), to_timestamp({Colname.to_date}), interval 1 hour)"
-            ),
+            f.expr(f"sequence(to_timestamp({Colname.from_date}), to_timestamp({Colname.to_date}), interval 1 hour)"),
         )
         .select(
             Colname.metering_point_id,
@@ -141,14 +134,8 @@ def get_metering_point_time_series(
                 metering_point_periods_df[Colname.metering_point_id]
                 == new_points_for_each_metering_point_df[Colname.metering_point_id]
             )
-            & (
-                new_points_for_each_metering_point_df[Colname.observation_time]
-                >= f.col(Colname.from_date)
-            )
-            & (
-                new_points_for_each_metering_point_df[Colname.observation_time]
-                < f.col(Colname.to_date)
-            ),
+            & (new_points_for_each_metering_point_df[Colname.observation_time] >= f.col(Colname.from_date))
+            & (new_points_for_each_metering_point_df[Colname.observation_time] < f.col(Colname.to_date)),
             "left",
         )
         .select(

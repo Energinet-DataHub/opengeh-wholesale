@@ -14,23 +14,23 @@
 
 import pyspark.sql.functions as f
 
-from package.calculation.energy.aggregators.transformations.aggregate_sum_and_quality import (
+from geh_wholesale.calculation.energy.aggregators.transformations.aggregate_sum_and_quality import (
     aggregate_quantity_and_quality,
 )
-from package.calculation.energy.data_structures.energy_results import (
+from geh_wholesale.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
-from package.calculation.preparation.data_structures.metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
 )
-from package.calculation.preparation.transformations.rounding import (
+from geh_wholesale.calculation.preparation.transformations.rounding import (
     round_quantity,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     MeteringPointType,
     SettlementMethod,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 def aggregate_per_es(
@@ -38,8 +38,7 @@ def aggregate_per_es(
     metering_point_type: MeteringPointType,
     settlement_method: SettlementMethod | None,
 ) -> EnergyResults:
-    """
-    This function creates an intermediate energy result, which is subsequently used
+    """This function creates an intermediate energy result, which is subsequently used
     to aggregate other energy results.
 
     The function is responsible for
@@ -50,15 +49,10 @@ def aggregate_per_es(
 
     Each row in the output dataframe corresponds to a unique combination of: ga, brp, es, and quarter_time
     """
-
-    result = metering_point_time_series.df.where(
-        f.col(Colname.metering_point_type) == metering_point_type.value
-    )
+    result = metering_point_time_series.df.where(f.col(Colname.metering_point_type) == metering_point_type.value)
 
     if settlement_method is not None:
-        result = result.where(
-            f.col(Colname.settlement_method) == settlement_method.value
-        )
+        result = result.where(f.col(Colname.settlement_method) == settlement_method.value)
 
     sum_group_by = [
         Colname.grid_area_code,
@@ -94,6 +88,4 @@ def aggregate_flex_consumption_per_es(
 def aggregate_production_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
-    return aggregate_per_es(
-        metering_point_time_series, MeteringPointType.PRODUCTION, None
-    )
+    return aggregate_per_es(metering_point_time_series, MeteringPointType.PRODUCTION, None)

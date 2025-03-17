@@ -12,15 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pyspark.sql.types as t
+from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
 from pyspark.sql import DataFrame
 
-from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 class PreparedMeteringPointTimeSeries(DataFrameWrapper):
-    """
-    Represents time series enriched with metering points master data.
+    """Represents time series enriched with metering points master data.
     The time series are prepared for calculation.
     """
 

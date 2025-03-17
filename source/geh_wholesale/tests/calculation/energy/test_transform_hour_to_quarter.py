@@ -15,12 +15,12 @@ from decimal import Decimal
 
 from pyspark.sql import SparkSession
 
-from package.constants import Colname
-from package.codelists import MeteringPointResolution
-from package.calculation.energy.hour_to_quarter import (
+import tests.calculation.preparation.transformations.prepared_metering_point_time_series_factory as factory
+from geh_wholesale.calculation.energy.hour_to_quarter import (
     transform_hour_to_quarter,
 )
-import tests.calculation.preparation.transformations.prepared_metering_point_time_series_factory as factory
+from geh_wholesale.codelists import MeteringPointResolution
+from geh_wholesale.constants import Colname
 
 DEFAULT_QUANTITY = Decimal("4.444000")
 
@@ -30,12 +30,8 @@ def test__transform_hour_to_quarter__when_valid_input__split_basis_data_time_ser
 ) -> None:
     # Arrange
     rows = [
-        factory.create_row(
-            resolution=MeteringPointResolution.HOUR, quantity=DEFAULT_QUANTITY
-        ),
-        factory.create_row(
-            resolution=MeteringPointResolution.QUARTER, quantity=DEFAULT_QUANTITY
-        ),
+        factory.create_row(resolution=MeteringPointResolution.HOUR, quantity=DEFAULT_QUANTITY),
+        factory.create_row(resolution=MeteringPointResolution.QUARTER, quantity=DEFAULT_QUANTITY),
     ]
 
     prepared_metering_point_time_series = factory.create(spark, rows)

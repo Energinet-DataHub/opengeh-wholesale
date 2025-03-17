@@ -12,20 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime
-import pytest
-from pyspark.sql import SparkSession, DataFrame, Row
-import metering_point_periods_factory as factory
-from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
-    GridLossMeteringPointPeriods,
-)
-from package.calculation.preparation.transformations.grid_loss_metering_point_ids import (
-    get_grid_loss_metering_point_ids,
-)
-from package.codelists import MeteringPointType
-
 from typing import List
 
-from package.databases.wholesale_internal.schemas import (
+import metering_point_periods_factory as factory
+import pytest
+from pyspark.sql import DataFrame, Row, SparkSession
+
+from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+    GridLossMeteringPointPeriods,
+)
+from geh_wholesale.calculation.preparation.transformations.grid_loss_metering_point_ids import (
+    get_grid_loss_metering_point_ids,
+)
+from geh_wholesale.codelists import MeteringPointType
+from geh_wholesale.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
 
@@ -51,9 +51,7 @@ def _create_grid_loss_metering_point_periods(data: List[str]) -> List[Row]:
     return resulting_data_frame
 
 
-def _get_grid_loss_metering_point_periods(
-    spark: SparkSession, data: List[str]
-) -> GridLossMeteringPointPeriods:
+def _get_grid_loss_metering_point_periods(spark: SparkSession, data: List[str]) -> GridLossMeteringPointPeriods:
     grid_loss_metering_point_periods = _create_grid_loss_metering_point_periods(data)
 
     metering_point_period = factory.create(spark, data=grid_loss_metering_point_periods)
@@ -100,9 +98,7 @@ def test__get_grid_loss_metering_point_ids__count_is_correct(
     expected_count: int,
 ) -> None:
     # Arrange
-    grid_loss_metering_point_periods = _get_grid_loss_metering_point_periods(
-        spark, grid_loss_metering_points
-    )
+    grid_loss_metering_point_periods = _get_grid_loss_metering_point_periods(spark, grid_loss_metering_points)
 
     # Act
     result = get_grid_loss_metering_point_ids(grid_loss_metering_point_periods)

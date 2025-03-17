@@ -13,15 +13,16 @@
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
 
-from package.infrastructure.paths import (
+from geh_wholesale.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
 )
+
 from ..repository_helper import read_table
 from ..wholesale_results_internal.schemas import (
-    energy_schema,
-    energy_per_es_schema,
-    energy_per_brp_schema,
     amounts_per_charge_schema,
+    energy_per_brp_schema,
+    energy_per_es_schema,
+    energy_schema,
 )
 
 

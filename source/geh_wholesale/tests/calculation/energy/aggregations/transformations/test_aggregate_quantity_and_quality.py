@@ -15,10 +15,10 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.energy.aggregators.transformations import (
+from geh_wholesale.calculation.energy.aggregators.transformations import (
     aggregate_quantity_and_quality,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 class TestWhenValidInput:

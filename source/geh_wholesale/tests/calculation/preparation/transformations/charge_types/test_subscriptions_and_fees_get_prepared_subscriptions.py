@@ -11,23 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime, timezone
 from decimal import Decimal
 from zoneinfo import ZoneInfo
 
 import pytest
-from datetime import datetime, timezone
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
 
-from package.calculation.preparation.transformations import (
+import geh_wholesale.calculation.preparation.data_structures as d
+import geh_wholesale.codelists as e
+import tests.calculation.charges_factory as factory
+from geh_wholesale.calculation.preparation.transformations import (
     get_prepared_subscriptions,
 )
-
-from package.constants import Colname
-import package.codelists as e
-import package.calculation.preparation.data_structures as d
-
-import tests.calculation.charges_factory as factory
+from geh_wholesale.constants import Colname
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 JAN_1ST = datetime(2021, 12, 31, 23)
@@ -56,9 +54,7 @@ def _create_default_charge_price_information(
     )
 
 
-def _create_charge_price(
-    spark: SparkSession, charge_time: datetime, charge_price: Decimal
-) -> d.ChargePrices:
+def _create_charge_price(spark: SparkSession, charge_time: datetime, charge_price: Decimal) -> d.ChargePrices:
     return factory.create_charge_prices(
         spark,
         [
@@ -84,9 +80,7 @@ def _create_charge_link_metering_point_periods(
         ),
     ]
 
-    return factory.create_charge_link_metering_point_periods(
-        spark, charge_link_metering_points_rows
-    )
+    return factory.create_charge_link_metering_point_periods(spark, charge_link_metering_points_rows)
 
 
 class TestWhenValidInput:
@@ -118,13 +112,9 @@ class TestWhenValidInput:
         expected_day_count: int,
     ) -> None:
         # Arrange
-        charge_price_information = _create_default_charge_price_information(
-            spark, from_date, to_date
-        )
+        charge_price_information = _create_default_charge_price_information(spark, from_date, to_date)
         charge_prices = _create_charge_price(spark, charge_time, Decimal("1.123456"))
-        charge_link_metering_point_periods = _create_charge_link_metering_point_periods(
-            spark, from_date, to_date
-        )
+        charge_link_metering_point_periods = _create_charge_link_metering_point_periods(spark, from_date, to_date)
 
         # Act
         actual_subscription = get_prepared_subscriptions(
@@ -145,9 +135,7 @@ class TestWhenNoPricesForPeriod:
     ) -> None:
         # Arrange
         charge_price_information = _create_default_charge_price_information(spark)
-        charge_link_metering_point_periods = _create_charge_link_metering_point_periods(
-            spark
-        )
+        charge_link_metering_point_periods = _create_charge_link_metering_point_periods(spark)
         charge_prices_empty = factory.create_charge_prices(spark, [])
 
         # Act
@@ -161,9 +149,7 @@ class TestWhenNoPricesForPeriod:
         # Assert
         actual_prices = actual_subscription.df.select(Colname.charge_price)
         assert actual_prices.count() == DEFAULT_DAYS_IN_MONTH
-        assert (
-            actual_prices.filter(f.col(Colname.charge_price).isNotNull()).count() == 0
-        )
+        assert actual_prices.filter(f.col(Colname.charge_price).isNotNull()).count() == 0
 
 
 class TestWhenInputContainsOtherChargeTypes:
@@ -175,33 +161,19 @@ class TestWhenInputContainsOtherChargeTypes:
         charge_price_information = factory.create_charge_price_information(
             spark,
             [
-                factory.create_charge_price_information_row(
-                    charge_type=e.ChargeType.FEE
-                ),
-                factory.create_charge_price_information_row(
-                    charge_type=e.ChargeType.SUBSCRIPTION
-                ),
-                factory.create_charge_price_information_row(
-                    charge_type=e.ChargeType.TARIFF
-                ),
+                factory.create_charge_price_information_row(charge_type=e.ChargeType.FEE),
+                factory.create_charge_price_information_row(charge_type=e.ChargeType.SUBSCRIPTION),
+                factory.create_charge_price_information_row(charge_type=e.ChargeType.TARIFF),
             ],
         )
 
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark,
-                [
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.FEE
-                    ),
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.SUBSCRIPTION
-                    ),
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.TARIFF
-                    ),
-                ],
-            )
+        charge_link_metering_point_periods = factory.create_charge_link_metering_point_periods(
+            spark,
+            [
+                factory.create_charge_link_metering_point_periods_row(charge_type=e.ChargeType.FEE),
+                factory.create_charge_link_metering_point_periods_row(charge_type=e.ChargeType.SUBSCRIPTION),
+                factory.create_charge_link_metering_point_periods_row(charge_type=e.ChargeType.TARIFF),
+            ],
         )
         charge_prices = factory.create_charge_prices(
             spark,
@@ -221,10 +193,7 @@ class TestWhenInputContainsOtherChargeTypes:
         )
 
         # Assert
-        assert (
-            actual_subscription.df.collect()[0][Colname.charge_type]
-            == e.ChargeType.SUBSCRIPTION.value
-        )
+        assert actual_subscription.df.collect()[0][Colname.charge_type] == e.ChargeType.SUBSCRIPTION.value
 
 
 class TestWhenChargePriceChangesDuringPeriod:
@@ -246,9 +215,7 @@ class TestWhenChargePriceChangesDuringPeriod:
             JAN_4TH: Decimal("2.000000"),
             JAN_5TH: Decimal("2.000000"),
         }
-        charge_link_metering_point_periods = _create_charge_link_metering_point_periods(
-            spark, from_date, to_date
-        )
+        charge_link_metering_point_periods = _create_charge_link_metering_point_periods(spark, from_date, to_date)
         charge_price_information = _create_default_charge_price_information(spark)
 
         charge_prices = factory.create_charge_prices(
@@ -311,22 +278,20 @@ class TestWhenChargePriceInformationPeriodStopsAndStartsAgain:
                 ),
             ],
         )
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark,
-                [
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.SUBSCRIPTION,
-                        from_date=first_period_from_date,
-                        to_date=first_period_to_date,
-                    ),
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.SUBSCRIPTION,
-                        from_date=second_period_from_date,
-                        to_date=second_period_to_date,
-                    ),
-                ],
-            )
+        charge_link_metering_point_periods = factory.create_charge_link_metering_point_periods(
+            spark,
+            [
+                factory.create_charge_link_metering_point_periods_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=first_period_from_date,
+                    to_date=first_period_to_date,
+                ),
+                factory.create_charge_link_metering_point_periods_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=second_period_from_date,
+                    to_date=second_period_to_date,
+                ),
+            ],
         )
         charge_period_prices = factory.create_charge_prices(
             spark,
@@ -351,10 +316,7 @@ class TestWhenChargePriceInformationPeriodStopsAndStartsAgain:
         )
 
         # Assert
-        actual_charge_times = set(
-            row[0]
-            for row in actual_subscription.df.select(Colname.charge_time).collect()
-        )
+        actual_charge_times = set(row[0] for row in actual_subscription.df.select(Colname.charge_time).collect())
         expected_charge_times_set = set(expected_charge_times)
 
         assert actual_charge_times == expected_charge_times_set
@@ -391,22 +353,20 @@ class TestWhenChargePriceInformationPeriodStopsAndStartsAgain:
                 ),
             ],
         )
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark,
-                [
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.SUBSCRIPTION,
-                        from_date=first_period_from_date,
-                        to_date=first_period_to_date,
-                    ),
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.SUBSCRIPTION,
-                        from_date=second_period_from_date,
-                        to_date=second_period_to_date,
-                    ),
-                ],
-            )
+        charge_link_metering_point_periods = factory.create_charge_link_metering_point_periods(
+            spark,
+            [
+                factory.create_charge_link_metering_point_periods_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=first_period_from_date,
+                    to_date=first_period_to_date,
+                ),
+                factory.create_charge_link_metering_point_periods_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=second_period_from_date,
+                    to_date=second_period_to_date,
+                ),
+            ],
         )
         charge_period_prices = factory.create_charge_prices(
             spark,
@@ -460,22 +420,20 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
 
         charge_price_information = _create_default_charge_price_information(spark)
 
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark,
-                [
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.SUBSCRIPTION,
-                        from_date=first_link_from_date,
-                        to_date=first_link_to_date,
-                    ),
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.SUBSCRIPTION,
-                        from_date=second_link_from_date,
-                        to_date=second_link_to_date,
-                    ),
-                ],
-            )
+        charge_link_metering_point_periods = factory.create_charge_link_metering_point_periods(
+            spark,
+            [
+                factory.create_charge_link_metering_point_periods_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=first_link_from_date,
+                    to_date=first_link_to_date,
+                ),
+                factory.create_charge_link_metering_point_periods_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=second_link_from_date,
+                    to_date=second_link_to_date,
+                ),
+            ],
         )
         charge_prices = factory.create_charge_prices(
             spark,
@@ -535,17 +493,15 @@ class TestWhenDaylightSavingTimeChanges:
         expected_day_count: int,
     ) -> None:
         # Arrange
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark,
-                [
-                    factory.create_charge_link_metering_point_periods_row(
-                        charge_type=e.ChargeType.SUBSCRIPTION,
-                        from_date=from_date,
-                        to_date=to_date,
-                    ),
-                ],
-            )
+        charge_link_metering_point_periods = factory.create_charge_link_metering_point_periods(
+            spark,
+            [
+                factory.create_charge_link_metering_point_periods_row(
+                    charge_type=e.ChargeType.SUBSCRIPTION,
+                    from_date=from_date,
+                    to_date=to_date,
+                ),
+            ],
         )
         charge_price_information = factory.create_charge_price_information(
             spark,
@@ -577,18 +533,12 @@ class TestWhenDaylightSavingTimeChanges:
         )
 
         # Assert
-        actual_charge_times = actual_subscription.df.orderBy(
-            Colname.charge_time
-        ).collect()
+        actual_charge_times = actual_subscription.df.orderBy(Colname.charge_time).collect()
 
         assert actual_subscription.df.count() == expected_day_count
         assert actual_charge_times[0][Colname.charge_time].astimezone(
             ZoneInfo(DEFAULT_TIME_ZONE)
         ) == expected_first_charge_time.astimezone(ZoneInfo(DEFAULT_TIME_ZONE))
-        assert actual_charge_times[expected_day_count - 1][
-            Colname.charge_time
-        ].astimezone(
+        assert actual_charge_times[expected_day_count - 1][Colname.charge_time].astimezone(
             ZoneInfo(DEFAULT_TIME_ZONE)
-        ) == expected_last_charge_time.astimezone(
-            ZoneInfo(DEFAULT_TIME_ZONE)
-        )
+        ) == expected_last_charge_time.astimezone(ZoneInfo(DEFAULT_TIME_ZONE))

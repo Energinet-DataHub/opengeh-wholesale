@@ -15,15 +15,13 @@
 
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
-from pyspark.sql.types import ArrayType, StringType, DecimalType
+from pyspark.sql.types import ArrayType, DecimalType, StringType
 
-from package.codelists import ChargeType, ChargeUnit
-from package.constants import Colname
+from geh_wholesale.codelists import ChargeType, ChargeUnit
+from geh_wholesale.constants import Colname
 
 
-def calculate_total_quantity_and_amount(
-    prepared_charge: DataFrame, charge_type: ChargeType
-) -> DataFrame:
+def calculate_total_quantity_and_amount(prepared_charge: DataFrame, charge_type: ChargeType) -> DataFrame:
     qualities_function = _get_qualities_function(charge_type)
 
     df = prepared_charge.groupBy(
@@ -46,17 +44,11 @@ def calculate_total_quantity_and_amount(
 
     df = df.withColumn(
         Colname.total_amount,
-        (f.col(Colname.total_quantity) * f.col(Colname.charge_price)).cast(
-            DecimalType(18, 6)
-        ),
+        (f.col(Colname.total_quantity) * f.col(Colname.charge_price)).cast(DecimalType(18, 6)),
     )
 
-    df = df.withColumn(
-        Colname.total_quantity, f.col(Colname.total_quantity).cast(DecimalType(18, 3))
-    )
-    df = df.withColumn(
-        Colname.charge_price, f.col(Colname.charge_price).cast(DecimalType(18, 6))
-    )
+    df = df.withColumn(Colname.total_quantity, f.col(Colname.total_quantity).cast(DecimalType(18, 3)))
+    df = df.withColumn(Colname.charge_price, f.col(Colname.charge_price).cast(DecimalType(18, 6)))
 
     df = _add_charge_unit(df, charge_type)
 

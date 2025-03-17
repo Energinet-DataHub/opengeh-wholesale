@@ -11,20 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from decimal import Decimal
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 from pyspark.sql import SparkSession
 
-from package.calculation.wholesale.fee_calculators import (
+import tests.calculation.wholesale.factories.prepared_fees_factory as factory
+from geh_wholesale.calculation.wholesale.fee_calculators import (
     calculate,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     MeteringPointType,
     SettlementMethod,
 )
-from package.constants import Colname
-import tests.calculation.wholesale.factories.prepared_fees_factory as factory
+from geh_wholesale.constants import Colname
 
 
 def _get_all_wholesale_metering_point_types() -> list[MeteringPointType]:
@@ -106,14 +106,9 @@ class TestWhenInputContainsMultipleMeteringPointTypes:
         actual = calculate(prepared_fees).df
 
         # Assert
-        expected = [
-            metering_point_type.value
-            for metering_point_type in all_metering_point_types
-        ]
+        expected = [metering_point_type.value for metering_point_type in all_metering_point_types]
         assert actual.count() == len(expected)
-        actual_metering_point_types = [
-            row[Colname.metering_point_type] for row in actual.collect()
-        ]
+        actual_metering_point_types = [row[Colname.metering_point_type] for row in actual.collect()]
         assert set(actual_metering_point_types) == set(expected)
 
 
@@ -136,9 +131,7 @@ class TestWhenInputContainsMultipleSettlementMethods:
         # Assert
         expected = [SettlementMethod.FLEX.value, SettlementMethod.NON_PROFILED.value]
         assert actual_df.count() == 2
-        actual_settlement_methods = [
-            row[Colname.settlement_method] for row in actual_df.collect()
-        ]
+        actual_settlement_methods = [row[Colname.settlement_method] for row in actual_df.collect()]
         assert set(actual_settlement_methods) == set(expected)
 
 

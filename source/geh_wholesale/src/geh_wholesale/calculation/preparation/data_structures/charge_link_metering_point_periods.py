@@ -13,16 +13,15 @@
 # limitations under the License.
 
 import pyspark.sql.types as t
+from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
 from pyspark.sql import DataFrame
 
-from package.codelists import ChargeType
-from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
-from package.constants import Colname
+from geh_wholesale.codelists import ChargeType
+from geh_wholesale.constants import Colname
 
 
 class ChargeLinkMeteringPointPeriods(DataFrameWrapper):
-    """
-    Represents the metering point period enriched with information on the relation to a charge.
+    """Represents the metering point period enriched with information on the relation to a charge.
     The relation is represented by the charge key and the charge quantity.
     All periods are clamped to least common period of the metering point and the charge link.
     Metering points that have no charge links in the calculation period are not included.
@@ -40,9 +39,7 @@ class ChargeLinkMeteringPointPeriods(DataFrameWrapper):
             ignore_decimal_precision=True,
         )
 
-    def filter_by_charge_type(
-        self, charge_type: ChargeType
-    ) -> "ChargeLinkMeteringPointPeriods":
+    def filter_by_charge_type(self, charge_type: ChargeType) -> "ChargeLinkMeteringPointPeriods":
         df = self._df.filter(self._df[Colname.charge_type] == charge_type.value)
         return ChargeLinkMeteringPointPeriods(df)
 

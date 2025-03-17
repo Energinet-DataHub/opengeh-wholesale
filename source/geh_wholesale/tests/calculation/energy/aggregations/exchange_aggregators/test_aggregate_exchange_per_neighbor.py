@@ -15,11 +15,11 @@ import pytest
 from pyspark.sql import SparkSession
 
 import tests.calculation.energy.metering_point_time_series_factories as factories
-from package.calculation.energy.aggregators.exchange_aggregators import (
+from geh_wholesale.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_exchange_per_neighbor,
 )
-from package.codelists import QuantityQuality
-from package.constants import Colname
+from geh_wholesale.codelists import QuantityQuality
+from geh_wholesale.constants import Colname
 
 
 class TestWhenValidInput:
@@ -83,9 +83,7 @@ class TestWhenValidInput:
         expected_qualities = sorted([q.value for q in expected_qualities])
 
         # Act
-        actual = aggregate_exchange_per_neighbor(
-            metering_point_time_series, [from_grid_area, to_grid_area]
-        )
+        actual = aggregate_exchange_per_neighbor(metering_point_time_series, [from_grid_area, to_grid_area])
 
         # Assert
         actual_rows = actual.df.collect()
@@ -117,9 +115,7 @@ class TestWhenInputHasDataNotBelongingToSelectedGridArea:
         metering_point_time_series = factories.create(spark, rows)
 
         # Act
-        actual = aggregate_exchange_per_neighbor(
-            metering_point_time_series, [selected_grid_area]
-        )
+        actual = aggregate_exchange_per_neighbor(metering_point_time_series, [selected_grid_area])
 
         # Assert
         actual_rows = actual.df.collect()

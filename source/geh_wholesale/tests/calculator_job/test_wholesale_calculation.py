@@ -17,22 +17,23 @@ import pytest
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
-from package.codelists import (
+from geh_wholesale.codelists import (
     ChargeType,
     TimeSeriesType,
     WholesaleResultResolution,
 )
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_basis_data_internal.schemas import (
-    charge_price_information_periods_schema,
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.wholesale_basis_data_internal.schemas import (
     charge_link_periods_schema,
+    charge_price_information_periods_schema,
     charge_price_points_schema,
     grid_loss_metering_point_ids_schema,
-    time_series_points_schema,
     metering_point_periods_schema,
+    time_series_points_schema,
 )
-from package.infrastructure import paths
-from package.infrastructure.infrastructure_settings import InfrastructureSettings
+from geh_wholesale.infrastructure import paths
+from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
+
 from . import configuration as c
 
 
@@ -92,13 +93,8 @@ def test__wholesale_fixing_result_type__is_created(
     table_name: str,
 ) -> None:
     actual = (
-        spark.read.table(
-            f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}"
-        )
-        .where(
-            f.col(TableColumnNames.calculation_id)
-            == c.executed_wholesale_calculation_id
-        )
+        spark.read.table(f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}")
+        .where(f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id)
         .where(f.col(TableColumnNames.time_series_type) == time_series_type)
     )
 
@@ -144,13 +140,9 @@ def test__energy_result__has_expected_number_of_types(
     # Arrange
     actual_result_type_count = (
         wholesale_fixing_energy_results_df.where(
-            f.col(TableColumnNames.calculation_id)
-            == c.executed_wholesale_calculation_id
+            f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
         )
-        .where(
-            f.col(TableColumnNames.calculation_id)
-            == c.executed_wholesale_calculation_id
-        )
+        .where(f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id)
         .select(
             TableColumnNames.time_series_type,
         )
@@ -185,8 +177,7 @@ def test__wholesale_result__amount_per_charge_is_created(
     # Arrange
     result_df = (
         wholesale_fixing_amounts_per_charge_df.where(
-            f.col(TableColumnNames.calculation_id)
-            == c.executed_wholesale_calculation_id
+            f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
         )
         .where(f.col(TableColumnNames.charge_type) == charge_type.value)
         .where(f.col(TableColumnNames.resolution) == resolution.value)
@@ -281,9 +272,7 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     # Arrange
     actual = spark.read.table(
         f"{paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{basis_data_table_name}"
-    ).where(
-        f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
-    )
+    ).where(f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id)
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -299,9 +288,7 @@ def test__when_calculation_is_stored__contains_calculation_succeeded_time(
     # Arrange
     actual = spark.read.table(
         f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-    ).where(
-        f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
-    )
+    ).where(f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id)
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -318,9 +305,7 @@ def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
     # Arrange
     actual = spark.read.table(
         f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME}"
-    ).where(
-        f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
-    )
+    ).where(f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id)
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`

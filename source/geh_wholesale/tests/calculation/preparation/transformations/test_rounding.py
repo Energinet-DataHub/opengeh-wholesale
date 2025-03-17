@@ -16,10 +16,10 @@ from decimal import Decimal
 
 from pyspark.sql import SparkSession
 
-from package.calculation.preparation.transformations.rounding import (
+from geh_wholesale.calculation.preparation.transformations.rounding import (
     round_quantity,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 def test_special_quantity_rounding(spark: SparkSession) -> None:

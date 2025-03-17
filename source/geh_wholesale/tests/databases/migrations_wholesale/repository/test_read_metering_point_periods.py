@@ -14,17 +14,18 @@
 
 import pathlib
 from unittest import mock
+
+import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
-import pyspark.sql.functions as f
 
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from package.databases.migrations_wholesale.schemas import metering_point_periods_schema
 import tests.databases.migrations_wholesale.repository.input_metering_point_periods_factory as factory
-from package.constants import Colname
-from tests.helpers.delta_table_utils import write_dataframe_to_table
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
+from geh_wholesale.databases.migrations_wholesale.schemas import metering_point_periods_schema
+from geh_wholesale.infrastructure.paths import MigrationsWholesaleDatabase
 from tests.helpers.data_frame_utils import assert_dataframes_equal
-from package.infrastructure.paths import MigrationsWholesaleDatabase
+from tests.helpers.delta_table_utils import write_dataframe_to_table
 
 
 class TestWhenValidInput:
@@ -69,9 +70,7 @@ class TestWhenValidInputAndMoreColumns:
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
-        with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
-        ):
+        with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
             reader.read_metering_point_periods()
 
 
@@ -88,9 +87,7 @@ class TestWhenContractMismatch:
         df = df.drop(Colname.metering_point_id)
 
         # Act & Assert
-        with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
-        ):
+        with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
             with pytest.raises(AssertionError) as exc_info:
                 reader.read_metering_point_periods()
 

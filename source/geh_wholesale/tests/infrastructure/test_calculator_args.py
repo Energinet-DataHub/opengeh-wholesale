@@ -1,16 +1,15 @@
-from datetime import datetime
 import os
 import sys
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 
 import pydantic
 import pytest
 
-
-from package.calculation.calculator_args import CalculatorArgs
-from package.codelists.calculation_type import CalculationType
-from package.infrastructure.environment_variables import EnvironmentVariable
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.codelists.calculation_type import CalculationType
+from geh_wholesale.infrastructure.environment_variables import EnvironmentVariable
 from tests import PROJECT_PATH
 
 DEFAULT_CALCULATION_ID = "12345678-9fc8-409a-a169-fbd49479d718"
@@ -47,9 +46,7 @@ def _load_contract(path: Path):
             mode = "optional"
             continue
         if mode == "required" and line.startswith("--"):
-            required_params.append(
-                line.replace("{calculation-id}", DEFAULT_CALCULATION_ID)
-            )
+            required_params.append(line.replace("{calculation-id}", DEFAULT_CALCULATION_ID))
         if mode == "optional" and line.startswith("--"):
             optional_params.append(line)
     return Contract(required_params, optional_params)
@@ -81,12 +78,8 @@ def _args_to_dict(args):
 
 def _assert_args(args: CalculatorArgs, args_dict, env_args):
     assert args.calculation_id == args_dict["calculation-id"]
-    assert args.period_start_datetime == datetime.fromisoformat(
-        args_dict["period-start-datetime"]
-    )
-    assert args.period_end_datetime == datetime.fromisoformat(
-        args_dict["period-end-datetime"]
-    )
+    assert args.period_start_datetime == datetime.fromisoformat(args_dict["period-start-datetime"])
+    assert args.period_end_datetime == datetime.fromisoformat(args_dict["period-end-datetime"])
     assert args.calculation_type.value == args_dict["calculation-type"]
     assert args.created_by_user_id == args_dict["created-by-user-id"]
     assert args.time_zone == env_args["TIME_ZONE"]
@@ -96,9 +89,7 @@ def _assert_args(args: CalculatorArgs, args_dict, env_args):
 
 
 @pytest.mark.parametrize(["_", "contract"], _load_contracts().items())
-def test_calculator_required_args(
-    _, contract: Contract, monkeypatch: pytest.MonkeyPatch
-):
+def test_calculator_required_args(_, contract: Contract, monkeypatch: pytest.MonkeyPatch):
     args_dict = _args_to_dict(contract.required)
     monkeypatch.setattr(
         sys,
@@ -111,9 +102,7 @@ def test_calculator_required_args(
 
 
 @pytest.mark.parametrize(["_", "contract"], _load_contracts().items())
-def test_calculator_optional_args(
-    _, contract: Contract, monkeypatch: pytest.MonkeyPatch
-):
+def test_calculator_optional_args(_, contract: Contract, monkeypatch: pytest.MonkeyPatch):
     args_dict = _args_to_dict(contract.required + contract.optional)
     monkeypatch.setattr(
         sys,
@@ -126,9 +115,7 @@ def test_calculator_optional_args(
 
 
 @pytest.mark.parametrize(["_", "contract"], _load_contracts().items())
-def test_calculator_args_missing_env(
-    _, contract: Contract, monkeypatch: pytest.MonkeyPatch
-):
+def test_calculator_args_missing_env(_, contract: Contract, monkeypatch: pytest.MonkeyPatch):
     environment_variables = DEFAULT_ENV_VARS.copy()
     environment_variables.pop("TIME_ZONE")
     monkeypatch.setattr(
@@ -142,9 +129,7 @@ def test_calculator_args_missing_env(
 
 
 @pytest.mark.parametrize(["_", "contract"], _load_contracts().items())
-def test_calculator_args_required_args_missing(
-    _, contract: Contract, monkeypatch: pytest.MonkeyPatch
-):
+def test_calculator_args_required_args_missing(_, contract: Contract, monkeypatch: pytest.MonkeyPatch):
     required_args = contract.required.copy()
     required_args.pop(0)
     monkeypatch.setattr(
@@ -262,9 +247,7 @@ def test_validate_period_for_wholesale_calculation(
             "period-end-datetime": end_date,
         }
     )
-    monkeypatch.setattr(
-        sys, "argv", ["calculators"] + [f"--{k}={v}" for k, v in args_dict.items()]
-    )
+    monkeypatch.setattr(sys, "argv", ["calculators"] + [f"--{k}={v}" for k, v in args_dict.items()])
     monkeypatch.setattr(os, "environ", DEFAULT_ENV_VARS)
     if match:
         with pytest.raises(ValueError, match=match):
@@ -293,9 +276,7 @@ def test_throw_exception_if_internal_calculation_and_not_aggregation_calculation
             "calculation-type": calculation_type.value,
         }
     )
-    sys_args = [
-        f"--{k}={v}" if v is not None else f"--{k}" for k, v in args_dict.items()
-    ]
+    sys_args = [f"--{k}={v}" if v is not None else f"--{k}" for k, v in args_dict.items()]
     if match:
         sys_args.append("--is-internal-calculation")
     monkeypatch.setattr(sys, "argv", ["calculators"] + sys_args)

@@ -17,17 +17,17 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.data_structures.prepared_subscriptions import (
+from geh_wholesale.calculation.preparation.data_structures.prepared_subscriptions import (
     PreparedSubscriptions,
     prepared_subscriptions_schema,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     ChargeType,
     MeteringPointType,
     SettlementMethod,
     WholesaleResultResolution,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 class DefaultValues:
@@ -78,9 +78,7 @@ def create_row(
     return Row(**row)
 
 
-def create(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> PreparedSubscriptions:
+def create(spark: SparkSession, data: None | Row | list[Row] = None) -> PreparedSubscriptions:
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):

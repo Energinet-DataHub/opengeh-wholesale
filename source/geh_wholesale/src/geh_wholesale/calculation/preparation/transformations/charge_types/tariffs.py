@@ -13,27 +13,27 @@
 # limitations under the License.
 import pyspark.sql.functions as f
 from pyspark.sql.dataframe import DataFrame
-from pyspark.sql.types import DecimalType, StringType, ArrayType
+from pyspark.sql.types import ArrayType, DecimalType, StringType
 
-import package.calculation.energy.aggregators.transformations as t
-from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
+import geh_wholesale.calculation.energy.aggregators.transformations as t
+from geh_wholesale.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.calculation.preparation.data_structures.charge_price_information import (
+from geh_wholesale.calculation.preparation.data_structures.charge_price_information import (
     ChargePriceInformation,
 )
-from package.calculation.preparation.data_structures.charge_prices import ChargePrices
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.charge_prices import ChargePrices
+from geh_wholesale.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.calculation.preparation.data_structures.prepared_tariffs import (
+from geh_wholesale.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
 )
-from package.calculation.preparation.transformations.charge_types.explode_charge_price_information_within_periods import (
+from geh_wholesale.calculation.preparation.transformations.charge_types.explode_charge_price_information_within_periods import (
     explode_charge_price_information_within_periods,
 )
-from package.codelists import ChargeType, ChargeResolution
-from package.constants import Colname
+from geh_wholesale.codelists import ChargeResolution, ChargeType
+from geh_wholesale.constants import Colname
 
 
 def get_prepared_tariffs(
@@ -44,13 +44,9 @@ def get_prepared_tariffs(
     resolution: ChargeResolution,
     time_zone: str,
 ) -> PreparedTariffs:
-    """
-    metering_point_time_series always hava a row for each resolution time in the given period.
-    """
+    """metering_point_time_series always hava a row for each resolution time in the given period."""
     tariff_links = charge_link_metering_points.filter_by_charge_type(ChargeType.TARIFF)
-    tariff_price_information_periods = charge_price_information.filter_by_charge_type(
-        ChargeType.TARIFF
-    )
+    tariff_price_information_periods = charge_price_information.filter_by_charge_type(ChargeType.TARIFF)
     tariff_prices = charge_prices.filter_by_charge_type(ChargeType.TARIFF)
 
     tariffs = _join_price_information_periods_and_prices_add_missing_prices(
@@ -60,10 +56,8 @@ def get_prepared_tariffs(
     tariffs = _join_with_charge_link_metering_points(tariffs, tariff_links)
 
     # group by time series on metering point id and resolution and sum quantity
-    grouped_time_series = (
-        _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
-            metering_point_time_series, resolution, time_zone
-        )
+    grouped_time_series = _group_by_time_series_on_metering_point_id_and_resolution_and_sum_quantity(
+        metering_point_time_series, resolution, time_zone
     )
 
     # join with grouped time series
@@ -81,32 +75,26 @@ def _join_price_information_periods_and_prices_add_missing_prices(
     charge_prices = charge_prices.df
 
     charge_price_information = ChargePriceInformation(
-        charge_price_information.df.filter(
-            f.col(Colname.resolution) == resolution.value
-        )
+        charge_price_information.df.filter(f.col(Colname.resolution) == resolution.value)
     )
 
-    charge_price_information_with_charge_time = (
-        explode_charge_price_information_within_periods(
-            charge_price_information, resolution, time_zone
-        )
+    charge_price_information_with_charge_time = explode_charge_price_information_within_periods(
+        charge_price_information, resolution, time_zone
     )
 
-    charges_with_prices_and_missing_prices = (
-        charge_price_information_with_charge_time.join(
-            charge_prices, [Colname.charge_key, Colname.charge_time], "left"
-        ).select(
-            charge_price_information_with_charge_time[Colname.charge_key],
-            charge_price_information_with_charge_time[Colname.charge_code],
-            charge_price_information_with_charge_time[Colname.charge_type],
-            charge_price_information_with_charge_time[Colname.charge_owner],
-            charge_price_information_with_charge_time[Colname.charge_tax],
-            charge_price_information_with_charge_time[Colname.resolution],
-            charge_price_information_with_charge_time[Colname.charge_time],
-            charge_price_information_with_charge_time[Colname.from_date],
-            charge_price_information_with_charge_time[Colname.to_date],
-            Colname.charge_price,
-        )
+    charges_with_prices_and_missing_prices = charge_price_information_with_charge_time.join(
+        charge_prices, [Colname.charge_key, Colname.charge_time], "left"
+    ).select(
+        charge_price_information_with_charge_time[Colname.charge_key],
+        charge_price_information_with_charge_time[Colname.charge_code],
+        charge_price_information_with_charge_time[Colname.charge_type],
+        charge_price_information_with_charge_time[Colname.charge_owner],
+        charge_price_information_with_charge_time[Colname.charge_tax],
+        charge_price_information_with_charge_time[Colname.resolution],
+        charge_price_information_with_charge_time[Colname.charge_time],
+        charge_price_information_with_charge_time[Colname.from_date],
+        charge_price_information_with_charge_time[Colname.to_date],
+        Colname.charge_price,
     )
 
     return charges_with_prices_and_missing_prices
@@ -120,12 +108,9 @@ def _join_with_charge_link_metering_points(
     df = tariffs.join(
         charge_link_metering_point_periods_df,
         [
-            tariffs[Colname.charge_key]
-            == charge_link_metering_point_periods_df[Colname.charge_key],
-            tariffs[Colname.charge_time]
-            >= charge_link_metering_point_periods_df[Colname.from_date],
-            tariffs[Colname.charge_time]
-            < charge_link_metering_point_periods_df[Colname.to_date],
+            tariffs[Colname.charge_key] == charge_link_metering_point_periods_df[Colname.charge_key],
+            tariffs[Colname.charge_time] >= charge_link_metering_point_periods_df[Colname.from_date],
+            tariffs[Colname.charge_time] < charge_link_metering_point_periods_df[Colname.to_date],
         ],
         "inner",
     ).select(
@@ -208,15 +193,11 @@ def _get_window_duration_string_based_on_resolution(
     return window_duration_string
 
 
-def _join_with_grouped_time_series(
-    df: DataFrame, grouped_time_series: DataFrame
-) -> DataFrame:
-
+def _join_with_grouped_time_series(df: DataFrame, grouped_time_series: DataFrame) -> DataFrame:
     df = df.join(
         grouped_time_series,
         [
-            df[Colname.metering_point_id]
-            == grouped_time_series[Colname.metering_point_id],
+            df[Colname.metering_point_id] == grouped_time_series[Colname.metering_point_id],
             df[Colname.charge_time] == grouped_time_series[Colname.observation_time],
         ],
         "inner",

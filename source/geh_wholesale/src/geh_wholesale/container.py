@@ -14,8 +14,7 @@
 from dependency_injector import containers, providers
 from pyspark.sql import SparkSession
 
-import package
-from package.infrastructure.infrastructure_settings import InfrastructureSettings
+from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
 class Container(containers.DeclarativeContainer):

@@ -18,11 +18,11 @@ import pytest
 from pyspark.sql import SparkSession
 
 import tests.calculation.preparation.transformations.prepared_metering_point_time_series_factory as factory
-from package.constants import Colname
-from package.codelists import MeteringPointResolution, QuantityQuality
-from package.calculation.energy.quarter_to_hour import (
+from geh_wholesale.calculation.energy.quarter_to_hour import (
     transform_quarter_to_hour,
 )
+from geh_wholesale.codelists import MeteringPointResolution, QuantityQuality
+from geh_wholesale.constants import Colname
 
 DEFAULT_QUANTITY = Decimal("4.444000")
 
@@ -32,9 +32,7 @@ def test__transform_quarter_to_hour__when_valid_input__merge_basis_data_time_ser
 ) -> None:
     # Arrange
     rows = [
-        factory.create_row(
-            resolution=MeteringPointResolution.HOUR, quantity=DEFAULT_QUANTITY
-        ),
+        factory.create_row(resolution=MeteringPointResolution.HOUR, quantity=DEFAULT_QUANTITY),
         factory.create_row(
             resolution=MeteringPointResolution.QUARTER,
             observation_time=datetime(2020, 1, 1, 0, 0),

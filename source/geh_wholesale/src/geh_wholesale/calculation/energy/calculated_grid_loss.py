@@ -13,22 +13,22 @@
 # limitations under the License.
 import pyspark.sql.functions as f
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.data_structures.energy_results import (
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
-from package.calculation.energy.resolution_transition_factory import (
+from geh_wholesale.calculation.energy.resolution_transition_factory import (
     get_energy_result_resolution,
 )
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     MeteringPointType,
-    SettlementMethod,
     QuantityQuality,
+    SettlementMethod,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 def append_calculated_grid_loss_to_metering_point_times_series(
@@ -37,11 +37,9 @@ def append_calculated_grid_loss_to_metering_point_times_series(
     positive_grid_loss: EnergyResults,
     negative_grid_loss: EnergyResults,
 ) -> PreparedMeteringPointTimeSeries:
-    """
-    Metering point time series for wholesale calculation includes all calculation input metering point time series,
+    """Metering point time series for wholesale calculation includes all calculation input metering point time series,
     and positive and negative grid loss metering point time series.
     """
-
     # Union positive and negative grid loss metering point time series and transform them to the same format as the
     # calculation input metering point time series before final union.
     positive = positive_grid_loss.df.withColumn(

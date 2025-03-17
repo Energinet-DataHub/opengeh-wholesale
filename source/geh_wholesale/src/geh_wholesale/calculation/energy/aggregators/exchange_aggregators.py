@@ -14,18 +14,18 @@
 
 import pyspark.sql.functions as F
 
-import package.calculation.energy.aggregators.transformations as T
-from package.calculation.energy.data_structures.energy_results import (
+import geh_wholesale.calculation.energy.aggregators.transformations as T
+from geh_wholesale.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
-from package.calculation.preparation.data_structures.metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
 )
-from package.calculation.preparation.transformations.rounding import (
+from geh_wholesale.calculation.preparation.transformations.rounding import (
     round_quantity,
 )
-from package.codelists import MeteringPointType
-from package.constants import Colname
+from geh_wholesale.codelists import MeteringPointType
+from geh_wholesale.constants import Colname
 
 to_sum = "to_sum"
 from_sum = "from_sum"
@@ -39,14 +39,10 @@ def aggregate_exchange_per_neighbor(
     metering_point_time_series: MeteringPointTimeSeries,
     calculation_grid_areas: list[str],
 ) -> EnergyResults:
-    """
-    Function to aggregate net exchange per neighboring grid areas.
+    """Function to aggregate net exchange per neighboring grid areas.
     The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
     """
-
-    df = metering_point_time_series.df.where(
-        F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value
-    )
+    df = metering_point_time_series.df.where(F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
 
     group_by = [
         Colname.to_grid_area_code,
@@ -72,12 +68,8 @@ def aggregate_exchange_per_neighbor(
     from_observation_time = "from_observation_time"
 
     # Workaround for ambiguous "time_window" column in select after join
-    exchange_to = exchange_to.withColumnRenamed(
-        Colname.observation_time, to_observation_time
-    )
-    exchange_from = exchange_from.withColumnRenamed(
-        Colname.observation_time, from_observation_time
-    )
+    exchange_to = exchange_to.withColumnRenamed(Colname.observation_time, to_observation_time)
+    exchange_from = exchange_from.withColumnRenamed(Colname.observation_time, from_observation_time)
 
     exchange = (
         # Outer self join: Outer is required as we must support cases where only metering point(s)
@@ -85,21 +77,15 @@ def aggregate_exchange_per_neighbor(
         exchange_to.join(
             exchange_from,
             (exchange_to[to_observation_time] == exchange_from[from_observation_time])
-            & (
-                exchange_to[exchange_in_to_grid_area]
-                == exchange_from[exchange_out_from_grid_area]
-            )
-            & (
-                exchange_to[exchange_in_from_grid_area]
-                == exchange_from[exchange_out_to_grid_area]
-            ),
+            & (exchange_to[exchange_in_to_grid_area] == exchange_from[exchange_out_from_grid_area])
+            & (exchange_to[exchange_in_from_grid_area] == exchange_from[exchange_out_to_grid_area]),
             "outer",
         )
         # Since both exchange_from or exchange_to can be missing we need to coalesce all columns
         .select(
-            F.coalesce(
-                exchange_to[to_observation_time], exchange_from[from_observation_time]
-            ).alias(Colname.observation_time),
+            F.coalesce(exchange_to[to_observation_time], exchange_from[from_observation_time]).alias(
+                Colname.observation_time
+            ),
             F.coalesce(
                 exchange_to[exchange_in_to_grid_area],
                 exchange_from[exchange_out_from_grid_area],
@@ -110,12 +96,8 @@ def aggregate_exchange_per_neighbor(
             ).alias(Colname.from_grid_area_code),
             F.coalesce(exchange_to[to_sum], F.lit(0)).alias(to_sum),
             F.coalesce(exchange_from[from_sum], F.lit(0)).alias(from_sum),
-            F.coalesce(exchange_from[Colname.qualities], F.array()).alias(
-                from_qualities
-            ),
-            F.coalesce(exchange_to[Colname.qualities], F.array()).alias(
-                Colname.qualities
-            ),
+            F.coalesce(exchange_from[Colname.qualities], F.array()).alias(from_qualities),
+            F.coalesce(exchange_to[Colname.qualities], F.array()).alias(Colname.qualities),
         )
         # Calculate netto sum between neighboring grid areas
         .withColumn(Colname.quantity, F.col(to_sum) - F.col(from_sum))
@@ -131,9 +113,7 @@ def aggregate_exchange_per_neighbor(
         )
     )
 
-    exchange = exchange.filter(
-        F.col(Colname.grid_area_code).isin(calculation_grid_areas)
-    )
+    exchange = exchange.filter(F.col(Colname.grid_area_code).isin(calculation_grid_areas))
     exchange = round_quantity(exchange)
     return EnergyResults(exchange)
 
@@ -141,11 +121,9 @@ def aggregate_exchange_per_neighbor(
 def aggregate_exchange(
     exchange_per_neighbor: EnergyResults,
 ) -> EnergyResults:
-    """
-    Function to aggregate net exchange per grid area.
+    """Function to aggregate net exchange per grid area.
     The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
     """
-
     result_df = T.aggregate_sum_quantity_and_qualities(
         exchange_per_neighbor.df, [Colname.grid_area_code, Colname.observation_time]
     )

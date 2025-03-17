@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.codelists import CalculationType
-from package.codelists.calculation_type import is_wholesale_calculation_type
+from geh_wholesale.codelists import CalculationType
+from geh_wholesale.codelists.calculation_type import is_wholesale_calculation_type
 
 
 def test__is_wholesale_calculation_type__returns_expected():

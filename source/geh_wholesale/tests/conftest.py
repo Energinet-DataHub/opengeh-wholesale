@@ -11,39 +11,39 @@ import sys
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Generator, Callable, Optional
-from geh_common.pyspark.read_csv import read_csv_path
-import pytest
+from typing import Callable, Generator, Optional
+from unittest.mock import patch
+
 import geh_common.telemetry.logging_configuration as config
+import pytest
 import yaml
-from azure.identity import ClientSecretCredential
 from delta import configure_spark_with_delta_pip
+from geh_common.pyspark.read_csv import read_csv_path
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
-from package.infrastructure.environment_variables import EnvironmentVariable
 import tests.helpers.spark_sql_migration_helper as sql_migration_helper
-from package.calculation.calculator_args import CalculatorArgs
-from package.codelists import CalculationType
-from package.container import create_and_configure_container, Container
-from package.databases.migrations_wholesale.schemas import (
-    time_series_points_schema,
-    metering_point_periods_schema,
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.codelists import CalculationType
+from geh_wholesale.container import Container, create_and_configure_container
+from geh_wholesale.databases.migrations_wholesale.schemas import (
+    charge_link_periods_schema,
     charge_price_information_periods_schema,
     charge_price_points_schema,
-    charge_link_periods_schema,
+    metering_point_periods_schema,
+    time_series_points_schema,
 )
-from package.databases.wholesale_internal.schemas import (
+from geh_wholesale.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
-from package.infrastructure import paths
-from package.infrastructure.infrastructure_settings import InfrastructureSettings
+from geh_wholesale.infrastructure import paths
+from geh_wholesale.infrastructure.environment_variables import EnvironmentVariable
+from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
 from tests.testsession_configuration import (
     TestSessionConfiguration,
 )
-from unittest.mock import patch
 
 
 @pytest.fixture(scope="session")
@@ -59,10 +59,7 @@ def spark(
     warehouse_location = f"{tests_path}/__spark-warehouse__"
     metastore_path = f"{tests_path}/__metastore_db__"
 
-    if (
-        test_session_configuration.migrations.execute.value
-        == sql_migration_helper.MigrationsExecution.ALL.value
-    ):
+    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
         if os.path.exists(warehouse_location):
             print(f"Removing warehouse before clean run (path={warehouse_location})")
             shutil.rmtree(warehouse_location)
@@ -184,9 +181,7 @@ def timestamp_factory() -> Callable[[str], Optional[datetime]]:
         date_time_formatting_string = "%Y-%m-%dT%H:%M:%S.%fZ"
         if date_time_string is None:
             return None
-        return datetime.strptime(date_time_string, date_time_formatting_string).replace(
-            tzinfo=timezone.utc
-        )
+        return datetime.strptime(date_time_string, date_time_formatting_string).replace(tzinfo=timezone.utc)
 
     return factory
 
@@ -247,12 +242,8 @@ def virtual_environment() -> Generator:
     activating the virtual environment from pytest."""
 
     # Create and activate the virtual environment
-    subprocess.call(
-        ["virtualenv", ".wholesale-pytest"], shell=True, executable="/bin/bash"
-    )
-    subprocess.call(
-        "source .wholesale-pytest/bin/activate", shell=True, executable="/bin/bash"
-    )
+    subprocess.call(["virtualenv", ".wholesale-pytest"], shell=True, executable="/bin/bash")
+    subprocess.call("source .wholesale-pytest/bin/activate", shell=True, executable="/bin/bash")
 
     yield None
 
@@ -261,9 +252,7 @@ def virtual_environment() -> Generator:
 
 
 @pytest.fixture(scope="session")
-def installed_package(
-    virtual_environment: Generator, calculation_engine_path: str
-) -> None:
+def installed_package(virtual_environment: Generator, calculation_engine_path: str) -> None:
     """Ensures that the wholesale package is installed (after building it)."""
 
     # Build the package wheel
@@ -323,9 +312,7 @@ def integration_test_configuration(tests_path: str) -> IntegrationTestConfigurat
             os.environ[key] = value
 
     if "AZURE_KEYVAULT_URL" in settings:
-        return IntegrationTestConfiguration(
-            azure_keyvault_url=settings["AZURE_KEYVAULT_URL"]
-        )
+        return IntegrationTestConfiguration(azure_keyvault_url=settings["AZURE_KEYVAULT_URL"])
 
     logging.error(
         f"Integration test configuration could not be loaded from {settings_file_path} or environment variables."
@@ -359,9 +346,7 @@ def any_calculator_args(monkeypatch: pytest.MonkeyPatch) -> CalculatorArgs:
         ],
     )
     monkeypatch.setenv("TIME_ZONE", "Europe/Copenhagen")
-    monkeypatch.setenv(
-        "QUARTERLY_RESOLUTION_TRANSITION_DATETIME", "2023-01-31T23:00:00Z"
-    )
+    monkeypatch.setenv("QUARTERLY_RESOLUTION_TRANSITION_DATETIME", "2023-01-31T23:00:00Z")
     return CalculatorArgs()
 
 

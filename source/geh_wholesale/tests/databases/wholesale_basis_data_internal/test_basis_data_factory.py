@@ -13,28 +13,29 @@
 # limitations under the License.
 import os
 import sys
+
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import (
-    StructType,
-    StructField,
-    StringType,
     DecimalType,
+    StringType,
+    StructField,
+    StructType,
     TimestampType,
 )
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.codelists.calculation_type import CalculationType
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_basis_data_internal.schemas import (
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.codelists.calculation_type import CalculationType
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.wholesale_basis_data_internal.schemas import (
     charge_price_information_periods_schema,
     charge_price_points_schema,
     grid_loss_metering_point_ids_schema,
 )
-from package.databases.wholesale_basis_data_internal.schemas.charge_link_periods_schema import (
+from geh_wholesale.databases.wholesale_basis_data_internal.schemas.charge_link_periods_schema import (
     charge_link_periods_schema,
 )
-from package.databases.wholesale_basis_data_internal.schemas.metering_point_periods_schema import (
+from geh_wholesale.databases.wholesale_basis_data_internal.schemas.metering_point_periods_schema import (
     metering_point_periods_schema_basis_data,
 )
 from tests.databases.wholesale_basis_data_internal.basis_data_test_factory import (
@@ -100,9 +101,7 @@ def test__basis_data_uses_correct_schema(
         "TIME_ZONE": DefaultValues.TIME_ZONE,
         "QUARTERLY_RESOLUTION_TRANSITION_DATETIME": DefaultValues.QUARTERLY_RESOLUTION_TRANSITION_DATETIME,
     }
-    monkeypatch.setattr(
-        sys, "argv", ["calculator"] + [f"--{k}={v}" for k, v in sys_args.items()]
-    )
+    monkeypatch.setattr(sys, "argv", ["calculator"] + [f"--{k}={v}" for k, v in sys_args.items()])
     monkeypatch.setattr(os, "environ", env_vars)
     args = CalculatorArgs()
     # Arrange
@@ -110,9 +109,7 @@ def test__basis_data_uses_correct_schema(
 
     # Act
     # Refer to the property so we can use parameterization
-    basis_data_container_property = getattr(
-        basis_data_container, basis_data_table_property_name
-    )
+    basis_data_container_property = getattr(basis_data_container, basis_data_table_property_name)
 
     # Assert
     assert basis_data_container_property.schema == expected_schema

@@ -19,12 +19,12 @@ import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
 
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from package.databases.migrations_wholesale.schemas import charge_link_periods_schema
-from package.constants import Colname
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
+from geh_wholesale.databases.migrations_wholesale.schemas import charge_link_periods_schema
+from geh_wholesale.infrastructure.paths import MigrationsWholesaleDatabase
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
-from package.infrastructure.paths import MigrationsWholesaleDatabase
 
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_TO_DATE = datetime(2022, 6, 8, 22, 0, 0)
@@ -58,9 +58,7 @@ class TestWhenContractMismatch:
         df = df.drop(Colname.charge_type)
 
         # Act & Assert
-        with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
-        ):
+        with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
             with pytest.raises(AssertionError) as exc_info:
                 reader.read_charge_link_periods()
 
@@ -110,7 +108,5 @@ class TestWhenValidInputAndMoreColumns:
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
-        with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
-        ):
+        with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
             reader.read_charge_link_periods()

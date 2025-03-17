@@ -15,16 +15,17 @@ import pathlib
 from datetime import datetime
 from decimal import Decimal
 from unittest import mock
+
+import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
-import pyspark.sql.functions as f
 
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from package.databases.migrations_wholesale.schemas import time_series_points_schema
-from package.constants import Colname
-from package.infrastructure.paths import MigrationsWholesaleDatabase
-from tests.helpers.delta_table_utils import write_dataframe_to_table
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
+from geh_wholesale.databases.migrations_wholesale.schemas import time_series_points_schema
+from geh_wholesale.infrastructure.paths import MigrationsWholesaleDatabase
 from tests.helpers.data_frame_utils import assert_dataframes_equal
+from tests.helpers.delta_table_utils import write_dataframe_to_table
 
 
 def _create_time_series_point_row(
@@ -51,9 +52,7 @@ class TestWhenContractMismatch:
         df = df.drop(Colname.metering_point_id)
 
         # Act & Assert
-        with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
-        ):
+        with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
             with pytest.raises(AssertionError) as exc_info:
                 reader.read_time_series_points()
 
@@ -69,7 +68,9 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        time_series_points_table_location = f"{calculation_input_path}/{MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
+        time_series_points_table_location = (
+            f"{calculation_input_path}/{MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
+        )
         row = _create_time_series_point_row()
         df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
         write_dataframe_to_table(
@@ -104,7 +105,5 @@ class TestWhenValidInputAndExtraColumns:
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
-        with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
-        ):
+        with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
             reader.read_time_series_points()

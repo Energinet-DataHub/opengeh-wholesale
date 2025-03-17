@@ -17,11 +17,11 @@ from enum import Enum
 from pathlib import Path
 
 import pyspark.sql.functions as f
-from pyspark.sql import SparkSession
 from geh_common.migrations.utility import delta_table_helper
+from pyspark.sql import SparkSession
 
-from package.datamigration.migration import migrate_data_lake
-from package.infrastructure.paths import UnityCatalogDatabaseNames
+from geh_wholesale.datamigration.migration import migrate_data_lake
+from geh_wholesale.infrastructure.paths import UnityCatalogDatabaseNames
 
 catalog_name = "spark_catalog"
 schema_migration_schema_name = "schema_migration"
@@ -62,9 +62,7 @@ def migrate(
     spark: SparkSession,
     migrations_execution: MigrationsExecution = MigrationsExecution.ALL,
 ) -> None:
-    print(
-        f"Preparing execution of migrations with execution type: {migrations_execution}"
-    )
+    print(f"Preparing execution of migrations with execution type: {migrations_execution}")
 
     if migrations_execution.value == MigrationsExecution.NONE.value:
         print("Skipping migrations as MigrationsExecution is set to NONE")
@@ -78,16 +76,12 @@ def migrate(
     migrate_data_lake(catalog_name, is_testing=True)
 
 
-def _remove_registration_of_modified_scripts(
-    spark: SparkSession, migrations_execution: MigrationsExecution
-) -> None:
+def _remove_registration_of_modified_scripts(spark: SparkSession, migrations_execution: MigrationsExecution) -> None:
     migrations_table = f"{schema_migration_schema_name}.{schema_migration_table_name}"
     if not delta_table_helper.delta_table_exists(
         spark, catalog_name, schema_migration_schema_name, schema_migration_table_name
     ):
-        print(
-            f"Table {migrations_table} does not exist. Skipping removal of modified scripts"
-        )
+        print(f"Table {migrations_table} does not exist. Skipping removal of modified scripts")
         return
 
     latest_execution_time = (
@@ -95,9 +89,7 @@ def _remove_registration_of_modified_scripts(
         .agg(f.max("execution_datetime").alias("latest_execution_time"))
         .collect()[0]["latest_execution_time"]
     )
-    modified_scripts = _get_recently_modified_migration_scripts(
-        _get_migration_scripts_path(), latest_execution_time
-    )
+    modified_scripts = _get_recently_modified_migration_scripts(_get_migration_scripts_path(), latest_execution_time)
     if not modified_scripts:
         return
 
@@ -111,9 +103,7 @@ def _get_migration_scripts_path() -> str:
     return f"{os.path.dirname(__file__)}/migration_scripts/"
 
 
-def _get_recently_modified_migration_scripts(
-    root_folder: str, reference_datetime: datetime
-) -> list[str]:
+def _get_recently_modified_migration_scripts(root_folder: str, reference_datetime: datetime) -> list[str]:
     recent_files = []
 
     # Traverse the folder and its sub-folders

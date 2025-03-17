@@ -13,25 +13,25 @@
 # limitations under the License.
 
 from datetime import datetime, timedelta
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
 
 import pytest
-from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import when, col
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.functions import col, when
 
 import tests.databases.migrations_wholesale.repository.input_metering_point_periods_factory as factory
-from package.databases import migrations_wholesale
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from package.calculation.preparation.transformations import (
+from geh_wholesale.calculation.preparation.transformations import (
     get_metering_point_periods_df,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
     MeteringPointType,
     SettlementMethod,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases import migrations_wholesale
+from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 june_1th = datetime(2022, 5, 31, 22, 0)
@@ -48,8 +48,7 @@ def _map_metering_point_type_and_settlement_method(df: DataFrame) -> DataFrame:
     return df.withColumn(
         Colname.metering_point_type,
         when(
-            col(Colname.metering_point_type)
-            == InputMeteringPointType.CONSUMPTION.value,
+            col(Colname.metering_point_type) == InputMeteringPointType.CONSUMPTION.value,
             MeteringPointType.CONSUMPTION.value,
         ).otherwise(col(Colname.metering_point_type)),
     ).withColumn(
@@ -109,9 +108,7 @@ class TestWhenValidInput:
         row = factory.create_row(
             metering_point_type=metering_point_type,
         )
-        mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, row)
-        )
+        mock_calculation_input_reader.read_metering_point_periods.return_value = factory.create(spark, row)
 
         # Act
         actual = get_metering_point_periods_df(
@@ -141,9 +138,7 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         row = factory.create_row(settlement_method=settlement_method)
-        mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, row)
-        )
+        mock_calculation_input_reader.read_metering_point_periods.return_value = factory.create(spark, row)
 
         # Act
         actual = get_metering_point_periods_df(
@@ -167,9 +162,7 @@ class TestWhenValidInput:
             metering_point_type=InputMeteringPointType.CONSUMPTION,
             settlement_method=InputSettlementMethod.FLEX,
         )
-        mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, row)
-        )
+        mock_calculation_input_reader.read_metering_point_periods.return_value = factory.create(spark, row)
 
         # Act
         actual = get_metering_point_periods_df(
@@ -183,29 +176,16 @@ class TestWhenValidInput:
         actual_rows = actual.collect()
         assert len(actual_rows) == 1
         actual_row = actual_rows[0]
-        assert (
-            actual_row[Colname.metering_point_id] == factory.DEFAULT_METERING_POINT_ID
-        )
-        assert (
-            actual_row[Colname.metering_point_type]
-            == MeteringPointType.CONSUMPTION.value
-        )
+        assert actual_row[Colname.metering_point_id] == factory.DEFAULT_METERING_POINT_ID
+        assert actual_row[Colname.metering_point_type] == MeteringPointType.CONSUMPTION.value
         assert actual_row[Colname.settlement_method] == SettlementMethod.FLEX.value
         assert actual_row[Colname.grid_area_code] == factory.DEFAULT_GRID_AREA_CODE
         assert actual_row[Colname.resolution] == factory.DEFAULT_RESOLUTION.value
         assert actual_row[Colname.from_grid_area_code] == factory.DEFAULT_FROM_GRID_AREA
         assert actual_row[Colname.to_grid_area_code] == factory.DEFAULT_TO_GRID_AREA
-        assert (
-            actual_row[Colname.parent_metering_point_id]
-            == factory.DEFAULT_PARENT_METERING_POINT_ID
-        )
-        assert (
-            actual_row[Colname.energy_supplier_id] == factory.DEFAULT_ENERGY_SUPPLIER_ID
-        )
-        assert (
-            actual_row[Colname.balance_responsible_party_id]
-            == factory.DEFAULT_BALANCE_RESPONSIBLE_ID
-        )
+        assert actual_row[Colname.parent_metering_point_id] == factory.DEFAULT_PARENT_METERING_POINT_ID
+        assert actual_row[Colname.energy_supplier_id] == factory.DEFAULT_ENERGY_SUPPLIER_ID
+        assert actual_row[Colname.balance_responsible_party_id] == factory.DEFAULT_BALANCE_RESPONSIBLE_ID
 
     @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
     def test_returns_expected_df(
@@ -292,9 +272,7 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         row = factory.create_row(from_date=from_date, to_date=to_date)
-        mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, row)
-        )
+        mock_calculation_input_reader.read_metering_point_periods.return_value = factory.create(spark, row)
 
         # Act
         actual = get_metering_point_periods_df(
@@ -320,20 +298,12 @@ class TestWhenThreeGridAreasExchangingWithEachOther:
     ) -> None:
         # Arrange
         rows = [
-            factory.create_row(
-                grid_area="111", from_grid_area="111", to_grid_area="222"
-            ),
-            factory.create_row(
-                grid_area="222", from_grid_area="222", to_grid_area="111"
-            ),
-            factory.create_row(
-                grid_area="333", from_grid_area="111", to_grid_area="222"
-            ),
+            factory.create_row(grid_area="111", from_grid_area="111", to_grid_area="222"),
+            factory.create_row(grid_area="222", from_grid_area="222", to_grid_area="111"),
+            factory.create_row(grid_area="333", from_grid_area="111", to_grid_area="222"),
         ]
 
-        mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, rows)
-        )
+        mock_calculation_input_reader.read_metering_point_periods.return_value = factory.create(spark, rows)
 
         # Act
         actual = get_metering_point_periods_df(
@@ -387,9 +357,7 @@ class TestWhenExchangeMeteringPoint:
             from_grid_area=from_grid_area,
             to_grid_area=to_grid_area,
         )
-        mock_calculation_input_reader.read_metering_point_periods.return_value = (
-            factory.create(spark, row)
-        )
+        mock_calculation_input_reader.read_metering_point_periods.return_value = factory.create(spark, row)
 
         # Act
         actual = get_metering_point_periods_df(

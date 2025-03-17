@@ -15,9 +15,9 @@ from datetime import datetime, timezone
 
 import pytest
 
-from package.common.datetime_utils import (
-    is_exactly_one_calendar_month,
+from geh_wholesale.common.datetime_utils import (
     get_number_of_days_in_period,
+    is_exactly_one_calendar_month,
     is_midnight_in_time_zone,
 )
 
@@ -104,9 +104,7 @@ def test__is_exactly_one_calendar_month__when_exactly_one_month__returns_true(
     period_start: datetime, period_end: datetime
 ) -> None:
     # Act
-    actual = is_exactly_one_calendar_month(
-        period_start, period_end, COPENHAGEN_TIME_ZONE
-    )
+    actual = is_exactly_one_calendar_month(period_start, period_end, COPENHAGEN_TIME_ZONE)
 
     # Assert
     assert actual is True

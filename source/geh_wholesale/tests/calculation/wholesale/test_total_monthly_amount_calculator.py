@@ -14,19 +14,19 @@
 from datetime import datetime
 from decimal import Decimal
 
+import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
-import pyspark.sql.functions as f
-from package.codelists import (
-    ChargeType,
-)
-from package.constants import Colname
+
 import tests.calculation.wholesale.factories.monthly_amount_per_charge_factory as monthly_amount_per_charge_factory
-from package.calculation.wholesale.total_monthly_amount_calculator import (
+from geh_wholesale.calculation.wholesale.total_monthly_amount_calculator import (
     calculate_per_co_es,
     calculate_per_es,
 )
-
+from geh_wholesale.codelists import (
+    ChargeType,
+)
+from geh_wholesale.constants import Colname
 
 SYSTEM_OPERATOR_ID = "system_operator_id"
 GRID_ACCESS_PROVIDER_ID = "grid_access_provider_id"
@@ -53,9 +53,7 @@ def test__calculate_per_co_es__sums_across_charge_types(
             charge_tax=False,
         ),
     ]
-    monthly_amounts = monthly_amount_per_charge_factory.create(
-        spark, monthly_amounts_rows
-    )
+    monthly_amounts = monthly_amount_per_charge_factory.create(spark, monthly_amounts_rows)
 
     # Act
     actual = calculate_per_co_es(
@@ -88,9 +86,7 @@ def test__calculate_per_co_es__sums_per_energy_supplier(
             energy_supplier_id="2",
         ),
     ]
-    monthly_amounts = monthly_amount_per_charge_factory.create(
-        spark, monthly_amounts_rows
-    )
+    monthly_amounts = monthly_amount_per_charge_factory.create(spark, monthly_amounts_rows)
 
     # Act
     actual = calculate_per_co_es(
@@ -99,12 +95,12 @@ def test__calculate_per_co_es__sums_per_energy_supplier(
 
     # Assert
     assert actual.count() == 2
-    assert actual.where(f.col(Colname.energy_supplier_id) == "1").collect()[0][
-        Colname.total_amount
-    ] == Decimal("1.000000")
-    assert actual.where(f.col(Colname.energy_supplier_id) == "2").collect()[0][
-        Colname.total_amount
-    ] == Decimal("5.000000")
+    assert actual.where(f.col(Colname.energy_supplier_id) == "1").collect()[0][Colname.total_amount] == Decimal(
+        "1.000000"
+    )
+    assert actual.where(f.col(Colname.energy_supplier_id) == "2").collect()[0][Colname.total_amount] == Decimal(
+        "5.000000"
+    )
 
 
 @pytest.mark.parametrize(
@@ -132,9 +128,7 @@ def test__calculate_per_co_es__adds_tax_amount_only_to_grid_access_operator(
             charge_owner=SYSTEM_OPERATOR_ID,
         ),
     ]
-    monthly_amounts = monthly_amount_per_charge_factory.create(
-        spark, monthly_amounts_rows
-    )
+    monthly_amounts = monthly_amount_per_charge_factory.create(spark, monthly_amounts_rows)
 
     # Act
     actual = calculate_per_co_es(
@@ -175,9 +169,7 @@ def test__calculate_per_co_es__ignores_null_in_sum(
             charge_owner=SYSTEM_OPERATOR_ID,
         ),
     ]
-    monthly_amounts = monthly_amount_per_charge_factory.create(
-        spark, monthly_amounts_rows
-    )
+    monthly_amounts = monthly_amount_per_charge_factory.create(spark, monthly_amounts_rows)
 
     # Act
     actual = calculate_per_co_es(
@@ -235,9 +227,7 @@ def test__calculate_per_co_es__when_multiple_charge_owners_with_multiple_energy_
             energy_supplier_id="2",
         ),
     ]
-    monthly_amounts = monthly_amount_per_charge_factory.create(
-        spark, monthly_amounts_rows
-    )
+    monthly_amounts = monthly_amount_per_charge_factory.create(spark, monthly_amounts_rows)
 
     # Act
     actual = calculate_per_co_es(
@@ -266,9 +256,7 @@ def test__calculate_per_co_es__when_tax_charge_has_other_energy_supplier__ignore
             total_amount=Decimal("3"),
         ),
     ]
-    monthly_amounts = monthly_amount_per_charge_factory.create(
-        spark, monthly_amounts_rows
-    )
+    monthly_amounts = monthly_amount_per_charge_factory.create(spark, monthly_amounts_rows)
 
     # Act
     actual = calculate_per_co_es(

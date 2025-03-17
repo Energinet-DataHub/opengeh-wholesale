@@ -11,26 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pytest
-
-from pyspark.sql import SparkSession
 from datetime import datetime, timedelta
 
-from package.calculation.energy.aggregators.grid_loss_aggregators import (
+import pytest
+from pyspark.sql import SparkSession
+
+import tests.calculation.energy.energy_results_factories as energy_results_factories
+from geh_wholesale.calculation.energy.aggregators.grid_loss_aggregators import (
     apply_grid_loss_adjustment,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     MeteringPointType,
     QuantityQuality,
 )
-from package.constants import Colname
-import tests.calculation.energy.energy_results_factories as energy_results_factories
+from geh_wholesale.constants import Colname
 from tests.calculation.energy import grid_loss_metering_point_periods_factories
 
 # This time should be within the time window of the grid loss responsible
-DEFAULT_OBSERVATION_TIME = datetime.strptime(
-    "2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
-)
+DEFAULT_OBSERVATION_TIME = datetime.strptime("2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
 DEFAULT_FROM_DATE = datetime.strptime("2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
 DEFAULT_TO_DATE = datetime.strptime("2020-01-02T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z")
 
@@ -68,17 +66,13 @@ class TestWhenValidInput:
         )
         grid_loss = energy_results_factories.create(spark, [grid_loss_row])
 
-        grid_loss_metering_point_periods = (
-            grid_loss_metering_point_periods_factories.create_row(
-                energy_supplier_id="energy_supplier_id",
-                balance_responsible_id="balance_responsible_id",
-                metering_point_type=metering_point_type,
-            )
+        grid_loss_metering_point_periods = grid_loss_metering_point_periods_factories.create_row(
+            energy_supplier_id="energy_supplier_id",
+            balance_responsible_id="balance_responsible_id",
+            metering_point_type=metering_point_type,
         )
-        grid_loss_metering_point_periods = (
-            grid_loss_metering_point_periods_factories.create(
-                spark, [grid_loss_metering_point_periods]
-            )
+        grid_loss_metering_point_periods = grid_loss_metering_point_periods_factories.create(
+            spark, [grid_loss_metering_point_periods]
         )
 
         # Act
@@ -121,17 +115,13 @@ class TestWhenValidInput:
         )
         grid_loss = energy_results_factories.create(spark, [grid_loss_row])
 
-        grid_loss_metering_point_periods_row = (
-            grid_loss_metering_point_periods_factories.create_row(
-                energy_supplier_id="energy_supplier_id",
-                balance_responsible_id="balance_responsible_id",
-                metering_point_type=metering_point_type,
-            )
+        grid_loss_metering_point_periods_row = grid_loss_metering_point_periods_factories.create_row(
+            energy_supplier_id="energy_supplier_id",
+            balance_responsible_id="balance_responsible_id",
+            metering_point_type=metering_point_type,
         )
-        grid_loss_metering_point_periods = (
-            grid_loss_metering_point_periods_factories.create(
-                spark, [grid_loss_metering_point_periods_row]
-            )
+        grid_loss_metering_point_periods = grid_loss_metering_point_periods_factories.create(
+            spark, [grid_loss_metering_point_periods_row]
         )
 
         # Act
@@ -195,10 +185,8 @@ class TestWhenEnergySupplierIdIsNotGridLossResponsible:
                 to_date=DEFAULT_TO_DATE,
             )
         ]
-        grid_loss_metering_point_periods = (
-            grid_loss_metering_point_periods_factories.create(
-                spark, grid_loss_metering_point_periods_rows
-            )
+        grid_loss_metering_point_periods = grid_loss_metering_point_periods_factories.create(
+            spark, grid_loss_metering_point_periods_rows
         )
 
         # Act
@@ -250,10 +238,8 @@ class TestWhenEnergySupplierOnlyHasGridLossMeteringPoints:
                 to_date=DEFAULT_TO_DATE,
             )
         ]
-        grid_loss_metering_point_periods = (
-            grid_loss_metering_point_periods_factories.create(
-                spark, grid_loss_metering_point_periods_rows
-            )
+        grid_loss_metering_point_periods = grid_loss_metering_point_periods_factories.create(
+            spark, grid_loss_metering_point_periods_rows
         )
 
         # Act
@@ -267,13 +253,8 @@ class TestWhenEnergySupplierOnlyHasGridLossMeteringPoints:
         # Assert
         assert actual.df.count() == 1
         assert actual.df.collect()[0][Colname.quantity] == 20
-        assert (
-            actual.df.collect()[0][Colname.energy_supplier_id] == "energy_supplier_id"
-        )
-        assert (
-            actual.df.collect()[0][Colname.balance_responsible_party_id]
-            == "balance_responsible_id"
-        )
+        assert actual.df.collect()[0][Colname.energy_supplier_id] == "energy_supplier_id"
+        assert actual.df.collect()[0][Colname.balance_responsible_party_id] == "balance_responsible_id"
 
 
 class TestWhenGridLossResponsibleIsChangedWithinPeriod:
@@ -345,10 +326,8 @@ class TestWhenGridLossResponsibleIsChangedWithinPeriod:
                 to_date=to_date_2,
             ),
         ]
-        grid_loss_metering_point_periods = (
-            grid_loss_metering_point_periods_factories.create(
-                spark, grid_loss_metering_point_periods_rows
-            )
+        grid_loss_metering_point_periods = grid_loss_metering_point_periods_factories.create(
+            spark, grid_loss_metering_point_periods_rows
         )
 
         # Act
@@ -362,17 +341,8 @@ class TestWhenGridLossResponsibleIsChangedWithinPeriod:
         # Assert
         assert actual.df.count() == 3
         assert actual.df.collect()[0][Colname.quantity] == 20
-        assert (
-            actual.df.collect()[0][Colname.energy_supplier_id]
-            == "grid_loss_responsible_1"
-        )
+        assert actual.df.collect()[0][Colname.energy_supplier_id] == "grid_loss_responsible_1"
         assert actual.df.collect()[1][Colname.quantity] == 30
-        assert (
-            actual.df.collect()[1][Colname.energy_supplier_id]
-            == "grid_loss_responsible_2"
-        )
+        assert actual.df.collect()[1][Colname.energy_supplier_id] == "grid_loss_responsible_2"
         assert actual.df.collect()[2][Colname.quantity] == 10
-        assert (
-            actual.df.collect()[2][Colname.energy_supplier_id]
-            == "grid_loss_responsible_2"
-        )
+        assert actual.df.collect()[2][Colname.energy_supplier_id] == "grid_loss_responsible_2"

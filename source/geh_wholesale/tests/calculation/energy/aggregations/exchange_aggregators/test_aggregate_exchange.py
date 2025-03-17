@@ -16,12 +16,12 @@ import pytest
 from pyspark.sql import SparkSession
 
 import tests.calculation.energy.metering_point_time_series_factories as factories
-from package.calculation.energy.aggregators.exchange_aggregators import (
+from geh_wholesale.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_exchange,
     aggregate_exchange_per_neighbor,
 )
-from package.codelists import QuantityQuality
-from package.constants import Colname
+from geh_wholesale.codelists import QuantityQuality
+from geh_wholesale.constants import Colname
 
 
 class TestWhenValidInput:
@@ -124,17 +124,13 @@ class TestWhenMeteringPointIsNeitherInToOrFromGridArea:
         metering_point_time_series = factories.create(spark, rows)
 
         # Act
-        exchange_per_neighbor = aggregate_exchange_per_neighbor(
-            metering_point_time_series, all_grid_areas
-        )
+        exchange_per_neighbor = aggregate_exchange_per_neighbor(metering_point_time_series, all_grid_areas)
         actual = aggregate_exchange(exchange_per_neighbor)
 
         # Assert
         actual_grid_areas = [row[Colname.grid_area_code] for row in actual.df.collect()]
 
-        assert sorted(actual_grid_areas) == sorted(
-            [exchange_grid_area_1, exchange_grid_area_2]
-        )
+        assert sorted(actual_grid_areas) == sorted([exchange_grid_area_1, exchange_grid_area_2])
 
 
 class TestWhenInputHasDataNotBelongingToSelectedGridArea:
@@ -160,9 +156,7 @@ class TestWhenInputHasDataNotBelongingToSelectedGridArea:
         metering_point_time_series = factories.create(spark, rows)
 
         # Act
-        exchange_per_neighbor = aggregate_exchange_per_neighbor(
-            metering_point_time_series, [selected_grid_area]
-        )
+        exchange_per_neighbor = aggregate_exchange_per_neighbor(metering_point_time_series, [selected_grid_area])
         actual = aggregate_exchange(exchange_per_neighbor)
 
         # Assert

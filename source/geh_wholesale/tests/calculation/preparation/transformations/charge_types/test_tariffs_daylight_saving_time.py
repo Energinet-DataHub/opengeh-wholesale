@@ -16,23 +16,21 @@ from zoneinfo import ZoneInfo
 
 from pyspark.sql import SparkSession
 
-import package.codelists as e
+import geh_wholesale.codelists as e
 import tests.calculation.charges_factory as factory
+from geh_wholesale.calculation.preparation.transformations import (
+    get_prepared_tariffs,
+)
+from geh_wholesale.codelists import ChargeResolution
+from geh_wholesale.constants import Colname
 from tests.calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
-from package.calculation.preparation.transformations import (
-    get_prepared_tariffs,
-)
-from package.codelists import ChargeResolution
-from package.constants import Colname
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
 
-def create_default_price_information(
-    spark: SparkSession, charge_resolution: ChargeResolution
-):
+def create_default_price_information(spark: SparkSession, charge_resolution: ChargeResolution):
     return factory.create_charge_price_information(
         spark,
         [
@@ -53,21 +51,11 @@ class TestWhenEnteringDaylightSavingTime:
         # Arrange
         expected_number_of_rows = 5
         time_series_rows = [
-            factory.create_time_series_row(
-                observation_time=datetime(2021, 3, 27, 23, tzinfo=timezone.utc)
-            ),
-            factory.create_time_series_row(
-                observation_time=datetime(2021, 3, 28, 0, tzinfo=timezone.utc)
-            ),
-            factory.create_time_series_row(
-                observation_time=datetime(2021, 3, 28, 1, tzinfo=timezone.utc)
-            ),
-            factory.create_time_series_row(
-                observation_time=datetime(2021, 3, 28, 2, tzinfo=timezone.utc)
-            ),
-            factory.create_time_series_row(
-                observation_time=datetime(2021, 3, 28, 3, tzinfo=timezone.utc)
-            ),
+            factory.create_time_series_row(observation_time=datetime(2021, 3, 27, 23, tzinfo=timezone.utc)),
+            factory.create_time_series_row(observation_time=datetime(2021, 3, 28, 0, tzinfo=timezone.utc)),
+            factory.create_time_series_row(observation_time=datetime(2021, 3, 28, 1, tzinfo=timezone.utc)),
+            factory.create_time_series_row(observation_time=datetime(2021, 3, 28, 2, tzinfo=timezone.utc)),
+            factory.create_time_series_row(observation_time=datetime(2021, 3, 28, 3, tzinfo=timezone.utc)),
         ]
         from_date = datetime(2021, 3, 26, 23, tzinfo=timezone.utc)
         to_date = datetime(2021, 4, 2, 22, tzinfo=timezone.utc)
@@ -85,17 +73,11 @@ class TestWhenEnteringDaylightSavingTime:
             ),
         ]
 
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark, charge_link_metering_points_rows
-            )
+        charge_link_metering_point_periods = factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
         )
-        time_series = prepared_metering_point_time_series_factory.create(
-            spark, time_series_rows
-        )
-        charge_price_information = factory.create_charge_price_information(
-            spark, charge_price_information_rows
-        )
+        time_series = prepared_metering_point_time_series_factory.create(spark, time_series_rows)
+        charge_price_information = factory.create_charge_price_information(spark, charge_price_information_rows)
         charge_prices = factory.create_charge_prices(spark, [])
 
         # Act
@@ -122,8 +104,7 @@ class TestWhenEnteringDaylightSavingTime:
             # create 47 hours of time series data corresponding to 2 full days when entering daylight saving time
             time_series_rows.append(
                 factory.create_time_series_row(
-                    observation_time=datetime(2021, 3, 27, 23, tzinfo=timezone.utc)
-                    + timedelta(hours=i)
+                    observation_time=datetime(2021, 3, 27, 23, tzinfo=timezone.utc) + timedelta(hours=i)
                 )
             )
 
@@ -143,17 +124,11 @@ class TestWhenEnteringDaylightSavingTime:
             ),
         ]
 
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark, charge_link_metering_points_rows
-            )
+        charge_link_metering_point_periods = factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
         )
-        time_series = prepared_metering_point_time_series_factory.create(
-            spark, time_series_rows
-        )
-        charge_price_information = factory.create_charge_price_information(
-            spark, charge_price_information_rows
-        )
+        time_series = prepared_metering_point_time_series_factory.create(spark, time_series_rows)
+        charge_price_information = factory.create_charge_price_information(spark, charge_price_information_rows)
         charge_prices = factory.create_charge_prices(spark, [])
 
         # Act
@@ -170,18 +145,14 @@ class TestWhenEnteringDaylightSavingTime:
         assert actual.df.count() == 2
         actual_df = actual.df.orderBy(Colname.charge_time).collect()
         # Day with transition into daylight saving time
-        assert actual_df[0][Colname.charge_time].astimezone(
-            ZoneInfo(DEFAULT_TIME_ZONE)
-        ) == datetime(2021, 3, 27, 23, tzinfo=timezone.utc).astimezone(
-            ZoneInfo(DEFAULT_TIME_ZONE)
-        )
+        assert actual_df[0][Colname.charge_time].astimezone(ZoneInfo(DEFAULT_TIME_ZONE)) == datetime(
+            2021, 3, 27, 23, tzinfo=timezone.utc
+        ).astimezone(ZoneInfo(DEFAULT_TIME_ZONE))
         assert actual_df[0][Colname.quantity] == 23 * factory.DefaultValues.QUANTITY
         # Normal day within daylight saving time (no transition)
-        assert actual_df[1][Colname.charge_time].astimezone(
-            ZoneInfo(DEFAULT_TIME_ZONE)
-        ) == datetime(2021, 3, 28, 22, tzinfo=timezone.utc).astimezone(
-            ZoneInfo(DEFAULT_TIME_ZONE)
-        )
+        assert actual_df[1][Colname.charge_time].astimezone(ZoneInfo(DEFAULT_TIME_ZONE)) == datetime(
+            2021, 3, 28, 22, tzinfo=timezone.utc
+        ).astimezone(ZoneInfo(DEFAULT_TIME_ZONE))
         assert actual_df[1][Colname.quantity] == 24 * factory.DefaultValues.QUANTITY
 
 
@@ -193,21 +164,11 @@ class TestWhenExitingDaylightSavingTime:
         # Arrange
         expected_number_of_rows = 5
         time_series_rows = [
-            factory.create_time_series_row(
-                observation_time=datetime(2021, 10, 30, 22, tzinfo=timezone.utc)
-            ),
-            factory.create_time_series_row(
-                observation_time=datetime(2021, 10, 30, 23, tzinfo=timezone.utc)
-            ),
-            factory.create_time_series_row(
-                observation_time=datetime(2021, 10, 31, 0, tzinfo=timezone.utc)
-            ),
-            factory.create_time_series_row(
-                observation_time=datetime(2021, 10, 31, 1, tzinfo=timezone.utc)
-            ),
-            factory.create_time_series_row(
-                observation_time=datetime(2021, 10, 31, 2, tzinfo=timezone.utc)
-            ),
+            factory.create_time_series_row(observation_time=datetime(2021, 10, 30, 22, tzinfo=timezone.utc)),
+            factory.create_time_series_row(observation_time=datetime(2021, 10, 30, 23, tzinfo=timezone.utc)),
+            factory.create_time_series_row(observation_time=datetime(2021, 10, 31, 0, tzinfo=timezone.utc)),
+            factory.create_time_series_row(observation_time=datetime(2021, 10, 31, 1, tzinfo=timezone.utc)),
+            factory.create_time_series_row(observation_time=datetime(2021, 10, 31, 2, tzinfo=timezone.utc)),
         ]
         charge_price_information_rows = [
             factory.create_charge_price_information_row(
@@ -224,17 +185,11 @@ class TestWhenExitingDaylightSavingTime:
             ),
         ]
 
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark, charge_link_metering_points_rows
-            )
+        charge_link_metering_point_periods = factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
         )
-        time_series = prepared_metering_point_time_series_factory.create(
-            spark, time_series_rows
-        )
-        charge_price_information = factory.create_charge_price_information(
-            spark, charge_price_information_rows
-        )
+        time_series = prepared_metering_point_time_series_factory.create(spark, time_series_rows)
+        charge_price_information = factory.create_charge_price_information(spark, charge_price_information_rows)
         charge_prices = factory.create_charge_prices(spark, [])
 
         # Act
@@ -261,8 +216,7 @@ class TestWhenExitingDaylightSavingTime:
             # create 49 hours of time series data corresponding to 2 full days when exiting daylight saving time
             time_series_rows.append(
                 factory.create_time_series_row(
-                    observation_time=datetime(2021, 10, 30, 22, tzinfo=timezone.utc)
-                    + timedelta(hours=i)
+                    observation_time=datetime(2021, 10, 30, 22, tzinfo=timezone.utc) + timedelta(hours=i)
                 )
             )
         from_date = datetime(2021, 10, 29, 22, tzinfo=timezone.utc)
@@ -282,17 +236,11 @@ class TestWhenExitingDaylightSavingTime:
             ),
         ]
 
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark, charge_link_metering_points_rows
-            )
+        charge_link_metering_point_periods = factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
         )
-        time_series = prepared_metering_point_time_series_factory.create(
-            spark, time_series_rows
-        )
-        charge_price_information = factory.create_charge_price_information(
-            spark, charge_price_information_rows
-        )
+        time_series = prepared_metering_point_time_series_factory.create(spark, time_series_rows)
+        charge_price_information = factory.create_charge_price_information(spark, charge_price_information_rows)
         charge_prices = factory.create_charge_prices(spark, [])
 
         # Act
@@ -310,15 +258,11 @@ class TestWhenExitingDaylightSavingTime:
         actual_df = actual.df.orderBy(Colname.charge_time).collect()
         # Day with transition out of daylight saving time
         assert actual_df[0][Colname.quantity] == 25 * factory.DefaultValues.QUANTITY
-        assert actual_df[0][Colname.charge_time].astimezone(
-            ZoneInfo(DEFAULT_TIME_ZONE)
-        ) == datetime(2021, 10, 30, 22, tzinfo=timezone.utc).astimezone(
-            ZoneInfo(DEFAULT_TIME_ZONE)
-        )
+        assert actual_df[0][Colname.charge_time].astimezone(ZoneInfo(DEFAULT_TIME_ZONE)) == datetime(
+            2021, 10, 30, 22, tzinfo=timezone.utc
+        ).astimezone(ZoneInfo(DEFAULT_TIME_ZONE))
         # Normal day not in daylight saving time and no transition
         assert actual_df[1][Colname.quantity] == 24 * factory.DefaultValues.QUANTITY
-        assert actual_df[1][Colname.charge_time].astimezone(
-            ZoneInfo(DEFAULT_TIME_ZONE)
-        ) == datetime(2021, 10, 31, 23, tzinfo=timezone.utc).astimezone(
-            ZoneInfo(DEFAULT_TIME_ZONE)
-        )
+        assert actual_df[1][Colname.charge_time].astimezone(ZoneInfo(DEFAULT_TIME_ZONE)) == datetime(
+            2021, 10, 31, 23, tzinfo=timezone.utc
+        ).astimezone(ZoneInfo(DEFAULT_TIME_ZONE))

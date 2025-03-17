@@ -12,20 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from datetime import datetime
-
-import pytest
-from pyspark.sql import SparkSession
 from unittest.mock import patch
 
-from package.databases import wholesale_internal
-from package.calculation.preparation.transformations.grid_loss_metering_point_periods import (
+import metering_point_periods_factory as factory
+import pytest
+from pyspark.sql import SparkSession
+
+from geh_wholesale.calculation.preparation.transformations.grid_loss_metering_point_periods import (
     get_grid_loss_metering_point_periods,
 )
-import metering_point_periods_factory as factory
-from package.codelists import MeteringPointType
-from package.constants import Colname
-from package.databases.wholesale_internal import WholesaleInternalRepository
-from package.databases.wholesale_internal.schemas import (
+from geh_wholesale.codelists import MeteringPointType
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases import wholesale_internal
+from geh_wholesale.databases.wholesale_internal import WholesaleInternalRepository
+from geh_wholesale.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
 
@@ -65,9 +65,7 @@ def test__get_grid_loss_metering_point_periods__given_three_metering_point_perio
     )
 
     # Act
-    repository_mock.read_grid_loss_metering_point_ids.return_value = (
-        grid_loss_metering_point_ids
-    )
+    repository_mock.read_grid_loss_metering_point_ids.return_value = grid_loss_metering_point_ids
     grid_loss_metering_point_periods = get_grid_loss_metering_point_periods(
         grid_areas,
         metering_point_period,
@@ -76,14 +74,8 @@ def test__get_grid_loss_metering_point_periods__given_three_metering_point_perio
 
     # Assert
     assert grid_loss_metering_point_periods.df.count() == 2
-    assert (
-        grid_loss_metering_point_periods.df.collect()[0][Colname.metering_point_id]
-        == metering_point_id_1
-    )
-    assert (
-        grid_loss_metering_point_periods.df.collect()[1][Colname.metering_point_id]
-        == metering_point_id_2
-    )
+    assert grid_loss_metering_point_periods.df.collect()[0][Colname.metering_point_id] == metering_point_id_1
+    assert grid_loss_metering_point_periods.df.collect()[1][Colname.metering_point_id] == metering_point_id_2
 
 
 @patch.object(wholesale_internal, WholesaleInternalRepository.__name__)
@@ -125,9 +117,7 @@ def test__get_grid_loss_metering_point_periods__given_metering_point_period_with
     )
 
     # Act
-    repository_mock.read_grid_loss_metering_point_ids.return_value = (
-        grid_loss_metering_points
-    )
+    repository_mock.read_grid_loss_metering_point_ids.return_value = grid_loss_metering_points
     grid_loss_metering_point_periods = get_grid_loss_metering_point_periods(
         grid_areas,
         metering_point_period,

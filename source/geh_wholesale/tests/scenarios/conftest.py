@@ -1,43 +1,37 @@
 import os
-from pathlib import Path
 import sys
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Generator
 from unittest.mock import Mock, patch
 
 import pytest
-from pyspark.sql import SparkSession
+import yaml
+from geh_common.pyspark.read_csv import read_csv_path
 from geh_common.testing.dataframes import AssertDataframesConfiguration
 from geh_common.testing.scenario_testing import TestCase, TestCases
-from geh_common.pyspark.read_csv import read_csv_path
+from pyspark.sql import SparkSession
 
-from package.calculation import CalculationCore, PreparedDataReader
-from package.codelists.calculation_type import is_wholesale_calculation_type
-from package.databases.migrations_wholesale.schemas import charge_price_points_schema
-
-from package.databases.migrations_wholesale import (
+from geh_wholesale.calculation import CalculationCore, PreparedDataReader
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.codelists.calculation_type import is_wholesale_calculation_type
+from geh_wholesale.databases.migrations_wholesale import (
     MigrationsWholesaleRepository,
 )
-from package.databases.migrations_wholesale.schemas import (
-    time_series_points_schema,
-    metering_point_periods_schema,
+from geh_wholesale.databases.migrations_wholesale.schemas import (
     charge_link_periods_schema,
     charge_price_information_periods_schema,
+    charge_price_points_schema,
+    metering_point_periods_schema,
+    time_series_points_schema,
 )
-from package.databases.wholesale_internal import (
+from geh_wholesale.databases.wholesale_internal import (
     WholesaleInternalRepository,
 )
-from package.databases.wholesale_internal.schemas import (
+from geh_wholesale.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
-
 from tests.testsession_configuration import TestSessionConfiguration
-
-
-from datetime import datetime, timezone
-import yaml
-
-from package.calculation.calculator_args import CalculatorArgs
-
 
 CSV_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 DEFAULT_QUARTERLY_RESOLUTION = datetime(2023, 1, 31, 23, 0, 0, tzinfo=timezone.utc)
@@ -59,9 +53,7 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
     scenario_path = str(Path(request.module.__file__).parent)
 
     # To avoid creating data for a full month, we mock the function is_exactly_one_calendar_month
-    with patch(
-        "package.calculation.calculator_args.is_exactly_one_calendar_month"
-    ) as mock:
+    with patch("package.calculation.calculator_args.is_exactly_one_calendar_month") as mock:
         mock.return_value = True
         with open(f"{scenario_path}/when/calculation_arguments.yml", "r") as file:
             sys_args = yaml.safe_load(file)[0]
@@ -107,17 +99,11 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
 
     # Defining the mocks for the data frames in the "when" folder
     migrations_wholesale_repository: MigrationsWholesaleRepository = Mock()
-    migrations_wholesale_repository.read_time_series_points.return_value = (
-        time_series_points
-    )
-    migrations_wholesale_repository.read_metering_point_periods.return_value = (
-        metering_point_periods
-    )
+    migrations_wholesale_repository.read_time_series_points.return_value = time_series_points
+    migrations_wholesale_repository.read_metering_point_periods.return_value = metering_point_periods
 
     wholesale_internal_repository: WholesaleInternalRepository = Mock()
-    wholesale_internal_repository.read_grid_loss_metering_point_ids.return_value = (
-        grid_loss_metering_points
-    )
+    wholesale_internal_repository.read_grid_loss_metering_point_ids.return_value = grid_loss_metering_points
 
     # Only for wholesale we need these additional tests
     if is_wholesale_calculation_type(calculation_args.calculation_type):
@@ -140,15 +126,11 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
         )
 
         # Mock the dataframes specific to the wholesales
-        migrations_wholesale_repository.read_charge_link_periods.return_value = (
-            charge_link_periods
-        )
+        migrations_wholesale_repository.read_charge_link_periods.return_value = charge_link_periods
         migrations_wholesale_repository.read_charge_price_information_periods.return_value = (
             charge_price_information_periods
         )
-        migrations_wholesale_repository.read_charge_price_points.return_value = (
-            charge_price_points
-        )
+        migrations_wholesale_repository.read_charge_price_points.return_value = charge_price_points
 
     # Execute the calculation logic
     calculation_output = CalculationCore().execute(

@@ -1,6 +1,6 @@
 import pyspark.sql.types as t
 
-from package.databases.table_column_names import (
+from geh_wholesale.databases.table_column_names import (
     TableColumnNames as cname,
 )
 
@@ -15,8 +15,6 @@ exchange_per_neighbor_schema = t.StructType(
         t.StructField(cname.resolution, t.StringType(), not nullable),
         t.StructField(cname.time, t.TimestampType(), not nullable),
         t.StructField(cname.quantity, t.DecimalType(18, 3), not nullable),
-        t.StructField(
-            cname.quantity_qualities, t.ArrayType(t.StringType()), not nullable
-        ),
+        t.StructField(cname.quantity_qualities, t.ArrayType(t.StringType()), not nullable),
     ]
 )

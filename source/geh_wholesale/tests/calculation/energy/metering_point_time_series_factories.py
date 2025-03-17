@@ -17,12 +17,12 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.data_structures.metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
     metering_point_time_series_schema,
 )
-from package.codelists import MeteringPointType, QuantityQuality, SettlementMethod
-from package.constants import Colname
+from geh_wholesale.codelists import MeteringPointType, QuantityQuality, SettlementMethod
+from geh_wholesale.constants import Colname
 
 DEFAULT_GRID_AREA = "100"
 DEFAULT_NEIGHBOR_GRID_AREA = "200"
@@ -132,9 +132,7 @@ def create_to_row(
     )
 
 
-def create(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> MeteringPointTimeSeries:
+def create(spark: SparkSession, data: None | Row | list[Row] = None) -> MeteringPointTimeSeries:
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):

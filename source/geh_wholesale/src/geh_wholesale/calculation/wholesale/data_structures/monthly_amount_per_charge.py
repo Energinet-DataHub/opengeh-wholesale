@@ -13,22 +13,17 @@
 # limitations under the License.
 
 import pyspark.sql.types as t
+from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
 from pyspark.sql import DataFrame
 
-from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 class MonthlyAmountPerCharge(DataFrameWrapper):
-    """
-    This is the result of the sum of amounts per charge, which is the sum of amounts within a month and across metering points.
-    """
+    """This is the result of the sum of amounts per charge, which is the sum of amounts within a month and across metering points."""
 
     def __init__(self, df: DataFrame):
-        """
-        Fit data frame in a general DataFrame. This is used for all results and missing columns will be null.
-        """
-
+        """Fit data frame in a general DataFrame. This is used for all results and missing columns will be null."""
         super().__init__(
             df,
             monthly_amount_per_charge_schema,

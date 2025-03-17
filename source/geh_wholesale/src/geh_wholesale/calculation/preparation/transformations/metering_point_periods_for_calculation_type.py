@@ -13,10 +13,10 @@
 # limitations under the License.
 
 import pyspark.sql.functions as f
-from pyspark.sql import DataFrame, Column
+from pyspark.sql import Column, DataFrame
 
-from package.codelists import MeteringPointType
-from package.constants import Colname
+from geh_wholesale.codelists import MeteringPointType
+from geh_wholesale.constants import Colname
 
 
 def is_parent_metering_point(col: Column | str) -> bool:
@@ -36,29 +36,23 @@ def is_child_metering_point(col: Column | str) -> bool:
 def add_parent_data_to_child_metering_point_periods(
     all_metering_point_periods: DataFrame,
 ) -> DataFrame:
-    """
-    All child metering points are updated with the energy supplier id and balance responsible party id of its parent metering point.
-    """
+    """All child metering points are updated with the energy supplier id and balance responsible party id of its parent metering point."""
     parent_metering_points_periods = all_metering_point_periods.where(
         is_parent_metering_point(Colname.metering_point_type)
     )
-    child_metering_points_with_energy_suppliers = (
-        _get_child_metering_points_with_energy_suppliers(all_metering_point_periods)
+    child_metering_points_with_energy_suppliers = _get_child_metering_points_with_energy_suppliers(
+        all_metering_point_periods
     )
-    metering_point_periods_union = parent_metering_points_periods.union(
-        child_metering_points_with_energy_suppliers
-    )
+    metering_point_periods_union = parent_metering_points_periods.union(child_metering_points_with_energy_suppliers)
     return metering_point_periods_union
 
 
 def _get_child_metering_points_with_energy_suppliers(
     all_metering_point_periods: DataFrame,
 ) -> DataFrame:
-    """
-    Returns all child metering points.
+    """Returns all child metering points.
     The energy supplier of child metering points is added from its parent metering point.
     """
-
     es = "energy_supplier_id_temp"
     mp = "metering_point_id_temp"
     from_date = "from_date_temp"
@@ -72,46 +66,23 @@ def _get_child_metering_points_with_energy_suppliers(
         f.col(Colname.to_date).alias(to_date),
     )
 
-    all_child_metering_points = all_metering_point_periods.where(
-        is_child_metering_point(Colname.metering_point_type)
-    )
+    all_child_metering_points = all_metering_point_periods.where(is_child_metering_point(Colname.metering_point_type))
 
     child_metering_points_with_energy_suppliers = all_child_metering_points.join(
         potential_parent_metering_points,
-        (
-            potential_parent_metering_points[mp]
-            == all_child_metering_points[Colname.parent_metering_point_id]
-        )
+        (potential_parent_metering_points[mp] == all_child_metering_points[Colname.parent_metering_point_id])
         & (
             (  # When child from date is within parent period
-                (
-                    all_child_metering_points[Colname.from_date]
-                    >= potential_parent_metering_points[from_date]
-                )
-                & (
-                    all_child_metering_points[Colname.from_date]
-                    < potential_parent_metering_points[to_date]
-                )
+                (all_child_metering_points[Colname.from_date] >= potential_parent_metering_points[from_date])
+                & (all_child_metering_points[Colname.from_date] < potential_parent_metering_points[to_date])
             )
             | (  # When child to date is within parent period
-                (
-                    all_child_metering_points[Colname.to_date]
-                    > potential_parent_metering_points[from_date]
-                )
-                & (
-                    all_child_metering_points[Colname.to_date]
-                    <= potential_parent_metering_points[to_date]
-                )
+                (all_child_metering_points[Colname.to_date] > potential_parent_metering_points[from_date])
+                & (all_child_metering_points[Colname.to_date] <= potential_parent_metering_points[to_date])
             )
             | (  # When child from date is before parent from date and to date is after parent to date
-                (
-                    all_child_metering_points[Colname.to_date]
-                    > potential_parent_metering_points[to_date]
-                )
-                & (
-                    all_child_metering_points[Colname.from_date]
-                    < potential_parent_metering_points[from_date]
-                )
+                (all_child_metering_points[Colname.to_date] > potential_parent_metering_points[to_date])
+                & (all_child_metering_points[Colname.from_date] < potential_parent_metering_points[from_date])
             )
         ),
         "inner",
@@ -130,15 +101,13 @@ def _get_child_metering_points_with_energy_suppliers(
         ),  # energy_supplier_id is always null on child metering points
         all_child_metering_points[Colname.balance_responsible_party_id],
         f.when(
-            potential_parent_metering_points[from_date]
-            > all_child_metering_points[Colname.from_date],
+            potential_parent_metering_points[from_date] > all_child_metering_points[Colname.from_date],
             potential_parent_metering_points[from_date],
         )
         .otherwise(all_child_metering_points[Colname.from_date])
         .alias(Colname.from_date),
         f.when(
-            potential_parent_metering_points[to_date]
-            < all_child_metering_points[Colname.to_date],
+            potential_parent_metering_points[to_date] < all_child_metering_points[Colname.to_date],
             potential_parent_metering_points[to_date],
         )
         .otherwise(all_child_metering_points[Colname.to_date])

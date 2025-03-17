@@ -14,9 +14,9 @@
 from typing import Type
 
 import pytest
-from pyspark.sql import SparkSession, Row
+from pyspark.sql import Row, SparkSession
 
-import package.calculation.preparation.data_structures as d
+import geh_wholesale.calculation.preparation.data_structures as d
 
 
 @pytest.mark.parametrize(

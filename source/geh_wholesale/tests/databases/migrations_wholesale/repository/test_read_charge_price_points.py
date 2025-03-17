@@ -15,17 +15,17 @@ import pathlib
 from datetime import datetime
 from decimal import Decimal
 from unittest import mock
+
+import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
-import pyspark.sql.functions as f
 
-
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from package.databases.migrations_wholesale.schemas import charge_price_points_schema
-from package.constants import Colname
-from tests.helpers.delta_table_utils import write_dataframe_to_table
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
+from geh_wholesale.databases.migrations_wholesale.schemas import charge_price_points_schema
+from geh_wholesale.infrastructure.paths import MigrationsWholesaleDatabase
 from tests.helpers.data_frame_utils import assert_dataframes_equal
-from package.infrastructure.paths import MigrationsWholesaleDatabase
+from tests.helpers.delta_table_utils import write_dataframe_to_table
 
 DEFAULT_OBSERVATION_TIME = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
@@ -58,9 +58,7 @@ class TestWhenContractMismatch:
         df = df.drop(Colname.charge_code)
 
         # Act & Assert
-        with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
-        ):
+        with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
             with pytest.raises(AssertionError) as exc_info:
                 reader.read_charge_price_points()
 
@@ -113,7 +111,5 @@ class TestWhenValidInputAndExtraColumns:
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
-        with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
-        ):
+        with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
             reader.read_charge_price_points()

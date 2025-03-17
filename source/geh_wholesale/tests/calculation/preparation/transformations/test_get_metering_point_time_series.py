@@ -20,18 +20,18 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.types import Row
 
-from package.databases.migrations_wholesale.schemas import (
-    time_series_points_schema,
-    metering_point_periods_schema,
-)
-from package.calculation.preparation.transformations import (
+from geh_wholesale.calculation.preparation.transformations import (
     get_metering_point_time_series,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     MeteringPointResolution,
     QuantityQuality,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.migrations_wholesale.schemas import (
+    metering_point_periods_schema,
+    time_series_points_schema,
+)
 
 DEFAULT_METERING_POINT_ID = "the-metering-point-id"
 
@@ -104,9 +104,7 @@ def test__given_different_from_date_and_to_date__return_dataframe_with_correct_n
     FromDate and ToDate on the metering point"""
 
     # Arrange
-    raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory("2022-06-08T12:15:00.000Z")
-    )
+    raw_time_series_points = raw_time_series_points_factory(time=timestamp_factory("2022-06-08T12:15:00.000Z"))
     metering_point_period_df = metering_point_period_df_factory(
         from_date=timestamp_factory(from_date),
         to_date=timestamp_factory(to_date),
@@ -146,9 +144,7 @@ def test__missing_point_has_quantity_0_for_quarterly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual_df = actual.df.where(
-        col(Colname.observation_time) != timestamp_factory(start_time)
-    )
+    actual_df = actual.df.where(col(Colname.observation_time) != timestamp_factory(start_time))
     assert actual_df.where(col(Colname.quantity) == 0).count() == 95
 
 
@@ -176,9 +172,7 @@ def test__missing_point_has_quantity_0_for_hourly_resolution(
 
     # Assert
     # We remove the point we created before inspecting the remaining
-    actual_df = actual.df.where(
-        col(Colname.observation_time) != timestamp_factory(start_time)
-    )
+    actual_df = actual.df.where(col(Colname.observation_time) != timestamp_factory(start_time))
     assert actual_df.where(col(Colname.quantity) == 0).count() == 23
 
 
@@ -189,9 +183,7 @@ def test__df_is_not_empty_when_no_time_series_points(
     start_time = "2022-06-08T22:00:00.000Z"
     end_time = "2022-06-09T22:00:00.000Z"
 
-    empty_raw_time_series_points = raw_time_series_points_factory().where(
-        col(Colname.metering_point_id) == ""
-    )
+    empty_raw_time_series_points = raw_time_series_points_factory().where(col(Colname.metering_point_id) == "")
     metering_point_period_df = metering_point_period_df_factory(
         resolution=MeteringPointResolution.QUARTER.value,
         from_date=timestamp_factory(start_time),
@@ -265,9 +257,9 @@ def test__df_has_expected_row_count_according_to_dst(
     expected_number_of_rows,
 ):
     # Arrange
-    raw_time_series_points = raw_time_series_points_factory(
-        time=timestamp_factory(period_start)
-    ).where(col(Colname.metering_point_id) != DEFAULT_METERING_POINT_ID)
+    raw_time_series_points = raw_time_series_points_factory(time=timestamp_factory(period_start)).where(
+        col(Colname.metering_point_id) != DEFAULT_METERING_POINT_ID
+    )
 
     metering_point_period_df = metering_point_period_df_factory(
         from_date=timestamp_factory(period_start),
@@ -358,12 +350,8 @@ def test__support_metering_point_period_switch_on_resolution_provides_correct_nu
         metering_point_period_df.union(second_metering_point_period_df),
     )
 
-    hour = actual.df.filter(
-        col(Colname.resolution) == MeteringPointResolution.HOUR.value
-    )
-    quarter = actual.df.filter(
-        col(Colname.resolution) == MeteringPointResolution.QUARTER.value
-    )
+    hour = actual.df.filter(col(Colname.resolution) == MeteringPointResolution.HOUR.value)
+    quarter = actual.df.filter(col(Colname.resolution) == MeteringPointResolution.QUARTER.value)
 
     # Assert
     assert actual.df.count() == total

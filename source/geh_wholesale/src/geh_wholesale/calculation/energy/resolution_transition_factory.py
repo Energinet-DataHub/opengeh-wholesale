@@ -13,16 +13,16 @@
 # limitations under the License.
 from datetime import datetime
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.hour_to_quarter import transform_hour_to_quarter
-from package.calculation.energy.quarter_to_hour import transform_quarter_to_hour
-from package.calculation.preparation.data_structures import (
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.energy.hour_to_quarter import transform_hour_to_quarter
+from geh_wholesale.calculation.energy.quarter_to_hour import transform_quarter_to_hour
+from geh_wholesale.calculation.preparation.data_structures import (
     PreparedMeteringPointTimeSeries,
 )
-from package.calculation.preparation.data_structures.metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
 )
-from package.codelists import MeteringPointResolution
+from geh_wholesale.codelists import MeteringPointResolution
 
 
 def get_energy_result_resolution(

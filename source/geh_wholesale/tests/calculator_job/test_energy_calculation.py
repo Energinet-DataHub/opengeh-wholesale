@@ -16,13 +16,14 @@ import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
 
-from package.codelists import (
-    TimeSeriesType,
+from geh_wholesale.codelists import (
     MeteringPointType,
+    TimeSeriesType,
 )
-from package.databases.table_column_names import TableColumnNames
-from package.infrastructure import paths
-from package.infrastructure.infrastructure_settings import InfrastructureSettings
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.infrastructure import paths
+from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
+
 from . import configuration as c
 
 
@@ -36,11 +37,7 @@ def test__balance_fixing_exchange_per_neighbor_result_type__is_created(
 
     # Assert: Result(s) are created if there are rows
     assert (
-        actual.where(
-            f.col(TableColumnNames.calculation_id)
-            == c.executed_balance_fixing_calculation_id
-        ).count()
-        > 0
+        actual.where(f.col(TableColumnNames.calculation_id) == c.executed_balance_fixing_calculation_id).count() > 0
     ), actual.collect()
 
 
@@ -60,10 +57,7 @@ def test__balance_fixing_grid_loss_time_series_result_type__is_created(
         spark.read.table(
             f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME}"
         )
-        .where(
-            f.col(TableColumnNames.calculation_id)
-            == c.executed_balance_fixing_calculation_id
-        )
+        .where(f.col(TableColumnNames.calculation_id) == c.executed_balance_fixing_calculation_id)
         .where(f.col(TableColumnNames.metering_point_type) == metering_point_type)
     )
 
@@ -139,13 +133,8 @@ def test__balance_fixing_energy_result_type__is_created(
     table_name: str,
 ) -> None:
     actual = (
-        spark.read.table(
-            f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}"
-        )
-        .where(
-            f.col(TableColumnNames.calculation_id)
-            == c.executed_balance_fixing_calculation_id
-        )
+        spark.read.table(f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}")
+        .where(f.col(TableColumnNames.calculation_id) == c.executed_balance_fixing_calculation_id)
         .where(f.col(TableColumnNames.time_series_type) == time_series_type)
     )
 
@@ -169,10 +158,7 @@ def test__when_energy_calculation__basis_data_is_stored(
     # Arrange
     actual = spark.read.table(
         f"{infrastructure_settings.catalog_name}.{paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME}.{basis_data_table_name}"
-    ).where(
-        f.col(TableColumnNames.calculation_id)
-        == c.executed_balance_fixing_calculation_id
-    )
+    ).where(f.col(TableColumnNames.calculation_id) == c.executed_balance_fixing_calculation_id)
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -188,10 +174,7 @@ def test__when_calculation_is_stored__contains_calculation_succeeded_time(
     # Arrange
     actual = spark.read.table(
         f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
-    ).where(
-        f.col(TableColumnNames.calculation_id)
-        == c.executed_balance_fixing_calculation_id
-    )
+    ).where(f.col(TableColumnNames.calculation_id) == c.executed_balance_fixing_calculation_id)
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -208,10 +191,7 @@ def test__when_energy_calculation__calculation_grid_areas_are_stored(
     # Arrange
     actual = spark.read.table(
         f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME}"
-    ).where(
-        f.col(TableColumnNames.calculation_id)
-        == c.executed_balance_fixing_calculation_id
-    )
+    ).where(f.col(TableColumnNames.calculation_id) == c.executed_balance_fixing_calculation_id)
 
     # Act: Calculator job is executed just once per session.
     #      See the fixtures `results_df` and `executed_wholesale_fixing`
@@ -261,8 +241,7 @@ def test__when_balance_fixing__view_has_data_if_expected(
     spark: SparkSession, executed_balance_fixing: None, view_name: str, has_data: bool
 ) -> None:
     actual = spark.sql(f"SELECT * FROM {view_name}").where(
-        f.col(TableColumnNames.calculation_id)
-        == c.executed_balance_fixing_calculation_id
+        f.col(TableColumnNames.calculation_id) == c.executed_balance_fixing_calculation_id
     )
 
     assert actual.count() > 0 if has_data else actual.count() == 0

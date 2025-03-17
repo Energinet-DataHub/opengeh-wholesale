@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from package.calculation.energy.aggregators.transformations.aggregate_sum_and_quality import (
+from geh_wholesale.calculation.energy.aggregators.transformations.aggregate_sum_and_quality import (
     aggregate_sum_quantity_and_qualities,
 )
-from package.calculation.energy.data_structures.energy_results import (
+from geh_wholesale.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 def aggregate(df: EnergyResults) -> EnergyResults:

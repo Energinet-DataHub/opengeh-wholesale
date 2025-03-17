@@ -14,14 +14,14 @@
 
 import pyspark.sql.functions as f
 
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
-    PreparedMeteringPointTimeSeries,
-)
-from package.calculation.preparation.data_structures.metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
 )
-from package.codelists import MeteringPointResolution
-from package.constants import Colname
+from geh_wholesale.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+    PreparedMeteringPointTimeSeries,
+)
+from geh_wholesale.codelists import MeteringPointResolution
+from geh_wholesale.constants import Colname
 
 
 def transform_hour_to_quarter(

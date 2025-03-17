@@ -14,20 +14,20 @@
 
 import sys
 import uuid
-from pyspark.sql import SparkSession
-import pytest
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.preparation.data_structures.prepared_charges import (
+import pytest
+from pyspark.sql import SparkSession
+
+import tests.calculation.wholesale.factories.prepared_fees_factory as fees_factory
+import tests.calculation.wholesale.factories.prepared_subscriptions_factory as subscriptions_factory
+import tests.calculation.wholesale.factories.prepared_tariffs_factory as tariffs_factory
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.preparation.data_structures.prepared_charges import (
     PreparedChargesContainer,
 )
-from package.calculation.wholesale import execute
-from package.codelists import ChargeResolution
-
-from package.codelists.calculation_type import CalculationType
-import tests.calculation.wholesale.factories.prepared_tariffs_factory as tariffs_factory
-import tests.calculation.wholesale.factories.prepared_subscriptions_factory as subscriptions_factory
-import tests.calculation.wholesale.factories.prepared_fees_factory as fees_factory
+from geh_wholesale.calculation.wholesale import execute
+from geh_wholesale.codelists import ChargeResolution
+from geh_wholesale.codelists.calculation_type import CalculationType
 
 
 def test__execute__when_tariff_schema_is_valid__does_not_raise(
@@ -48,14 +48,10 @@ def test__execute__when_tariff_schema_is_valid__does_not_raise(
         ],
     )
     monkeypatch.setenv("TIME_ZONE", "Europe/Copenhagen")
-    monkeypatch.setenv(
-        "QUARTERLY_RESOLUTION_TRANSITION_DATETIME", "2023-01-31T23:00:00Z"
-    )
+    monkeypatch.setenv("QUARTERLY_RESOLUTION_TRANSITION_DATETIME", "2023-01-31T23:00:00Z")
     args = CalculatorArgs()
     # Arrange
-    tariffs_hourly_df = tariffs_factory.create(
-        spark, data=[tariffs_factory.create_row()]
-    )
+    tariffs_hourly_df = tariffs_factory.create(spark, data=[tariffs_factory.create_row()])
     tariffs_daily_df = tariffs_factory.create(
         spark,
         data=[tariffs_factory.create_row(resolution=ChargeResolution.DAY)],

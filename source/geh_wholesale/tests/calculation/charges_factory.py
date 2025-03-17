@@ -17,21 +17,21 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-import package.codelists as e
-from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
+import geh_wholesale.codelists as e
+from geh_wholesale.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
     charge_link_metering_point_periods_schema,
 )
-from package.calculation.preparation.data_structures.charge_price_information import (
+from geh_wholesale.calculation.preparation.data_structures.charge_price_information import (
     ChargePriceInformation,
     charge_price_information_schema,
 )
-from package.calculation.preparation.data_structures.charge_prices import (
+from geh_wholesale.calculation.preparation.data_structures.charge_prices import (
     ChargePrices,
     charge_prices_schema,
 )
-from package.codelists import ChargeType
-from package.constants import Colname
+from geh_wholesale.codelists import ChargeType
+from geh_wholesale.constants import Colname
 from tests.calculation.preparation.transformations import (
     prepared_metering_point_time_series_factory,
 )
@@ -139,9 +139,7 @@ def create_charge_link_metering_point_periods_row(
         Colname.from_date: from_date.astimezone(timezone.utc),
         Colname.to_date: to_date.astimezone(timezone.utc) if to_date else None,
         Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: (
-            settlement_method.value if settlement_method else None
-        ),
+        Colname.settlement_method: (settlement_method.value if settlement_method else None),
         Colname.grid_area_code: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
     }
@@ -149,9 +147,7 @@ def create_charge_link_metering_point_periods_row(
     return Row(**row)
 
 
-def create_charge_price_information(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> ChargePriceInformation:
+def create_charge_price_information(spark: SparkSession, data: None | Row | list[Row] = None) -> ChargePriceInformation:
     if data is None:
         data = [create_charge_price_information_row()]
     elif isinstance(data, Row):
@@ -160,9 +156,7 @@ def create_charge_price_information(
     return ChargePriceInformation(df)
 
 
-def create_charge_prices(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> ChargePrices:
+def create_charge_prices(spark: SparkSession, data: None | Row | list[Row] = None) -> ChargePrices:
     if data is None:
         data = [create_charge_prices_row()]
     elif isinstance(data, Row):

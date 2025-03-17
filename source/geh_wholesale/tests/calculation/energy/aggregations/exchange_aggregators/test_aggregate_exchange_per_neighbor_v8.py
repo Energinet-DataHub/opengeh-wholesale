@@ -18,22 +18,22 @@ import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import Row
 
-from tests.calculation.energy import metering_point_time_series_factories
-from package.calculation.energy.aggregators.exchange_aggregators import (
+from geh_wholesale.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_exchange_per_neighbor,
 )
-from package.calculation.preparation.data_structures.metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     MeteringPointType,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
+from tests.calculation.energy import metering_point_time_series_factories
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
-default_obs_time = datetime.strptime(
-    "2020-01-01T00:00:00+0000", date_time_formatting_string
-).replace(tzinfo=timezone.utc)
+default_obs_time = datetime.strptime("2020-01-01T00:00:00+0000", date_time_formatting_string).replace(
+    tzinfo=timezone.utc
+)
 numberOfTestQuarters = 96
 
 ALL_GRID_AREAS = ["A", "B", "C"]
@@ -71,9 +71,7 @@ def multi_quarter_test_data(spark: SparkSession) -> MeteringPointTimeSeries:
     return metering_point_time_series_factories.create(spark, rows)
 
 
-def _create_row(
-    domain: str, in_domain: str, out_domain: str, timestamp: datetime, quantity: Decimal
-) -> Row:
+def _create_row(domain: str, in_domain: str, out_domain: str, timestamp: datetime, quantity: Decimal) -> Row:
     return metering_point_time_series_factories.create_row(
         grid_area=domain,
         to_grid_area=in_domain,
@@ -85,9 +83,7 @@ def _create_row(
 
 
 def test_aggregate_net_exchange_per_neighbor_single_hour(single_quarter_test_data):
-    df = aggregate_exchange_per_neighbor(
-        single_quarter_test_data, ALL_GRID_AREAS
-    ).df.orderBy(
+    df = aggregate_exchange_per_neighbor(single_quarter_test_data, ALL_GRID_AREAS).df.orderBy(
         Colname.to_grid_area_code, Colname.from_grid_area_code, Colname.observation_time
     )
     values = df.collect()
@@ -102,9 +98,7 @@ def test_aggregate_net_exchange_per_neighbor_single_hour(single_quarter_test_dat
 
 
 def test_aggregate_net_exchange_per_neighbor_multi_hour(multi_quarter_test_data):
-    df = aggregate_exchange_per_neighbor(
-        multi_quarter_test_data, ALL_GRID_AREAS
-    ).df.orderBy(
+    df = aggregate_exchange_per_neighbor(multi_quarter_test_data, ALL_GRID_AREAS).df.orderBy(
         Colname.to_grid_area_code, Colname.from_grid_area_code, Colname.observation_time
     )
     values = df.collect()

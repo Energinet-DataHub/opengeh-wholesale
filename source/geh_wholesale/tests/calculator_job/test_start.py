@@ -14,11 +14,11 @@
 from unittest.mock import Mock, patch
 
 import pytest
-
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculator_job import start, start_with_deps
-from package.infrastructure.infrastructure_settings import InfrastructureSettings
 from pydantic_core import ValidationError
+
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculator_job import start, start_with_deps
+from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
 class TestWhenInvokedWithInvalidArguments:

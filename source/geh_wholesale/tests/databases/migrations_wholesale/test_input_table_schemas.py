@@ -16,14 +16,14 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import StructType
 
-from package.databases.migrations_wholesale.schemas import (
-    time_series_points_schema,
-    metering_point_periods_schema,
+from geh_wholesale.databases.migrations_wholesale.schemas import (
     charge_link_periods_schema,
     charge_price_information_periods_schema,
     charge_price_points_schema,
+    metering_point_periods_schema,
+    time_series_points_schema,
 )
-from package.infrastructure import paths
+from geh_wholesale.infrastructure import paths
 
 
 def test__input_time_series_point_schema__matches_published_contract(
@@ -96,7 +96,4 @@ def test__input_charge_price_information_periods_schema__matches_published_contr
 
 
 def _assert_is_equal(actual_schema: StructType, expected_schema: StructType) -> None:
-    assert all(
-        (a.name, a.dataType) == (b.name, b.dataType)
-        for a, b in zip(actual_schema, expected_schema)
-    )
+    assert all((a.name, a.dataType) == (b.name, b.dataType) for a, b in zip(actual_schema, expected_schema))

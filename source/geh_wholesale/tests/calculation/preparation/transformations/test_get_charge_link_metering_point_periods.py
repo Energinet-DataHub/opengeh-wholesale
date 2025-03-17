@@ -18,15 +18,15 @@ import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession
 
-from tests.calculation.wholesale.factories import (
-    prepared_charge_link_periods_factory,
-    prepared_metering_point_periods_factory,
-    prepared_charge_link_metering_point_periods_factory,
-)
-from tests.helpers.data_frame_utils import assert_dataframes_equal
-from package.calculation.preparation.transformations import (
+from geh_wholesale.calculation.preparation.transformations import (
     get_charge_link_metering_point_periods,
 )
+from tests.calculation.wholesale.factories import (
+    prepared_charge_link_metering_point_periods_factory,
+    prepared_charge_link_periods_factory,
+    prepared_metering_point_periods_factory,
+)
+from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 
 @pytest.mark.parametrize(
@@ -440,22 +440,16 @@ def test_get_charge_link_metering_point_periods(
     expected_rows: List[Row],
 ) -> None:
     # Arrange
-    expected = prepared_charge_link_metering_point_periods_factory.create(
-        spark, data=expected_rows
-    )
+    expected = prepared_charge_link_metering_point_periods_factory.create(spark, data=expected_rows)
 
     input_metering_point_periods = prepared_metering_point_periods_factory.create(
         spark, data=input_metering_point_periods_rows
     )
 
-    input_charge_link_periods = prepared_charge_link_periods_factory.create(
-        spark, data=input_charge_link_periods_rows
-    )
+    input_charge_link_periods = prepared_charge_link_periods_factory.create(spark, data=input_charge_link_periods_rows)
 
     # Act
-    actual = get_charge_link_metering_point_periods(
-        input_charge_link_periods, input_metering_point_periods
-    )
+    actual = get_charge_link_metering_point_periods(input_charge_link_periods, input_metering_point_periods)
 
     # Assert
     assert_dataframes_equal(actual.df, expected)

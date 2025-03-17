@@ -20,14 +20,13 @@ import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
 
-from package.codelists import CalculationType
-from package.databases import wholesale_internal
-from package.databases.table_column_names import TableColumnNames
-
-from package.databases.wholesale_internal.schemas import (
+from geh_wholesale.codelists import CalculationType
+from geh_wholesale.databases import wholesale_internal
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.wholesale_internal.schemas import (
     calculations_schema,
 )
-from package.infrastructure.paths import (
+from geh_wholesale.infrastructure.paths import (
     WholesaleInternalDatabase,
 )
 from tests.helpers.data_frame_utils import assert_dataframes_equal
@@ -41,9 +40,7 @@ def _create_calculation_row() -> dict:
         TableColumnNames.calculation_period_start: datetime(2022, 6, 8, 22, 0, 0),
         TableColumnNames.calculation_period_end: datetime(2022, 6, 9, 22, 0, 0),
         TableColumnNames.calculation_version: 1,
-        TableColumnNames.calculation_execution_time_start: datetime(
-            2022, 6, 8, 22, 0, 0
-        ),
+        TableColumnNames.calculation_execution_time_start: datetime(2022, 6, 8, 22, 0, 0),
         TableColumnNames.is_internal_calculation: False,
     }
 
@@ -61,9 +58,7 @@ class TestWhenContractMismatch:
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
-        with mock.patch.object(
-            repository._spark.read.format("delta"), "table", return_value=df
-        ):
+        with mock.patch.object(repository._spark.read.format("delta"), "table", return_value=df):
             with pytest.raises(AssertionError) as exc_info:
                 repository.read_calculations()
 
@@ -92,9 +87,7 @@ class TestWhenValidInput:
         )
         expected = df
 
-        repository = wholesale_internal.WholesaleInternalRepository(
-            spark, "spark_catalog"
-        )
+        repository = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
 
         # Act
         actual = repository.read_calculations()

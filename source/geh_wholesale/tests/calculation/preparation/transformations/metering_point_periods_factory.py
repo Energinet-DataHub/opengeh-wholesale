@@ -17,13 +17,13 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession
 
-from package.codelists import (
+from geh_wholesale.codelists import (
+    MeteringPointResolution,
     MeteringPointType,
     SettlementMethod,
-    MeteringPointResolution,
 )
-from package.constants import Colname
-from package.databases.migrations_wholesale.schemas import (
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.migrations_wholesale.schemas import (
     metering_point_periods_schema,
 )
 
@@ -61,9 +61,7 @@ def create_row(
         Colname.metering_point_id: metering_point_id,
         Colname.metering_point_type: metering_point_type.value,
         Colname.calculation_type: calculation_type,
-        Colname.settlement_method: (
-            settlement_method.value if settlement_method else None
-        ),
+        Colname.settlement_method: (settlement_method.value if settlement_method else None),
         Colname.grid_area_code: grid_area,
         Colname.resolution: resolution.value,
         Colname.from_grid_area_code: from_grid_area,

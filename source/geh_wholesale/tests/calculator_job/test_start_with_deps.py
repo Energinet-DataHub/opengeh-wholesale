@@ -11,20 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import argparse
 import uuid
 from datetime import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculator_job import start_with_deps
-from package.databases.wholesale_internal.schemas import calculations_schema
-from package.infrastructure.infrastructure_settings import InfrastructureSettings
-from package.infrastructure.paths import WholesaleInternalDatabase
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculator_job import start_with_deps
+from geh_wholesale.databases.wholesale_internal.schemas import calculations_schema
+from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
+from geh_wholesale.infrastructure.paths import WholesaleInternalDatabase
 
 
 @pytest.mark.parametrize(

@@ -17,12 +17,11 @@ import pytest
 from pyspark.sql import SparkSession
 
 import tests.calculation.charges_factory as factory
-
-from package.calculation.preparation.transformations.charge_types.explode_charge_price_information_within_periods import (
+from geh_wholesale.calculation.preparation.transformations.charge_types.explode_charge_price_information_within_periods import (
     explode_charge_price_information_within_periods,
 )
-from package.codelists import ChargeResolution
-from package.constants import Colname
+from geh_wholesale.codelists import ChargeResolution
+from geh_wholesale.constants import Colname
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 FEB_1ST = datetime(2020, 1, 31, 23)
@@ -39,7 +38,6 @@ class TestWhenChargeResolutionDiffersFormHourOrDay:
     def test__explode_charge_price_information_within_periods__when_resolution_is_not_hour_nor_day__raises_value_error(
         self, spark: SparkSession
     ) -> None:
-
         # Arrange
         charge_price_information_rows = [
             factory.create_charge_price_information_row(
@@ -47,9 +45,7 @@ class TestWhenChargeResolutionDiffersFormHourOrDay:
             )
         ]
 
-        charge_price_information = factory.create_charge_price_information(
-            spark, charge_price_information_rows
-        )
+        charge_price_information = factory.create_charge_price_information(spark, charge_price_information_rows)
 
         # Act & Assert
         with pytest.raises(ValueError) as exc_info:
@@ -70,7 +66,6 @@ class TestWhenChargePeriodStopsAndStartsOnSameDay:
     def test__explode_charge_price_information_within_periods__when_hourly_resolution__returns_expected(
         self, spark: SparkSession
     ) -> None:
-
         # Arrange
         expected_charge_times = 48
         charge_price_information_rows = [
@@ -82,9 +77,7 @@ class TestWhenChargePeriodStopsAndStartsOnSameDay:
             ),
         ]
 
-        charge_price_information = factory.create_charge_price_information(
-            spark, charge_price_information_rows
-        )
+        charge_price_information = factory.create_charge_price_information(spark, charge_price_information_rows)
 
         # Act
         actual = explode_charge_price_information_within_periods(
@@ -102,7 +95,6 @@ class TestWhenChargePeriodStopsAndStartsOnSameDay:
     def test__explode_charge_price_information_within_periods__when_daily_resolution__returns_expected(
         self, spark: SparkSession
     ) -> None:
-
         # Arrange
         expected_charge_times = 2
         charge_price_information_rows = [
@@ -114,9 +106,7 @@ class TestWhenChargePeriodStopsAndStartsOnSameDay:
             ),
         ]
 
-        charge_price_information = factory.create_charge_price_information(
-            spark, charge_price_information_rows
-        )
+        charge_price_information = factory.create_charge_price_information(spark, charge_price_information_rows)
 
         # Act
         actual = explode_charge_price_information_within_periods(
@@ -140,7 +130,6 @@ class TestWhenChargeStopsForOneDay:
     def test__explode_charge_price_information_within_periods__when_hourly_resolution__returns_expected(
         self, spark: SparkSession
     ) -> None:
-
         # Arrange
         expected_charge_times_day_1 = 24
         expected_charge_times_day_2 = 24
@@ -153,9 +142,7 @@ class TestWhenChargeStopsForOneDay:
             ),
         ]
 
-        charge_price_information = factory.create_charge_price_information(
-            spark, charge_price_information_rows
-        )
+        charge_price_information = factory.create_charge_price_information(spark, charge_price_information_rows)
 
         # Act
         actual = explode_charge_price_information_within_periods(
@@ -165,24 +152,17 @@ class TestWhenChargeStopsForOneDay:
         )
 
         # Assert
-        assert (
-            actual.count() == expected_charge_times_day_1 + expected_charge_times_day_2
-        )
+        assert actual.count() == expected_charge_times_day_1 + expected_charge_times_day_2
         actual_rows = actual.orderBy(Colname.charge_time).collect()
         for i in range(expected_charge_times_day_1):
-            assert actual_rows[i][Colname.charge_time] == FEB_1ST + i * timedelta(
-                hours=1
-            )
+            assert actual_rows[i][Colname.charge_time] == FEB_1ST + i * timedelta(hours=1)
 
         for i in range(expected_charge_times_day_2):
-            assert actual_rows[i + expected_charge_times_day_1][
-                Colname.charge_time
-            ] == FEB_3RD + i * timedelta(hours=1)
+            assert actual_rows[i + expected_charge_times_day_1][Colname.charge_time] == FEB_3RD + i * timedelta(hours=1)
 
     def test__explode_charge_price_information_within_periods__when_daily_resolution__returns_expected(
         self, spark: SparkSession
     ) -> None:
-
         # Arrange
         expected_charge_times = 2
         charge_price_information_rows = [
@@ -194,9 +174,7 @@ class TestWhenChargeStopsForOneDay:
             ),
         ]
 
-        charge_price_information = factory.create_charge_price_information(
-            spark, charge_price_information_rows
-        )
+        charge_price_information = factory.create_charge_price_information(spark, charge_price_information_rows)
 
         # Act
         actual = explode_charge_price_information_within_periods(

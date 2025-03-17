@@ -15,12 +15,11 @@
 import pytest
 from pyspark.sql import SparkSession
 
-from package.calculation.energy.aggregators.grid_loss_aggregators import (
+from geh_wholesale.calculation.energy.aggregators.grid_loss_aggregators import (
     calculate_total_consumption,
 )
-from package.codelists import QuantityQuality
-from package.constants import Colname
-
+from geh_wholesale.codelists import QuantityQuality
+from geh_wholesale.constants import Colname
 from tests.calculation.energy import energy_results_factories as energy_results
 
 
@@ -68,9 +67,7 @@ class TestWhenValidInput:
         production = energy_results.create_row(qualities=[QuantityQuality.MEASURED])
         exchange_other_ga = [
             energy_results.create_row(qualities=[QuantityQuality.ESTIMATED]),
-            energy_results.create_row(
-                qualities=[QuantityQuality.CALCULATED], grid_area="some-other-grid-area"
-            ),
+            energy_results.create_row(qualities=[QuantityQuality.CALCULATED], grid_area="some-other-grid-area"),
         ]
         production = energy_results.create(spark, production)
         exchange = energy_results.create(spark, exchange_other_ga)
@@ -106,9 +103,7 @@ class TestWhenValidInput:
         actual_row = actual.df.collect()[0]
         assert actual_row[Colname.quantity] == expected_quantity
 
-    def test__does_not_include_quantity_from_non_neighbor_in_return(
-        self, spark: SparkSession
-    ):
+    def test__does_not_include_quantity_from_non_neighbor_in_return(self, spark: SparkSession):
         # Arrange
         production = [
             energy_results.create_row(quantity=1),

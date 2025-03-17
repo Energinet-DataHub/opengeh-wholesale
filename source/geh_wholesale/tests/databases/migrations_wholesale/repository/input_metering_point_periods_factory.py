@@ -17,15 +17,15 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession
 
-from package.databases.migrations_wholesale.schemas import (
-    metering_point_periods_schema,
-)
-from package.codelists import (
+from geh_wholesale.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
     MeteringPointResolution,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.migrations_wholesale.schemas import (
+    metering_point_periods_schema,
+)
 
 DEFAULT_FROM_DATE = datetime(2022, 6, 8, 22, 0, 0)
 DEFAULT_TO_DATE = datetime(2022, 6, 9, 22, 0, 0)

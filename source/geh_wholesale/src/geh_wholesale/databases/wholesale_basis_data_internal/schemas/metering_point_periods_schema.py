@@ -13,13 +13,13 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
-    StructField,
     StringType,
-    TimestampType,
+    StructField,
     StructType,
+    TimestampType,
 )
 
-from package.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.table_column_names import TableColumnNames
 
 # This is the expected schema for the metering point periods dataframe in basis data output.
 metering_point_periods_schema = StructType(

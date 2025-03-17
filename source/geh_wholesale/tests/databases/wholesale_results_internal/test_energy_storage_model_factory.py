@@ -22,18 +22,18 @@ import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 
-import package.codelists as e
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.data_structures.energy_results import (
-    energy_results_schema,
+import geh_wholesale.codelists as e
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.energy.data_structures.energy_results import (
     EnergyResults,
+    energy_results_schema,
 )
-from package.constants import Colname
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal import (
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.wholesale_results_internal import (
     energy_storage_model_factory as sut,
 )
-from package.databases.wholesale_results_internal.schemas import energy_schema
+from geh_wholesale.databases.wholesale_results_internal.schemas import energy_schema
 
 # The calculation id is used in parameterized test executed using xdist, which does not allow parameters to change
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"

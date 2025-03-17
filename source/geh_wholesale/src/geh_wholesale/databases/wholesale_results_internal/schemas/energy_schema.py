@@ -1,6 +1,6 @@
 import pyspark.sql.types as t
 
-from package.databases.table_column_names import (
+from geh_wholesale.databases.table_column_names import (
     TableColumnNames as cname,
 )
 

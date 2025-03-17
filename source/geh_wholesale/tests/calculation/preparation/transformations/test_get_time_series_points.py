@@ -14,19 +14,19 @@
 import uuid
 from datetime import datetime
 from decimal import Decimal
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
 
 import pytest
-from pyspark.sql import SparkSession, Row
+from pyspark.sql import Row, SparkSession
 from pyspark.sql.functions import lit
 
-from package.databases import migrations_wholesale
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from package.databases.migrations_wholesale.schemas import (
+from geh_wholesale.calculation.preparation.transformations import get_time_series_points
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases import migrations_wholesale
+from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
+from geh_wholesale.databases.migrations_wholesale.schemas import (
     time_series_points_schema,
 )
-from package.calculation.preparation.transformations import get_time_series_points
-from package.constants import Colname
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 DEFAULT_OBSERVATION_TIME = datetime(2022, 6, 8, 22, 0, 0)
@@ -65,15 +65,11 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         time_series_row = _create_time_series_point_row()
-        expected = spark.createDataFrame(
-            data=[time_series_row], schema=time_series_points_schema
-        )
+        expected = spark.createDataFrame(data=[time_series_row], schema=time_series_points_schema)
         mock_calculation_input_reader.read_time_series_points.return_value = expected
 
         # Act
-        actual = get_time_series_points(
-            mock_calculation_input_reader, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
-        )
+        actual = get_time_series_points(mock_calculation_input_reader, DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
         # Assert
         assert_dataframes_equal(actual, expected)
@@ -96,22 +92,16 @@ class TestWhenValidInput:
         expected: int,
     ) -> None:
         # Arrange
-        time_series_row = _create_time_series_point_row(
-            observation_time=observation_time
-        )
+        time_series_row = _create_time_series_point_row(observation_time=observation_time)
 
         time_series_points_df = spark.createDataFrame(
             data=[time_series_row],
             schema=time_series_points_schema,
         )
-        mock_calculation_input_reader.read_time_series_points.return_value = (
-            time_series_points_df
-        )
+        mock_calculation_input_reader.read_time_series_points.return_value = time_series_points_df
 
         # Act
-        actual = get_time_series_points(
-            mock_calculation_input_reader, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
-        )
+        actual = get_time_series_points(mock_calculation_input_reader, DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
         # Assert
         assert actual.count() == expected
@@ -129,9 +119,7 @@ class TestWhenValidInput:
         expected: bool,
     ) -> None:
         # Arrange
-        time_series_row = _create_time_series_point_row(
-            metering_point_id=str(uuid.uuid4())
-        )
+        time_series_row = _create_time_series_point_row(metering_point_id=str(uuid.uuid4()))
         dataframe = spark.createDataFrame(
             data=[time_series_row],
             schema=time_series_points_schema,
@@ -140,9 +128,7 @@ class TestWhenValidInput:
         mock_calculation_input_reader.read_time_series_points.return_value = dataframe
 
         # Act
-        actual = get_time_series_points(
-            mock_calculation_input_reader, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
-        )
+        actual = get_time_series_points(mock_calculation_input_reader, DEFAULT_FROM_DATE, DEFAULT_TO_DATE)
 
         # Assert
         assert (column_name not in actual.columns) == expected

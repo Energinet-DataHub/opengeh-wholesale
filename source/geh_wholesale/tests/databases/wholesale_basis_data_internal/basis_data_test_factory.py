@@ -14,34 +14,34 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 
-from pyspark.sql import Row, SparkSession, DataFrame
+from pyspark.sql import DataFrame, Row, SparkSession
 
-import package.codelists as e
-import package.databases.wholesale_basis_data_internal.basis_data_factory as basis_data_factory
+import geh_wholesale.codelists as e
+import geh_wholesale.databases.wholesale_basis_data_internal.basis_data_factory as basis_data_factory
 import tests.calculation.charges_factory as charges_factory
-from package.calculation.calculation_output import BasisDataOutput
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.preparation.data_structures import (
+from geh_wholesale.calculation.calculation_output import BasisDataOutput
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.preparation.data_structures import (
     InputChargesContainer,
     PreparedMeteringPointTimeSeries,
 )
-from package.calculation.preparation.data_structures.charge_price_information import (
+from geh_wholesale.calculation.preparation.data_structures.charge_price_information import (
     ChargePriceInformation,
 )
-from package.calculation.preparation.data_structures.charge_prices import ChargePrices
-from package.calculation.preparation.data_structures.grid_loss_metering_point_ids import (
+from geh_wholesale.calculation.preparation.data_structures.charge_prices import ChargePrices
+from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_ids import (
     GridLossMeteringPointIds,
 )
-from package.codelists import ChargeType
-from package.constants import Colname
-from package.databases.wholesale_basis_data_internal.schemas import (
+from geh_wholesale.codelists import ChargeType
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.wholesale_basis_data_internal.schemas import (
     charge_link_periods_schema,
     charge_price_information_periods_schema,
     charge_price_points_schema,
     grid_loss_metering_point_ids_schema,
 )
-from tests.calculation.preparation.transformations import metering_point_periods_factory
 from tests.calculation.preparation.transformations import (
+    metering_point_periods_factory,
     prepared_metering_point_time_series_factory,
 )
 
@@ -66,18 +66,10 @@ class DefaultValues:
     TO_DATE: datetime = datetime(2020, 1, 31, 23, tzinfo=timezone.utc)
     TIME_ZONE = "Europe/Copenhagen"
     CALCULATION_GRID_AREAS = ["805", "806"]
-    CALCULATION_PERIOD_START_DATETIME = datetime(
-        2018, 1, 1, 23, 0, 0, tzinfo=timezone.utc
-    )
-    CALCULATION_PERIOD_END_DATETIME = datetime(
-        2018, 1, 3, 23, 0, 0, tzinfo=timezone.utc
-    )
-    CALCULATION_EXECUTION_TIME_START = datetime(
-        2018, 1, 5, 23, 0, 0, tzinfo=timezone.utc
-    )
-    QUARTERLY_RESOLUTION_TRANSITION_DATETIME = datetime(
-        2018, 1, 5, 23, 0, 0, tzinfo=timezone.utc
-    )
+    CALCULATION_PERIOD_START_DATETIME = datetime(2018, 1, 1, 23, 0, 0, tzinfo=timezone.utc)
+    CALCULATION_PERIOD_END_DATETIME = datetime(2018, 1, 3, 23, 0, 0, tzinfo=timezone.utc)
+    CALCULATION_EXECUTION_TIME_START = datetime(2018, 1, 5, 23, 0, 0, tzinfo=timezone.utc)
+    QUARTERLY_RESOLUTION_TRANSITION_DATETIME = datetime(2018, 1, 5, 23, 0, 0, tzinfo=timezone.utc)
     CREATED_BY_USER_ID = "bar"
 
 
@@ -170,9 +162,7 @@ def create_grid_loss_metering_point_id_row(
     return Row(**row)
 
 
-def create_charge_price_information(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> ChargePriceInformation:
+def create_charge_price_information(spark: SparkSession, data: None | Row | list[Row] = None) -> ChargePriceInformation:
     if data is None:
         data = [create_charge_price_information_row()]
     elif isinstance(data, Row):
@@ -181,9 +171,7 @@ def create_charge_price_information(
     return ChargePriceInformation(df)
 
 
-def create_charge_prices(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> ChargePrices:
+def create_charge_prices(spark: SparkSession, data: None | Row | list[Row] = None) -> ChargePrices:
     if data is None:
         data = [create_charge_prices_row()]
     elif isinstance(data, Row):
@@ -192,9 +180,7 @@ def create_charge_prices(
     return ChargePrices(df)
 
 
-def create_charge_links(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> DataFrame:
+def create_charge_links(spark: SparkSession, data: None | Row | list[Row] = None) -> DataFrame:
     if data is None:
         data = [create_charge_link_row()]
     elif isinstance(data, Row):
@@ -210,9 +196,7 @@ def create_prepared_metering_point_time_series(
         charges_factory.create_time_series_row(),
     ]
 
-    metering_point_time_series_df = prepared_metering_point_time_series_factory.create(
-        spark, time_series_rows
-    )
+    metering_point_time_series_df = prepared_metering_point_time_series_factory.create(spark, time_series_rows)
 
     return metering_point_time_series_df
 
@@ -224,14 +208,10 @@ def create_grid_loss_metering_point_ids(
         data = [create_grid_loss_metering_point_id_row()]
     elif isinstance(data, Row):
         data = [data]
-    return GridLossMeteringPointIds(
-        spark.createDataFrame(data, grid_loss_metering_point_ids_schema)
-    )
+    return GridLossMeteringPointIds(spark.createDataFrame(data, grid_loss_metering_point_ids_schema))
 
 
-def create_basis_data_factory(
-    spark: SparkSession, calculation_args: CalculatorArgs
-) -> BasisDataOutput:
+def create_basis_data_factory(spark: SparkSession, calculation_args: CalculatorArgs) -> BasisDataOutput:
     metering_point_period_df = metering_point_periods_factory.create(spark)
     metering_point_time_series_df = create_prepared_metering_point_time_series(spark)
     grid_loss_metering_point_ids = create_grid_loss_metering_point_ids(spark)

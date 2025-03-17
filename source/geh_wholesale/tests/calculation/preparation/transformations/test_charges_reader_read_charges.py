@@ -12,33 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from decimal import Decimal
 from datetime import datetime
+from decimal import Decimal
 from unittest.mock import patch
 
 import pytest
 from pyspark import Row
 from pyspark.sql import SparkSession
 
-from package.calculation.preparation.transformations import (
-    read_charge_prices,
+from geh_wholesale.calculation.preparation.transformations import (
     read_charge_price_information,
+    read_charge_prices,
 )
-from package.databases.migrations_wholesale.schemas import (
+from geh_wholesale.codelists import ChargeType
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases import migrations_wholesale
+from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
+from geh_wholesale.databases.migrations_wholesale.schemas import (
     charge_price_information_periods_schema,
 )
-
-from package.databases import migrations_wholesale
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from package.codelists import ChargeType
-from package.constants import Colname
 
 DEFAULT_CHARGE_CODE = "4000"
 DEFAULT_CHARGE_OWNER = "001"
 DEFAULT_CHARGE_TYPE = ChargeType.TARIFF.value
-DEFAULT_CHARGE_KEY = (
-    f"{DEFAULT_CHARGE_CODE}-{DEFAULT_CHARGE_OWNER}-{DEFAULT_CHARGE_TYPE}"
-)
+DEFAULT_CHARGE_KEY = f"{DEFAULT_CHARGE_CODE}-{DEFAULT_CHARGE_OWNER}-{DEFAULT_CHARGE_TYPE}"
 DEFAULT_CHARGE_TAX = True
 DEFAULT_CHARGE_PRICE = Decimal(1.0)
 DEFAULT_RESOLUTION = "P1D"
@@ -93,14 +90,12 @@ class TestWhenValidInput:
         self, repository_mock: MigrationsWholesaleRepository, spark: SparkSession
     ) -> None:
         # Arrange
-        repository_mock.read_charge_price_information_periods.return_value = (
-            spark.createDataFrame(data=[_create_charge_price_information_row()])
+        repository_mock.read_charge_price_information_periods.return_value = spark.createDataFrame(
+            data=[_create_charge_price_information_row()]
         )
 
         # Act
-        actual = read_charge_price_information(
-            repository_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
-        ).df
+        actual = read_charge_price_information(repository_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE).df
 
         # Assert
         assert actual.count() == 1
@@ -124,9 +119,7 @@ class TestWhenValidInput:
         )
 
         # Act
-        actual = read_charge_prices(
-            repository_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE
-        ).df
+        actual = read_charge_prices(repository_mock, DEFAULT_FROM_DATE, DEFAULT_TO_DATE).df
 
         # Assert
         assert actual.count() == 1
@@ -261,22 +254,18 @@ class TestWhenChargePeriodExceedsCalculationPeriod:
         # Arrange
         calculation_from_date = datetime(2020, 1, 2, 0, 0)
         calculation_to_date = datetime(2020, 1, 3, 0, 0)
-        repository_mock.read_charge_price_information_periods.return_value = (
-            spark.createDataFrame(
-                data=[
-                    _create_charge_price_information_row(
-                        from_date=charge_from_date,
-                        to_date=charge_to_date,
-                    )
-                ],
-                schema=charge_price_information_periods_schema,
-            )
+        repository_mock.read_charge_price_information_periods.return_value = spark.createDataFrame(
+            data=[
+                _create_charge_price_information_row(
+                    from_date=charge_from_date,
+                    to_date=charge_to_date,
+                )
+            ],
+            schema=charge_price_information_periods_schema,
         )
 
         # Act
-        actual = read_charge_price_information(
-            repository_mock, calculation_from_date, calculation_to_date
-        ).df
+        actual = read_charge_price_information(repository_mock, calculation_from_date, calculation_to_date).df
 
         # Assert
         actual_row = actual.collect()[0]

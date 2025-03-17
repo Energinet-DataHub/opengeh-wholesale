@@ -21,10 +21,10 @@ import pytest
 from pyspark.sql import SparkSession
 
 import tests.calculation.wholesale.factories.prepared_tariffs_factory as factory
-from package.calculation.wholesale.tariff_calculators import (
+from geh_wholesale.calculation.wholesale.tariff_calculators import (
     calculate_tariff_price_per_co_es,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     ChargeQuality,
     ChargeType,
     ChargeUnit,
@@ -32,7 +32,7 @@ from package.codelists import (
     SettlementMethod,
     WholesaleResultResolution,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 def test__calculate_tariff_price_per_co_es__returns_empty_df_when_input_df_is_empty(
@@ -95,20 +95,11 @@ def test__calculate_tariff_price_per_co_es__returns_df_with_expected_values(
     assert actual.count() == 1
     actual_row = actual.collect()[0]
 
-    assert (
-        actual_row[Colname.energy_supplier_id]
-        == factory.DefaultValues.ENERGY_SUPPLIER_ID
-    )
+    assert actual_row[Colname.energy_supplier_id] == factory.DefaultValues.ENERGY_SUPPLIER_ID
     assert actual_row[Colname.grid_area_code] == factory.DefaultValues.GRID_AREA
     assert actual_row[Colname.charge_time] == factory.DefaultValues.CHARGE_TIME_HOUR_0
-    assert (
-        actual_row[Colname.metering_point_type]
-        == factory.DefaultValues.METERING_POINT_TYPE.value
-    )
-    assert (
-        actual_row[Colname.settlement_method]
-        == factory.DefaultValues.SETTLEMENT_METHOD.value
-    )
+    assert actual_row[Colname.metering_point_type] == factory.DefaultValues.METERING_POINT_TYPE.value
+    assert actual_row[Colname.settlement_method] == factory.DefaultValues.SETTLEMENT_METHOD.value
     assert actual_row[Colname.charge_code] == factory.DefaultValues.CHARGE_CODE
     assert actual_row[Colname.charge_type] == ChargeType.TARIFF.value
     assert actual_row[Colname.charge_owner] == factory.DefaultValues.CHARGE_OWNER
@@ -134,10 +125,7 @@ def test__calculate_tariff_price_per_co_es__returns_all_qualities(
     ]
     expected_quality_values = [quality.value for quality in expected_qualities]
 
-    rows = [
-        factory.create_row(metering_point_id=str(uuid.uuid4()), quality=quality)
-        for quality in expected_qualities
-    ]
+    rows = [factory.create_row(metering_point_id=str(uuid.uuid4()), quality=quality) for quality in expected_qualities]
     prepared_tariffs = factory.create(spark, rows)
 
     # Act
@@ -202,11 +190,7 @@ def test__calculate_tariff_price_per_co_es__when_settlement_method_is_null__retu
     """
 
     # Arrange
-    rows = [
-        factory.create_row(
-            metering_point_type=MeteringPointType.PRODUCTION, settlement_method=None
-        )
-    ]
+    rows = [factory.create_row(metering_point_type=MeteringPointType.PRODUCTION, settlement_method=None)]
     prepared_tariffs = factory.create(spark, rows)
 
     # Act

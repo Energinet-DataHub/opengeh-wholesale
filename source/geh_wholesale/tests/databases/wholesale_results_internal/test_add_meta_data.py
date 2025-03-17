@@ -14,11 +14,11 @@
 from pyspark import Row
 from pyspark.sql import SparkSession
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.constants import Colname
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_internal.schemas import calculation_grid_areas_schema
-from package.databases.wholesale_results_internal.add_meta_data import (
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.wholesale_internal.schemas import calculation_grid_areas_schema
+from geh_wholesale.databases.wholesale_results_internal.add_meta_data import (
     _add_calculation_result_id,
 )
 

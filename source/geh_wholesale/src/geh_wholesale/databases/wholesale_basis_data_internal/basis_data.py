@@ -12,19 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pyspark.sql.functions as f
+from geh_common.telemetry import use_span
 from pyspark.sql import DataFrame
 from pyspark.sql.types import DecimalType
-from geh_common.telemetry import use_span
 
-from package.calculation.preparation.data_structures import InputChargesContainer
-from package.calculation.preparation.data_structures.grid_loss_metering_point_ids import (
+from geh_wholesale.calculation.preparation.data_structures import InputChargesContainer
+from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_ids import (
     GridLossMeteringPointIds,
 )
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.constants import Colname
-from package.databases.table_column_names import TableColumnNames
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.table_column_names import TableColumnNames
 
 
 @use_span("get_metering_point_periods_basis_data")
@@ -41,13 +41,9 @@ def get_metering_point_periods_basis_data(
         f.col(Colname.resolution).alias(TableColumnNames.resolution),
         f.col(Colname.from_grid_area_code).alias(TableColumnNames.from_grid_area_code),
         f.col(Colname.to_grid_area_code).alias(TableColumnNames.to_grid_area_code),
-        f.col(Colname.parent_metering_point_id).alias(
-            TableColumnNames.parent_metering_point_id
-        ),
+        f.col(Colname.parent_metering_point_id).alias(TableColumnNames.parent_metering_point_id),
         f.col(Colname.energy_supplier_id).alias(TableColumnNames.energy_supplier_id),
-        f.col(Colname.balance_responsible_party_id).alias(
-            TableColumnNames.balance_responsible_party_id
-        ),
+        f.col(Colname.balance_responsible_party_id).alias(TableColumnNames.balance_responsible_party_id),
         f.col(Colname.from_date).alias(TableColumnNames.from_date),
         f.col(Colname.to_date).alias(TableColumnNames.to_date),
     )
@@ -61,9 +57,7 @@ def get_time_series_points_basis_data(
     return metering_point_time_series.df.select(
         f.lit(calculation_id).alias(TableColumnNames.calculation_id),
         f.col(Colname.metering_point_id).alias(TableColumnNames.metering_point_id),
-        f.col(Colname.quantity)
-        .alias(TableColumnNames.quantity)
-        .cast(DecimalType(18, 3)),
+        f.col(Colname.quantity).alias(TableColumnNames.quantity).cast(DecimalType(18, 3)),
         f.col(Colname.quality).alias(TableColumnNames.quality),
         f.col(Colname.observation_time).alias(TableColumnNames.observation_time),
         f.col(Colname.metering_point_type).alias(TableColumnNames.metering_point_type),

@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from delta.tables import DeltaTable
-from package.optimize_job.delta_optimization import _optimize_table
-from pyspark.sql import SparkSession
-from tests.helpers.delta_table_utils import write_dataframe_to_table
-from pyspark.sql.types import StructType, StructField, StringType
-import pytest
 from geh_common.telemetry import Logger
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StringType, StructField, StructType
+
+from geh_wholesale.optimize_job.delta_optimization import _optimize_table
+from tests.helpers.delta_table_utils import write_dataframe_to_table
 
 
 def test__optimize_table__optimize_is_in_history_of_delta_table(
@@ -36,9 +36,7 @@ def test__optimize_table__optimize_is_in_history_of_delta_table(
             StructField("row", StringType(), False),
         ]
     )
-    df = spark.createDataFrame(
-        [("1", "foo"), ("2", "bar"), ("3", "test")], schema=schema
-    )
+    df = spark.createDataFrame([("1", "foo"), ("2", "bar"), ("3", "test")], schema=schema)
 
     write_dataframe_to_table(
         spark,

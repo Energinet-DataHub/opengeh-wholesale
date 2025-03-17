@@ -14,13 +14,13 @@
 
 from pyspark.sql.types import (
     IntegerType,
-    StructField,
     StringType,
-    TimestampType,
+    StructField,
     StructType,
+    TimestampType,
 )
 
-from package.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.table_column_names import TableColumnNames
 
 charge_link_periods_schema = StructType(
     [

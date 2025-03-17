@@ -19,23 +19,23 @@ from typing import Any
 import pytest
 from pyspark.sql import SparkSession
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.wholesale.data_structures import TotalMonthlyAmount
-from package.calculation.wholesale.data_structures.total_monthly_amount import (
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.wholesale.data_structures import TotalMonthlyAmount
+from geh_wholesale.calculation.wholesale.data_structures.total_monthly_amount import (
     total_monthly_amount_schema,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     CalculationType,
 )
-from package.constants import Colname
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal import (
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.wholesale_results_internal import (
     total_monthly_amounts_storage_model_factory as sut,
 )
-from package.databases.wholesale_results_internal.schemas import (
+from geh_wholesale.databases.wholesale_results_internal.schemas import (
     total_monthly_amounts_schema_uc,
 )
-from package.infrastructure.paths import WholesaleResultsInternalDatabase
+from geh_wholesale.infrastructure.paths import WholesaleResultsInternalDatabase
 
 TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
 
@@ -85,9 +85,7 @@ def _create_default_total_monthly_amounts(
     spark: SparkSession,
 ) -> TotalMonthlyAmount:
     row = [_create_result_row()]
-    return TotalMonthlyAmount(
-        spark.createDataFrame(data=row, schema=total_monthly_amount_schema)
-    )
+    return TotalMonthlyAmount(spark.createDataFrame(data=row, schema=total_monthly_amount_schema))
 
 
 def _create_multiple_total_monthly_amounts(
@@ -166,9 +164,7 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
     assert actual == expected_column_names
 
 
-def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names() -> (
-    None
-):
+def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names() -> None:
     # This class is a guard against adding new columns without considering how the column affects the generation of
     # calculation result IDs
 

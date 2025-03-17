@@ -19,18 +19,16 @@ from pyspark.sql.functions import lit
 from pyspark.sql.types import DecimalType
 
 import tests.calculation.energy.energy_results_factories as factory
-from package.calculation.energy.data_structures.energy_results import (
+from geh_wholesale.calculation.energy.data_structures.energy_results import (
     EnergyResults,
     energy_results_schema,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 class TestCtor:
     class TestWhenNullableColumnsAreMissingInInputDataframe:
-        def test_returns_dataframe_that_includes_missing_column(
-            self, spark: SparkSession
-        ) -> None:
+        def test_returns_dataframe_that_includes_missing_column(self, spark: SparkSession) -> None:
             # Arrange
             df = factory.create(spark).df
             nullable_columns = [
@@ -49,9 +47,7 @@ class TestCtor:
             assert set(nullable_columns).issubset(set(actual.df.schema.fieldNames()))
 
     class TestWhenMismatchInNullability:
-        def test_accepts_nullability_of_input_dataframe(
-            self, spark: SparkSession
-        ) -> None:
+        def test_accepts_nullability_of_input_dataframe(self, spark: SparkSession) -> None:
             # Arrange
             df = factory.create(spark).df
             df = df.withColumn(Colname.quantity, lit(None).cast(DecimalType(18, 3)))
@@ -72,9 +68,7 @@ class TestCtor:
             assert actual.df.collect() == df.collect()
 
     class TestWhenInputContainsIrrelevantColumn:
-        def test_returns_schema_without_irrelevant_column(
-            self, spark: SparkSession
-        ) -> None:
+        def test_returns_schema_without_irrelevant_column(self, spark: SparkSession) -> None:
             # Arrange
             df = factory.create(spark).df
             irrelevant_column = "irrelevant_column"
@@ -87,9 +81,7 @@ class TestCtor:
             assert irrelevant_column not in actual.df.schema.fieldNames()
 
     class TestWhenInputDecimalScaleIsHigherThanThree:
-        def test_raise_exception_if_scale_does_no_match_schema(
-            self, spark: SparkSession
-        ) -> None:
+        def test_raise_exception_if_scale_does_no_match_schema(self, spark: SparkSession) -> None:
             """
             The quantity column in EnergyResult can be represented by 3 decimals.
             Time series has 3 decimals and those with resolution PT1H is divided by four (quarters).

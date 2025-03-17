@@ -13,12 +13,12 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
-    StructField,
     StringType,
+    StructField,
     StructType,
 )
 
-from package.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.table_column_names import TableColumnNames
 
 calculation_grid_areas_schema = StructType(
     [

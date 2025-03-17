@@ -13,23 +13,22 @@
 # limitations under the License.
 
 
-from package.calculation.preparation.data_structures.prepared_tariffs import (
+from geh_wholesale.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
 )
-from package.calculation.wholesale.data_structures.wholesale_results import (
-    WholesaleResults,
-)
-from package.calculation.wholesale.calculate_total_quantity_and_amount import (
+from geh_wholesale.calculation.wholesale.calculate_total_quantity_and_amount import (
     calculate_total_quantity_and_amount,
 )
-from package.codelists import ChargeType
+from geh_wholesale.calculation.wholesale.data_structures.wholesale_results import (
+    WholesaleResults,
+)
+from geh_wholesale.codelists import ChargeType
 
 
 def calculate_tariff_price_per_co_es(
     prepared_tariffs: PreparedTariffs,
 ) -> WholesaleResults:
-    """
-    Calculate tariff amount time series.
+    """Calculate tariff amount time series.
     A result is calculated per
     - grid area
     - charge key (charge id, charge type, charge owner)
@@ -41,6 +40,5 @@ def calculate_tariff_price_per_co_es(
     in the tariffs data frame. So responsibility of creating results per
     resolution is managed outside this module.
     """
-
     df = calculate_total_quantity_and_amount(prepared_tariffs.df, ChargeType.TARIFF)
     return WholesaleResults(df)

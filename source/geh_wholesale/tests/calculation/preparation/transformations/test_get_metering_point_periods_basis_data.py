@@ -12,18 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import SparkSession, Row
+from geh_common.testing.dataframes.assert_schemas import assert_schema
+from pyspark.sql import Row, SparkSession
 
-from package.codelists import (
+from geh_wholesale.codelists import (
     MeteringPointResolution,
 )
-from geh_common.testing.dataframes.assert_schemas import assert_schema
-from package.constants import Colname
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_basis_data_internal import (
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.wholesale_basis_data_internal import (
     get_metering_point_periods_basis_data,
 )
-from package.databases.wholesale_basis_data_internal.schemas.metering_point_periods_schema import (
+from geh_wholesale.databases.wholesale_basis_data_internal.schemas.metering_point_periods_schema import (
     metering_point_periods_schema_basis_data,
 )
 from tests.calculation.preparation.transformations import metering_point_periods_factory
@@ -36,9 +36,7 @@ def test__when_valid_input__returns_df_with_expected_schema(
     metering_point_period_df = metering_point_periods_factory.create(spark)
 
     # Act
-    actual = get_metering_point_periods_basis_data(
-        "some-calculation-id", metering_point_period_df
-    )
+    actual = get_metering_point_periods_basis_data("some-calculation-id", metering_point_period_df)
 
     # Assert
     assert_schema(actual.schema, metering_point_periods_schema_basis_data)
@@ -57,9 +55,7 @@ def test__each_metering_point_has_a_row(spark: SparkSession) -> None:
     metering_point_period_df = metering_point_periods_factory.create(spark, rows)
 
     # Act
-    master_basis_data = get_metering_point_periods_basis_data(
-        "some-calculation-id", metering_point_period_df
-    )
+    master_basis_data = get_metering_point_periods_basis_data("some-calculation-id", metering_point_period_df)
 
     # Assert
     assert master_basis_data.count() == expected_number_of_metering_points
@@ -103,20 +99,14 @@ def test__both_hour_and_quarterly_resolution_data_are_in_basis_data(
     # Arrange
     expected_number_of_metering_points = 2
     rows = [
-        metering_point_periods_factory.create_row(
-            metering_point_id="1", resolution=MeteringPointResolution.QUARTER
-        ),
-        metering_point_periods_factory.create_row(
-            metering_point_id="2", resolution=MeteringPointResolution.HOUR
-        ),
+        metering_point_periods_factory.create_row(metering_point_id="1", resolution=MeteringPointResolution.QUARTER),
+        metering_point_periods_factory.create_row(metering_point_id="2", resolution=MeteringPointResolution.HOUR),
     ]
 
     metering_point_period_df = metering_point_periods_factory.create(spark, rows)
 
     # Act
-    master_basis_data = get_metering_point_periods_basis_data(
-        "some-calculation-id", metering_point_period_df
-    )
+    master_basis_data = get_metering_point_periods_basis_data("some-calculation-id", metering_point_period_df)
 
     # Assert
     assert master_basis_data.count() == expected_number_of_metering_points

@@ -17,18 +17,18 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.data_structures.prepared_tariffs import (
+from geh_wholesale.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
     prepared_tariffs_schema,
 )
-from package.codelists import (
-    ChargeType,
+from geh_wholesale.codelists import (
+    ChargeQuality,
     ChargeResolution,
+    ChargeType,
     MeteringPointType,
     SettlementMethod,
-    ChargeQuality,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 class DefaultValues:
@@ -63,8 +63,7 @@ def create_row(
     quality: ChargeQuality = DefaultValues.QUALITY,
 ) -> Row:
     row = {
-        Colname.charge_key: charge_key
-        or f"{charge_code}-{ChargeType.TARIFF.value}-{charge_owner}",
+        Colname.charge_key: charge_key or f"{charge_code}-{ChargeType.TARIFF.value}-{charge_owner}",
         Colname.charge_code: charge_code,
         Colname.charge_type: ChargeType.TARIFF.value,
         Colname.charge_owner: charge_owner,
@@ -75,9 +74,7 @@ def create_row(
         Colname.metering_point_id: metering_point_id,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.metering_point_type: metering_point_type.value,
-        Colname.settlement_method: (
-            settlement_method.value if settlement_method else None
-        ),
+        Colname.settlement_method: (settlement_method.value if settlement_method else None),
         Colname.grid_area_code: grid_area,
         Colname.quantity: quantity,
         Colname.qualities: [quality.value],

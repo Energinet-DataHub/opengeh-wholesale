@@ -13,17 +13,15 @@
 # limitations under the License.
 
 import pyspark.sql.types as t
+from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
 from pyspark.sql import DataFrame
 
-from package.codelists import ChargeType
-from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
-from package.constants import Colname
+from geh_wholesale.codelists import ChargeType
+from geh_wholesale.constants import Colname
 
 
 class ChargePrices(DataFrameWrapper):
-    """
-    Represents the charge prices.
-    """
+    """Represents the charge prices."""
 
     def __init__(self, df: DataFrame):
         super().__init__(

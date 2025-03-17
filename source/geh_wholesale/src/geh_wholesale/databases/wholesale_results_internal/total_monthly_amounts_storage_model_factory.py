@@ -15,17 +15,15 @@
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.wholesale.data_structures import TotalMonthlyAmount
-from package.constants import Colname
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal.add_meta_data import add_metadata
-from package.infrastructure.paths import WholesaleResultsInternalDatabase
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.wholesale.data_structures import TotalMonthlyAmount
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.wholesale_results_internal.add_meta_data import add_metadata
+from geh_wholesale.infrastructure.paths import WholesaleResultsInternalDatabase
 
 
-def create(
-    args: CalculatorArgs, total_monthly_amounts: TotalMonthlyAmount
-) -> DataFrame:
+def create(args: CalculatorArgs, total_monthly_amounts: TotalMonthlyAmount) -> DataFrame:
     total_monthly_amounts = add_metadata(
         args,
         _get_column_group_for_calculation_result_id(),

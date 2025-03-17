@@ -15,10 +15,10 @@ from dataclasses import dataclass
 
 from pyspark.sql import DataFrame
 
-from package.calculation.preparation.data_structures.charge_price_information import (
+from geh_wholesale.calculation.preparation.data_structures.charge_price_information import (
     ChargePriceInformation,
 )
-from package.calculation.preparation.data_structures.charge_prices import ChargePrices
+from geh_wholesale.calculation.preparation.data_structures.charge_prices import ChargePrices
 
 
 @dataclass

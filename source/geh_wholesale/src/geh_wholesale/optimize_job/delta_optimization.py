@@ -19,9 +19,9 @@ from delta.tables import DeltaTable
 from geh_common.telemetry import Logger
 from pyspark.sql import SparkSession
 
-import package.infrastructure.environment_variables as env_vars
-from package.infrastructure import initialize_spark
-from package.infrastructure.paths import (
+import geh_wholesale.infrastructure.environment_variables as env_vars
+from geh_wholesale.infrastructure import initialize_spark
+from geh_wholesale.infrastructure.paths import (
     WholesaleBasisDataInternalDatabase,
     WholesaleInternalDatabase,
     WholesaleResultsInternalDatabase,
@@ -29,13 +29,10 @@ from package.infrastructure.paths import (
 
 
 def optimize_tables(catalog_name: str | None = None) -> None:
-    """
-    Optimize all tables in the internal databases.
+    """Optimize all tables in the internal databases.
     OPTIMIZE documentation: https://docs.delta.io/latest/optimizations-oss.html
     """
-    applicationinsights_connection_string = os.getenv(
-        "APPLICATIONINSIGHTS_CONNECTION_STRING"
-    )
+    applicationinsights_connection_string = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
     logging_settings = config.LoggingSettings(
         cloud_role_name="dbr-optimize-tables",
         tracer_name="optimize-tables-job",
@@ -53,9 +50,7 @@ def optimize_tables(catalog_name: str | None = None) -> None:
         f"{catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}": WholesaleInternalDatabase.TABLE_NAMES,
     }
 
-    total_tables = sum(
-        len(table_names) for table_names in database_table_dicts.values()
-    )
+    total_tables = sum(len(table_names) for table_names in database_table_dicts.values())
     logger.info(f"Total number of tables to optimize: {total_tables}")
 
     with config.start_span(__name__):
@@ -65,9 +60,7 @@ def optimize_tables(catalog_name: str | None = None) -> None:
                 _optimize_table(spark, database_name, table_name, logger)
 
 
-def _optimize_table(
-    spark: SparkSession, database_name: str, table_name: str, logger: Logger
-) -> None:
+def _optimize_table(spark: SparkSession, database_name: str, table_name: str, logger: Logger) -> None:
     full_table_name = f"{database_name}.{table_name}"
     with config.start_span(full_table_name):
         try:

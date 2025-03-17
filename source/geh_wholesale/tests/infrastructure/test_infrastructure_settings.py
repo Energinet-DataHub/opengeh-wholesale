@@ -1,10 +1,10 @@
-from itertools import combinations
 import os
+from itertools import combinations
 
 import pytest
-from package.infrastructure.environment_variables import EnvironmentVariable
-from package.infrastructure.infrastructure_settings import InfrastructureSettings
 
+from geh_wholesale.infrastructure.environment_variables import EnvironmentVariable
+from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
 
 DEFAULT_ENV_VARS = {
     EnvironmentVariable.CATALOG_NAME.value: "catalog",
@@ -35,7 +35,7 @@ def test_infrastructure_settings_with_default_env(monkeypatch):
     InfrastructureSettings()
 
 
-@pytest.mark.parametrize(["required_env_var"], [(k,) for k in DEFAULT_ENV_VARS.keys()])
+@pytest.mark.parametrize("required_env_var", [(k,) for k in DEFAULT_ENV_VARS.keys()])
 def test_infrastructure_settings_with_missing_env(required_env_var, monkeypatch):
     env_vars = DEFAULT_ENV_VARS.copy()
     env_vars.pop(required_env_var)
@@ -53,7 +53,7 @@ def test_infrastructure_settings_with_all_optional_cli_args(monkeypatch):
         assert settings.__dict__[k.replace("-", "_")] == v
 
 
-@pytest.mark.parametrize(["arg_names"], _get_all_combinations(DEFAULT_ARGS.keys()))
+@pytest.mark.parametrize("arg_names", _get_all_combinations(DEFAULT_ARGS.keys()))
 def test_infrastructure_settings_with_some_optional_cli_args(arg_names, monkeypatch):
     sys_args = [f"--{k}={v}" for k, v in DEFAULT_ARGS.items() if k in arg_names]
     monkeypatch.setattr(os, "environ", DEFAULT_ENV_VARS)

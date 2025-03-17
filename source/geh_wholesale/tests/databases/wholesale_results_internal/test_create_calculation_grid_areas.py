@@ -14,14 +14,14 @@
 
 from pyspark.sql import Row, SparkSession
 
-from tests.helpers.data_frame_utils import assert_dataframes_equal
-from package.calculation.calculator_args import CalculatorArgs
-from package.databases.wholesale_internal.schemas.calculation_grid_areas_schema import (
-    calculation_grid_areas_schema,
-)
-from package.databases.wholesale_internal.calculations_grid_areas_storage_model_factory import (
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.databases.wholesale_internal.calculations_grid_areas_storage_model_factory import (
     create_calculation_grid_areas,
 )
+from geh_wholesale.databases.wholesale_internal.schemas.calculation_grid_areas_schema import (
+    calculation_grid_areas_schema,
+)
+from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 
 def test__when_valid_input__creates_calculation_grid_areas_with_expected_schema(

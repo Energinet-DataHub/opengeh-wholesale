@@ -17,13 +17,13 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.wholesale.data_structures import (
+from geh_wholesale.calculation.wholesale.data_structures import (
     TotalMonthlyAmount,
 )
-from package.calculation.wholesale.data_structures.total_monthly_amount import (
+from geh_wholesale.calculation.wholesale.data_structures.total_monthly_amount import (
     total_monthly_amount_schema,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 class DefaultValues:
@@ -41,7 +41,6 @@ def create_row(
     total_amount: int | Decimal | None = DefaultValues.TOTAL_AMOUNT,
     charge_owner: str = DefaultValues.CHARGE_OWNER,
 ) -> Row:
-
     row = {
         Colname.grid_area_code: grid_area,
         Colname.energy_supplier_id: energy_supplier_id,
@@ -53,9 +52,7 @@ def create_row(
     return Row(**row)
 
 
-def create(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> TotalMonthlyAmount:
+def create(spark: SparkSession, data: None | Row | list[Row] = None) -> TotalMonthlyAmount:
     """If data is None, a single row with default values is created."""
     if data is None:
         data = [create_row()]

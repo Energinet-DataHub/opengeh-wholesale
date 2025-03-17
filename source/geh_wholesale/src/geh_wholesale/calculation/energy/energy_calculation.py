@@ -13,31 +13,31 @@
 # limitations under the License.
 from typing import Tuple
 
-from geh_common.telemetry import use_span, logging_configuration
+from geh_common.telemetry import logging_configuration, use_span
 
-import package.calculation.energy.aggregators.exchange_aggregators as exchange_aggr
-import package.calculation.energy.aggregators.grid_loss_aggregators as grid_loss_aggr
-import package.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
-import package.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
-import package.databases.wholesale_results_internal.energy_storage_model_factory as factory
-from package.calculation.calculation_output import EnergyResultsOutput
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.data_structures.energy_results import (
+import geh_wholesale.calculation.energy.aggregators.exchange_aggregators as exchange_aggr
+import geh_wholesale.calculation.energy.aggregators.grid_loss_aggregators as grid_loss_aggr
+import geh_wholesale.calculation.energy.aggregators.grouping_aggregators as grouping_aggr
+import geh_wholesale.calculation.energy.aggregators.metering_point_time_series_aggregators as mp_aggr
+import geh_wholesale.databases.wholesale_results_internal.energy_storage_model_factory as factory
+from geh_wholesale.calculation.calculation_output import EnergyResultsOutput
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
-from package.calculation.energy.resolution_transition_factory import (
+from geh_wholesale.calculation.energy.resolution_transition_factory import (
     get_energy_result_resolution_adjusted_metering_point_time_series,
 )
-from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
     GridLossMeteringPointPeriods,
 )
-from package.calculation.preparation.data_structures.metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
 )
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     CalculationType,
     MeteringPointType,
     TimeSeriesType,
@@ -51,10 +51,8 @@ def execute(
     grid_loss_metering_point_periods: GridLossMeteringPointPeriods,
 ) -> Tuple[EnergyResultsOutput, EnergyResults, EnergyResults]:
     with logging_configuration.start_span("metering_point_time_series"):
-        metering_point_time_series = (
-            get_energy_result_resolution_adjusted_metering_point_time_series(
-                args, prepared_metering_point_time_series
-            )
+        metering_point_time_series = get_energy_result_resolution_adjusted_metering_point_time_series(
+            args, prepared_metering_point_time_series
         )
         metering_point_time_series.cache_internal()
 
@@ -87,9 +85,7 @@ def _calculate(
         args, metering_point_time_series, energy_results_output
     )
 
-    non_profiled_consumption_per_es = _calculate_non_profiled_consumption_per_es(
-        metering_point_time_series
-    )
+    non_profiled_consumption_per_es = _calculate_non_profiled_consumption_per_es(metering_point_time_series)
     non_profiled_consumption_per_es.cache_internal()
 
     positive_grid_loss, negative_grid_loss = _calculate_grid_loss(
@@ -141,9 +137,7 @@ def _calculate_exchange(
     metering_point_time_series: MeteringPointTimeSeries,
     energy_results_output: EnergyResultsOutput,
 ) -> EnergyResults:
-    exchange_per_neighbor = exchange_aggr.aggregate_exchange_per_neighbor(
-        metering_point_time_series, args.grid_areas
-    )
+    exchange_per_neighbor = exchange_aggr.aggregate_exchange_per_neighbor(metering_point_time_series, args.grid_areas)
 
     # exchange_per_neighbor is a result for eSett.
     # And eSett is only interested in the calculation types aggregation and balance fixing.
@@ -170,9 +164,7 @@ def _calculate_non_profiled_consumption_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
 ) -> EnergyResults:
     # Non-profiled consumption per balance responsible party and energy supplier
-    non_profiled_consumption_per_es = mp_aggr.aggregate_non_profiled_consumption_per_es(
-        metering_point_time_series
-    )
+    non_profiled_consumption_per_es = mp_aggr.aggregate_non_profiled_consumption_per_es(metering_point_time_series)
 
     return non_profiled_consumption_per_es
 
@@ -183,9 +175,7 @@ def _calculate_temporary_production_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
     energy_results_output: EnergyResultsOutput,
 ) -> EnergyResults:
-    temporary_production_per_es = mp_aggr.aggregate_production_per_es(
-        metering_point_time_series
-    )
+    temporary_production_per_es = mp_aggr.aggregate_production_per_es(metering_point_time_series)
     temporary_production_per_es.cache_internal()
     # temp production per grid area - used as control result for grid loss
     temporary_production = grouping_aggr.aggregate(temporary_production_per_es)
@@ -205,14 +195,10 @@ def _calculate_temporary_flex_consumption_per_es(
     metering_point_time_series: MeteringPointTimeSeries,
     energy_results_output: EnergyResultsOutput,
 ) -> EnergyResults:
-    temporary_flex_consumption_per_es = mp_aggr.aggregate_flex_consumption_per_es(
-        metering_point_time_series
-    )
+    temporary_flex_consumption_per_es = mp_aggr.aggregate_flex_consumption_per_es(metering_point_time_series)
     temporary_flex_consumption_per_es.cache_internal()
     # temp flex consumption per grid area - used as control result for grid loss
-    temporary_flex_consumption = grouping_aggr.aggregate(
-        temporary_flex_consumption_per_es
-    )
+    temporary_flex_consumption = grouping_aggr.aggregate(temporary_flex_consumption_per_es)
 
     energy_results_output.temporary_flex_consumption = factory.create(
         args,
@@ -241,13 +227,9 @@ def _calculate_grid_loss(
     )
     grid_loss.cache_internal()
 
-    energy_results_output.grid_loss = factory.create(
-        args, grid_loss, TimeSeriesType.GRID_LOSS
-    )
+    energy_results_output.grid_loss = factory.create(args, grid_loss, TimeSeriesType.GRID_LOSS)
 
-    positive_grid_loss = grid_loss_aggr.calculate_positive_grid_loss(
-        grid_loss, grid_loss_metering_point_periods
-    )
+    positive_grid_loss = grid_loss_aggr.calculate_positive_grid_loss(grid_loss, grid_loss_metering_point_periods)
 
     energy_results_output.positive_grid_loss = factory.create(
         args,
@@ -255,9 +237,7 @@ def _calculate_grid_loss(
         TimeSeriesType.POSITIVE_GRID_LOSS,
     )
 
-    negative_grid_loss = grid_loss_aggr.calculate_negative_grid_loss(
-        grid_loss, grid_loss_metering_point_periods
-    )
+    negative_grid_loss = grid_loss_aggr.calculate_negative_grid_loss(grid_loss, grid_loss_metering_point_periods)
 
     energy_results_output.negative_grid_loss = factory.create(
         args,
@@ -405,7 +385,4 @@ def _calculate_total_consumption(
 
 
 def _is_aggregation_or_balance_fixing(calculation_type: CalculationType) -> bool:
-    return (
-        calculation_type == CalculationType.AGGREGATION
-        or calculation_type == CalculationType.BALANCE_FIXING
-    )
+    return calculation_type == CalculationType.AGGREGATION or calculation_type == CalculationType.BALANCE_FIXING

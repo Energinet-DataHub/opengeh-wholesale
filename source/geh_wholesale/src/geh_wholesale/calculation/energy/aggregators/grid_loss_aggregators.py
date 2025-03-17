@@ -15,18 +15,18 @@ from typing import Any
 
 import pyspark.sql.functions as f
 
-import package.calculation.energy.aggregators.transformations as t
-from package.calculation.energy.data_structures.energy_results import (
+import geh_wholesale.calculation.energy.aggregators.transformations as t
+from geh_wholesale.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
-from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
     GridLossMeteringPointPeriods,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     MeteringPointType,
     QuantityQuality,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 production_sum_quantity = "production_sum_quantity"
 exchange_sum_quantity = "exchange_sum_quantity"
@@ -44,7 +44,6 @@ def calculate_grid_loss(
     flex_consumption: EnergyResults,
     production: EnergyResults,
 ) -> EnergyResults:
-
     agg_non_profiled_consumption_result = t.aggregate_sum_quantity_and_qualities(
         non_profiled_consumption.df,
         [Colname.grid_area_code, Colname.observation_time],
@@ -90,9 +89,7 @@ def calculate_grid_loss(
 
     result = result.withColumn(
         Colname.quantity,
-        result[exchange_result]
-        + result[prod_result]
-        - (result[hourly_result] + result[flex_result]),
+        result[exchange_result] + result[prod_result] - (result[hourly_result] + result[flex_result]),
     )
 
     result = result.select(
@@ -147,10 +144,7 @@ def _calculate_negative_or_positive(
             gl,
             (gl[Colname.grid_area_code] == glr[Colname.grid_area_code])
             & (gl[Colname.observation_time] >= f.col(Colname.from_date))
-            & (
-                f.col(Colname.to_date).isNull()
-                | (gl[Colname.observation_time] < f.col(Colname.to_date))
-            ),
+            & (f.col(Colname.to_date).isNull() | (gl[Colname.observation_time] < f.col(Colname.to_date))),
             "inner",
         )
         .select(
@@ -168,9 +162,7 @@ def _calculate_negative_or_positive(
     return EnergyResults(result)
 
 
-def calculate_total_consumption(
-    production: EnergyResults, exchange: EnergyResults
-) -> EnergyResults:
+def calculate_total_consumption(production: EnergyResults, exchange: EnergyResults) -> EnergyResults:
     result_production = (
         t.aggregate_sum_quantity_and_qualities(
             production.df,
@@ -201,9 +193,7 @@ def calculate_total_consumption(
         )
         .withColumn(
             Colname.qualities,
-            f.array_union(
-                aggregated_production_qualities, aggregated_exchange_qualities
-            ),
+            f.array_union(aggregated_production_qualities, aggregated_exchange_qualities),
         )
     )
 
@@ -251,10 +241,7 @@ def apply_grid_loss_adjustment(
             f.col(Colname.observation_time) <= f.col(Colname.to_date),
         ).otherwise(True)
         & (f.col(Colname.observation_time) >= f.col(Colname.from_date))
-        & (
-            f.col(Colname.to_date).isNull()
-            | (f.col(Colname.observation_time) < f.col(Colname.to_date))
-        )
+        & (f.col(Colname.to_date).isNull() | (f.col(Colname.observation_time) < f.col(Colname.to_date)))
         & (f.col(Colname.grid_area_code) == f.col(grid_loss_responsible_grid_area)),
         "left",
     ).select(
@@ -289,15 +276,9 @@ def apply_grid_loss_adjustment(
             joined_grid_loss_result_and_responsible[Colname.qualities].isNull(),
             result_df[Colname.qualities],
         )
-        .otherwise(
-            f.array_union(
-                result_df[Colname.qualities], grid_loss_result_df[Colname.qualities]
-            )
-        )
+        .otherwise(f.array_union(result_df[Colname.qualities], grid_loss_result_df[Colname.qualities]))
         .alias(Colname.qualities),
-        joined_grid_loss_result_and_responsible[Colname.quantity].alias(
-            "grid_loss_sum_quantity"
-        ),
+        joined_grid_loss_result_and_responsible[Colname.quantity].alias("grid_loss_sum_quantity"),
     )
     df = df.na.fill(0, subset=["grid_loss_sum_quantity", Colname.quantity])
 

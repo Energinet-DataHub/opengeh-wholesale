@@ -17,16 +17,16 @@ from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession
 
-from package.databases.migrations_wholesale.schemas import (
+from geh_wholesale.codelists import (
+    CalculationType,
+    MeteringPointResolution,
+    MeteringPointType,
+    SettlementMethod,
+)
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.migrations_wholesale.schemas import (
     metering_point_periods_schema,
 )
-from package.codelists import (
-    MeteringPointResolution,
-    SettlementMethod,
-    MeteringPointType,
-    CalculationType,
-)
-from package.constants import Colname
 
 
 class DefaultValues:

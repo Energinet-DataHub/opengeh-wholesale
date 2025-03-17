@@ -20,15 +20,15 @@ from pyspark.sql.functions import lit
 
 import tests.calculation.energy.energy_results_factories as energy_results_factory
 import tests.calculation.energy.metering_point_time_series_factories as metering_point_time_series_factory
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.energy.calculated_grid_loss import (
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.energy.calculated_grid_loss import (
     append_calculated_grid_loss_to_metering_point_times_series,
 )
-from package.calculation.preparation.data_structures import (
+from geh_wholesale.calculation.preparation.data_structures import (
     PreparedMeteringPointTimeSeries,
 )
-from package.codelists import QuantityQuality
-from package.constants import Colname
+from geh_wholesale.codelists import QuantityQuality
+from geh_wholesale.constants import Colname
 
 
 @pytest.mark.parametrize(
@@ -70,9 +70,7 @@ def test__add_calculated_grid_loss_to_metering_point_times_series__returns_corre
 
     # Assert
     assert result.df.count() == 3
-    positive_and_negative_grid_loss = result.df.filter(
-        result.df[Colname.quality] == QuantityQuality.CALCULATED.value
-    )
+    positive_and_negative_grid_loss = result.df.filter(result.df[Colname.quality] == QuantityQuality.CALCULATED.value)
     assert positive_and_negative_grid_loss.count() == 2
     assert result.df.collect()[0][Colname.resolution] == expected_resolution
     assert result.df.collect()[1][Colname.resolution] == expected_resolution

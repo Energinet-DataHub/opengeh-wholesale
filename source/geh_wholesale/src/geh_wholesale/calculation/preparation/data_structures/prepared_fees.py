@@ -13,15 +13,14 @@
 # limitations under the License.
 
 import pyspark.sql.types as t
+from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
 from pyspark.sql import DataFrame
 
-from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 class PreparedFees(DataFrameWrapper):
-    """
-    Represents fee charges that are prepared for calculation.
+    """Represents fee charges that are prepared for calculation.
     Missing prices are represented by a None value in the 'charge_price' column.
     """
 

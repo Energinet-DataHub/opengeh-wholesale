@@ -17,17 +17,17 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.wholesale.data_structures.wholesale_results import (
+from geh_wholesale.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
     wholesale_results_schema,
 )
-from package.codelists import (
-    MeteringPointType,
-    SettlementMethod,
+from geh_wholesale.codelists import (
     ChargeQuality,
     ChargeType,
+    MeteringPointType,
+    SettlementMethod,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 default_qualities = [ChargeQuality.CALCULATED]
 
@@ -77,9 +77,7 @@ def create_row(
     return Row(**row)
 
 
-def create(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> WholesaleResults:
+def create(spark: SparkSession, data: None | Row | list[Row] = None) -> WholesaleResults:
     """If data is None, a single row with default values is created."""
     if data is None:
         data = [create_row()]

@@ -13,16 +13,15 @@
 # limitations under the License.
 from datetime import datetime
 
-from pyspark.sql import SparkSession
 import pytest
+from pyspark.sql import SparkSession
 
 import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
-from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
+from geh_wholesale.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
     _get_child_metering_points_with_energy_suppliers,
 )
-
-from package.codelists import MeteringPointType
-from package.constants import Colname
+from geh_wholesale.codelists import MeteringPointType
+from geh_wholesale.constants import Colname
 
 
 class TestWhenMeteringPointPeriodsHasMeteringPointType:
@@ -110,26 +109,12 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         assert actual.count() == 2
         actual_metering_points_sorted = actual.sort(Colname.from_date).collect()
 
-        assert (
-            actual_metering_points_sorted[0][Colname.energy_supplier_id]
-            == "es_parent_1"
-        )
-        assert (
-            actual_metering_points_sorted[1][Colname.energy_supplier_id]
-            == "es_parent_2"
-        )
-        assert actual_metering_points_sorted[0][Colname.from_date] == datetime(
-            2019, 12, 31, 23
-        )
-        assert actual_metering_points_sorted[1][Colname.from_date] == datetime(
-            2020, 1, 15, 23
-        )
-        assert actual_metering_points_sorted[0][Colname.to_date] == datetime(
-            2020, 1, 15, 23
-        )
-        assert actual_metering_points_sorted[1][Colname.to_date] == datetime(
-            2020, 1, 31, 23
-        )
+        assert actual_metering_points_sorted[0][Colname.energy_supplier_id] == "es_parent_1"
+        assert actual_metering_points_sorted[1][Colname.energy_supplier_id] == "es_parent_2"
+        assert actual_metering_points_sorted[0][Colname.from_date] == datetime(2019, 12, 31, 23)
+        assert actual_metering_points_sorted[1][Colname.from_date] == datetime(2020, 1, 15, 23)
+        assert actual_metering_points_sorted[0][Colname.to_date] == datetime(2020, 1, 15, 23)
+        assert actual_metering_points_sorted[1][Colname.to_date] == datetime(2020, 1, 31, 23)
 
     def test__returns_two_child_metering_points_with_the_same_from_and_to_date(
         self,
@@ -180,26 +165,12 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         assert actual.count() == 2
         actual_metering_points_sorted = actual.sort(Colname.from_date).collect()
 
-        assert (
-            actual_metering_points_sorted[0][Colname.energy_supplier_id]
-            == "es_parent_1"
-        )
-        assert (
-            actual_metering_points_sorted[1][Colname.energy_supplier_id]
-            == "es_parent_2"
-        )
-        assert actual_metering_points_sorted[0][Colname.from_date] == datetime(
-            2019, 12, 31, 23
-        )
-        assert actual_metering_points_sorted[1][Colname.from_date] == datetime(
-            2020, 1, 15, 23
-        )
-        assert actual_metering_points_sorted[0][Colname.to_date] == datetime(
-            2020, 1, 15, 23
-        )
-        assert actual_metering_points_sorted[1][Colname.to_date] == datetime(
-            2020, 1, 31, 23
-        )
+        assert actual_metering_points_sorted[0][Colname.energy_supplier_id] == "es_parent_1"
+        assert actual_metering_points_sorted[1][Colname.energy_supplier_id] == "es_parent_2"
+        assert actual_metering_points_sorted[0][Colname.from_date] == datetime(2019, 12, 31, 23)
+        assert actual_metering_points_sorted[1][Colname.from_date] == datetime(2020, 1, 15, 23)
+        assert actual_metering_points_sorted[0][Colname.to_date] == datetime(2020, 1, 15, 23)
+        assert actual_metering_points_sorted[1][Colname.to_date] == datetime(2020, 1, 31, 23)
 
     def test__returns_two_child_metering_points_with_parent_metering_points_from_and_to_date(
         self,
@@ -250,26 +221,12 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         assert actual.count() == 2
         actual_metering_points_sorted = actual.sort(Colname.from_date).collect()
 
-        assert (
-            actual_metering_points_sorted[0][Colname.energy_supplier_id]
-            == "es_parent_1"
-        )
-        assert (
-            actual_metering_points_sorted[1][Colname.energy_supplier_id]
-            == "es_parent_2"
-        )
-        assert actual_metering_points_sorted[0][Colname.from_date] == datetime(
-            2020, 1, 5, 23
-        )
-        assert actual_metering_points_sorted[1][Colname.from_date] == datetime(
-            2020, 1, 15, 23
-        )
-        assert actual_metering_points_sorted[0][Colname.to_date] == datetime(
-            2020, 1, 15, 23
-        )
-        assert actual_metering_points_sorted[1][Colname.to_date] == datetime(
-            2020, 1, 25, 23
-        )
+        assert actual_metering_points_sorted[0][Colname.energy_supplier_id] == "es_parent_1"
+        assert actual_metering_points_sorted[1][Colname.energy_supplier_id] == "es_parent_2"
+        assert actual_metering_points_sorted[0][Colname.from_date] == datetime(2020, 1, 5, 23)
+        assert actual_metering_points_sorted[1][Colname.from_date] == datetime(2020, 1, 15, 23)
+        assert actual_metering_points_sorted[0][Colname.to_date] == datetime(2020, 1, 15, 23)
+        assert actual_metering_points_sorted[1][Colname.to_date] == datetime(2020, 1, 25, 23)
 
     def test__returns_two_child_metering_points_with_the_same_period_as_parent_metering_points_in_child_period(
         self,
@@ -336,28 +293,14 @@ class TestWhenParentMeteringPointChangesEnergySupplierWithinChildMeteringPointPe
         assert actual.count() == 2
         actual_metering_points_sorted = actual.sort(Colname.from_date).collect()
 
-        assert (
-            actual_metering_points_sorted[0][Colname.energy_supplier_id]
-            == "es_parent_1"
-        )
-        assert (
-            actual_metering_points_sorted[1][Colname.energy_supplier_id]
-            == "es_parent_2"
-        )
+        assert actual_metering_points_sorted[0][Colname.energy_supplier_id] == "es_parent_1"
+        assert actual_metering_points_sorted[1][Colname.energy_supplier_id] == "es_parent_2"
 
-        assert actual_metering_points_sorted[0][Colname.from_date] == datetime(
-            2019, 12, 31, 23
-        )
-        assert actual_metering_points_sorted[1][Colname.from_date] == datetime(
-            2020, 1, 15, 23
-        )
+        assert actual_metering_points_sorted[0][Colname.from_date] == datetime(2019, 12, 31, 23)
+        assert actual_metering_points_sorted[1][Colname.from_date] == datetime(2020, 1, 15, 23)
 
-        assert actual_metering_points_sorted[0][Colname.to_date] == datetime(
-            2020, 1, 15, 23
-        )
-        assert actual_metering_points_sorted[1][Colname.to_date] == datetime(
-            2020, 1, 31, 23
-        )
+        assert actual_metering_points_sorted[0][Colname.to_date] == datetime(2020, 1, 15, 23)
+        assert actual_metering_points_sorted[1][Colname.to_date] == datetime(2020, 1, 31, 23)
 
 
 class TestWhenNoMeteringPointIdMatchingParentMeteringPointId:

@@ -17,12 +17,12 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.energy.data_structures.energy_results import (
+from geh_wholesale.calculation.energy.data_structures.energy_results import (
     EnergyResults,
     energy_results_schema,
 )
-from package.codelists import MeteringPointType, QuantityQuality, SettlementMethod
-from package.constants import Colname
+from geh_wholesale.codelists import MeteringPointType, QuantityQuality, SettlementMethod
+from geh_wholesale.constants import Colname
 
 DEFAULT_GRID_AREA = "100"
 DEFAULT_OBSERVATION_TIME = datetime.datetime.now()

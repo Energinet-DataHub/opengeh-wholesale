@@ -14,7 +14,7 @@
 
 import pyspark.sql.types as t
 
-from package.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.table_column_names import TableColumnNames
 
 amounts_per_charge_schema = t.StructType(
     [

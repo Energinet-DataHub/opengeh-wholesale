@@ -12,15 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 def round_quantity(df: DataFrame) -> DataFrame:
-    """
-    The function rounds the quantity to 3 decimal places.
+    """The function rounds the quantity to 3 decimal places.
     All Quantities that comes in from time series has a scale of 3.
     The scale will be increased to 6 in different way depending on resolution.
     Quantities with resolution of PT15M get added three zero at the end to increase the scale to 6.
@@ -45,28 +44,20 @@ def round_quantity(df: DataFrame) -> DataFrame:
     Now we can add them up and get the original value of 0.003.
     """
     df = df.orderBy(Colname.observation_time)
-    df = df.withColumn(
-        "index", (f.minute(Colname.observation_time) / 15).cast("integer") + 1
-    )
+    df = df.withColumn("index", (f.minute(Colname.observation_time) / 15).cast("integer") + 1)
 
     df = df.withColumn("quantity_row_1", f.col(Colname.quantity))
     df = df.withColumn(
         "quantity_row_2",
-        f.col(Colname.quantity)
-        - f.round("quantity_row_1", 3)
-        + f.col("quantity_row_1"),
+        f.col(Colname.quantity) - f.round("quantity_row_1", 3) + f.col("quantity_row_1"),
     )
     df = df.withColumn(
         "quantity_row_3",
-        f.col(Colname.quantity)
-        - f.round("quantity_row_2", 3)
-        + f.col("quantity_row_2"),
+        f.col(Colname.quantity) - f.round("quantity_row_2", 3) + f.col("quantity_row_2"),
     )
     df = df.withColumn(
         "quantity_row_4",
-        f.col(Colname.quantity)
-        - f.round("quantity_row_3", 3)
-        + f.col("quantity_row_3"),
+        f.col(Colname.quantity) - f.round("quantity_row_3", 3) + f.col("quantity_row_3"),
     )
     df = df.withColumn(
         "round_ready_quantity",

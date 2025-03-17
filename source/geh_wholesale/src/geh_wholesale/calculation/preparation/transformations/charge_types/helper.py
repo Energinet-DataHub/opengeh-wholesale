@@ -13,7 +13,8 @@
 # limitations under the License.
 
 from pyspark.sql.dataframe import DataFrame
-from package.constants import Colname
+
+from geh_wholesale.constants import Colname
 
 
 def join_charge_price_information_and_charge_price(
@@ -23,12 +24,9 @@ def join_charge_price_information_and_charge_price(
         charge_price_information.join(
             charge_prices,
             [
-                charge_prices[Colname.charge_key]
-                == charge_price_information[Colname.charge_key],
-                charge_prices[Colname.charge_time]
-                >= charge_price_information[Colname.from_date],
-                charge_prices[Colname.charge_time]
-                < charge_price_information[Colname.to_date],
+                charge_prices[Colname.charge_key] == charge_price_information[Colname.charge_key],
+                charge_prices[Colname.charge_time] >= charge_price_information[Colname.from_date],
+                charge_prices[Colname.charge_time] < charge_price_information[Colname.to_date],
             ],
             "inner",
         )

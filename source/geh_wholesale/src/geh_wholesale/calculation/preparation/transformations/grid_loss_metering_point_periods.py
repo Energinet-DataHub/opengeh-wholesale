@@ -11,20 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-By having a conftest.py in this directory, we are able to add all packages
+"""By having a conftest.py in this directory, we are able to add all packages
 defined in the geh_stream directory in our tests.
 """
 
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
-from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
     GridLossMeteringPointPeriods,
 )
-from package.codelists import MeteringPointType
-from package.constants import Colname
-from package.databases import wholesale_internal
+from geh_wholesale.codelists import MeteringPointType
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases import wholesale_internal
 
 
 def get_grid_loss_metering_point_periods(
@@ -50,9 +49,7 @@ def get_grid_loss_metering_point_periods(
         )
     )
 
-    _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
-        grid_areas, grid_loss_metering_point_periods
-    )
+    _throw_if_no_grid_loss_metering_point_periods_in_grid_area(grid_areas, grid_loss_metering_point_periods)
 
     return GridLossMeteringPointPeriods(grid_loss_metering_point_periods)
 
@@ -61,10 +58,8 @@ def _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
     grid_areas: list[str], grid_loss_metering_point_periods: DataFrame
 ) -> None:
     for grid_area in grid_areas:
-        current_grid_loss_metering_point_periods = (
-            grid_loss_metering_point_periods.where(
-                col(Colname.grid_area_code) == grid_area
-            )
+        current_grid_loss_metering_point_periods = grid_loss_metering_point_periods.where(
+            col(Colname.grid_area_code) == grid_area
         )
         if (
             current_grid_loss_metering_point_periods.filter(
@@ -72,15 +67,11 @@ def _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
             ).count()
             == 0
         ):
-            raise ValueError(
-                f"No metering point for negative grid loss found for grid area {grid_area}"
-            )
+            raise ValueError(f"No metering point for negative grid loss found for grid area {grid_area}")
         if (
             current_grid_loss_metering_point_periods.filter(
                 col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value
             ).count()
             == 0
         ):
-            raise ValueError(
-                f"No metering point for positive grid loss found for grid area {grid_area}"
-            )
+            raise ValueError(f"No metering point for positive grid loss found for grid area {grid_area}")

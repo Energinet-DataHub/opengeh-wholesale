@@ -17,28 +17,28 @@ from decimal import Decimal
 from typing import Any
 
 import pytest
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import DataFrame, SparkSession
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.wholesale.data_structures.wholesale_results import (
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
     wholesale_results_schema,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
+    CalculationType,
     ChargeQuality,
-    WholesaleResultResolution,
     ChargeType,
     ChargeUnit,
     MeteringPointType,
-    CalculationType,
     SettlementMethod,
+    WholesaleResultResolution,
 )
-from package.constants import Colname
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal import (
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.wholesale_results_internal import (
     amounts_per_charge_storage_model_factory as sut,
 )
-from package.databases.wholesale_results_internal.schemas import (
+from geh_wholesale.databases.wholesale_results_internal.schemas import (
     amounts_per_charge_schema,
 )
 
@@ -52,9 +52,7 @@ DEFAULT_ENERGY_SUPPLIER_ID = "9876543210123"
 DEFAULT_GRID_AREA_CODE = "543"
 DEFAULT_CHARGE_TIME = datetime(2022, 6, 10, 13, 30)
 DEFAULT_INPUT_METERING_POINT_TYPE = MeteringPointType.ELECTRICAL_HEATING
-DEFAULT_METERING_POINT_TYPE = (
-    MeteringPointType.ELECTRICAL_HEATING
-)  # Must correspond with the input type above
+DEFAULT_METERING_POINT_TYPE = MeteringPointType.ELECTRICAL_HEATING  # Must correspond with the input type above
 DEFAULT_SETTLEMENT_METHOD = SettlementMethod.FLEX
 DEFAULT_CHARGE_KEY = "40000-tariff-5790001330552"
 DEFAULT_CHARGE_CODE = "4000"
@@ -122,9 +120,7 @@ def _create_default_result(
     spark: SparkSession,
 ) -> WholesaleResults:
     row = [_create_result_row()]
-    return WholesaleResults(
-        spark.createDataFrame(data=row, schema=wholesale_results_schema)
-    )
+    return WholesaleResults(spark.createDataFrame(data=row, schema=wholesale_results_schema))
 
 
 def _create_result_df_corresponding_to_multiple_calculation_results(
@@ -188,9 +184,7 @@ def test__create__returns_dataframe_with_calculation_result_id(
     args: CalculatorArgs,
 ) -> None:
     # Arrange
-    result_df = WholesaleResults(
-        _create_result_df_corresponding_to_multiple_calculation_results(spark)
-    )
+    result_df = WholesaleResults(_create_result_df_corresponding_to_multiple_calculation_results(spark))
     expected_number_of_calculation_result_ids = 3
 
     # Act
@@ -223,9 +217,7 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
     assert actual == expected_column_names
 
 
-def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names() -> (
-    None
-):
+def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names() -> None:
     # This class is a guard against adding new columns without considering how the column affects the generation of
     # calculation result IDs
 

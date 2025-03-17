@@ -15,17 +15,16 @@
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 
-from package.calculation.preparation.data_structures.charge_link_metering_point_periods import (
+from geh_wholesale.calculation.preparation.data_structures.charge_link_metering_point_periods import (
     ChargeLinkMeteringPointPeriods,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 def get_charge_link_metering_point_periods(
     charge_links: DataFrame,
     metering_points: DataFrame,
 ) -> ChargeLinkMeteringPointPeriods:
-
     charge_link_metering_point_periods = (
         charge_links.join(
             metering_points,

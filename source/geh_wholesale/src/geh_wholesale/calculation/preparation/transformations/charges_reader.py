@@ -16,13 +16,13 @@ from datetime import datetime
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, concat_ws
 
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from package.calculation.preparation.data_structures.charge_price_information import (
+from geh_wholesale.calculation.preparation.data_structures.charge_price_information import (
     ChargePriceInformation,
 )
-from package.calculation.preparation.data_structures.charge_prices import ChargePrices
-from package.calculation.preparation.transformations.clamp_period import clamp_period
-from package.constants import Colname
+from geh_wholesale.calculation.preparation.data_structures.charge_prices import ChargePrices
+from geh_wholesale.calculation.preparation.transformations.clamp_period import clamp_period
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
 
 
 def read_charge_price_information(
@@ -33,10 +33,7 @@ def read_charge_price_information(
     charge_price_information_periods = (
         repository.read_charge_price_information_periods()
         .where(col(Colname.from_date) < period_end_datetime)
-        .where(
-            col(Colname.to_date).isNull()
-            | (col(Colname.to_date) > period_start_datetime)
-        )
+        .where(col(Colname.to_date).isNull() | (col(Colname.to_date) > period_start_datetime))
     )
 
     charge_price_information_periods = clamp_period(
@@ -47,9 +44,7 @@ def read_charge_price_information(
         Colname.to_date,
     )
 
-    charge_price_information_periods = _add_charge_key_column(
-        charge_price_information_periods
-    )
+    charge_price_information_periods = _add_charge_key_column(charge_price_information_periods)
     return ChargePriceInformation(charge_price_information_periods)
 
 
@@ -76,10 +71,7 @@ def read_charge_links(
     charge_links_df = (
         repository.read_charge_link_periods()
         .where(col(Colname.from_date) < period_end_datetime)
-        .where(
-            col(Colname.to_date).isNull()
-            | (col(Colname.to_date) > period_start_datetime)
-        )
+        .where(col(Colname.to_date).isNull() | (col(Colname.to_date) > period_start_datetime))
     )
 
     charge_links_df = clamp_period(

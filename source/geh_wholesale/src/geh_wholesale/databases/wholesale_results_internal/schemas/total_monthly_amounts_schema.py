@@ -20,7 +20,7 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from package.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.table_column_names import TableColumnNames
 
 # Note: The order of the columns must match the order of the columns in the Delta table
 total_monthly_amounts_schema_uc = StructType(

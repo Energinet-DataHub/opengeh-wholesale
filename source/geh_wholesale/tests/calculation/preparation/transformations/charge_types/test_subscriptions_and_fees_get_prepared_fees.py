@@ -11,19 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 import pytest
 from pyspark.sql import SparkSession
 
+import geh_wholesale.calculation.preparation.data_structures as d
+import geh_wholesale.codelists as e
 import tests.calculation.charges_factory as factory
-from package.calculation.preparation.transformations.charge_types import (
+from geh_wholesale.calculation.preparation.transformations.charge_types import (
     get_prepared_fees,
 )
-import package.calculation.preparation.data_structures as d
-import package.codelists as e
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 DEFAULT_TIME_ZONE = "Europe/Copenhagen"
 
@@ -52,9 +52,7 @@ def _create_default_charge_price_information(
     )
 
 
-def _create_charge_price(
-    spark: SparkSession, charge_time: datetime, charge_price: Decimal
-) -> d.ChargePrices:
+def _create_charge_price(spark: SparkSession, charge_time: datetime, charge_price: Decimal) -> d.ChargePrices:
     return factory.create_charge_prices(
         spark,
         [
@@ -78,9 +76,7 @@ def _create_charge_link_metering_point_periods(
         ),
     ]
 
-    return factory.create_charge_link_metering_point_periods(
-        spark, charge_link_metering_points_rows
-    )
+    return factory.create_charge_link_metering_point_periods(spark, charge_link_metering_points_rows)
 
 
 class TestWhenChargeTimeIsWithinOrBeforeLinkPeriod:
@@ -109,9 +105,7 @@ class TestWhenChargeTimeIsWithinOrBeforeLinkPeriod:
         charge_price = Decimal("1.123456")
         charge_price_information = _create_default_charge_price_information(spark)
         charge_prices = _create_charge_price(spark, charge_time, charge_price)
-        charge_link_metering_point_periods = _create_charge_link_metering_point_periods(
-            spark, charge_link_from_date
-        )
+        charge_link_metering_point_periods = _create_charge_link_metering_point_periods(spark, charge_link_from_date)
 
         # Act
         actual = get_prepared_fees(
@@ -135,9 +129,7 @@ class TestWhenChargeTimeIsAfterLinkPeriod:
         charge_price = Decimal("1.123456")
         charge_price_information = _create_default_charge_price_information(spark)
         charge_prices = _create_charge_price(spark, JAN_3RD, charge_price)
-        charge_link_metering_point_periods = _create_charge_link_metering_point_periods(
-            spark, JAN_1ST
-        )
+        charge_link_metering_point_periods = _create_charge_link_metering_point_periods(spark, JAN_1ST)
 
         # Act
         actual = get_prepared_fees(
@@ -182,10 +174,8 @@ class TestWhenHavingTwoLinksThatDoNotOverlapWithChargeTime:
             ),
         ]
 
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark, charge_link_metering_points_rows
-            )
+        charge_link_metering_point_periods = factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
         )
 
         # Act
@@ -214,15 +204,9 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         charge_link_metering_points_rows = [
-            factory.create_charge_link_metering_point_periods_row(
-                charge_type=e.ChargeType.FEE
-            ),
-            factory.create_charge_link_metering_point_periods_row(
-                charge_type=e.ChargeType.SUBSCRIPTION
-            ),
-            factory.create_charge_link_metering_point_periods_row(
-                charge_type=e.ChargeType.TARIFF
-            ),
+            factory.create_charge_link_metering_point_periods_row(charge_type=e.ChargeType.FEE),
+            factory.create_charge_link_metering_point_periods_row(charge_type=e.ChargeType.SUBSCRIPTION),
+            factory.create_charge_link_metering_point_periods_row(charge_type=e.ChargeType.TARIFF),
         ]
         charge_price_information_rows = [
             factory.create_charge_price_information_row(
@@ -244,14 +228,10 @@ class TestWhenValidInput:
             factory.create_charge_prices_row(),
         ]
 
-        charge_link_metering_point_periods = (
-            factory.create_charge_link_metering_point_periods(
-                spark, charge_link_metering_points_rows
-            )
+        charge_link_metering_point_periods = factory.create_charge_link_metering_point_periods(
+            spark, charge_link_metering_points_rows
         )
-        charge_price_information = factory.create_charge_price_information(
-            spark, charge_price_information_rows
-        )
+        charge_price_information = factory.create_charge_price_information(spark, charge_price_information_rows)
         charge_prices = factory.create_charge_prices(spark, charge_prices_rows)
 
         # Act

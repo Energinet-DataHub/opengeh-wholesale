@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from dependency_injector.wiring import Provide
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import DataFrame, SparkSession
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.container import Container
-from package.databases.wholesale_internal.schemas.calculation_grid_areas_schema import (
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.container import Container
+from geh_wholesale.databases.wholesale_internal.schemas.calculation_grid_areas_schema import (
     calculation_grid_areas_schema,
 )
 
@@ -24,9 +24,7 @@ from package.databases.wholesale_internal.schemas.calculation_grid_areas_schema 
 def create_calculation_grid_areas(
     args: CalculatorArgs,
 ) -> DataFrame:
-    """
-    Creates a data frame containing calculation_id and grid area code.
-    """
+    """Creates a data frame containing calculation_id and grid area code."""
     return _create_calculation_grid_areas(args)
 
 

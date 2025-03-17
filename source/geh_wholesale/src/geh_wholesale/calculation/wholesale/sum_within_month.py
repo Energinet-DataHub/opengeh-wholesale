@@ -15,14 +15,14 @@
 from datetime import datetime
 
 import pyspark.sql.functions as f
-from pyspark.sql.types import StringType, DecimalType, ArrayType
+from pyspark.sql.types import ArrayType, DecimalType, StringType
 
-from package.calculation.wholesale.data_structures import MonthlyAmountPerCharge
-from package.calculation.wholesale.data_structures.wholesale_results import (
+from geh_wholesale.calculation.wholesale.data_structures import MonthlyAmountPerCharge
+from geh_wholesale.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
 )
-from package.codelists import WholesaleResultResolution
-from package.constants import Colname
+from geh_wholesale.codelists import WholesaleResultResolution
+from geh_wholesale.constants import Colname
 
 
 def sum_within_month(

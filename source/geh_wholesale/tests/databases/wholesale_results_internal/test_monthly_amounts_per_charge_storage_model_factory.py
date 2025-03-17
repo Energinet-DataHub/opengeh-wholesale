@@ -17,27 +17,27 @@ from decimal import Decimal
 from typing import Any
 
 import pytest
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import DataFrame, SparkSession
 
-from package.calculation.calculator_args import CalculatorArgs
-from package.calculation.wholesale.data_structures import MonthlyAmountPerCharge
-from package.calculation.wholesale.data_structures.monthly_amount_per_charge import (
+from geh_wholesale.calculation.calculator_args import CalculatorArgs
+from geh_wholesale.calculation.wholesale.data_structures import MonthlyAmountPerCharge
+from geh_wholesale.calculation.wholesale.data_structures.monthly_amount_per_charge import (
     monthly_amount_per_charge_schema,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
+    CalculationType,
     ChargeType,
     ChargeUnit,
-    CalculationType,
 )
-from package.constants import Colname
-from package.databases.table_column_names import TableColumnNames
-from package.databases.wholesale_results_internal import (
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.wholesale_results_internal import (
     monthly_amounts_per_charge_storage_model_factory as sut,
 )
-from package.databases.wholesale_results_internal.schemas import (
+from geh_wholesale.databases.wholesale_results_internal.schemas import (
     monthly_amounts_schema_uc,
 )
-from package.infrastructure.paths import (
+from geh_wholesale.infrastructure.paths import (
     WholesaleResultsInternalDatabase,
 )
 
@@ -101,9 +101,7 @@ def _create_default_result(
     spark: SparkSession,
 ) -> MonthlyAmountPerCharge:
     row = [_create_result_row()]
-    return MonthlyAmountPerCharge(
-        spark.createDataFrame(data=row, schema=monthly_amount_per_charge_schema)
-    )
+    return MonthlyAmountPerCharge(spark.createDataFrame(data=row, schema=monthly_amount_per_charge_schema))
 
 
 def _create_result_df_corresponding_to_multiple_calculation_results(
@@ -158,9 +156,7 @@ def test__create__returns_dataframe_with_calculation_result_id(
     args: CalculatorArgs,
 ) -> None:
     # Arrange
-    result_df = MonthlyAmountPerCharge(
-        _create_result_df_corresponding_to_multiple_calculation_results(spark)
-    )
+    result_df = MonthlyAmountPerCharge(_create_result_df_corresponding_to_multiple_calculation_results(spark))
     expected_number_of_calculation_result_ids = 3
 
     # Act
@@ -190,9 +186,7 @@ def test__get_column_group_for_calculation_result_id__returns_expected_column_na
     assert actual == expected_column_names
 
 
-def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names() -> (
-    None
-):
+def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names() -> None:
     # This class is a guard against adding new columns without considering how the column affects the generation of
     # calculation result IDs
 

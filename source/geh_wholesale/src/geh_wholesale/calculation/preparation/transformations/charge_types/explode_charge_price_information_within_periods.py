@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import DataFrame
 import pyspark.sql.functions as f
+from pyspark.sql import DataFrame
 
-from package.calculation.preparation.data_structures import ChargePriceInformation
-from package.codelists import ChargeResolution
-from package.constants import Colname
+from geh_wholesale.calculation.preparation.data_structures import ChargePriceInformation
+from geh_wholesale.codelists import ChargeResolution
+from geh_wholesale.constants import Colname
 
 
 def explode_charge_price_information_within_periods(
@@ -25,9 +25,7 @@ def explode_charge_price_information_within_periods(
     resolution: ChargeResolution,
     time_zone: str,
 ) -> DataFrame:
-    """
-    This method explodes charge_price_information_periods between from_date and to_date with a resolution set according to 'charge_resolution'.
-    """
+    """This method explodes charge_price_information_periods between from_date and to_date with a resolution set according to 'charge_resolution'."""
     if resolution != ChargeResolution.HOUR and resolution != ChargeResolution.DAY:
         raise ValueError(f"Unsupported resolution {resolution}")
 
@@ -61,8 +59,7 @@ def _explode_with_daily_charge_time(
         )
     ).where(
         # drop rows where charge_time is greater than or equal to to_date. This can happen when a charge stops and starts on the same day
-        f.col(Colname.charge_time)
-        < f.col(Colname.to_date)
+        f.col(Colname.charge_time) < f.col(Colname.to_date)
     )
 
 
@@ -80,6 +77,5 @@ def _explode_with_hourly_charge_time(
         ),
     ).where(
         # drop rows where charge_time is greater than or equal to to_date. This can happen when a charge stops and starts on the same day
-        f.col(Colname.charge_time)
-        < f.col(Colname.to_date)
+        f.col(Colname.charge_time) < f.col(Colname.to_date)
     )

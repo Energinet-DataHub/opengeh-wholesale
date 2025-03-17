@@ -16,12 +16,12 @@ import pyspark.sql.functions as f
 from pyspark.sql import Window
 from pyspark.sql.dataframe import DataFrame
 
-import package.calculation.preparation.data_structures as d
-from package.calculation.preparation.transformations.charge_types.explode_charge_price_information_within_periods import (
+import geh_wholesale.calculation.preparation.data_structures as d
+from geh_wholesale.calculation.preparation.transformations.charge_types.explode_charge_price_information_within_periods import (
     explode_charge_price_information_within_periods,
 )
-from package.codelists import ChargeType, WholesaleResultResolution, ChargeResolution
-from package.constants import Colname
+from geh_wholesale.codelists import ChargeResolution, ChargeType, WholesaleResultResolution
+from geh_wholesale.constants import Colname
 
 
 def get_prepared_subscriptions(
@@ -65,8 +65,7 @@ def _prepare(
     time_zone: str,
     charge_type: ChargeType,
 ) -> DataFrame:
-    """
-    This method does the following:
+    """This method does the following:
     - Joins charge_price_information, charge_prices and charge_link_metering_point_periods
     - Filters the result to only include the defined charge type
     - Explodes the result from monthly to daily resolution (only relevant for subscription charges, because fees have
@@ -75,19 +74,11 @@ def _prepare(
     """
     charge_links = charge_link_metering_point_periods.filter_by_charge_type(charge_type)
     charge_prices = charge_prices.filter_by_charge_type(charge_type)
-    charge_price_information = charge_price_information.filter_by_charge_type(
-        charge_type
-    )
+    charge_price_information = charge_price_information.filter_by_charge_type(charge_type)
 
-    charge_price_information_and_prices = _join_with_prices(
-        charge_price_information, charge_prices, time_zone
-    )
-    charge_with_links = _join_with_links(
-        charge_price_information_and_prices, charge_links.df
-    )
-    charge_with_links = charge_with_links.withColumn(
-        Colname.resolution, f.lit(WholesaleResultResolution.DAY.value)
-    )
+    charge_price_information_and_prices = _join_with_prices(charge_price_information, charge_prices, time_zone)
+    charge_with_links = _join_with_links(charge_price_information_and_prices, charge_links.df)
+    charge_with_links = charge_with_links.withColumn(Colname.resolution, f.lit(WholesaleResultResolution.DAY.value))
     return charge_with_links
 
 
@@ -96,28 +87,21 @@ def _join_with_prices(
     charge_prices: d.ChargePrices,
     time_zone: str,
 ) -> DataFrame:
-    """
-    Join charge_price_information with charge_prices.
+    """Join charge_price_information with charge_prices.
     This method also ensure
     - Missing charge prices will be set to None.
     - The charge price is the last known charge price for the charge key.
     """
     charge_prices = charge_prices.df
 
-    charge_price_information_with_charge_time = (
-        explode_charge_price_information_within_periods(
-            charge_price_information, ChargeResolution.DAY, time_zone
-        )
+    charge_price_information_with_charge_time = explode_charge_price_information_within_periods(
+        charge_price_information, ChargeResolution.DAY, time_zone
     )
 
-    w = Window.partitionBy(Colname.charge_key, Colname.from_date).orderBy(
-        Colname.charge_time
-    )
+    w = Window.partitionBy(Colname.charge_key, Colname.from_date).orderBy(Colname.charge_time)
 
     charge_price_information_with_prices = (
-        charge_price_information_with_charge_time.join(
-            charge_prices, [Colname.charge_key, Colname.charge_time], "left"
-        )
+        charge_price_information_with_charge_time.join(charge_prices, [Colname.charge_key, Colname.charge_time], "left")
         .withColumn(
             Colname.charge_price,
             f.last(Colname.charge_price, ignorenulls=True).over(w),
@@ -144,18 +128,9 @@ def _join_with_links(
 ) -> DataFrame:
     subscriptions = charge_price_information_and_prices.join(
         charge_links,
-        (
-            charge_price_information_and_prices[Colname.charge_key]
-            == charge_links[Colname.charge_key]
-        )
-        & (
-            charge_price_information_and_prices[Colname.charge_time]
-            >= charge_links[Colname.from_date]
-        )
-        & (
-            charge_price_information_and_prices[Colname.charge_time]
-            < charge_links[Colname.to_date]
-        ),
+        (charge_price_information_and_prices[Colname.charge_key] == charge_links[Colname.charge_key])
+        & (charge_price_information_and_prices[Colname.charge_time] >= charge_links[Colname.from_date])
+        & (charge_price_information_and_prices[Colname.charge_time] < charge_links[Colname.to_date]),
         how="inner",
     ).select(
         charge_price_information_and_prices[Colname.charge_key],

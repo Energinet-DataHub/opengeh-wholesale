@@ -5,7 +5,7 @@ This file should be renamed and relocated when hive is removed (or earlier).
 import pytest
 from pyspark.sql import SparkSession
 
-from package.infrastructure import paths
+from geh_wholesale.infrastructure import paths
 
 
 @pytest.mark.parametrize(
@@ -85,8 +85,7 @@ def test__when_migrations_executed__created_table_is_managed(
     table_description.show()
 
     is_managed = any(
-        prop["col_name"] == "Type" and prop["data_type"] == "MANAGED"
-        for prop in table_description.collect()
+        prop["col_name"] == "Type" and prop["data_type"] == "MANAGED" for prop in table_description.collect()
     )
 
     assert is_managed

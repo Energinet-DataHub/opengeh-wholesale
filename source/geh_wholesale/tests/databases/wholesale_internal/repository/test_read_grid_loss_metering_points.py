@@ -19,12 +19,12 @@ import pyspark.sql.functions as f
 import pytest
 from pyspark.sql import SparkSession
 
-from package.constants import Colname
-from package.databases import wholesale_internal
-from package.databases.wholesale_internal.schemas import (
+from geh_wholesale.constants import Colname
+from geh_wholesale.databases import wholesale_internal
+from geh_wholesale.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
-from package.infrastructure.paths import WholesaleInternalDatabase
+from geh_wholesale.infrastructure.paths import WholesaleInternalDatabase
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 
@@ -43,19 +43,13 @@ class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_grid_loss_metering_point_row()
-        reader = wholesale_internal.WholesaleInternalRepository(
-            mock.Mock(), "dummy_catalog_name"
-        )
-        df = spark.createDataFrame(
-            data=[row], schema=grid_loss_metering_point_ids_schema
-        )
+        reader = wholesale_internal.WholesaleInternalRepository(mock.Mock(), "dummy_catalog_name")
+        df = spark.createDataFrame(data=[row], schema=grid_loss_metering_point_ids_schema)
         df = df.drop(Colname.metering_point_id)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
-        with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
-        ):
+        with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
             with pytest.raises(AssertionError) as exc_info:
                 reader.read_grid_loss_metering_point_ids()
 
@@ -72,9 +66,7 @@ class TestWhenValidInput:
         calculation_input_path = f"{str(tmp_path)}/calculation_input"
         table_location = f"{calculation_input_path}/{WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
         row = _create_grid_loss_metering_point_row()
-        df = spark.createDataFrame(
-            data=[row], schema=grid_loss_metering_point_ids_schema
-        )
+        df = spark.createDataFrame(data=[row], schema=grid_loss_metering_point_ids_schema)
         write_dataframe_to_table(
             spark,
             df,
@@ -99,16 +91,10 @@ class TestWhenValidInputAndExtraColumns:
     def test_returns_expected_df(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_grid_loss_metering_point_row()
-        reader = wholesale_internal.WholesaleInternalRepository(
-            mock.Mock(), "spark_catalog"
-        )
-        df = spark.createDataFrame(
-            data=[row], schema=grid_loss_metering_point_ids_schema
-        )
+        reader = wholesale_internal.WholesaleInternalRepository(mock.Mock(), "spark_catalog")
+        df = spark.createDataFrame(data=[row], schema=grid_loss_metering_point_ids_schema)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
-        with mock.patch.object(
-            reader._spark.read.format("delta"), "table", return_value=df
-        ):
+        with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
             reader.read_grid_loss_metering_point_ids()

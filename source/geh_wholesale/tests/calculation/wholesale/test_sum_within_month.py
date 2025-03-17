@@ -18,8 +18,8 @@ from decimal import Decimal
 from pyspark.sql import SparkSession
 
 import tests.calculation.wholesale.factories.wholesale_results_factory as wholesale_results_factory
-from package.calculation.wholesale.sum_within_month import sum_within_month
-from package.constants import Colname
+from geh_wholesale.calculation.wholesale.sum_within_month import sum_within_month
+from geh_wholesale.constants import Colname
 
 PERIOD_START_DATETIME = datetime(2019, 12, 31, 23)
 

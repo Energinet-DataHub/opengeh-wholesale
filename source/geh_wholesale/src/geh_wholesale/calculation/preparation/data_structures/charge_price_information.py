@@ -13,16 +13,15 @@
 # limitations under the License.
 
 import pyspark.sql.types as t
+from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
 from pyspark.sql import DataFrame
 
-from package.codelists import ChargeType
-from geh_common.pyspark.data_frame_wrapper import DataFrameWrapper
-from package.constants import Colname
+from geh_wholesale.codelists import ChargeType
+from geh_wholesale.constants import Colname
 
 
 class ChargePriceInformation(DataFrameWrapper):
-    """
-    Represents the charge master data.
+    """Represents the charge master data.
     All periods are clamped to least common period of the metering point and the charge master data period.
     """
 
@@ -38,9 +37,7 @@ class ChargePriceInformation(DataFrameWrapper):
             ignore_decimal_precision=True,
         )
 
-    def filter_by_charge_type(
-        self, charge_type: ChargeType
-    ) -> "ChargePriceInformation":
+    def filter_by_charge_type(self, charge_type: ChargeType) -> "ChargePriceInformation":
         df = self._df.filter(self._df[Colname.charge_type] == charge_type.value)
         return ChargePriceInformation(df)
 

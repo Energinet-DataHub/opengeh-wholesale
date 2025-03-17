@@ -19,27 +19,25 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 from pyspark.sql.types import Row
 
-from package.calculation.energy.aggregators.exchange_aggregators import (
+from geh_wholesale.calculation.energy.aggregators.exchange_aggregators import (
     aggregate_exchange,
     aggregate_exchange_per_neighbor,
 )
-from package.calculation.energy.data_structures.energy_results import (
+from geh_wholesale.calculation.energy.data_structures.energy_results import (
     EnergyResults,
 )
-from package.calculation.preparation.data_structures.metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.metering_point_time_series import (
     MeteringPointTimeSeries,
     metering_point_time_series_schema,
 )
-from package.codelists import MeteringPointType
-from package.constants import Colname
+from geh_wholesale.codelists import MeteringPointType
+from geh_wholesale.constants import Colname
 from tests.calculation.energy import (
     metering_point_time_series_factories as factories,
 )
 
 date_time_formatting_string = "%Y-%m-%dT%H:%M:%S%z"
-default_obs_time = datetime.strptime(
-    "2020-01-01T00:00:00+0000", date_time_formatting_string
-)
+default_obs_time = datetime.strptime("2020-01-01T00:00:00+0000", date_time_formatting_string)
 numberOfQuarters = 5  # Not too many as it has a massive impact on test performance
 
 ALL_GRID_AREAS = ["A", "B", "C", "D", "E", "F", "X", "Y"]
@@ -94,9 +92,7 @@ def _create_row(
 @pytest.fixture(scope="module")
 def aggregated_data_frame(metering_point_time_series):
     """Perform aggregation"""
-    exchange_per_neighbor = aggregate_exchange_per_neighbor(
-        metering_point_time_series, ALL_GRID_AREAS
-    )
+    exchange_per_neighbor = aggregate_exchange_per_neighbor(metering_point_time_series, ALL_GRID_AREAS)
     return aggregate_exchange(exchange_per_neighbor)
 
 
@@ -169,9 +165,7 @@ def test_exchange_aggregator_returns_correct_aggregations(
         )
 
 
-def check_aggregation_row(
-    df: EnergyResults, grid_area: str, quantity: Decimal, time: datetime
-) -> None:
+def check_aggregation_row(df: EnergyResults, grid_area: str, quantity: Decimal, time: datetime) -> None:
     """Helper function that checks column values for the given row"""
     gridfiltered = df.df.where(df.df[Colname.grid_area_code] == grid_area).select(
         col(Colname.grid_area_code),

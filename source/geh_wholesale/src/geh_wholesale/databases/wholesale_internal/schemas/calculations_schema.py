@@ -13,15 +13,15 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
-    StructField,
-    StringType,
-    TimestampType,
-    StructType,
-    LongType,
     BooleanType,
+    LongType,
+    StringType,
+    StructField,
+    StructType,
+    TimestampType,
 )
 
-from package.databases.table_column_names import TableColumnNames
+from geh_wholesale.databases.table_column_names import TableColumnNames
 
 calculations_schema = StructType(
     [

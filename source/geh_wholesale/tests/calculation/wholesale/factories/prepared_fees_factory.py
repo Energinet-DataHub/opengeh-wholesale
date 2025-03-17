@@ -17,17 +17,17 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.data_structures import PreparedFees
-from package.calculation.preparation.data_structures.prepared_fees import (
+from geh_wholesale.calculation.preparation.data_structures import PreparedFees
+from geh_wholesale.calculation.preparation.data_structures.prepared_fees import (
     prepared_fees_schema,
 )
-from package.codelists import (
+from geh_wholesale.codelists import (
     ChargeType,
     MeteringPointType,
     SettlementMethod,
     WholesaleResultResolution,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 
 class DefaultValues:

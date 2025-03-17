@@ -13,17 +13,21 @@
 # limitations under the License.
 
 import pyspark.sql.functions as f
+from geh_common.telemetry import use_span
 from pyspark.sql import DataFrame
 
-from package.calculation.energy.calculated_grid_loss import (
+from geh_wholesale.calculation.energy.calculated_grid_loss import (
     append_calculated_grid_loss_to_metering_point_times_series,
 )
-from package.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
+from geh_wholesale.calculation.preparation.transformations.metering_point_periods_for_calculation_type import (
     add_parent_data_to_child_metering_point_periods,
     is_parent_metering_point,
 )
-from package.databases.wholesale_basis_data_internal import basis_data_factory
-from geh_common.telemetry import use_span, logging_configuration
+from geh_wholesale.databases.wholesale_basis_data_internal import basis_data_factory
+
+from ..codelists import MeteringPointType
+from ..codelists.calculation_type import is_wholesale_calculation_type
+from ..constants import Colname
 from .calculation_output import (
     CalculationOutput,
 )
@@ -32,9 +36,6 @@ from .energy import energy_calculation
 from .preparation import PreparedDataReader
 from .preparation.transformations import get_grid_loss_metering_point_ids
 from .wholesale import wholesale_calculation
-from ..codelists import MeteringPointType
-from ..codelists.calculation_type import is_wholesale_calculation_type, CalculationType
-from ..constants import Colname
 
 
 class CalculationCore:
@@ -58,25 +59,19 @@ class CalculationCore:
 
         metering_point_periods = _get_metering_point_periods(args, prepared_data_reader)
 
-        metering_point_periods__except_grid_loss = (
-            prepared_data_reader.get_metering_point_periods__except_grid_loss(
-                metering_point_periods
-            )
+        metering_point_periods__except_grid_loss = prepared_data_reader.get_metering_point_periods__except_grid_loss(
+            metering_point_periods
         )
 
-        metering_point_time_series = (
-            prepared_data_reader.get_metering_point_time_series(
-                args.period_start_datetime,
-                args.period_end_datetime,
-                metering_point_periods__except_grid_loss,
-            )
+        metering_point_time_series = prepared_data_reader.get_metering_point_time_series(
+            args.period_start_datetime,
+            args.period_end_datetime,
+            metering_point_periods__except_grid_loss,
         )
         metering_point_time_series.cache_internal()
 
-        grid_loss_metering_point_periods = (
-            prepared_data_reader.get_grid_loss_metering_point_periods(
-                args.grid_areas, metering_point_periods
-            )
+        grid_loss_metering_point_periods = prepared_data_reader.get_grid_loss_metering_point_periods(
+            args.grid_areas, metering_point_periods
         )
 
         (
@@ -91,20 +86,16 @@ class CalculationCore:
 
         # This extends the content of metering_point_time_series with calculated grid loss,
         # which is used in the wholesale calculation and the basis data
-        metering_point_time_series = (
-            append_calculated_grid_loss_to_metering_point_times_series(
-                args,
-                metering_point_time_series,
-                positive_grid_loss,
-                negative_grid_loss,
-            )
+        metering_point_time_series = append_calculated_grid_loss_to_metering_point_times_series(
+            args,
+            metering_point_time_series,
+            positive_grid_loss,
+            negative_grid_loss,
         )
 
         # Extract metering point ids from all metering point periods in
         # the grid areas specified in the calculation arguments.
-        metering_point_period_ids = metering_point_periods.select(
-            Colname.metering_point_id
-        ).distinct()
+        metering_point_period_ids = metering_point_periods.select(Colname.metering_point_id).distinct()
 
         input_charges = prepared_data_reader.get_input_charges(
             args.period_start_datetime,
@@ -128,9 +119,7 @@ class CalculationCore:
             prepared_charges,
         )
 
-        grid_loss_metering_point_ids = get_grid_loss_metering_point_ids(
-            grid_loss_metering_point_periods
-        )
+        grid_loss_metering_point_ids = get_grid_loss_metering_point_ids(grid_loss_metering_point_periods)
 
         # Add basis data to results
         calculation_output.basis_data_output = basis_data_factory.create(
@@ -158,24 +147,18 @@ class CalculationCore:
             args.grid_areas,
         ).where(is_parent_metering_point(Colname.metering_point_type))
 
-        grid_loss_metering_point_periods = (
-            prepared_data_reader.get_grid_loss_metering_point_periods(
-                args.grid_areas, parent_metering_point_periods
-            )
+        grid_loss_metering_point_periods = prepared_data_reader.get_grid_loss_metering_point_periods(
+            args.grid_areas, parent_metering_point_periods
         )
 
-        metering_point_periods__except_grid_loss = (
-            prepared_data_reader.get_metering_point_periods__except_grid_loss(
-                parent_metering_point_periods
-            )
+        metering_point_periods__except_grid_loss = prepared_data_reader.get_metering_point_periods__except_grid_loss(
+            parent_metering_point_periods
         )
 
-        parent_metering_point_time_series__except_grid_loss = (
-            prepared_data_reader.get_metering_point_time_series(
-                args.period_start_datetime,
-                args.period_end_datetime,
-                metering_point_periods__except_grid_loss,
-            )
+        parent_metering_point_time_series__except_grid_loss = prepared_data_reader.get_metering_point_time_series(
+            args.period_start_datetime,
+            args.period_end_datetime,
+            metering_point_periods__except_grid_loss,
         )
         parent_metering_point_time_series__except_grid_loss.cache_internal()
 
@@ -200,9 +183,7 @@ class CalculationCore:
             )
         )
 
-        grid_loss_metering_point_ids = get_grid_loss_metering_point_ids(
-            grid_loss_metering_point_periods
-        )
+        grid_loss_metering_point_ids = get_grid_loss_metering_point_ids(grid_loss_metering_point_periods)
 
         # Add basis data to results
 
@@ -216,9 +197,7 @@ class CalculationCore:
         return calculation_output
 
 
-def _get_metering_point_periods(
-    args: CalculatorArgs, prepared_data_reader: PreparedDataReader
-) -> DataFrame:
+def _get_metering_point_periods(args: CalculatorArgs, prepared_data_reader: PreparedDataReader) -> DataFrame:
     # cache of metering_point_time_series had no effect on performance (01-12-2023)
     metering_point_periods = prepared_data_reader.get_metering_point_periods(
         args.period_start_datetime,
@@ -227,7 +206,5 @@ def _get_metering_point_periods(
     )
     # Child metering points inherit energy supplier and balance responsible party from
     # their parent metering point. So we add this data to the child metering points.
-    metering_point_periods = add_parent_data_to_child_metering_point_periods(
-        metering_point_periods
-    )
+    metering_point_periods = add_parent_data_to_child_metering_point_periods(metering_point_periods)
     return metering_point_periods

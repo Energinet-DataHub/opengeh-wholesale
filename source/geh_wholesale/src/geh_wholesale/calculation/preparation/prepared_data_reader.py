@@ -15,28 +15,29 @@
 from datetime import datetime
 
 import pyspark.sql.functions as f
+from geh_common.telemetry import use_span
 from pyspark.sql import DataFrame
 
-from package.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
     GridLossMeteringPointPeriods,
 )
-from package.calculation.preparation.data_structures.input_charges import (
+from geh_wholesale.calculation.preparation.data_structures.input_charges import (
     InputChargesContainer,
 )
-from package.calculation.preparation.data_structures.prepared_charges import (
+from geh_wholesale.calculation.preparation.data_structures.prepared_charges import (
     PreparedChargesContainer,
 )
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
-from package.codelists import ChargeResolution, CalculationType
-from package.databases.migrations_wholesale import MigrationsWholesaleRepository
-from . import transformations as T
-from .data_structures import ChargePrices, ChargePriceInformation
+from geh_wholesale.codelists import CalculationType, ChargeResolution
+from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
+
 from ...constants import Colname
 from ...databases import wholesale_internal
 from ...databases.table_column_names import TableColumnNames
-from geh_common.telemetry import use_span
+from . import transformations as T
+from .data_structures import ChargePriceInformation, ChargePrices
 
 
 class PreparedDataReader:
@@ -114,13 +115,11 @@ class PreparedDataReader:
 
         # The list of charge_links, charge_prices and change information contains data from all metering point periods in all grid areas.
         # This method ensures we only get charge data from metering points in grid areas from the calculation arguments.
-        charge_links, charge_price_information, charge_prices = (
-            self._get_charges_filtered_by_grid_area(
-                charge_links,
-                charge_price_information,
-                charge_prices,
-                metering_point_ids,
-            )
+        charge_links, charge_price_information, charge_prices = self._get_charges_filtered_by_grid_area(
+            charge_links,
+            charge_price_information,
+            charge_prices,
+            metering_point_ids,
         )
 
         return InputChargesContainer(
@@ -136,9 +135,7 @@ class PreparedDataReader:
         charge_prices: ChargePrices,
         metering_point_ids: DataFrame,
     ) -> tuple[DataFrame, ChargePriceInformation, ChargePrices]:
-        charge_links = charge_links.join(
-            metering_point_ids, Colname.metering_point_id, "inner"
-        )
+        charge_links = charge_links.join(metering_point_ids, Colname.metering_point_id, "inner")
         change_keys = charge_links.select(Colname.charge_key).distinct()
         charge_prices_df = charge_prices.df.join(
             change_keys,
@@ -206,9 +203,7 @@ class PreparedDataReader:
             fees=fees,
         )
 
-    def get_metering_point_periods__except_grid_loss(
-        self, metering_point_periods_df: DataFrame
-    ) -> DataFrame:
+    def get_metering_point_periods__except_grid_loss(self, metering_point_periods_df: DataFrame) -> DataFrame:
         # Remove grid loss metering point periods
         return metering_point_periods_df.join(
             self._wholesale_internal_repository.read_grid_loss_metering_point_ids(),
@@ -216,31 +211,20 @@ class PreparedDataReader:
             "left_anti",
         )
 
-    def get_latest_calculation_version(
-        self, calculation_type: CalculationType
-    ) -> int | None:
+    def get_latest_calculation_version(self, calculation_type: CalculationType) -> int | None:
         """Returns the latest used version for the selected calculation type or None."""
-
         calculations = self._wholesale_internal_repository.read_calculations()
 
         latest_version = (
-            calculations.where(
-                f.col(TableColumnNames.calculation_type) == calculation_type.value
-            )
-            .agg(
-                f.max(TableColumnNames.calculation_version).alias(
-                    TableColumnNames.calculation_version
-                )
-            )
+            calculations.where(f.col(TableColumnNames.calculation_type) == calculation_type.value)
+            .agg(f.max(TableColumnNames.calculation_version).alias(TableColumnNames.calculation_version))
             .collect()[0][TableColumnNames.calculation_version]
         )
 
         return latest_version
 
     def is_calculation_id_unique(self, calculation_id: str) -> bool:
-        calculation = self._wholesale_internal_repository.get_by_calculation_id(
-            calculation_id
-        )
+        calculation = self._wholesale_internal_repository.get_by_calculation_id(calculation_id)
 
         count = calculation.count()
         return count == 0

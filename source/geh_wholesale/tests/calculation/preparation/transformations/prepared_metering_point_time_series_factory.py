@@ -16,17 +16,17 @@ from decimal import Decimal
 
 from pyspark.sql import Row, SparkSession
 
-from package.calculation.preparation.data_structures.prepared_metering_point_time_series import (
+from geh_wholesale.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
     prepared_metering_point_time_series_schema,
 )
-from package.codelists import (
-    MeteringPointType,
-    SettlementMethod,
+from geh_wholesale.codelists import (
     MeteringPointResolution,
+    MeteringPointType,
     QuantityQuality,
+    SettlementMethod,
 )
-from package.constants import Colname
+from geh_wholesale.constants import Colname
 
 DEFAULT_METERING_POINT_ID = "123456789012345678901234567"
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.PRODUCTION
@@ -65,17 +65,13 @@ def create_row(
         Colname.quality: quality.value,
         Colname.energy_supplier_id: energy_supplier_id,
         Colname.balance_responsible_party_id: balance_responsible_id,
-        Colname.settlement_method: (
-            settlement_method.value if settlement_method else None
-        ),
+        Colname.settlement_method: (settlement_method.value if settlement_method else None),
     }
 
     return Row(**row)
 
 
-def create(
-    spark: SparkSession, data: None | Row | list[Row] = None
-) -> PreparedMeteringPointTimeSeries:
+def create(spark: SparkSession, data: None | Row | list[Row] = None) -> PreparedMeteringPointTimeSeries:
     if data is None:
         data = [create_row()]
     elif isinstance(data, Row):

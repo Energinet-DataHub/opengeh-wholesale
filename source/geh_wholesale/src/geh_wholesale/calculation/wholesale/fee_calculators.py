@@ -11,14 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from package.calculation.preparation.data_structures import PreparedFees
-from package.calculation.wholesale.calculate_total_quantity_and_amount import (
+from geh_wholesale.calculation.preparation.data_structures import PreparedFees
+from geh_wholesale.calculation.wholesale.calculate_total_quantity_and_amount import (
     calculate_total_quantity_and_amount,
 )
-from package.calculation.wholesale.data_structures.wholesale_results import (
+from geh_wholesale.calculation.wholesale.data_structures.wholesale_results import (
     WholesaleResults,
 )
-from package.codelists import ChargeType
+from geh_wholesale.codelists import ChargeType
 
 
 def calculate(prepared_fees: PreparedFees) -> WholesaleResults:

@@ -13,10 +13,12 @@
 # limitations under the License.
 from pyspark.sql import DataFrame, SparkSession
 
-from package.infrastructure.paths import (
+from geh_wholesale.infrastructure.paths import (
     MigrationsWholesaleDatabase,
     WholesaleInternalDatabase,
 )
+
+from ..repository_helper import read_table
 from .schemas import (
     charge_link_periods_schema,
     charge_price_information_periods_schema,
@@ -24,7 +26,6 @@ from .schemas import (
     metering_point_periods_schema,
     time_series_points_schema,
 )
-from ..repository_helper import read_table
 
 
 class MigrationsWholesaleRepository:
@@ -41,16 +42,13 @@ class MigrationsWholesaleRepository:
         self._catalog_name = catalog_name
         self._calculation_input_database_name = calculation_input_database_name
         self._time_series_points_table_name = (
-            time_series_points_table_name
-            or MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME
+            time_series_points_table_name or MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME
         )
         self._metering_point_periods_table_name = (
-            metering_point_periods_table_name
-            or MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME
+            metering_point_periods_table_name or MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME
         )
         self._grid_loss_metering_point_ids_table_name = (
-            grid_loss_metering_point_ids_table_name
-            or WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME
+            grid_loss_metering_point_ids_table_name or WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME
         )
 
     def read_metering_point_periods(
