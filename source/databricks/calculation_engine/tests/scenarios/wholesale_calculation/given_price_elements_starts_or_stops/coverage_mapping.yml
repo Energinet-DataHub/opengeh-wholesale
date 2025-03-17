@@ -1,0 +1,9 @@
+notes: |
+  ## PURPOSE
+  The purpose is to check the scenario where a price element is active and has active charge link, but there are no active
+  prices in the calculation period.
+
+cases_tested:
+  "Price Elements And Mp Periods":
+    - "Price Element From Date Inside Calculation Period"
+    - "Price Element To Date Inside Calculation Period"

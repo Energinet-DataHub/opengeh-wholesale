@@ -1,8 +1,0 @@
-- grid-areas: ["800"]
-  calculation-id: "0b15a420-9fc8-409a-a169-000000000001"
-  period-start-datetime: "2023-02-01 23:00:00"
-  period-end-datetime: "2023-02-02 23:00:00"
-  calculation-type: "aggregation"
-  calculation-execution-time-start: "2024-01-01 23:00:00"
-  quarterly-resolution-transition-datetime: "2023-04-04 22:00:00"
-  created-by-user-id: "a8efc21d-3508-4d76-a712-828330e6674d"
