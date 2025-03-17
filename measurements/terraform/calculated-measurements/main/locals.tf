@@ -25,4 +25,5 @@ locals {
   # However that part needs to be migrated to calculated-measurements.
   database_measurements_calculated_internal = "measurements_calculated_internal"
   database_measurements_calculated = "measurements_calculated"
+  database_measurements_golds = "measurements_gold"
 }

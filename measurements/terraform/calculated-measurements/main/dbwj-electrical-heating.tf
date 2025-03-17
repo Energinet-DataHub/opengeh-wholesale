@@ -21,6 +21,7 @@ resource "databricks_job" "electrical_heating" {
         "ELECTRICITY_MARKET_DATA_PATH"              = "/Volumes/${data.azurerm_key_vault_secret.shared_unity_catalog_name.value}/measurements_internal/shared_electricity_market_electrical_heating_container"
         "MEASUREMENTS_CALCULATED_INTERNAL_DATABASE" = local.database_measurements_calculated_internal
         "MEASUREMENTS_CALCULATED_DATABASE"          = local.database_measurements_calculated
+        "DATABASE_MEASUREMENTS_GOLDS"               = local.database_measurements_golds
       }
     }
   }
