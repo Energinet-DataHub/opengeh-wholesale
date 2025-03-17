@@ -13,17 +13,19 @@
 # limitations under the License.
 
 import os
+
+import geh_common.telemetry.logging_configuration as config
 from delta.tables import DeltaTable
-from package.infrastructure import initialize_spark
+from geh_common.telemetry import Logger
 from pyspark.sql import SparkSession
+
+import package.infrastructure.environment_variables as env_vars
+from package.infrastructure import initialize_spark
 from package.infrastructure.paths import (
-    WholesaleResultsInternalDatabase,
     WholesaleBasisDataInternalDatabase,
     WholesaleInternalDatabase,
+    WholesaleResultsInternalDatabase,
 )
-import geh_common.telemetry.logging_configuration as config
-from geh_common.telemetry import Logger
-import package.infrastructure.environment_variables as env_vars
 
 
 def optimize_tables(catalog_name: str | None = None) -> None:
@@ -34,11 +36,12 @@ def optimize_tables(catalog_name: str | None = None) -> None:
     applicationinsights_connection_string = os.getenv(
         "APPLICATIONINSIGHTS_CONNECTION_STRING"
     )
-    config.configure_logging(
+    logging_settings = config.LoggingSettings(
         cloud_role_name="dbr-optimize-tables",
         tracer_name="optimize-tables-job",
         applicationinsights_connection_string=applicationinsights_connection_string,
     )
+    config.configure_logging(logging_settings=logging_settings)
     logger = Logger(__name__)
 
     spark = initialize_spark()
