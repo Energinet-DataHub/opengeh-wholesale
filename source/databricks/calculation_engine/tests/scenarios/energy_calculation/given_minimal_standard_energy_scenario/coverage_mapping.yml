@@ -22,4 +22,4 @@ cases_tested:
   "Calculation Tests":
     - "Typical Energy Scenario"
     - "Calculation Input Data Includes Other Ga"
-    - "Aggregations Generates Basis Data"
+    - "Aggregations Generate Basis Data"
