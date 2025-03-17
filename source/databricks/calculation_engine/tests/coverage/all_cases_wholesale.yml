@@ -3,7 +3,7 @@
   "Typical Wholesale Scenario": true
   "Calculation Results Are Hourly When Calculation Period Is Before Result Resolution Change": true
   "Calculation Input Data Includes Other Ga": true
-  "Aggregations Generates Basis Data": true
+  "Aggregations Generate Basis Data": true
 
   "Metering Point Master Data Updates":
     "Change Of Settlement Method On An MP": true
