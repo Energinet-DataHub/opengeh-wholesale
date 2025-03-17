@@ -1,5 +1,10 @@
 # Wholesale Contracts Release notes
 
+## Version 11.0.3
+
+- Update tj-actions to v46.0.1
+- No functional changes.
+
 ## Version 11.0.2
 
 - No functional changes.
