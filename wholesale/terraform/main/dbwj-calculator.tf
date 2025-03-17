@@ -41,8 +41,15 @@ resource "databricks_job" "calculator_job" {
         "CALCULATION_INPUT_DATABASE_NAME"          = var.calculation_input_database
         "QUARTERLY_RESOLUTION_TRANSITION_DATETIME" = var.quarterly_resolution_transition_datetime
         # Using the name 'APPLICATIONINSIGHTS_CONNECTION_STRING' ensures the logging module is configured automatically
-        "APPLICATIONINSIGHTS_CONNECTION_STRING" = data.azurerm_key_vault_secret.appi_shared_connection_string.value
-        "LOGGING_LOGLEVEL"                      = "INFO"
+        "APPLICATIONINSIGHTS_CONNECTION_STRING"    = data.azurerm_key_vault_secret.appi_shared_connection_string.value
+        "LOGGING_LOGLEVEL"                         = "INFO"
+        "WHOLESALE_RESULTS"                        = locals.WHOLESALE_RESULTS
+        "WHOLESALE_BASIS_DATA_INTERNAL"            = locals.wholesale_basis_data_internal
+        "WHOLESALE_BASIS_DATA"                     = locals.wholesale_basis_data
+        "WHOLESALE_RESULTS_INTERNAL"               = locals.wholesale_results_internal
+        "WHOLESALE_INTERNAL"                       = locals.wholesale_internal
+        "WHOLESALE_SAP"                            = locals.wholesale_sap
+        "SHARED_WHOLESALE_INPUT"                   = locals.shared_wholesale_input
       }
     }
 

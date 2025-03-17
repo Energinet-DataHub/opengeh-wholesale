@@ -33,4 +33,13 @@ locals {
   # Local readers determines if the provided reader security group should be assigned permissions or grants.
   # This is necessary as reader and contributor groups may be the same on the development and test environments. In Databricks, the grants and permissions of a security group can't be be managed by multiple resources.
   readers = var.databricks_readers_group.name == var.databricks_contributor_dataplane_group.name ? {} : { "${var.databricks_readers_group.name}" = "${var.databricks_readers_group.id}" }
+
+  # Database names
+  WHOLESALE_RESULTS = "wholesale_results"
+  WHOLESALE_BASIS_DATA_INTERNAL = "wholesale_basis_data_internal"
+  WHOLESALE_BASIS_DATA = "wholesale_basis_data"
+  WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
+  WHOLESALE_INTERNAL = "wholesale_internal"
+  WHOLESALE_SAP = "wholesale_sap"
+  SHARED_WHOLESALE_INPUT = "shared_wholesale_input"
 }
