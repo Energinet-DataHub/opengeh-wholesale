@@ -105,7 +105,7 @@ jobs:
 
       - name: Package content or build has changed
         id: docker_changed
-        uses: tj-actions/changed-files@v41
+        uses: tj-actions/changed-files@v46.0.1
         with:
           since_last_remote_commit: true
           files: .docker/**
