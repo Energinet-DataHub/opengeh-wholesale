@@ -20,7 +20,7 @@ resource "databricks_job" "capacity_settlement" {
         "APPLICATIONINSIGHTS_CONNECTION_STRING"     = data.azurerm_key_vault_secret.appi_shared_connection_string.value
         "ELECTRICITY_MARKET_DATA_PATH"              = "/Volumes/${data.azurerm_key_vault_secret.shared_unity_catalog_name.value}/measurements_internal/shared_electricity_market_capacity_settlement_container"
         "MEASUREMENTS_CALCULATED_INTERNAL_DATABASE" = local.database_measurements_calculated_internal
-        "MEASUREMENTS_CALCULATED_DATABASE"          = local.database_measurements_calculatedl
+        "MEASUREMENTS_CALCULATED_DATABASE"          = local.database_measurements_calculated
       }
     }
   }
