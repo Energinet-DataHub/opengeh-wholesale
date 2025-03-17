@@ -13,10 +13,10 @@
 # limitations under the License.
 
 from pyspark.sql.types import (
-    StructField,
     StringType,
-    TimestampType,
+    StructField,
     StructType,
+    TimestampType,
 )
 
 """

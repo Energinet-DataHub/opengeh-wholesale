@@ -48,7 +48,7 @@ class TestWhenChargeResolutionDiffersFormHourOrDay:
         charge_price_information = factory.create_charge_price_information(spark, charge_price_information_rows)
 
         # Act & Assert
-        with pytest.raises(ValueError) as exc_info:
+        with pytest.raises(ValueError, match="Unsupported resolution") as exc_info:
             explode_charge_price_information_within_periods(
                 charge_price_information,
                 ChargeResolution.MONTH,

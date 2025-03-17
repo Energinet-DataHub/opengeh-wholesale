@@ -13,19 +13,13 @@
 # limitations under the License.
 
 
-from .amounts_per_charge_schema import (
-    amounts_per_charge_schema,
-)
-from .energy_per_brp_schema import energy_per_brp_schema
-from .energy_per_es_schema import energy_per_es_schema
-from .energy_schema import energy_schema
-from .exchange_per_neighbor_schema import exchange_per_neighbor_schema
+from .amounts_per_charge_schema import amounts_per_charge_schema as amounts_per_charge_schema
+from .energy_per_brp_schema import energy_per_brp_schema as energy_per_brp_schema
+from .energy_per_es_schema import energy_per_es_schema as energy_per_es_schema
+from .energy_schema import energy_schema as energy_schema
+from .exchange_per_neighbor_schema import exchange_per_neighbor_schema as exchange_per_neighbor_schema
 from .grid_loss_metering_point_time_series_schema import (
-    grid_loss_metering_point_time_series_schema,
+    grid_loss_metering_point_time_series_schema as grid_loss_metering_point_time_series_schema,
 )
-from .monthly_amounts_schema import (
-    monthly_amounts_schema_uc,
-)
-from .total_monthly_amounts_schema import (
-    total_monthly_amounts_schema_uc,
-)
+from .monthly_amounts_schema import monthly_amounts_schema_uc as monthly_amounts_schema_uc
+from .total_monthly_amounts_schema import total_monthly_amounts_schema_uc as total_monthly_amounts_schema_uc

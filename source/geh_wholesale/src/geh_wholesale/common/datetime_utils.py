@@ -13,12 +13,11 @@
 # limitations under the License.
 from datetime import datetime
 from zoneinfo import ZoneInfo
+
 from dateutil.relativedelta import relativedelta
 
 
-def is_exactly_one_calendar_month(
-    period_start: datetime, period_end: datetime, time_zone: str
-) -> bool:
+def is_exactly_one_calendar_month(period_start: datetime, period_end: datetime, time_zone: str) -> bool:
     time_zone_info = ZoneInfo(time_zone)
     period_start_local_time = period_start.astimezone(time_zone_info)
     period_end_local_time = period_end.astimezone(time_zone_info)
@@ -33,15 +32,9 @@ def is_exactly_one_calendar_month(
     )
 
 
-def get_number_of_days_in_period(
-    period_start: datetime, period_end: datetime, time_zone: str
-) -> int:
-    start_at_midnight, period_start_local_time = is_midnight_in_time_zone(
-        period_start, time_zone
-    )
-    end_at_midnight, period_end_local_time = is_midnight_in_time_zone(
-        period_end, time_zone
-    )
+def get_number_of_days_in_period(period_start: datetime, period_end: datetime, time_zone: str) -> int:
+    start_at_midnight, period_start_local_time = is_midnight_in_time_zone(period_start, time_zone)
+    end_at_midnight, period_end_local_time = is_midnight_in_time_zone(period_end, time_zone)
 
     if start_at_midnight is False or end_at_midnight is False:
         raise Exception(

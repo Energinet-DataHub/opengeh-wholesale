@@ -39,7 +39,9 @@ target_mp_table_name = "metering_point_periods"
 target_ts_table_name = "time_series_points"
 target_gl_table_name = "grid_loss_metering_points"
 target_storage_account_name = "stdatalakeshresdwe001"
-target_delta_table_root_path = f"abfss://wholesale@{target_storage_account_name}.dfs.core.windows.net/calculation_input_anonymised"
+target_delta_table_root_path = (
+    f"abfss://wholesale@{target_storage_account_name}.dfs.core.windows.net/calculation_input_anonymised"
+)
 
 # Source columns variables
 metering_point_id_column_name = "metering_point_id"
@@ -55,9 +57,7 @@ anonymised_mp_id_column_name = "anonymised_mp_id"
 anonymisation_start_date = "2021-01-31T23:00:00Z"
 
 # Anonymisation MP IDs
-mps_to_anonymise = (
-    []
-)  # Fill in with MP IDs, this list will be used to anonymise the 'quantity' of the specified MPs
+mps_to_anonymise = []  # Fill in with MP IDs, this list will be used to anonymise the 'quantity' of the specified MPs
 
 # COMMAND ----------
 
@@ -68,9 +68,9 @@ df_source_mp_table = (
     .filter(f"'{anonymisation_start_date}' <= to_date")
 )
 
-df_source_ts_table = spark.read.table(
-    f"{source_database}.{source_ts_table_name}"
-).filter(f"'{anonymisation_start_date}' <= observation_time")
+df_source_ts_table = spark.read.table(f"{source_database}.{source_ts_table_name}").filter(
+    f"'{anonymisation_start_date}' <= observation_time"
+)
 
 df_source_gl_table = spark.read.table(f"{source_database}.{source_gl_table_name}")
 
@@ -167,9 +167,7 @@ df_anonymised_metering_points = (
         F.rpad(
             F.concat(
                 F.lit("5"),
-                F.lpad(
-                    F.row_number().over(window_random_order), count_distinct_mpids, "0"
-                ),
+                F.lpad(F.row_number().over(window_random_order), count_distinct_mpids, "0"),
                 F.lit("5"),
             ),
             18,
@@ -229,16 +227,10 @@ assert (
 tmp_balance_and_supplier_id_column_name = "balance_and_supplier_id"
 
 df_all_supplier_and_balancers = (
-    df_source_mp_table.select(
-        F.col(energy_supplier_id_column_name).alias(
-            tmp_balance_and_supplier_id_column_name
-        )
-    )
+    df_source_mp_table.select(F.col(energy_supplier_id_column_name).alias(tmp_balance_and_supplier_id_column_name))
     .union(
         df_source_mp_table.select(
-            F.col(balance_responsible_id_column_name).alias(
-                tmp_balance_and_supplier_id_column_name
-            )
+            F.col(balance_responsible_id_column_name).alias(tmp_balance_and_supplier_id_column_name)
         )
     )
     .distinct()
@@ -265,9 +257,9 @@ df_anonymised_suppliers_and_balancers = (
         ),
     ).withColumn(
         anonymised_balance_or_supplier_id_column_name,
-        F.when(
-            F.col(tmp_balance_and_supplier_id_column_name).isNull(), F.lit(None)
-        ).otherwise(F.col(anonymised_balance_or_supplier_id_column_name)),
+        F.when(F.col(tmp_balance_and_supplier_id_column_name).isNull(), F.lit(None)).otherwise(
+            F.col(anonymised_balance_or_supplier_id_column_name)
+        ),
     )
 ).cache()
 
@@ -282,9 +274,7 @@ df_anonymised_suppliers_and_balancers = (
 # COMMAND ----------
 
 assert (
-    df_anonymised_suppliers_and_balancers.groupBy(
-        anonymised_balance_or_supplier_id_column_name
-    )
+    df_anonymised_suppliers_and_balancers.groupBy(anonymised_balance_or_supplier_id_column_name)
     .agg(F.sum(F.lit(1)).alias("id_count"))
     .filter("id_count > 1")
     .count()
@@ -294,25 +284,15 @@ assert (
 # COMMAND ----------
 
 assert (
-    df_anonymised_suppliers_and_balancers.select(
-        anonymised_balance_or_supplier_id_column_name
-    )
-    .distinct()
-    .count()
-    == df_all_supplier_and_balancers.select(tmp_balance_and_supplier_id_column_name)
-    .distinct()
-    .count()
+    df_anonymised_suppliers_and_balancers.select(anonymised_balance_or_supplier_id_column_name).distinct().count()
+    == df_all_supplier_and_balancers.select(tmp_balance_and_supplier_id_column_name).distinct().count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_anonymised_suppliers_and_balancers.filter(
-        F.col(anonymised_balance_or_supplier_id_column_name).isNull()
-    ).count()
-    == df_all_supplier_and_balancers.filter(
-        F.col(tmp_balance_and_supplier_id_column_name).isNull()
-    ).count()
+    df_anonymised_suppliers_and_balancers.filter(F.col(anonymised_balance_or_supplier_id_column_name).isNull()).count()
+    == df_all_supplier_and_balancers.filter(F.col(tmp_balance_and_supplier_id_column_name).isNull()).count()
 )
 
 # COMMAND ----------
@@ -328,38 +308,28 @@ assert (
 # COMMAND ----------
 
 df_source_mp_table_anonymised = (
-    df_source_mp_table.join(
-        df_anonymised_metering_points, [metering_point_id_column_name], "left"
-    )
+    df_source_mp_table.join(df_anonymised_metering_points, [metering_point_id_column_name], "left")
     .withColumn(metering_point_id_column_name, F.col(anonymised_mp_id_column_name))
     .drop(anonymised_mp_id_column_name)
     .join(
         df_anonymised_metering_points.select(
-            F.col(metering_point_id_column_name).alias(
-                parent_metering_point_id_column_name
-            ),
+            F.col(metering_point_id_column_name).alias(parent_metering_point_id_column_name),
             anonymised_mp_id_column_name,
         ),
         [parent_metering_point_id_column_name],
         "left",
     )
-    .withColumn(
-        parent_metering_point_id_column_name, F.col(anonymised_mp_id_column_name)
-    )
+    .withColumn(parent_metering_point_id_column_name, F.col(anonymised_mp_id_column_name))
     .drop(anonymised_mp_id_column_name)
     .join(
         df_anonymised_suppliers_and_balancers,
         [
             (
-                df_anonymised_suppliers_and_balancers[
-                    tmp_balance_and_supplier_id_column_name
-                ]
+                df_anonymised_suppliers_and_balancers[tmp_balance_and_supplier_id_column_name]
                 == df_source_mp_table.energy_supplier_id
             )
             | (
-                df_anonymised_suppliers_and_balancers[
-                    tmp_balance_and_supplier_id_column_name
-                ]
+                df_anonymised_suppliers_and_balancers[tmp_balance_and_supplier_id_column_name]
                 == df_source_mp_table.balance_responsible_party_id
             )
         ],
@@ -372,9 +342,7 @@ df_source_mp_table_anonymised = (
     .drop(anonymised_balance_or_supplier_id_column_name)
     .join(
         df_anonymised_suppliers_and_balancers.select(
-            F.col(tmp_balance_and_supplier_id_column_name).alias(
-                balance_responsible_id_column_name
-            ),
+            F.col(tmp_balance_and_supplier_id_column_name).alias(balance_responsible_id_column_name),
             anonymised_balance_or_supplier_id_column_name,
         ),
         [balance_responsible_id_column_name],
@@ -417,69 +385,49 @@ assert (
 # COMMAND ----------
 
 assert (
-    df_source_mp_table_anonymised.select(metering_point_id_column_name)
-    .distinct()
-    .count()
+    df_source_mp_table_anonymised.select(metering_point_id_column_name).distinct().count()
     == df_source_mp_table.select(metering_point_id_column_name).distinct().count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_mp_table_anonymised.select(parent_metering_point_id_column_name)
-    .distinct()
-    .count()
-    == df_source_mp_table.select(parent_metering_point_id_column_name)
-    .distinct()
-    .count()
+    df_source_mp_table_anonymised.select(parent_metering_point_id_column_name).distinct().count()
+    == df_source_mp_table.select(parent_metering_point_id_column_name).distinct().count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_mp_table_anonymised.filter(
-        F.col(parent_metering_point_id_column_name).isNull()
-    ).count()
-    == df_source_mp_table.filter(
-        F.col(parent_metering_point_id_column_name).isNull()
-    ).count()
+    df_source_mp_table_anonymised.filter(F.col(parent_metering_point_id_column_name).isNull()).count()
+    == df_source_mp_table.filter(F.col(parent_metering_point_id_column_name).isNull()).count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_mp_table_anonymised.select(balance_responsible_id_column_name)
-    .distinct()
-    .count()
+    df_source_mp_table_anonymised.select(balance_responsible_id_column_name).distinct().count()
     == df_source_mp_table.select(balance_responsible_id_column_name).distinct().count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_mp_table_anonymised.filter(
-        F.col(balance_responsible_id_column_name).isNull()
-    ).count()
-    == df_source_mp_table.filter(
-        F.col(balance_responsible_id_column_name).isNull()
-    ).count()
+    df_source_mp_table_anonymised.filter(F.col(balance_responsible_id_column_name).isNull()).count()
+    == df_source_mp_table.filter(F.col(balance_responsible_id_column_name).isNull()).count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_mp_table_anonymised.select(energy_supplier_id_column_name)
-    .distinct()
-    .count()
+    df_source_mp_table_anonymised.select(energy_supplier_id_column_name).distinct().count()
     == df_source_mp_table.select(energy_supplier_id_column_name).distinct().count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_mp_table_anonymised.filter(
-        F.col(energy_supplier_id_column_name).isNull()
-    ).count()
+    df_source_mp_table_anonymised.filter(F.col(energy_supplier_id_column_name).isNull()).count()
     == df_source_mp_table.filter(F.col(energy_supplier_id_column_name).isNull()).count()
 )
 
@@ -500,9 +448,9 @@ if not mps_to_anonymise:
 df_source_ts_table_anonymised = (
     df_source_ts_table.withColumn(
         "quantity",
-        F.when(
-            F.col(metering_point_id_column_name).isin(mps_to_anonymise), F.rand() * 100
-        ).otherwise(F.col("quantity").cast(DecimalType(18, 6))),
+        F.when(F.col(metering_point_id_column_name).isin(mps_to_anonymise), F.rand() * 100).otherwise(
+            F.col("quantity").cast(DecimalType(18, 6))
+        ),
     )
     .join(df_anonymised_metering_points, metering_point_id_column_name)
     .withColumn(metering_point_id_column_name, F.col(anonymised_mp_id_column_name))
@@ -518,9 +466,7 @@ df_source_ts_table_anonymised = (
 # COMMAND ----------
 
 assert (
-    df_source_ts_table_anonymised.select(metering_point_id_column_name)
-    .distinct()
-    .count()
+    df_source_ts_table_anonymised.select(metering_point_id_column_name).distinct().count()
     == df_source_ts_table.select(metering_point_id_column_name).distinct().count()
 )
 
@@ -532,9 +478,7 @@ assert (
 # COMMAND ----------
 
 df_source_gl_table_anonymised = (
-    df_source_gl_table.join(
-        df_anonymised_metering_points, metering_point_id_column_name
-    )
+    df_source_gl_table.join(df_anonymised_metering_points, metering_point_id_column_name)
     .withColumn(metering_point_id_column_name, F.col(anonymised_mp_id_column_name))
     .select(df_source_gl_table.columns)
 )
@@ -549,18 +493,14 @@ df_source_gl_table_anonymised = (
 # COMMAND ----------
 
 assert (
-    df_source_gl_table_anonymised.select(metering_point_id_column_name)
-    .distinct()
-    .count()
+    df_source_gl_table_anonymised.select(metering_point_id_column_name).distinct().count()
     == df_source_gl_table.select(metering_point_id_column_name).distinct().count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_gl_table_anonymised.filter(
-        F.col(metering_point_id_column_name).isNull()
-    ).count()
+    df_source_gl_table_anonymised.filter(F.col(metering_point_id_column_name).isNull()).count()
     == df_source_gl_table.filter(F.col(metering_point_id_column_name).isNull()).count()
 )
 

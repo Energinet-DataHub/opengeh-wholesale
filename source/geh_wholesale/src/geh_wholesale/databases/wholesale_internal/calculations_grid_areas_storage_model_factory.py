@@ -24,7 +24,7 @@ from geh_wholesale.databases.wholesale_internal.schemas.calculation_grid_areas_s
 def create_calculation_grid_areas(
     args: CalculatorArgs,
 ) -> DataFrame:
-    """Creates a data frame containing calculation_id and grid area code."""
+    """Create a data frame containing calculation_id and grid area code."""
     return _create_calculation_grid_areas(args)
 
 

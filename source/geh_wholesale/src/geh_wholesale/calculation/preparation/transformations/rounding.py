@@ -19,7 +19,8 @@ from geh_wholesale.constants import Colname
 
 
 def round_quantity(df: DataFrame) -> DataFrame:
-    """The function rounds the quantity to 3 decimal places.
+    """Round the quantity to 3 decimal places.
+
     All Quantities that comes in from time series has a scale of 3.
     The scale will be increased to 6 in different way depending on resolution.
     Quantities with resolution of PT15M get added three zero at the end to increase the scale to 6.

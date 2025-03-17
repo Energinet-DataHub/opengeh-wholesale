@@ -22,6 +22,7 @@ from geh_wholesale.constants import Colname
 
 class ChargePriceInformation(DataFrameWrapper):
     """Represents the charge master data.
+
     All periods are clamped to least common period of the metering point and the charge master data period.
     """
 

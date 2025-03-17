@@ -39,5 +39,5 @@ def test__constructor__when_invalid_input_schema__raise_assertion_error(
     df = spark.createDataFrame(data=[Row(**({"Hello": "World"}))])
 
     # Act & Assert
-    with pytest.raises(Exception):
+    with pytest.raises(Exception):  # noqa: PT011
         sut(df)

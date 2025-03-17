@@ -64,7 +64,7 @@ def _get_metering_point_dataframe(spark: SparkSession, data: List[str]) -> DataF
 
 
 @pytest.mark.parametrize(
-    "grid_loss_metering_points, expected_count",
+    ("grid_loss_metering_points", "expected_count"),
     [
         (
             [

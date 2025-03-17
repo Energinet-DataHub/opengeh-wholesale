@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import pyspark.sql.functions as f
+from geh_common.testing.dataframes.assert_schemas import assert_schema
 from pyspark.sql import DataFrame
 
-from geh_common.testing.dataframes.assert_schemas import assert_schema
 from tests.testsession_configuration import FeatureTestsConfiguration
 
 
@@ -39,16 +39,14 @@ def assert_dataframes_equal(actual: DataFrame, expected: DataFrame) -> None:
     expected_excess_count = expected_excess.count()
 
     if actual_excess_count > 0:
-        print("Actual excess:")
+        print("Actual excess:")  # noqa: T201
         actual_excess.show(3000, False)
 
     if expected_excess_count > 0:
-        print("Expected excess:")
+        print("Expected excess:")  # noqa: T201
         expected_excess.show(3000, False)
 
-    assert (
-        actual_excess_count == 0 and expected_excess_count == 0
-    ), "Dataframes data are not equal"
+    assert actual_excess_count == 0 and expected_excess_count == 0, "Dataframes data are not equal"  # noqa: PT018
 
 
 def _assert_no_duplicates(df: DataFrame) -> None:
@@ -58,12 +56,7 @@ def _assert_no_duplicates(df: DataFrame) -> None:
 
 
 def _show_duplicates(df: DataFrame) -> DataFrame:
-    duplicates = (
-        df.groupby(df.columns)
-        .count()
-        .where(f.col("count") > 1)
-        .withColumnRenamed("count", "duplicate_count")
-    )
+    duplicates = df.groupby(df.columns).count().where(f.col("count") > 1).withColumnRenamed("count", "duplicate_count")
     return duplicates
 
 
@@ -81,9 +74,9 @@ def assert_dataframe_and_schema(
     assert expected is not None, "Expected data frame is None"
 
     if feature_tests_configuration.show_actual_and_expected_count:
-        print("\n")
-        print(f"Number of rows in actual: {actual.count()}")
-        print(f"Number of rows in expected: {expected.count()}")
+        print("\n")  # noqa: T201
+        print(f"Number of rows in actual: {actual.count()}")  # noqa: T201
+        print(f"Number of rows in expected: {expected.count()}")  # noqa: T201
 
     if columns_to_skip is not None and len(columns_to_skip) > 0:
         actual = actual.drop(*columns_to_skip)
@@ -99,64 +92,55 @@ def assert_dataframe_and_schema(
             ignore_decimal_precision,
         )
     except AssertionError:
-        print("SCHEMA MISMATCH:")
-        print("ACTUAL SCHEMA:")
+        print("SCHEMA MISMATCH:")  # noqa: T201
+        print("ACTUAL SCHEMA:")  # noqa: T201
         actual.printSchema()
-        print("EXPECTED SCHEMA:")
+        print("EXPECTED SCHEMA:")  # noqa: T201
         expected.printSchema()
         raise
 
     if feature_tests_configuration.show_actual_and_expected:
-        print("ACTUAL:")
+        print("ACTUAL:")  # noqa: T201
         actual.show(3000, False)
-        print("EXPECTED:")
+        print("EXPECTED:")  # noqa: T201
         expected.show(3000, False)
 
     if feature_tests_configuration.assert_no_duplicate_rows:
         try:
             _assert_no_duplicates(actual)
         except AssertionError:
-
-            if (
-                not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal
-            ):
+            if not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal:
                 actual, expected = drop_columns_if_the_same(actual, expected)
 
-            print("DUPLICATED ROWS IN ACTUAL:")
+            print("DUPLICATED ROWS IN ACTUAL:")  # noqa: T201
             _show_duplicates(actual).show(3000, False)
             raise
 
         try:
             _assert_no_duplicates(expected)
         except AssertionError:
-
-            if (
-                not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal
-            ):
+            if not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal:
                 actual, expected = drop_columns_if_the_same(actual, expected)
 
-            print("DUPLICATED ROWS IN EXPECTED:")
+            print("DUPLICATED ROWS IN EXPECTED:")  # noqa: T201
             _show_duplicates(expected).show(3000, False)
             raise
 
     try:
         assert_dataframes_equal(actual, expected)
     except AssertionError:
-
-        if (
-            not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal
-        ):
+        if not feature_tests_configuration.show_columns_when_actual_and_expected_are_equal:
             actual, expected = drop_columns_if_the_same(actual, expected)
 
-        print("DATA MISMATCH:")
-        print("IN ACTUAL BUT NOT IN EXPECTED:")
+        print("DATA MISMATCH:")  # noqa: T201
+        print("IN ACTUAL BUT NOT IN EXPECTED:")  # noqa: T201
         actual.subtract(expected).show(3000, False)
-        print("IN EXPECTED BUT NOT IN ACTUAL:")
+        print("IN EXPECTED BUT NOT IN ACTUAL:")  # noqa: T201
         expected.subtract(actual).show(3000, False)
         raise
 
 
-def drop_columns_if_the_same(df1: DataFrame, df2: DataFrame) -> (DataFrame, DataFrame):
+def drop_columns_if_the_same(df1: DataFrame, df2: DataFrame) -> tuple[DataFrame, DataFrame]:
     column_names = df1.columns
     for column_name in column_names:
         df1_column = df1.select(column_name).collect()

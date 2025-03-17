@@ -17,8 +17,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class InfrastructureSettings(BaseSettings):  # type: ignore
-    """
-    InfrastructureSettings class uses Pydantic BaseSettings to configure and validate parameters.
+    """InfrastructureSettings class uses Pydantic BaseSettings to configure and validate parameters.
+
     Parameters can come from both runtime (CLI) or from environment variables.
     The priority is CLI parameters first and then environment variables.
     """
@@ -43,6 +43,4 @@ class InfrastructureSettings(BaseSettings):  # type: ignore
     calculation_input_folder_name: str | None = Field(init=False, default=None)
     time_series_points_table_name: str | None = Field(init=False, default=None)
     metering_point_periods_table_name: str | None = Field(init=False, default=None)
-    grid_loss_metering_point_ids_table_name: str | None = Field(
-        init=False, default=None
-    )
+    grid_loss_metering_point_ids_table_name: str | None = Field(init=False, default=None)

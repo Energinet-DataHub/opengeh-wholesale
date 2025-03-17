@@ -65,7 +65,10 @@ def _prepare(
     time_zone: str,
     charge_type: ChargeType,
 ) -> DataFrame:
-    """This method does the following:
+    """Prepare data.
+
+    This method does the following:
+
     - Joins charge_price_information, charge_prices and charge_link_metering_point_periods
     - Filters the result to only include the defined charge type
     - Explodes the result from monthly to daily resolution (only relevant for subscription charges, because fees have
@@ -88,6 +91,7 @@ def _join_with_prices(
     time_zone: str,
 ) -> DataFrame:
     """Join charge_price_information with charge_prices.
+
     This method also ensure
     - Missing charge prices will be set to None.
     - The charge price is the last known charge price for the charge key.

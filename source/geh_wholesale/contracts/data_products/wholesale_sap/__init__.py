@@ -1,3 +1,3 @@
-from .energy_v1 import energy_v1
-from .latest_calculations_history_v1 import latest_calculations_history_v1
-from .amounts_per_charge_v1 import amounts_per_charge_v1
+from .amounts_per_charge_v1 import amounts_per_charge_v1 as amounts_per_charge_v1
+from .energy_v1 import energy_v1 as energy_v1
+from .latest_calculations_history_v1 import latest_calculations_history_v1 as latest_calculations_history_v1

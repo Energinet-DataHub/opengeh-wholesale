@@ -22,6 +22,7 @@ from geh_wholesale.constants import Colname
 
 class ChargeLinkMeteringPointPeriods(DataFrameWrapper):
     """Represents the metering point period enriched with information on the relation to a charge.
+
     The relation is represented by the charge key and the charge quantity.
     All periods are clamped to least common period of the metering point and the charge link.
     Metering points that have no charge links in the calculation period are not included.

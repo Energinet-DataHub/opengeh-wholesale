@@ -20,7 +20,8 @@ from geh_wholesale.constants import Colname
 
 
 class PreparedSubscriptions(DataFrameWrapper):
-    """Represents subscription charges that are prepared for calculation.
+    """Represent subscription charges that are prepared for calculation.
+
     Missing prices are represented by a None value in the 'charge_price' column.
     """
 

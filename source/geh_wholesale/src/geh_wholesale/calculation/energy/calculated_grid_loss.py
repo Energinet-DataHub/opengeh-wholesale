@@ -37,7 +37,9 @@ def append_calculated_grid_loss_to_metering_point_times_series(
     positive_grid_loss: EnergyResults,
     negative_grid_loss: EnergyResults,
 ) -> PreparedMeteringPointTimeSeries:
-    """Metering point time series for wholesale calculation includes all calculation input metering point time series,
+    """Append grid loss metering point time series to the calculation input metering point time series.
+
+    Metering point time series for wholesale calculation includes all calculation input metering point time series,
     and positive and negative grid loss metering point time series.
     """
     # Union positive and negative grid loss metering point time series and transform them to the same format as the

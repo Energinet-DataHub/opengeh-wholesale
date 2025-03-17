@@ -84,9 +84,7 @@ grid_area_event_schema = StructType(
 )
 
 grid_area_events = (
-    integration_events.withColumn(
-        "body", from_json(col("body"), grid_area_event_schema)
-    )
+    integration_events.withColumn("body", from_json(col("body"), grid_area_event_schema))
     .select("*", "body.*")
     .where(col("MessageType") == "GridAreaUpdated")
 )
@@ -140,9 +138,8 @@ display(timeseries_unprocssed_df)
 # COMMAND ----------
 
 timeseries_points_df = (
-    spark.read.option("mergeSchema", "true").parquet(
-        "abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/time-series-points/"
-    )
+    spark.read.option("mergeSchema", "true")
+    .parquet("abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/time-series-points/")
     # .where(col("storedTime") <= snapshot_datetime)
     # .where(col("time") >= period_start_datetime)
     # .where(col("time") < period_end_datetime)

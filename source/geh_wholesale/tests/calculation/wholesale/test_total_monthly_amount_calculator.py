@@ -104,10 +104,10 @@ def test__calculate_per_co_es__sums_per_energy_supplier(
 
 
 @pytest.mark.parametrize(
-    "charge_owner, expected",
+    ("charge_owner", "expected"),
     [
-        [SYSTEM_OPERATOR_ID, Decimal("1.000000")],
-        [GRID_ACCESS_PROVIDER_ID, Decimal("2.000000")],
+        (SYSTEM_OPERATOR_ID, Decimal("1.000000")),
+        (GRID_ACCESS_PROVIDER_ID, Decimal("2.000000")),
     ],
 )
 def test__calculate_per_co_es__adds_tax_amount_only_to_grid_access_operator(
@@ -141,11 +141,11 @@ def test__calculate_per_co_es__adds_tax_amount_only_to_grid_access_operator(
 
 
 @pytest.mark.parametrize(
-    "amount_without_tax, amount_with_tax, expected",
+    ("amount_without_tax", "amount_with_tax", "expected"),
     [
-        [None, Decimal("1.000000"), Decimal("1.000000")],
-        [Decimal("1.000000"), None, Decimal("1.000000")],
-        [None, None, None],
+        (None, Decimal("1.000000"), Decimal("1.000000")),
+        (Decimal("1.000000"), None, Decimal("1.000000")),
+        (None, None, None),
     ],
 )
 def test__calculate_per_co_es__ignores_null_in_sum(
@@ -269,9 +269,17 @@ def test__calculate_per_co_es__when_tax_charge_has_other_energy_supplier__ignore
 
 
 @pytest.mark.parametrize(
-    "grid_area, energy_supplier_id, total_amount, charge_owner, charge_time, expected_count, expected_total_amount",
+    (
+        "grid_area",
+        "energy_supplier_id",
+        "total_amount",
+        "charge_owner",
+        "charge_time",
+        "expected_count",
+        "expected_total_amount",
+    ),
     [
-        [  # match on grid_area, energy_supplier_id, charge_time
+        (  # match on grid_area, energy_supplier_id, charge_time
             "123",
             "es_id_1",
             Decimal("1"),
@@ -279,8 +287,8 @@ def test__calculate_per_co_es__when_tax_charge_has_other_energy_supplier__ignore
             datetime(2021, 1, 1),
             1,
             Decimal("3"),
-        ],
-        [  # match on grid_area, energy_supplier_id
+        ),
+        (  # match on grid_area, energy_supplier_id
             "123",
             "es_id_1",
             Decimal("1"),
@@ -288,8 +296,8 @@ def test__calculate_per_co_es__when_tax_charge_has_other_energy_supplier__ignore
             datetime(2021, 2, 1),
             2,
             Decimal("1"),
-        ],
-        [  # # match on energy_supplier_id, charge_time
+        ),
+        (  # # match on energy_supplier_id, charge_time
             "321",
             "es_id_1",
             Decimal("1"),
@@ -297,8 +305,8 @@ def test__calculate_per_co_es__when_tax_charge_has_other_energy_supplier__ignore
             datetime(2021, 1, 1),
             2,
             Decimal("1"),
-        ],
-        [  # match on grid_area, charge_time
+        ),
+        (  # match on grid_area, charge_time
             "123",
             "es_id_2",
             Decimal("1"),
@@ -306,8 +314,8 @@ def test__calculate_per_co_es__when_tax_charge_has_other_energy_supplier__ignore
             datetime(2021, 1, 1),
             2,
             Decimal("1"),
-        ],
-        [  # match on none
+        ),
+        (  # match on none
             "321",
             "es_id_2",
             Decimal("1"),
@@ -315,7 +323,7 @@ def test__calculate_per_co_es__when_tax_charge_has_other_energy_supplier__ignore
             datetime(2021, 2, 1),
             2,
             Decimal("1"),
-        ],
+        ),
     ],
 )
 def test__calculate_per_es__when_grid_area_and_energy_supplier_and_charge_time__group_them_and_ignore_charge_owner(

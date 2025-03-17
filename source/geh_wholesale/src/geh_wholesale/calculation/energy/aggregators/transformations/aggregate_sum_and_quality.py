@@ -19,7 +19,7 @@ from geh_wholesale.constants import Colname
 
 
 def aggregate_quantity_and_quality(result: DataFrame, group_by: list[str]) -> DataFrame:
-    """Aggregates values from metering point time series and groups into an aggregated time-series.
+    """Aggregate values from metering point time series and groups into an aggregated time-series.
 
     Sums quantity and collects distinct quality from the metering point time-series.
     """
@@ -30,8 +30,7 @@ def aggregate_quantity_and_quality(result: DataFrame, group_by: list[str]) -> Da
 
 
 def aggregate_sum_quantity_and_qualities(result: DataFrame, group_by: list[str]) -> DataFrame:
-    """Aggregates values from already aggregated time series (energy results) and groups into
-    further aggregated time-series (also energy results).
+    """Aggregate values from already aggregated time series (energy results) and groups into further aggregated time-series (also energy results).
 
     Sums sum_quantity and collects distinct qualities from the aggregated time-series.
     """

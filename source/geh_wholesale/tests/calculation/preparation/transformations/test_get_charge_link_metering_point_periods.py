@@ -30,7 +30,7 @@ from tests.helpers.data_frame_utils import assert_dataframes_equal
 
 
 @pytest.mark.parametrize(
-    "input_metering_point_periods_rows, input_charge_link_periods_rows, expected_rows",
+    ("input_metering_point_periods_rows", "input_charge_link_periods_rows", "expected_rows"),
     [
         (
             #   Only a charge link period.

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .energy_results import write_energy_results
-from .monthly_amounts_per_charge import write_monthly_amounts_per_charge
-from .total_monthly_amounts import write_total_monthly_amounts
-from .wholesale_results import write_wholesale_results
+from .energy_results import write_energy_results as write_energy_results
+from .monthly_amounts_per_charge import write_monthly_amounts_per_charge as write_monthly_amounts_per_charge
+from .total_monthly_amounts import write_total_monthly_amounts as write_total_monthly_amounts
+from .wholesale_results import write_wholesale_results as write_wholesale_results

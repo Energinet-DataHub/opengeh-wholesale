@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .basis_data import get_metering_point_periods_basis_data
-from .basis_data import get_time_series_points_basis_data
-from .basis_data_results import write_basis_data
+from .basis_data import get_metering_point_periods_basis_data as get_metering_point_periods_basis_data
+from .basis_data import get_time_series_points_basis_data as get_time_series_points_basis_data
+from .basis_data_results import write_basis_data as write_basis_data

@@ -32,7 +32,7 @@ from geh_wholesale.constants import Colname
 
 
 @pytest.mark.parametrize(
-    "calculation_period_end_datetime, expected_resolution",
+    ("calculation_period_end_datetime", "expected_resolution"),
     [
         (datetime(2023, 4, 1), "PT1H"),
         (datetime(2023, 5, 1), "PT1H"),

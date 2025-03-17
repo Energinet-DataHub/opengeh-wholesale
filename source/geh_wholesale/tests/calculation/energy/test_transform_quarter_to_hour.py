@@ -87,7 +87,7 @@ def test__transform_quarter_to_hour__when_valid_input__merge_basis_data_time_ser
 
 
 @pytest.mark.parametrize(
-    "quality_1, quality_2, quality_3, quality_4, expected_quality",
+    ("quality_1", "quality_2", "quality_3", "quality_4", "expected_quality"),
     [
         (
             QuantityQuality.MISSING,

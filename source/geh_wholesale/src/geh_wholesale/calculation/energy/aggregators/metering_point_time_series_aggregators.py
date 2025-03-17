@@ -38,8 +38,7 @@ def aggregate_per_es(
     metering_point_type: MeteringPointType,
     settlement_method: SettlementMethod | None,
 ) -> EnergyResults:
-    """This function creates an intermediate energy result, which is subsequently used
-    to aggregate other energy results.
+    """Create an intermediate energy result, which is subsequently used to aggregate other energy results.
 
     The function is responsible for
     - Sum quantities across metering points per grid area, energy supplier, and balance responsible.

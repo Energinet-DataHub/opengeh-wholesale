@@ -32,7 +32,7 @@ from geh_wholesale.infrastructure.paths import (
 @use_span("calculation.write.energy")
 def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     """Write each energy result to the output table."""
-    print("Writing energy results to Unity Catalog")
+    print("Writing energy results to Unity Catalog")  # noqa: T201
     # Write exchange per neighbor grid area
     _write(
         "exchange_per_neighbor",

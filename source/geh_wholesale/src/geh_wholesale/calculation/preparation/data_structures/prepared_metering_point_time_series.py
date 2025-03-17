@@ -20,6 +20,7 @@ from geh_wholesale.constants import Colname
 
 class PreparedMeteringPointTimeSeries(DataFrameWrapper):
     """Represents time series enriched with metering points master data.
+
     The time series are prepared for calculation.
     """
 

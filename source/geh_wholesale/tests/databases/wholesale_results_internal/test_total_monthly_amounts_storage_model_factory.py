@@ -52,7 +52,7 @@ DEFAULT_CHARGE_OWNER_ID = "5790001330552"
 DEFAULT_TOTAL_AMOUNT = Decimal("123.456")
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
     args = copy(any_calculator_args)
 
@@ -102,7 +102,7 @@ def _create_multiple_total_monthly_amounts(
 
 
 @pytest.mark.parametrize(
-    "column_name, column_value",
+    ("column_name", "column_value"),
     [
         (TableColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
         (TableColumnNames.grid_area_code, DEFAULT_GRID_AREA_CODE),

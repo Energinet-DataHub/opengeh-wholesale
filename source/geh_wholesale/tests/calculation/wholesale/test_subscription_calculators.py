@@ -45,7 +45,7 @@ def _get_all_wholesale_metering_point_types() -> list[MeteringPointType]:
 
 class TestWhenValidInput:
     @pytest.mark.parametrize(
-        "period_start, period_end, input_charge_price, expected_output_charge_price",
+        ("period_start", "period_end", "input_charge_price", "expected_output_charge_price"),
         [
             (  # month with 29 days
                 datetime(2020, 1, 31, 23, 0, tzinfo=timezone.utc),
@@ -203,7 +203,7 @@ class TestWhenValidInput:
 
 class TestWhenDayLightSavingTime:
     @pytest.mark.parametrize(
-        "period_start, period_end, input_charge_price, expected_output_charge_price",
+        ("period_start", "period_end", "input_charge_price", "expected_output_charge_price"),
         [
             (  # Entering daylight saving time
                 datetime(2020, 2, 29, 23, 0, tzinfo=timezone.utc),

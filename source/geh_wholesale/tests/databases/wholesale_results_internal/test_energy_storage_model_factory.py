@@ -67,7 +67,7 @@ OTHER_METERING_POINT_TYPE = e.MeteringPointType.CONSUMPTION
 OTHER_SETTLEMENT_METHOD = e.SettlementMethod.NON_PROFILED
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def args(any_calculator_args: CalculatorArgs) -> CalculatorArgs:
     args = copy(any_calculator_args)
     args.calculation_type = DEFAULT_CALCULATION_TYPE
@@ -142,7 +142,7 @@ def _create_energy_results_corresponding_to_four_calculation_results(
 
 
 @pytest.mark.parametrize(
-    "column_name, column_value",
+    ("column_name", "column_value"),
     [
         (TableColumnNames.calculation_id, DEFAULT_CALCULATION_ID),
         (
@@ -212,7 +212,7 @@ def test__create__with_correct_number_of_calculation_result_ids(
 
 
 @pytest.mark.parametrize(
-    "column_name, value, other_value",
+    ("column_name", "value", "other_value"),
     [
         (Colname.grid_area_code, DEFAULT_GRID_AREA_CODE, OTHER_GRID_AREA_CODE),
         (
@@ -259,7 +259,7 @@ def test__create__when_rows_belong_to_different_results__adds_different_calculat
 
 
 @pytest.mark.parametrize(
-    "column_name, value, other_value",
+    ("column_name", "value", "other_value"),
     [
         (Colname.quantity, Decimal(DEFAULT_QUANTITY), Decimal(OTHER_QUANTITY)),
         (

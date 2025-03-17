@@ -12,10 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from geh_common.testing.dataframes.assert_schemas import assert_contract
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
-
-from geh_common.testing.dataframes.assert_schemas import assert_contract
 
 
 def read_table(

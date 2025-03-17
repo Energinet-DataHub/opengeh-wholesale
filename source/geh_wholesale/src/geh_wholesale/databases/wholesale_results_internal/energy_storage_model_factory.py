@@ -72,7 +72,8 @@ def _get_column_group_for_calculation_result_id() -> list[str]:
 
 
 def _map_to_storage_dataframe(results: DataFrame) -> DataFrame:
-    """Map column names to the Delta table field names
+    """Map column names to the Delta table field names.
+
     Note: The order of the columns must match the order of the columns in the Delta table
     """
     return results.select(

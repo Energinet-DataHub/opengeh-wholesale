@@ -29,7 +29,7 @@ from geh_wholesale.codelists import CalculationType, MeteringPointResolution
 
 class TestGetEnergyResultResolution:
     @pytest.mark.parametrize(
-        "transition_datetime, end_datetime, expected",
+        ("transition_datetime", "end_datetime", "expected"),
         [
             (
                 datetime(2023, 4, 30, 23),
@@ -60,7 +60,7 @@ class TestGetEnergyResultResolution:
 
 class TestEnergyResultResolutionAdjustedMeteringPointTimeSeries:
     @pytest.mark.parametrize(
-        "transition_datetime, start_datetime, end_datetime, expected_rows",
+        ("transition_datetime", "start_datetime", "end_datetime", "expected_rows"),
         [
             (
                 datetime(2023, 4, 30, 22, tzinfo=timezone.utc),

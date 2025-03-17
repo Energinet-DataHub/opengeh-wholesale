@@ -60,7 +60,7 @@ time_series_points_schema_temp = StructType(
 
 
 @pytest.mark.parametrize(
-    "basis_data_table_property_name, expected_schema",
+    ("basis_data_table_property_name", "expected_schema"),
     [
         (
             "metering_point_periods",

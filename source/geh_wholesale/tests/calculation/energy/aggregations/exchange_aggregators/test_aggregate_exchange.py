@@ -26,7 +26,7 @@ from geh_wholesale.constants import Colname
 
 class TestWhenValidInput:
     @pytest.mark.parametrize(
-        "from_qualities, to_qualities, expected_qualities",
+        ("from_qualities", "to_qualities", "expected_qualities"),
         [
             # Case where no "from" metering point exists
             ([], [QuantityQuality.ESTIMATED], [QuantityQuality.ESTIMATED]),

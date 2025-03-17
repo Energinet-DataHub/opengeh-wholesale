@@ -85,7 +85,7 @@ class TestWhenValidInput:
 
 class TestWhenChargeLinkPeriodExceedsCalculationPeriod:
     @pytest.mark.parametrize(
-        "charge_from_date, charge_to_date, expected_from_date, expected_to_date",
+        ("charge_from_date", "charge_to_date", "expected_from_date", "expected_to_date"),
         [
             (  # Dataset: charge period starts before calculation period
                 datetime(2020, 1, 1, 0, 0),

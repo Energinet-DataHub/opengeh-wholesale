@@ -212,7 +212,7 @@ class PreparedDataReader:
         )
 
     def get_latest_calculation_version(self, calculation_type: CalculationType) -> int | None:
-        """Returns the latest used version for the selected calculation type or None."""
+        """Return the latest used version for the selected calculation type or None."""
         calculations = self._wholesale_internal_repository.read_calculations()
 
         latest_version = (

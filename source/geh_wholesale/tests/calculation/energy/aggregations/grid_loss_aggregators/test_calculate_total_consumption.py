@@ -25,7 +25,7 @@ from tests.calculation.energy import energy_results_factories as energy_results
 
 class TestWhenValidInput:
     @pytest.mark.parametrize(
-        "prod_qualities, exchange_qualities, expected_qualities",
+        ("prod_qualities", "exchange_qualities", "expected_qualities"),
         [
             (
                 [QuantityQuality.MEASURED],

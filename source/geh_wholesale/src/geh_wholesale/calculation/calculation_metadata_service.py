@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from .calculator_args import CalculatorArgs
 from ..databases.wholesale_internal.calculation_writer import (
     write_calculation,
     write_calculation_grid_areas,
@@ -20,10 +19,10 @@ from ..databases.wholesale_internal.calculation_writer import (
 from ..databases.wholesale_internal.calculations_grid_areas_storage_model_factory import (
     create_calculation_grid_areas,
 )
+from .calculator_args import CalculatorArgs
 
 
 class CalculationMetadataService:
-
     @staticmethod
     def write(args: CalculatorArgs) -> None:
         write_calculation(args)

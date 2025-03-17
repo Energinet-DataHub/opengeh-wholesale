@@ -25,7 +25,7 @@ def explode_charge_price_information_within_periods(
     resolution: ChargeResolution,
     time_zone: str,
 ) -> DataFrame:
-    """This method explodes charge_price_information_periods between from_date and to_date with a resolution set according to 'charge_resolution'."""
+    """Explode charge_price_information_periods between from_date and to_date with a resolution set according to 'charge_resolution'."""
     if resolution != ChargeResolution.HOUR and resolution != ChargeResolution.DAY:
         raise ValueError(f"Unsupported resolution {resolution}")
 

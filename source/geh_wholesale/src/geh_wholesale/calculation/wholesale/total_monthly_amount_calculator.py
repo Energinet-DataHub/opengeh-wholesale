@@ -26,7 +26,8 @@ from geh_wholesale.constants import Colname
 def calculate_per_co_es(
     monthly_amounts_per_charge: MonthlyAmountPerCharge,
 ) -> TotalMonthlyAmount:
-    """Calculates the total monthly amount for each group of grid area, charge owner and charge time.
+    """Calculate the total monthly amount for each group of grid area, charge owner and charge time.
+
     Rows that are tax amounts are added to the other rows - but only the rows where the charge owner is not the tax owner itself.
     """
     total_amount_without_tax = _calculate_total_amount_for_charge_tax_value(

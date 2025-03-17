@@ -11,9 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""By having a conftest.py in this directory, we are able to add all packages
-defined in the geh_stream directory in our tests.
-"""
+"""By having a conftest.py in this directory, we are able to add all packages defined in the geh_stream directory in our tests."""
 
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col

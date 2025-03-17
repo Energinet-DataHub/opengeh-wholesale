@@ -26,7 +26,12 @@ from geh_wholesale.constants import Colname
 
 class TestWhenValidInput:
     @pytest.mark.parametrize(
-        "exchange_qualities, non_profiled_consumption_qualities, flex_consumption_qualities, production_qualities",
+        (
+            "exchange_qualities",
+            "non_profiled_consumption_qualities",
+            "flex_consumption_qualities",
+            "production_qualities",
+        ),
         [
             # Quality from all aggregated time series are included in the result
             (
@@ -95,7 +100,7 @@ class TestWhenValidInput:
 
 class TestWhenEnergyResultsIsEmpty:
     @pytest.mark.parametrize(
-        "exchange, non_profiled_consumption, flex_consumption, production, expected_quantity",
+        ("exchange", "non_profiled_consumption", "flex_consumption", "production", "expected_quantity"),
         [
             (  # Empty non profiled
                 factories.create_row(quantity=400),

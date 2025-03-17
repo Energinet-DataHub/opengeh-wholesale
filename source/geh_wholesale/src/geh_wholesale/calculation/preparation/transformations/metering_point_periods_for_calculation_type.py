@@ -50,7 +50,8 @@ def add_parent_data_to_child_metering_point_periods(
 def _get_child_metering_points_with_energy_suppliers(
     all_metering_point_periods: DataFrame,
 ) -> DataFrame:
-    """Returns all child metering points.
+    """Return all child metering points.
+
     The energy supplier of child metering points is added from its parent metering point.
     """
     es = "energy_supplier_id_temp"

@@ -76,7 +76,7 @@ class TestWhenValidInput:
 
     @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
     @pytest.mark.parametrize(
-        "observation_time, expected",
+        ("observation_time", "expected"),
         [
             (datetime(2022, 6, 8, 22, 0, 0), 1),
             (datetime(2022, 6, 8, 21, 0, 0), 0),
@@ -108,7 +108,7 @@ class TestWhenValidInput:
 
     @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
     @pytest.mark.parametrize(
-        "column_name, expected",
+        ("column_name", "expected"),
         [("observation_year", True), ("observation_month", True), ("dummy", False)],
     )
     def test_returns_time_series_df_without_respective_column(

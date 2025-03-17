@@ -14,6 +14,7 @@
 from dependency_injector import containers, providers
 from pyspark.sql import SparkSession
 
+import geh_wholesale
 from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
@@ -32,6 +33,6 @@ def create_and_configure_container(
 
     container.infrastructure_settings.from_value(infrastructure_settings)
 
-    container.wire(packages=[package])
+    container.wire(packages=[geh_wholesale])
 
     return container

@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .monthly_amount_per_charge import MonthlyAmountPerCharge
-from .total_monthly_amount import TotalMonthlyAmount
-from .wholesale_results import WholesaleResults
+from .monthly_amount_per_charge import MonthlyAmountPerCharge as MonthlyAmountPerCharge
+from .total_monthly_amount import TotalMonthlyAmount as TotalMonthlyAmount
+from .wholesale_results import WholesaleResults as WholesaleResults

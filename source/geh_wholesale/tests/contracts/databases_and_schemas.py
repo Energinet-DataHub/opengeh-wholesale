@@ -27,9 +27,7 @@ def get_tables_from_database(database_name: str, spark: SparkSession) -> list:
     return _get_from_database(database_name, spark, "TABLE")
 
 
-def _get_from_database(
-    database_name: str, spark: SparkSession, table_type: str
-) -> list:
+def _get_from_database(database_name: str, spark: SparkSession, table_type: str) -> list:
     tables = spark.catalog.listTables(database_name)
     tables = [table for table in tables if table.tableType == table_type]
     return tables
@@ -50,17 +48,13 @@ def get_expected_schemas(folder: str) -> dict:
                 module_path = os.path.join(root, file_name)
                 spec = spec_from_file_location(schema_name, module_path)
                 if spec is None:
-                    raise ImportError(
-                        f"Failed to import module from path '{module_path}'."
-                    )
+                    raise ImportError(f"Failed to import module from path '{module_path}'.")
 
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
                 if hasattr(module, schema_name):
-                    schemas[f"{database_name}.{schema_name}"] = getattr(
-                        module, schema_name
-                    )
+                    schemas[f"{database_name}.{schema_name}"] = getattr(module, schema_name)
                 else:
                     raise AttributeError(
                         f"The data product '{module}' does not define the expected contract '{schema_name}'"

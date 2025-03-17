@@ -188,7 +188,7 @@ def test__get_prepared_tariffs__filters_on_tariff_charge_type(
 
 
 @pytest.mark.parametrize(
-    "from_date, to_date, expected_rows",
+    ("from_date", "to_date", "expected_rows"),
     [
         # charge time before metering point from date - not accepted
         (datetime(2019, 12, 31, 23), datetime(2020, 1, 1, 0), 0),
@@ -460,7 +460,7 @@ def test__get_prepared_tariffs__returns_expected_tariff_values(
 
 
 @pytest.mark.parametrize(
-    "charge_resolution, expected_rows, expected_quantity",
+    ("charge_resolution", "expected_rows", "expected_quantity"),
     [
         (
             e.ChargeResolution.HOUR,
@@ -535,7 +535,7 @@ def test__get_prepared_tariffs__when_charges_with_specific_charge_resolution_and
 
 
 @pytest.mark.parametrize(
-    "charge_resolution, expected_rows, expected_quantity",
+    ("charge_resolution", "expected_rows", "expected_quantity"),
     [
         (
             e.ChargeResolution.HOUR,
@@ -613,7 +613,7 @@ def test__get_prepared_tariffs__when_specific_charge_resolution_and_time_series_
 
 
 @pytest.mark.parametrize(
-    "date_time_1, date_time_2, expected_rows",
+    ("date_time_1", "date_time_2", "expected_rows"),
     [
         (
             datetime(2019, 12, 31, 23, tzinfo=timezone.utc),
@@ -851,7 +851,7 @@ def test__get_prepared_tariffs__can_handle_missing_charge_links(
 
 
 @pytest.mark.parametrize(
-    "date_time_1, date_time_2",
+    ("date_time_1", "date_time_2"),
     [
         (
             datetime(2020, 3, 28, 23, tzinfo=timezone.utc),

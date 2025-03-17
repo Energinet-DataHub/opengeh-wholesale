@@ -21,6 +21,7 @@ from geh_wholesale.constants import Colname
 
 class PreparedFees(DataFrameWrapper):
     """Represents fee charges that are prepared for calculation.
+
     Missing prices are represented by a None value in the 'charge_price' column.
     """
 

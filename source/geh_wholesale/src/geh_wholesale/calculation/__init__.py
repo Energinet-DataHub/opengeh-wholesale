@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .preparation import PreparedDataReader
-from .calculation import execute
-from .calculation_core import CalculationCore
+from .calculation import execute as execute
+from .calculation_core import CalculationCore as CalculationCore
+from .preparation import PreparedDataReader as PreparedDataReader

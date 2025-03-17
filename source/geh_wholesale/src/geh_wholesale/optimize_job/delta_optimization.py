@@ -30,6 +30,7 @@ from geh_wholesale.infrastructure.paths import (
 
 def optimize_tables(catalog_name: str | None = None) -> None:
     """Optimize all tables in the internal databases.
+
     OPTIMIZE documentation: https://docs.delta.io/latest/optimizations-oss.html
     """
     applicationinsights_connection_string = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")

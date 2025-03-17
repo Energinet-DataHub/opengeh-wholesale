@@ -81,7 +81,7 @@ def _create_charge_link_metering_point_periods(
 
 class TestWhenChargeTimeIsWithinOrBeforeLinkPeriod:
     @pytest.mark.parametrize(
-        "charge_time, charge_link_from_date",
+        ("charge_time", "charge_link_from_date"),
         [
             (JAN_1ST, JAN_1ST),  # charge time and link period overlap
             (

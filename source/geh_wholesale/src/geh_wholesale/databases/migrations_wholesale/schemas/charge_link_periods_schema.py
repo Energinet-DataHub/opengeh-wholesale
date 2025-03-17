@@ -14,10 +14,10 @@
 
 from pyspark.sql.types import (
     IntegerType,
-    StructField,
     StringType,
-    TimestampType,
+    StructField,
     StructType,
+    TimestampType,
 )
 
 """

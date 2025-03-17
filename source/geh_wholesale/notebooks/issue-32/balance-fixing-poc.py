@@ -125,9 +125,7 @@ display(grid_area_events_df)
 
 # As we only use (currently) immutable data we can just pick any of the update events randomly.
 # This will, however, change when support for merge of grid areas are added.
-w2 = Window.partitionBy("body.GridAreaCode").orderBy(
-    col("enqueuedTime")
-)  # skal det ikke være stored time?
+w2 = Window.partitionBy("body.GridAreaCode").orderBy(col("enqueuedTime"))  # skal det ikke være stored time?
 grid_area_events_df = (
     grid_area_events_df.withColumn("row", row_number().over(w2))
     .filter(col("row") == 1)
@@ -137,9 +135,7 @@ grid_area_events_df = (
 display(grid_area_events_df)
 
 if grid_area_events_df.count() != len(batch_grid_areas):
-    raise Exception(
-        "Grid areas for processes in batch does not match the known grid areas in wholesale"
-    )
+    raise Exception("Grid areas for processes in batch does not match the known grid areas in wholesale")
 
 # COMMAND ----------
 
@@ -159,9 +155,7 @@ schema = StructType(
 # Debug
 display(
     spark.read.option("mergeSchema", "true")
-    .parquet(
-        "abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/events"
-    )
+    .parquet("abfss://integration-events@stdatalakesharedresu001.dfs.core.windows.net/events")
     .withColumn("body", col("body").cast("string"))
     .withColumn("body", from_json(col("body"), schema))
     .where(col("body.MessageType").startswith("Meter"))
@@ -204,27 +198,19 @@ metering_point_periods_df = (
     )
     .withColumn(
         "ConnectionState",
-        when(
-            col("MessageType") == "MeteringPointCreated", lit(connection_state_created)
-        ).when(
+        when(col("MessageType") == "MeteringPointCreated", lit(connection_state_created)).when(
             col("MessageType") == "MeteringPointConnected",
             lit(connection_state_connected),
         ),
     )
     .withColumn(
         "MeteringPointType",
-        coalesce(
-            col("MeteringPointType"), last("MeteringPointType", True).over(window)
-        ),
+        coalesce(col("MeteringPointType"), last("MeteringPointType", True).over(window)),
     )
-    .withColumn(
-        "Resolution", coalesce(col("Resolution"), last("Resolution", True).over(window))
-    )
+    .withColumn("Resolution", coalesce(col("Resolution"), last("Resolution", True).over(window)))
     .where(col("EffectiveDate") <= period_end_datetime)
     .where(col("toEffectiveDate") >= period_start_datetime)
-    .where(
-        col("ConnectionState") == connection_state_connected
-    )  # Only aggregate when metering points is connected
+    .where(col("ConnectionState") == connection_state_connected)  # Only aggregate when metering points is connected
 )
 
 display(metering_point_periods_df)
@@ -232,8 +218,7 @@ display(metering_point_periods_df)
 # Only include metering points in the selected grid areas
 metering_point_periods_df = metering_point_periods_df.join(
     grid_area_events_df,
-    metering_point_periods_df["GridAreaLinkId"]
-    == grid_area_events_df["GridAreaLinkId"],
+    metering_point_periods_df["GridAreaLinkId"] == grid_area_events_df["GridAreaLinkId"],
     "inner",
 ).select(
     metering_point_periods_df["MessageType"],
@@ -250,9 +235,7 @@ display(metering_point_periods_df)
 
 timeseries_df = (
     spark.read.option("mergeSchema", "true")
-    .parquet(
-        "abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/time-series-points/"
-    )
+    .parquet("abfss://timeseries-data@stdatalakesharedresu001.dfs.core.windows.net/time-series-points/")
     .where(col("storedTime") <= snapshot_datetime)
     .where(col("time") >= period_start_datetime)
     .where(col("time") < period_end_datetime)
@@ -266,13 +249,9 @@ display(timeseries_df)
 window = Window.partitionBy("metering_point_id", "time").orderBy(
     col("registration_date_time").desc(), col("storedTime").desc()
 )
-timeseries_df = timeseries_df.withColumn("row_number", row_number().over(window)).where(
-    col("row_number") == 1
-)
+timeseries_df = timeseries_df.withColumn("row_number", row_number().over(window)).where(col("row_number") == 1)
 
-timeseries_df = timeseries_df.select(
-    col("metering_point_id").alias("GsrnNumber"), "time", "quantity"
-)
+timeseries_df = timeseries_df.select(col("metering_point_id").alias("GsrnNumber"), "time", "quantity")
 
 display(timeseries_df.groupBy("GsrnNumber").count())
 display(timeseries_df.where(col("GsrnNumber") == "577996546429822830"))
@@ -317,9 +296,7 @@ result_df = (
             ),
         ).when(col("resolution") == resolution_quarter, F.array(col("time"))),
     )
-    .select(
-        timeseriesWithMeteringPoint["*"], explode("quarter_times").alias("quarter_time")
-    )
+    .select(timeseriesWithMeteringPoint["*"], explode("quarter_times").alias("quarter_time"))
     .withColumn(
         "quarter_quantity",
         when(col("resolution") == resolution_hour, col("quantity") / 4).when(
@@ -352,9 +329,7 @@ result_df = (
     result_df.repartition("grid_area")
     .write.mode("overwrite")
     .partitionBy("grid_area")
-    .json(
-        f"abfss://processes@stdatalakesharedresu001.dfs.core.windows.net/results/batch_id={batch_id}"
-    )
+    .json(f"abfss://processes@stdatalakesharedresu001.dfs.core.windows.net/results/batch_id={batch_id}")
 )
 
 # COMMAND ----------

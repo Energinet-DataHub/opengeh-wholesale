@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StructType
 
 
@@ -25,7 +25,7 @@ def write_dataframe_to_table(
     schema: StructType,
     mode: str = "overwrite",
 ) -> None:
-    print(f"{database_name}.{table_name} write")
+    print(f"{database_name}.{table_name} write")  # noqa: T201
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name}")
 
     sql_schema = _struct_type_to_sql_schema(schema)

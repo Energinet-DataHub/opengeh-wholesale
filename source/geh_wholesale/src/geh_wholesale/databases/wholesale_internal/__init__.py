@@ -1,1 +1,1 @@
-from .repository import WholesaleInternalRepository
+from .repository import WholesaleInternalRepository as WholesaleInternalRepository

@@ -54,7 +54,7 @@ def test_start_with_deps__throws_exception_when_calculation_id_already_used(
             infrastructure_settings=infrastructure_settings,
         )
     except SystemExit as e:
-        assert e.code == 4
+        assert e.code == 4  # noqa: PT017
 
     # Assert
     if calculation_id_already_used:

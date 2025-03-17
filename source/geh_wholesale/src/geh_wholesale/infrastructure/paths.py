@@ -18,7 +18,7 @@ import geh_wholesale.infrastructure.environment_variables as env_vars
 
 
 class UnityCatalogDatabaseNames:
-    """Unity Catalog database names are defined in the dh3infrastructure repository"""
+    """Unity Catalog database names are defined in the dh3infrastructure repository."""
 
     WHOLESALE_RESULTS = "wholesale_results"
     WHOLESALE_BASIS_DATA_INTERNAL = "wholesale_basis_data_internal"

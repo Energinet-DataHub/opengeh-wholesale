@@ -30,12 +30,8 @@ from pyspark.sql.window import Window
 source_database = "hive_metastore.wholesale_output"  # FILL IN
 source_energy_results_table_name = "energy_results"
 source_wholesale_results_table_name = "wholesale_results"
-source_metering_points_database_and_table_name = (
-    "wholesale_input.metering_point_periods"
-)
-source_charge_masterdata_database_and_table_name = (
-    "wholesale_input.charge_masterdata_periods"
-)
+source_metering_points_database_and_table_name = "wholesale_input.metering_point_periods"
+source_charge_masterdata_database_and_table_name = "wholesale_input.charge_masterdata_periods"
 source_calculation_id_to_use = "51d60f89-bbc5-4f7a-be98-6139aab1c1b2"  # FILL IN
 
 # Target variables
@@ -43,7 +39,9 @@ target_database = "hive_metastore.wholesale_output_anonymised"  # FILL IN
 target_energy_results_table_name = "energy_results"
 target_wholesale_results_table_name = "wholesale_results"
 target_storage_account_name = "stdatalakeshresdwe002"  # FILL IN
-target_delta_table_root_path = f"abfss://wholesale@{target_storage_account_name}.dfs.core.windows.net/wholesale_output_anonymised"  # FILL IN
+target_delta_table_root_path = (
+    f"abfss://wholesale@{target_storage_account_name}.dfs.core.windows.net/wholesale_output_anonymised"  # FILL IN
+)
 
 # Source columns variables
 grid_area_code_column_name = "grid_area_code"
@@ -56,9 +54,7 @@ charge_owner_id_column_name = "charge_owner_id"
 # Anonymised columns variables
 anonymised_grid_area_code_column_name = "anonymised_grid_area_code"
 anonymised_balance_or_supplier_id_column_name = "anonymised_balance_or_supplier_id"
-anonymised_charge_owner_or_supplier_id_column_name = (
-    "anonymised_charge_owner_or_supplier_id"
-)
+anonymised_charge_owner_or_supplier_id_column_name = "anonymised_charge_owner_or_supplier_id"
 anonymised_metering_point_id_column_name = "anonymised_metering_point_id"
 
 # GLN generation variables
@@ -127,61 +123,27 @@ df_source_wholesale_results_table = (
 # COMMAND ----------
 
 df_all_gln_numbers_for_mp = (
-    df_source_metering_points_table.select(
-        F.col(metering_point_id_column_name).alias(tmp_gln_column_name)
-    )
+    df_source_metering_points_table.select(F.col(metering_point_id_column_name).alias(tmp_gln_column_name))
     # These tables below shouldn't be needed for production, but for dev-002 we have some GLNs that only exists in the output tables
-    .union(
-        df_source_energy_results_table.select(
-            F.col(metering_point_id_column_name).alias(tmp_gln_column_name)
-        )
-    )
+    .union(df_source_energy_results_table.select(F.col(metering_point_id_column_name).alias(tmp_gln_column_name)))
     .distinct()
     .filter(F.col(tmp_gln_column_name).isNotNull())
 )
 
 df_all_gln_numbers_for_others = (
-    df_source_metering_points_table.select(
-        F.col(energy_supplier_id_column_name).alias(tmp_gln_column_name)
-    )
-    .union(
-        df_source_metering_points_table.select(
-            F.col(balance_responsible_id_column_name).alias(tmp_gln_column_name)
-        )
-    )
-    .union(
-        df_source_charge_masterdata_table.select(
-            F.col(charge_owner_id_column_name).alias(tmp_gln_column_name)
-        )
-    )
+    df_source_metering_points_table.select(F.col(energy_supplier_id_column_name).alias(tmp_gln_column_name))
+    .union(df_source_metering_points_table.select(F.col(balance_responsible_id_column_name).alias(tmp_gln_column_name)))
+    .union(df_source_charge_masterdata_table.select(F.col(charge_owner_id_column_name).alias(tmp_gln_column_name)))
     # These tables below shouldn't be needed for production, but for dev-002 we have some GLNs that only exists in the output tables
-    .union(
-        df_source_energy_results_table.select(
-            F.col(balance_responsible_id_column_name).alias(tmp_gln_column_name)
-        )
-    )
-    .union(
-        df_source_energy_results_table.select(
-            F.col(energy_supplier_id_column_name).alias(tmp_gln_column_name)
-        )
-    )
-    .union(
-        df_source_wholesale_results_table.select(
-            F.col(charge_owner_id_column_name).alias(tmp_gln_column_name)
-        )
-    )
-    .union(
-        df_source_wholesale_results_table.select(
-            F.col(energy_supplier_id_column_name).alias(tmp_gln_column_name)
-        )
-    )
+    .union(df_source_energy_results_table.select(F.col(balance_responsible_id_column_name).alias(tmp_gln_column_name)))
+    .union(df_source_energy_results_table.select(F.col(energy_supplier_id_column_name).alias(tmp_gln_column_name)))
+    .union(df_source_wholesale_results_table.select(F.col(charge_owner_id_column_name).alias(tmp_gln_column_name)))
+    .union(df_source_wholesale_results_table.select(F.col(energy_supplier_id_column_name).alias(tmp_gln_column_name)))
     .distinct()
     .filter(F.col(tmp_gln_column_name).isNotNull())
 )
 
-list_of_gln_numbers_for_others = [
-    row[tmp_gln_column_name] for row in df_all_gln_numbers_for_others.collect()
-]
+list_of_gln_numbers_for_others = [row[tmp_gln_column_name] for row in df_all_gln_numbers_for_others.collect()]
 
 # COMMAND ----------
 
@@ -204,9 +166,7 @@ list_of_gln_numbers_for_others = [
 # COMMAND ----------
 
 df_all_metering_point_ids = (
-    df_all_gln_numbers_for_mp.select(
-        F.col(tmp_gln_column_name).alias(gln_original_column_name)
-    ).distinct()
+    df_all_gln_numbers_for_mp.select(F.col(tmp_gln_column_name).alias(gln_original_column_name)).distinct()
 ).cache()
 
 count_distinct_mpids = len(str(df_all_metering_point_ids.count()))
@@ -218,9 +178,7 @@ df_anonymised_metering_points = (
         F.rpad(
             F.concat(
                 F.lit("5"),
-                F.lpad(
-                    F.row_number().over(window_random_order), count_distinct_mpids, "0"
-                ),
+                F.lpad(F.row_number().over(window_random_order), count_distinct_mpids, "0"),
                 F.lit("5"),
             ),
             18,
@@ -284,19 +242,14 @@ def calculate_checksum(gln_number):
 # COMMAND ----------
 
 
-def get_mapping_for_gln_numbers(
-    list_of_gln: List, length_of_gln: int
-) -> List[Tuple[int, int]]:
+def get_mapping_for_gln_numbers(list_of_gln: List, length_of_gln: int) -> List[Tuple[int, int]]:
     list_of_anonymised_gln_numbers = []
     anonymised_gln_numbers_mapping = []
     for gln_number in list_of_gln:
         anonymised_gln_number = create_random_gln(length_of_gln)
 
         # Create a new GLN number until we get one we haven't seen yet or one that doesn't match a real GLN
-        while (
-            anonymised_gln_number in list_of_anonymised_gln_numbers
-            or anonymised_gln_number in list_of_gln
-        ):
+        while anonymised_gln_number in list_of_anonymised_gln_numbers or anonymised_gln_number in list_of_gln:
             anonymised_gln_number = create_random_gln(length_of_gln)
 
         # Add to list of anonymised GLN numbers as well as the mapping
@@ -317,9 +270,7 @@ df_anonymised_gln_numbers = spark.createDataFrame(
     anonymised_gln_numbers_mapping_for_others + [(None, None)],
     [gln_original_column_name, gln_anonymised_column_name],
 ).cache()
-df_anonymised_gln_numbers_with_mps = df_anonymised_gln_numbers.union(
-    df_anonymised_metering_points
-).cache()
+df_anonymised_gln_numbers_with_mps = df_anonymised_gln_numbers.union(df_anonymised_metering_points).cache()
 
 # COMMAND ----------
 
@@ -352,12 +303,8 @@ assert (
 # COMMAND ----------
 
 assert (
-    df_anonymised_gln_numbers_with_mps.select(gln_original_column_name)
-    .distinct()
-    .count()
-    == df_anonymised_gln_numbers_with_mps.select(gln_anonymised_column_name)
-    .distinct()
-    .count()
+    df_anonymised_gln_numbers_with_mps.select(gln_original_column_name).distinct().count()
+    == df_anonymised_gln_numbers_with_mps.select(gln_anonymised_column_name).distinct().count()
 )
 
 # COMMAND ----------

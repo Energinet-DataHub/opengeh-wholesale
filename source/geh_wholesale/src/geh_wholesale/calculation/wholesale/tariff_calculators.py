@@ -29,6 +29,7 @@ def calculate_tariff_price_per_co_es(
     prepared_tariffs: PreparedTariffs,
 ) -> WholesaleResults:
     """Calculate tariff amount time series.
+
     A result is calculated per
     - grid area
     - charge key (charge id, charge type, charge owner)

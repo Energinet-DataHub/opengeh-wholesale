@@ -11,14 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime
-
-# Variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
-
-from azure.identity import ClientSecretCredential
 import os
+from datetime import datetime
 from enum import Enum
 from typing import Any
+
+# Variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
+from azure.identity import ClientSecretCredential
 
 
 class EnvironmentVariable(Enum):
@@ -30,9 +29,7 @@ class EnvironmentVariable(Enum):
     TENANT_ID = "TENANT_ID"
     SPN_APP_ID = "SPN_APP_ID"
     SPN_APP_SECRET = "SPN_APP_SECRET"
-    QUARTERLY_RESOLUTION_TRANSITION_DATETIME = (
-        "QUARTERLY_RESOLUTION_TRANSITION_DATETIME"
-    )
+    QUARTERLY_RESOLUTION_TRANSITION_DATETIME = "QUARTERLY_RESOLUTION_TRANSITION_DATETIME"
 
 
 def get_storage_account_credential() -> ClientSecretCredential:
@@ -62,13 +59,10 @@ def get_time_zone() -> str:
 
 
 def get_quarterly_resolution_transition_datetime() -> datetime:
-
     quarterly_resolution_transition_datetime = get_env_variable_or_throw(
         EnvironmentVariable.QUARTERLY_RESOLUTION_TRANSITION_DATETIME
     )
-    return datetime.strptime(
-        quarterly_resolution_transition_datetime, "%Y-%m-%dT%H:%M:%SZ"
-    )
+    return datetime.strptime(quarterly_resolution_transition_datetime, "%Y-%m-%dT%H:%M:%SZ")
 
 
 def get_catalog_name() -> str:
@@ -80,9 +74,7 @@ def get_calculation_input_folder_name() -> str:
 
 
 def get_calculation_input_database_name() -> str:
-    return get_env_variable_or_throw(
-        EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME
-    )
+    return get_env_variable_or_throw(EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME)
 
 
 def get_env_variables_or_throw(environment_variable: list[EnvironmentVariable]) -> dict:

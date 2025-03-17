@@ -88,8 +88,8 @@ def _assert_args(args: CalculatorArgs, args_dict, env_args):
     )
 
 
-@pytest.mark.parametrize(["_", "contract"], _load_contracts().items())
-def test_calculator_required_args(_, contract: Contract, monkeypatch: pytest.MonkeyPatch):
+@pytest.mark.parametrize(("name", "contract"), _load_contracts().items())
+def test_calculator_required_args(name, contract: Contract, monkeypatch: pytest.MonkeyPatch):
     args_dict = _args_to_dict(contract.required)
     monkeypatch.setattr(
         sys,
@@ -101,8 +101,8 @@ def test_calculator_required_args(_, contract: Contract, monkeypatch: pytest.Mon
     _assert_args(args, args_dict, DEFAULT_ENV_VARS)
 
 
-@pytest.mark.parametrize(["_", "contract"], _load_contracts().items())
-def test_calculator_optional_args(_, contract: Contract, monkeypatch: pytest.MonkeyPatch):
+@pytest.mark.parametrize(("name", "contract"), _load_contracts().items())
+def test_calculator_optional_args(name, contract: Contract, monkeypatch: pytest.MonkeyPatch):
     args_dict = _args_to_dict(contract.required + contract.optional)
     monkeypatch.setattr(
         sys,
@@ -114,8 +114,8 @@ def test_calculator_optional_args(_, contract: Contract, monkeypatch: pytest.Mon
     _assert_args(args, args_dict, DEFAULT_ENV_VARS)
 
 
-@pytest.mark.parametrize(["_", "contract"], _load_contracts().items())
-def test_calculator_args_missing_env(_, contract: Contract, monkeypatch: pytest.MonkeyPatch):
+@pytest.mark.parametrize(("name", "contract"), _load_contracts().items())
+def test_calculator_args_missing_env(name, contract: Contract, monkeypatch: pytest.MonkeyPatch):
     environment_variables = DEFAULT_ENV_VARS.copy()
     environment_variables.pop("TIME_ZONE")
     monkeypatch.setattr(
@@ -128,8 +128,8 @@ def test_calculator_args_missing_env(_, contract: Contract, monkeypatch: pytest.
         CalculatorArgs()
 
 
-@pytest.mark.parametrize(["_", "contract"], _load_contracts().items())
-def test_calculator_args_required_args_missing(_, contract: Contract, monkeypatch: pytest.MonkeyPatch):
+@pytest.mark.parametrize(("name", "contract"), _load_contracts().items())
+def test_calculator_args_required_args_missing(name, contract: Contract, monkeypatch: pytest.MonkeyPatch):
     required_args = contract.required.copy()
     required_args.pop(0)
     monkeypatch.setattr(
@@ -143,13 +143,13 @@ def test_calculator_args_required_args_missing(_, contract: Contract, monkeypatc
 
 
 @pytest.mark.parametrize(
-    ["_", "grid_areas"],
+    ("name", "grid_areas"),
     [
         ("short_grid_area_code", "[0, 805]"),
         ("long_grid_area_code", "[012341, 805]"),
     ],
 )
-def test_grid_area_code_validation(_, grid_areas, monkeypatch: pytest.MonkeyPatch):
+def test_grid_area_code_validation(name, grid_areas, monkeypatch: pytest.MonkeyPatch):
     args = DEFAULT_ARGS.copy()
     args.update({"grid-areas": grid_areas})
     sys_args = [f"--{k}={v}" for k, v in args.items()]
@@ -160,7 +160,7 @@ def test_grid_area_code_validation(_, grid_areas, monkeypatch: pytest.MonkeyPatc
 
 
 @pytest.mark.parametrize(
-    ["start_date", "end_date", "quarterly_resolution", "match"],
+    ("start_date", "end_date", "quarterly_resolution", "match"),
     [
         (
             "2022-05-31T22:00:00Z",
@@ -205,7 +205,7 @@ def test_quarterly_resolution_transition_datetime_validation(
 
 
 @pytest.mark.parametrize(
-    ["calculation_type", "start_date", "end_date", "match"],
+    ("calculation_type", "start_date", "end_date", "match"),
     [
         x
         for c in [
@@ -257,7 +257,7 @@ def test_validate_period_for_wholesale_calculation(
 
 
 @pytest.mark.parametrize(
-    ["calculation_type", "match"],
+    ("calculation_type", "match"),
     [
         (
             c,

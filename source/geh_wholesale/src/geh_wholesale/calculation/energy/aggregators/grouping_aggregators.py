@@ -28,7 +28,7 @@ def aggregate(df: EnergyResults) -> EnergyResults:
 
 
 def aggregate_per_brp(df: EnergyResults) -> EnergyResults:
-    """Function to aggregate sum per grid area and balance responsible party."""
+    """Aggregate sum per grid area and balance responsible party."""
     group_by = [
         Colname.grid_area_code,
         Colname.balance_responsible_party_id,

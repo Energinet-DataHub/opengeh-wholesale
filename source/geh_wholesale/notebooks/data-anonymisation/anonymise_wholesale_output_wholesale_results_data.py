@@ -66,17 +66,15 @@ spark.sql(query)
 # COMMAND ----------
 
 # Read source tables
-df_source_wholesale_results_table = spark.read.table(
-    f"{source_database}.{source_wholesale_results_table_name}"
-).filter(f"{calculation_id_column_name} == '{source_calculation_id_to_use}'")
+df_source_wholesale_results_table = spark.read.table(f"{source_database}.{source_wholesale_results_table_name}").filter(
+    f"{calculation_id_column_name} == '{source_calculation_id_to_use}'"
+)
 
 # COMMAND ----------
 
 # Read all grid area codes
 df_source_grid_area_codes_table = (
-    spark.read.table(f"{source_metering_points_database_and_table_name}")
-    .select(grid_area_code_column_name)
-    .distinct()
+    spark.read.table(f"{source_metering_points_database_and_table_name}").select(grid_area_code_column_name).distinct()
 )
 
 # COMMAND ----------
@@ -115,9 +113,7 @@ df_unique_grid_area_codes = df_source_grid_area_codes_table.union(
 ).distinct()
 
 anonymised_grid_area_codes = []
-list_unique_grid_area_codes = [
-    row[grid_area_code_column_name] for row in df_unique_grid_area_codes.collect()
-]
+list_unique_grid_area_codes = [row[grid_area_code_column_name] for row in df_unique_grid_area_codes.collect()]
 
 first_anonymized_id_iteration = 1
 for grid_area_code in list_unique_grid_area_codes:
@@ -179,9 +175,9 @@ df_source_wholesale_results_table_anonymised = (
     # Anonymise Energy Supplier Id
     .join(
         df_anonymised_suppliers_and_charge_owner,
-        df_anonymised_suppliers_and_charge_owner[
-            energy_supplier_id_column_name
-        ].eqNullSafe(df_source_wholesale_results_table[energy_supplier_id_column_name]),
+        df_anonymised_suppliers_and_charge_owner[energy_supplier_id_column_name].eqNullSafe(
+            df_source_wholesale_results_table[energy_supplier_id_column_name]
+        ),
         "left",
     )
     .drop(
@@ -193,9 +189,9 @@ df_source_wholesale_results_table_anonymised = (
     # Anonymise Charge Owner Id
     .join(
         df_anonymised_suppliers_and_charge_owner,
-        df_anonymised_suppliers_and_charge_owner[
-            charge_owner_id_column_name
-        ].eqNullSafe(df_source_wholesale_results_table[charge_owner_id_column_name]),
+        df_anonymised_suppliers_and_charge_owner[charge_owner_id_column_name].eqNullSafe(
+            df_source_wholesale_results_table[charge_owner_id_column_name]
+        ),
         "left",
     )
     .drop(
@@ -213,9 +209,7 @@ df_source_wholesale_results_table_anonymised = (
         "left",
     )
     .drop(df_anonymised_grid_area_codes[grid_area_code_column_name])
-    .withColumn(
-        grid_area_code_column_name, F.col(anonymised_grid_area_code_column_name)
-    )
+    .withColumn(grid_area_code_column_name, F.col(anonymised_grid_area_code_column_name))
     .drop(anonymised_grid_area_code_column_name)
     # Select and Distinct
     .select(df_source_wholesale_results_table.columns)
@@ -236,67 +230,43 @@ df_source_wholesale_results_table_anonymised = (
 # COMMAND ----------
 
 assert (
-    df_source_wholesale_results_table_anonymised.select(charge_owner_id_column_name)
-    .distinct()
-    .count()
-    == df_source_wholesale_results_table.select(charge_owner_id_column_name)
-    .distinct()
-    .count()
+    df_source_wholesale_results_table_anonymised.select(charge_owner_id_column_name).distinct().count()
+    == df_source_wholesale_results_table.select(charge_owner_id_column_name).distinct().count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_wholesale_results_table_anonymised.filter(
-        F.col(charge_owner_id_column_name).isNull()
-    ).count()
-    == df_source_wholesale_results_table.filter(
-        F.col(charge_owner_id_column_name).isNull()
-    ).count()
+    df_source_wholesale_results_table_anonymised.filter(F.col(charge_owner_id_column_name).isNull()).count()
+    == df_source_wholesale_results_table.filter(F.col(charge_owner_id_column_name).isNull()).count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_wholesale_results_table_anonymised.select(energy_supplier_id_column_name)
-    .distinct()
-    .count()
-    == df_source_wholesale_results_table.select(energy_supplier_id_column_name)
-    .distinct()
-    .count()
+    df_source_wholesale_results_table_anonymised.select(energy_supplier_id_column_name).distinct().count()
+    == df_source_wholesale_results_table.select(energy_supplier_id_column_name).distinct().count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_wholesale_results_table_anonymised.filter(
-        F.col(energy_supplier_id_column_name).isNull()
-    ).count()
-    == df_source_wholesale_results_table.filter(
-        F.col(energy_supplier_id_column_name).isNull()
-    ).count()
+    df_source_wholesale_results_table_anonymised.filter(F.col(energy_supplier_id_column_name).isNull()).count()
+    == df_source_wholesale_results_table.filter(F.col(energy_supplier_id_column_name).isNull()).count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_wholesale_results_table_anonymised.select(grid_area_code_column_name)
-    .distinct()
-    .count()
-    == df_source_wholesale_results_table.select(grid_area_code_column_name)
-    .distinct()
-    .count()
+    df_source_wholesale_results_table_anonymised.select(grid_area_code_column_name).distinct().count()
+    == df_source_wholesale_results_table.select(grid_area_code_column_name).distinct().count()
 )
 
 # COMMAND ----------
 
 assert (
-    df_source_wholesale_results_table_anonymised.filter(
-        F.col(grid_area_code_column_name).isNull()
-    ).count()
-    == df_source_wholesale_results_table.filter(
-        F.col(grid_area_code_column_name).isNull()
-    ).count()
+    df_source_wholesale_results_table_anonymised.filter(F.col(grid_area_code_column_name).isNull()).count()
+    == df_source_wholesale_results_table.filter(F.col(grid_area_code_column_name).isNull()).count()
 )
 
 # COMMAND ----------
@@ -306,8 +276,8 @@ assert (
 
 # COMMAND ----------
 
-df_source_wholesale_results_table_anonymised.write.format("delta").mode(
-    "overwrite"
-).saveAsTable(f"{target_database}.{target_wholesale_results_table_name}")
+df_source_wholesale_results_table_anonymised.write.format("delta").mode("overwrite").saveAsTable(
+    f"{target_database}.{target_wholesale_results_table_name}"
+)
 
 # COMMAND ----------

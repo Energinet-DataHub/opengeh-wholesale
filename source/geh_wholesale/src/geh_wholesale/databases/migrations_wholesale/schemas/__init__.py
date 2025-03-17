@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .charge_link_periods_schema import charge_link_periods_schema
+from .charge_link_periods_schema import charge_link_periods_schema as charge_link_periods_schema
 from .charge_price_information_periods_schema import (
-    charge_price_information_periods_schema,
+    charge_price_information_periods_schema as charge_price_information_periods_schema,
 )
-from .charge_price_points_schema import charge_price_points_schema
-from .metering_point_periods_schema import metering_point_periods_schema
-from .time_series_points_schema import time_series_points_schema
+from .charge_price_points_schema import charge_price_points_schema as charge_price_points_schema
+from .metering_point_periods_schema import metering_point_periods_schema as metering_point_periods_schema
+from .time_series_points_schema import time_series_points_schema as time_series_points_schema

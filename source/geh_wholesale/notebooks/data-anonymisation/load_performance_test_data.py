@@ -55,9 +55,7 @@ mp_schema_ddl = """(`metering_point_id` string NOT NULL,
 `energy_supplier_id` string, 
 `balance_responsible_id` string, 
 `from_date` timestamp NOT NULL, 
-`to_date` timestamp)""".replace(
-    "\n", ""
-)
+`to_date` timestamp)""".replace("\n", "")
 print(mp_schema_ddl)
 
 # COMMAND ----------
@@ -65,9 +63,7 @@ print(mp_schema_ddl)
 ts_schema_ddl = """(`metering_point_id` string NOT NULL, 
 `quantity` decimal(18,6), 
 `quality` string NOT NULL, 
-`observation_time` timestamp NOT NULL)""".replace(
-    "\n", ""
-)
+`observation_time` timestamp NOT NULL)""".replace("\n", "")
 print(ts_schema_ddl)
 
 # COMMAND ----------

@@ -38,7 +38,7 @@ from . import configuration as c
 
 
 @pytest.mark.parametrize(
-    "time_series_type, table_name",
+    ("time_series_type", "table_name"),
     [
         (
             TimeSeriesType.EXCHANGE.value,
@@ -166,7 +166,7 @@ WHOLESALE_RESULT_TYPES = [
 
 
 @pytest.mark.parametrize(
-    "charge_type, resolution",
+    ("charge_type", "resolution"),
     WHOLESALE_RESULT_TYPES,
 )
 def test__wholesale_result__amount_per_charge_is_created(
@@ -315,7 +315,7 @@ def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
 
 
 @pytest.mark.parametrize(
-    "basis_data_table_name, expected_schema",
+    ("basis_data_table_name", "expected_schema"),
     [
         (
             paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
@@ -363,7 +363,7 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
 
 
 @pytest.mark.parametrize(
-    "view_name, has_data",
+    ("view_name", "has_data"),
     [
         (
             f"{paths.WholesaleResultsDatabase.DATABASE_NAME}.{paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME}",

@@ -9,7 +9,7 @@ from geh_wholesale.infrastructure import paths
 
 
 @pytest.mark.parametrize(
-    "schema_name,table_name",
+    ("schema_name", "table_name"),
     [
         (
             paths.WholesaleResultsInternalDatabase.DATABASE_NAME,

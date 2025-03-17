@@ -136,5 +136,5 @@ def test__get_grid_loss_metering_point_periods__when_no_grid_loss_metering_point
     grid_areas = ["grid_area_without_grid_loss_metering_point"]
 
     # Act and Assert
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError, match="No metering point"):
         get_grid_loss_metering_point_periods(grid_areas)

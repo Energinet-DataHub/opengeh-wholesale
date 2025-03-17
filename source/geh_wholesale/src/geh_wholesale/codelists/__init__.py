@@ -12,17 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .basis_data_type import BasisDataType
-from .calculation_type import CalculationType
-from .charge_quality import ChargeQuality
-from .charge_resolution import ChargeResolution
-from .charge_type import ChargeType
-from .charge_unit import ChargeUnit
-from .input_metering_point_type import InputMeteringPointType
-from .input_settlement_method import InputSettlementMethod
-from .metering_point_resolution import MeteringPointResolution
-from .metering_point_type import MeteringPointType
-from .quantity_quality import QuantityQuality
-from .settlement_method import SettlementMethod
-from .time_series_type import TimeSeriesType
-from .wholesale_result_resolution import WholesaleResultResolution
+from .basis_data_type import BasisDataType as BasisDataType
+from .calculation_type import CalculationType as CalculationType
+from .charge_quality import ChargeQuality as ChargeQuality
+from .charge_resolution import ChargeResolution as ChargeResolution
+from .charge_type import ChargeType as ChargeType
+from .charge_unit import ChargeUnit as ChargeUnit
+from .input_metering_point_type import InputMeteringPointType as InputMeteringPointType
+from .input_settlement_method import InputSettlementMethod as InputSettlementMethod
+from .metering_point_resolution import MeteringPointResolution as MeteringPointResolution
+from .metering_point_type import MeteringPointType as MeteringPointType
+from .quantity_quality import QuantityQuality as QuantityQuality
+from .settlement_method import SettlementMethod as SettlementMethod
+from .time_series_type import TimeSeriesType as TimeSeriesType
+from .wholesale_result_resolution import WholesaleResultResolution as WholesaleResultResolution

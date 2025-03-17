@@ -54,7 +54,7 @@ def _create_databases(spark: SparkSession) -> None:
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {schema_migration_schema_name}")
 
     for database in UnityCatalogDatabaseNames.get_names():
-        print(f"Creating database {database}")
+        print(f"Creating database {database}")  # noqa: T201
         spark.sql(f"CREATE DATABASE IF NOT EXISTS {database}")
 
 
@@ -62,10 +62,10 @@ def migrate(
     spark: SparkSession,
     migrations_execution: MigrationsExecution = MigrationsExecution.ALL,
 ) -> None:
-    print(f"Preparing execution of migrations with execution type: {migrations_execution}")
+    print(f"Preparing execution of migrations with execution type: {migrations_execution}")  # noqa: T201
 
     if migrations_execution.value == MigrationsExecution.NONE.value:
-        print("Skipping migrations as MigrationsExecution is set to NONE")
+        print("Skipping migrations as MigrationsExecution is set to NONE")  # noqa: T201
         return
 
     if migrations_execution.value == MigrationsExecution.MODIFIED.value:
@@ -81,7 +81,7 @@ def _remove_registration_of_modified_scripts(spark: SparkSession, migrations_exe
     if not delta_table_helper.delta_table_exists(
         spark, catalog_name, schema_migration_schema_name, schema_migration_table_name
     ):
-        print(f"Table {migrations_table} does not exist. Skipping removal of modified scripts")
+        print(f"Table {migrations_table} does not exist. Skipping removal of modified scripts")  # noqa: T201
         return
 
     latest_execution_time = (

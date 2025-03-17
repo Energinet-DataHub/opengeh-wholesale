@@ -82,7 +82,7 @@ def metering_point_period_df_factory(spark, timestamp_factory):
 
 
 @pytest.mark.parametrize(
-    "from_date, to_date, expected_rows, resolution",
+    ("from_date", "to_date", "expected_rows", "resolution"),
     [
         ("2022-01-01T22:00:00.000Z", "2022-01-02T22:00:00.000Z", 96, "PT15M"),
         ("2022-01-01T22:00:00.000Z", "2022-01-03T22:00:00.000Z", 192, "PT15M"),
@@ -201,7 +201,7 @@ def test__df_is_not_empty_when_no_time_series_points(
 
 
 @pytest.mark.parametrize(
-    "period_start, period_end, resolution, expected_number_of_rows",
+    ("period_start", "period_end", "resolution", "expected_number_of_rows"),
     [
         # DST has 24 hours
         (
@@ -276,7 +276,17 @@ def test__df_has_expected_row_count_according_to_dst(
 
 
 @pytest.mark.parametrize(
-    "from_date, to_date, from_date_hour_mp, to_date_hour_mp, from_date_quarter_mp, to_date_quarter_mp, total, quarterly, hourly",
+    (
+        "from_date",
+        "to_date",
+        "from_date_hour_mp",
+        "to_date_hour_mp",
+        "from_date_quarter_mp",
+        "to_date_quarter_mp",
+        "total",
+        "quarterly",
+        "hourly",
+    ),
     [
         (
             "2022-01-01T22:00:00.000Z",  # from_date

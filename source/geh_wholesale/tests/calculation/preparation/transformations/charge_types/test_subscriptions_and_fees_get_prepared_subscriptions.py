@@ -85,7 +85,7 @@ def _create_charge_link_metering_point_periods(
 
 class TestWhenValidInput:
     @pytest.mark.parametrize(
-        "charge_time, from_date, to_date, expected_day_count",
+        ("charge_time", "from_date", "to_date", "expected_day_count"),
         [
             # leap year
             (
@@ -465,7 +465,7 @@ class TestWhenChargeLinkPeriodStopsAndStartsAgain:
 
 class TestWhenDaylightSavingTimeChanges:
     @pytest.mark.parametrize(
-        "from_date, to_date, expected_first_charge_time, expected_last_charge_time, expected_day_count",
+        ("from_date", "to_date", "expected_first_charge_time", "expected_last_charge_time", "expected_day_count"),
         [
             (  # Start of daylight saving time
                 datetime(2020, 2, 29, 23, tzinfo=timezone.utc),

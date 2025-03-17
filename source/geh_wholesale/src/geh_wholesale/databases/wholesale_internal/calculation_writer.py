@@ -37,7 +37,7 @@ def write_calculation(
     spark: SparkSession = Provide[Container.spark],
     infrastructure_settings: InfrastructureSettings = Provide[Container.infrastructure_settings],
 ) -> None:
-    """Writes the succeeded calculation to the calculations table. The current time is  added to the calculation before writing."""
+    """Write the succeeded calculation to the calculations table. The current time is added to the calculation before writing."""
     calculation_period_start_datetime = args.period_start_datetime.strftime(timestamp_format)[:-3]
 
     calculation_period_end_datetime = args.period_end_datetime.strftime(timestamp_format)[:-3]
@@ -70,7 +70,7 @@ def write_calculation_grid_areas(
     calculations_grid_areas: DataFrame,
     infrastructure_settings: InfrastructureSettings = Provide[Container.infrastructure_settings],
 ) -> None:
-    """Writes the calculation grid areas to the calculation grid areas table."""
+    """Write the calculation grid areas to the calculation grid areas table."""
     calculations_grid_areas.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
         f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME}"
     )
@@ -81,7 +81,7 @@ def write_calculation_succeeded_time(
     spark: SparkSession = Provide[Container.spark],
     infrastructure_settings: InfrastructureSettings = Provide[Container.infrastructure_settings],
 ) -> None:
-    """Writes the succeeded time to the calculation table."""
+    """Write the succeeded time to the calculation table."""
     spark.sql(
         f"""
         UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}

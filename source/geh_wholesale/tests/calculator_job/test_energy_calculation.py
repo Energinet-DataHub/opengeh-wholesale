@@ -66,7 +66,7 @@ def test__balance_fixing_grid_loss_time_series_result_type__is_created(
 
 
 @pytest.mark.parametrize(
-    "time_series_type, table_name",
+    ("time_series_type", "table_name"),
     [
         (
             TimeSeriesType.EXCHANGE.value,
@@ -201,7 +201,7 @@ def test__when_energy_calculation__calculation_grid_areas_are_stored(
 
 
 @pytest.mark.parametrize(
-    "view_name, has_data",
+    ("view_name", "has_data"),
     [
         (
             f"{paths.WholesaleInternalDatabase.DATABASE_NAME}.{paths.WholesaleInternalDatabase.SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME}",

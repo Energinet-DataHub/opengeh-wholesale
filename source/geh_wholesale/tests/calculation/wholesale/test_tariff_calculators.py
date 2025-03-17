@@ -138,7 +138,7 @@ def test__calculate_tariff_price_per_co_es__returns_all_qualities(
 
 
 @pytest.mark.parametrize(
-    "column_name, value, other_value",
+    ("column_name", "value", "other_value"),
     [
         ("grid_area", "1", "2"),
         ("energy_supplier_id", "1", "2"),
@@ -201,7 +201,7 @@ def test__calculate_tariff_price_per_co_es__when_settlement_method_is_null__retu
 
 
 @pytest.mark.parametrize(
-    "column_name, expected_scale",
+    ("column_name", "expected_scale"),
     [
         (Colname.total_amount, 6),
         (Colname.total_quantity, 3),
@@ -237,7 +237,7 @@ def test__calculate_tariff_price_per_co_es__when_production__returns_df_with_exp
 
 
 @pytest.mark.parametrize(
-    "charge_price, quantity, expected_total_amount",
+    ("charge_price", "quantity", "expected_total_amount"),
     [
         (Decimal("0.000001"), Decimal("0.499"), Decimal("0.000000")),
         (Decimal("0.000001"), Decimal("0.500"), Decimal("0.000001")),

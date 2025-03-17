@@ -61,10 +61,10 @@ def spark(
 
     if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
         if os.path.exists(warehouse_location):
-            print(f"Removing warehouse before clean run (path={warehouse_location})")
+            print(f"Removing warehouse before clean run (path={warehouse_location})")  # noqa: T201
             shutil.rmtree(warehouse_location)
         if os.path.exists(metastore_path):
-            print(f"Removing metastore before clean run (path={metastore_path})")
+            print(f"Removing metastore before clean run (path={metastore_path})")  # noqa: T201
             shutil.rmtree(metastore_path)
 
     session = configure_spark_with_delta_pip(
@@ -330,7 +330,7 @@ def _load_settings_from_file(file_path: Path) -> dict:
         return {}
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def any_calculator_args(monkeypatch: pytest.MonkeyPatch) -> CalculatorArgs:
     monkeypatch.setattr(
         sys,
@@ -350,7 +350,7 @@ def any_calculator_args(monkeypatch: pytest.MonkeyPatch) -> CalculatorArgs:
     return CalculatorArgs()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def infrastructure_settings(monkeypatch: pytest.MonkeyPatch) -> InfrastructureSettings:
     monkeypatch.setattr(
         os,

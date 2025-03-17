@@ -19,9 +19,7 @@ from pyspark.sql import DataFrame
 
 @dataclass
 class EnergyResultsOutput:
-    """
-    Contains all energy results from a calculation.
-    """
+    """Contains all energy results from a calculation."""
 
     exchange_per_neighbor: DataFrame | None = None
     exchange: DataFrame | None = None
@@ -44,9 +42,7 @@ class EnergyResultsOutput:
 
 @dataclass
 class WholesaleResultsOutput:
-    """
-    Contains all wholesale results from a calculation.
-    """
+    """Contains all wholesale results from a calculation."""
 
     # Delta table name: amounts_per_charge
     hourly_tariff_per_co_es: DataFrame | None = None
@@ -67,9 +63,7 @@ class WholesaleResultsOutput:
 
 @dataclass
 class BasisDataOutput:
-    """
-    Contains all the foundation data used in a calculation.
-    """
+    """Contains all the foundation data used in a calculation."""
 
     metering_point_periods: DataFrame
     """Data frame where the columns uses the column names of the storage model."""
@@ -82,8 +76,8 @@ class BasisDataOutput:
 
 @dataclass
 class CalculationOutput:
-    """
-    Contains the output of a calculation.
+    """Contains the output of a calculation.
+
     The output consists of energy and wholesale results and basis data.
 
     The usage of `cast(x, None)` is a workaround to prevent the type checker from complaining.

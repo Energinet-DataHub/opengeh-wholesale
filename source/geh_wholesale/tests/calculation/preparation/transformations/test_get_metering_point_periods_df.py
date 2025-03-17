@@ -62,38 +62,38 @@ def _map_metering_point_type_and_settlement_method(df: DataFrame) -> DataFrame:
 
 class TestWhenValidInput:
     @pytest.mark.parametrize(
-        "metering_point_type,expected",
+        ("metering_point_type", "expected"),
         [
-            [InputMeteringPointType.CONSUMPTION, MeteringPointType.CONSUMPTION],
-            [InputMeteringPointType.PRODUCTION, MeteringPointType.PRODUCTION],
-            [InputMeteringPointType.EXCHANGE, MeteringPointType.EXCHANGE],
-            [InputMeteringPointType.VE_PRODUCTION, MeteringPointType.VE_PRODUCTION],
-            [InputMeteringPointType.NET_PRODUCTION, MeteringPointType.NET_PRODUCTION],
-            [InputMeteringPointType.SUPPLY_TO_GRID, MeteringPointType.SUPPLY_TO_GRID],
-            [
+            (InputMeteringPointType.CONSUMPTION, MeteringPointType.CONSUMPTION),
+            (InputMeteringPointType.PRODUCTION, MeteringPointType.PRODUCTION),
+            (InputMeteringPointType.EXCHANGE, MeteringPointType.EXCHANGE),
+            (InputMeteringPointType.VE_PRODUCTION, MeteringPointType.VE_PRODUCTION),
+            (InputMeteringPointType.NET_PRODUCTION, MeteringPointType.NET_PRODUCTION),
+            (InputMeteringPointType.SUPPLY_TO_GRID, MeteringPointType.SUPPLY_TO_GRID),
+            (
                 InputMeteringPointType.CONSUMPTION_FROM_GRID,
                 MeteringPointType.CONSUMPTION_FROM_GRID,
-            ],
-            [
+            ),
+            (
                 InputMeteringPointType.WHOLESALE_SERVICES_INFORMATION,
                 MeteringPointType.WHOLESALE_SERVICES_INFORMATION,
-            ],
-            [InputMeteringPointType.OWN_PRODUCTION, MeteringPointType.OWN_PRODUCTION],
-            [InputMeteringPointType.NET_FROM_GRID, MeteringPointType.NET_FROM_GRID],
-            [InputMeteringPointType.NET_TO_GRID, MeteringPointType.NET_TO_GRID],
-            [
+            ),
+            (InputMeteringPointType.OWN_PRODUCTION, MeteringPointType.OWN_PRODUCTION),
+            (InputMeteringPointType.NET_FROM_GRID, MeteringPointType.NET_FROM_GRID),
+            (InputMeteringPointType.NET_TO_GRID, MeteringPointType.NET_TO_GRID),
+            (
                 InputMeteringPointType.TOTAL_CONSUMPTION,
                 MeteringPointType.TOTAL_CONSUMPTION,
-            ],
-            [
+            ),
+            (
                 InputMeteringPointType.ELECTRICAL_HEATING,
                 MeteringPointType.ELECTRICAL_HEATING,
-            ],
-            [InputMeteringPointType.NET_CONSUMPTION, MeteringPointType.NET_CONSUMPTION],
-            [
+            ),
+            (InputMeteringPointType.NET_CONSUMPTION, MeteringPointType.NET_CONSUMPTION),
+            (
                 InputMeteringPointType.CAPACITY_SETTLEMENT,
                 MeteringPointType.CAPACITY_SETTLEMENT,
-            ],
+            ),
         ],
     )
     @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
@@ -122,10 +122,10 @@ class TestWhenValidInput:
         assert actual.collect()[0][Colname.metering_point_type] == expected.value
 
     @pytest.mark.parametrize(
-        "settlement_method,expected",
+        ("settlement_method", "expected"),
         [
-            [InputSettlementMethod.FLEX, SettlementMethod.FLEX],
-            [InputSettlementMethod.NON_PROFILED, SettlementMethod.NON_PROFILED],
+            (InputSettlementMethod.FLEX, SettlementMethod.FLEX),
+            (InputSettlementMethod.NON_PROFILED, SettlementMethod.NON_PROFILED),
         ],
     )
     @patch.object(migrations_wholesale, MigrationsWholesaleRepository.__name__)
@@ -214,7 +214,7 @@ class TestWhenValidInput:
         assert_dataframes_equal(actual, expected)
 
     @pytest.mark.parametrize(
-        "from_date, to_date, period_start, period_end, expected_from_date, expected_to_date",
+        ("from_date", "to_date", "period_start", "period_end", "expected_from_date", "expected_to_date"),
         [
             (
                 june_1th,
@@ -329,7 +329,7 @@ class TestWhenThreeGridAreasExchangingWithEachOther:
 
 class TestWhenExchangeMeteringPoint:
     @pytest.mark.parametrize(
-        "grid_area, from_grid_area, to_grid_area, calculation_grid_area, expected",
+        ("grid_area", "from_grid_area", "to_grid_area", "calculation_grid_area", "expected"),
         [
             ("111", "222", "333", "111", 1),
             ("111", "222", "333", "222", 1),

@@ -15,11 +15,13 @@ def migrate_data_lake(
     catalog_name: str | None = None,
     is_testing: bool = False,
 ) -> None:
-    """This method must remain parameterless because it will be called from the entry point when deployed.
+    """Migration entry point for the Unity Catalog.
+
+    This method must remain parameterless because it will be called from the entry point when deployed.
     Default parameter values are used to allow for testing with custom configurations.
     """
     catalog_name = catalog_name or env_vars.get_catalog_name()
-    print(f"Executing Unity Catalog migrations for catalog {catalog_name}")
+    print(f"Executing Unity Catalog migrations for catalog {catalog_name}")  # noqa: T201
 
     spark_config = _create_spark_config(catalog_name, is_testing)
     schema_migration_pipeline.migrate(spark_config)

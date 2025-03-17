@@ -30,6 +30,7 @@ from geh_wholesale.common.datetime_utils import (
 
 class CalculatorArgs(BaseSettings):
     """CalculatorArgs class uses Pydantic BaseSettings to configure and validate parameters.
+
     Parameters can come from both runtime (CLI) or from environment variables.
     The priority is CLI parameters first and then environment variables.
     """

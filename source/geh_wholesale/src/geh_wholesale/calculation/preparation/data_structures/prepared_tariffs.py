@@ -21,6 +21,7 @@ from geh_wholesale.constants import Colname
 
 class PreparedTariffs(DataFrameWrapper):
     """Represents tariffs that are prepared for calculation.
+
     The 'sum_quantity' column is the sum energy quantities within the time window (represented by charge_time and resolution).
     Missing prices are represented by a None value in the 'charge_price' column.
     """

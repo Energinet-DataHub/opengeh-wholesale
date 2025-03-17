@@ -17,7 +17,6 @@ from typing import Any
 
 import pytest
 
-
 # IMPORTANT:
 # If we add/remove tests here, we also update the "retry logic" in '.docker/entrypoint.sh',
 # which depends on the number of "entry point tests".
@@ -26,13 +25,11 @@ import pytest
 def assert_entry_point_exists(entry_point_name: str) -> Any:
     # Load the entry point function from the installed wheel
     try:
-        entry_point = importlib.metadata.entry_points(
-            group="console_scripts", name=entry_point_name
-        )
+        entry_point = importlib.metadata.entry_points(group="console_scripts", name=entry_point_name)
         if not entry_point:
-            assert False, f"The {entry_point_name} entry point was not found."
+            pytest.fail(f"The {entry_point_name} entry point was not found.")
     except importlib.metadata.PackageNotFoundError:
-        assert False, f"The {entry_point_name} entry point was not found."
+        pytest.fail(f"The {entry_point_name} entry point was not found.")
 
 
 @pytest.mark.parametrize(

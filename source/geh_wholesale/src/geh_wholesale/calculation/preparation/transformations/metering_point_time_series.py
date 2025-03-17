@@ -33,6 +33,7 @@ def get_metering_point_time_series(
     metering_point_periods_df: DataFrame,
 ) -> PreparedMeteringPointTimeSeries:
     """Get metering point time-series points - both for metering points with hourly and quarterly resolution.
+
     All missing time series points for a given metering point is added with quantity=0 and quality=MISSING.
     Thus, there will be no missing points for a given metering point when it's connected. It may, however, not be
     connected for the entire period of the calculation.

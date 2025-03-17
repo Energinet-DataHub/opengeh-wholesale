@@ -39,7 +39,8 @@ def aggregate_exchange_per_neighbor(
     metering_point_time_series: MeteringPointTimeSeries,
     calculation_grid_areas: list[str],
 ) -> EnergyResults:
-    """Function to aggregate net exchange per neighboring grid areas.
+    """Aggregate net exchange per neighboring grid areas.
+
     The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
     """
     df = metering_point_time_series.df.where(F.col(Colname.metering_point_type) == MeteringPointType.EXCHANGE.value)
@@ -121,7 +122,8 @@ def aggregate_exchange_per_neighbor(
 def aggregate_exchange(
     exchange_per_neighbor: EnergyResults,
 ) -> EnergyResults:
-    """Function to aggregate net exchange per grid area.
+    """Aggregate net exchange per grid area.
+
     The result will only include exchange to/from grid areas specified in `calculation_grid_areas`.
     """
     result_df = T.aggregate_sum_quantity_and_qualities(
