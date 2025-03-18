@@ -129,12 +129,47 @@ def test__get_grid_loss_metering_point_periods__given_metering_point_period_with
 
 
 @pytest.mark.acceptance_test
-def test__get_grid_loss_metering_point_periods__when_no_grid_loss_metering_point_id_in_grid_area__raise_exception() -> (
-    None
-):
+@patch.object(wholesale_internal, WholesaleInternalRepository.__name__)
+def test__get_grid_loss_metering_point_periods__when_no_grid_loss_metering_point_id_in_grid_area__raise_exception(
+    repository_mock: WholesaleInternalRepository, spark
+) -> None:
     # Arrange
     grid_areas = ["grid_area_without_grid_loss_metering_point"]
+    metering_point_id_1 = "571313180480500149"
+    metering_point_id_2 = "571313180400100657"
+    row1 = factory.create_row(
+        metering_point_id=metering_point_id_1,
+        grid_area="804",
+        metering_point_type=MeteringPointType.PRODUCTION,
+    )
+    row2 = factory.create_row(
+        metering_point_id=metering_point_id_2,
+        grid_area="804",
+        metering_point_type=MeteringPointType.CONSUMPTION,
+        from_date=datetime(2020, 1, 1, 0, 0),
+        to_date=datetime(2020, 1, 2, 0, 0),
+    )
+    row3 = factory.create_row(
+        metering_point_id=metering_point_id_2,
+        grid_area="804",
+        metering_point_type=MeteringPointType.CONSUMPTION,
+        from_date=datetime(2020, 1, 2, 0, 0),
+        to_date=datetime(2020, 1, 3, 0, 0),
+    )
+    metering_point_period = factory.create(spark, data=[row1, row2, row3])
+    grid_loss_metering_points = spark.createDataFrame(
+        [
+            (metering_point_id_1,),
+            (metering_point_id_2,),
+        ],
+        grid_loss_metering_point_ids_schema,
+    )
+    repository_mock.read_grid_loss_metering_point_ids.return_value = grid_loss_metering_points
 
     # Act and Assert
     with pytest.raises(ValueError, match="No metering point"):
-        get_grid_loss_metering_point_periods(grid_areas)
+        get_grid_loss_metering_point_periods(
+            grid_areas,
+            metering_point_period,
+            repository_mock,
+        )
