@@ -38,7 +38,7 @@ def optimize_tables(catalog_name: str | None = None) -> None:
     )
     logging_settings = config.LoggingSettings(
         cloud_role_name="dbr-optimize-tables",
-        tracer_name="optimize-tables-job",
+        subsystem="optimize-tables-job",
         applicationinsights_connection_string=applicationinsights_connection_string,
     )
     config.configure_logging(logging_settings=logging_settings)
