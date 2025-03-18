@@ -56,7 +56,7 @@ class UnityCatalogDatabaseNames(BaseSettings):
 
 
 class MigrationsWholesaleDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.SHARED_WHOLESALE_INPUT
+    DATABASE_NAME = UnityCatalogDatabaseNames().SHARED_WHOLESALE_INPUT
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods_view_v1"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_view_v1"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods_view_v1"
@@ -75,7 +75,7 @@ class MigrationsWholesaleDatabase:
 
 
 class WholesaleInternalDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_INTERNAL
+    DATABASE_NAME = UnityCatalogDatabaseNames().WHOLESALE_INTERNAL
     EXECUTED_MIGRATIONS_TABLE_NAME = "executed_migrations"
     CALCULATIONS_TABLE_NAME = "calculations"
     GRID_LOSS_METERING_POINT_IDS_TABLE_NAME = "grid_loss_metering_points"
@@ -96,7 +96,7 @@ class WholesaleInternalDatabase:
 
 
 class WholesaleResultsInternalDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS_INTERNAL
+    DATABASE_NAME = UnityCatalogDatabaseNames().WHOLESALE_RESULTS_INTERNAL
     ENERGY_TABLE_NAME = "energy"
     ENERGY_PER_ES_TABLE_NAME = "energy_per_es"
     ENERGY_PER_BRP_TABLE_NAME = "energy_per_brp"
@@ -121,7 +121,7 @@ class WholesaleResultsInternalDatabase:
 
 
 class WholesaleResultsDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS
+    DATABASE_NAME = UnityCatalogDatabaseNames().WHOLESALE_RESULTS
     ENERGY_V1_VIEW_NAME = "energy_v1"
     ENERGY_PER_BRP_V1_VIEW_NAME = "energy_per_brp_v1"
     ENERGY_PER_ES_V1_VIEW_NAME = "energy_per_es_v1"
@@ -148,7 +148,7 @@ class WholesaleResultsDatabase:
 
 
 class WholesaleSapDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_SAP
+    DATABASE_NAME = UnityCatalogDatabaseNames().WHOLESALE_SAP
     LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME = "latest_calculations_history_v1"
     ENERGY_V1_VIEW_NAME = "energy_v1"
     AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
@@ -161,7 +161,7 @@ class WholesaleSapDatabase:
 
 
 class WholesaleBasisDataDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_BASIS_DATA
+    DATABASE_NAME = UnityCatalogDatabaseNames().WHOLESALE_BASIS_DATA
 
     METERING_POINT_PERIODS_VIEW_NAME = "metering_point_periods_v1"
     TIME_SERIES_POINTS_VIEW_NAME = "time_series_points_v1"
@@ -181,7 +181,7 @@ class WholesaleBasisDataDatabase:
 
 
 class WholesaleBasisDataInternalDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_BASIS_DATA_INTERNAL
+    DATABASE_NAME = UnityCatalogDatabaseNames().WHOLESALE_BASIS_DATA_INTERNAL
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
