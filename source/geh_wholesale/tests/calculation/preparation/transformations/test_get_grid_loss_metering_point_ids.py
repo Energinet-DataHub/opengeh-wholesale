@@ -14,10 +14,10 @@
 from datetime import datetime
 from typing import List
 
-import metering_point_periods_factory as factory
 import pytest
 from pyspark.sql import DataFrame, Row, SparkSession
 
+import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
 from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
     GridLossMeteringPointPeriods,
 )

@@ -14,10 +14,10 @@
 from datetime import datetime
 from unittest.mock import patch
 
-import metering_point_periods_factory as factory
 import pytest
 from pyspark.sql import SparkSession
 
+import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
 from geh_wholesale.calculation.preparation.transformations.grid_loss_metering_point_periods import (
     get_grid_loss_metering_point_periods,
 )
