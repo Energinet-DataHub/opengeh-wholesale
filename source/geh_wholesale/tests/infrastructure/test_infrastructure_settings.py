@@ -26,7 +26,7 @@ def _get_all_combinations(args):
     out = []
     for i in range(1, len(args) + 1):
         for comb in combinations(args, i):
-            out.append([comb])
+            out.append(comb)
     return out
 
 
@@ -35,7 +35,7 @@ def test_infrastructure_settings_with_default_env(monkeypatch):
     InfrastructureSettings()
 
 
-@pytest.mark.parametrize("required_env_var", [(k,) for k in DEFAULT_ENV_VARS.keys()])
+@pytest.mark.parametrize("required_env_var", [(k) for k in DEFAULT_ENV_VARS.keys()])
 def test_infrastructure_settings_with_missing_env(required_env_var, monkeypatch):
     env_vars = DEFAULT_ENV_VARS.copy()
     env_vars.pop(required_env_var)
