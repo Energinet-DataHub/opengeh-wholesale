@@ -18,16 +18,12 @@ import pyspark.sql.functions as f
 from geh_common.telemetry import use_span
 from pyspark.sql import DataFrame
 
-from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
+from geh_wholesale.calculation.preparation.data_structures import (
+    ChargePriceInformation,
+    ChargePrices,
     GridLossMeteringPointPeriods,
-)
-from geh_wholesale.calculation.preparation.data_structures.input_charges import (
     InputChargesContainer,
-)
-from geh_wholesale.calculation.preparation.data_structures.prepared_charges import (
     PreparedChargesContainer,
-)
-from geh_wholesale.calculation.preparation.data_structures.prepared_metering_point_time_series import (
     PreparedMeteringPointTimeSeries,
 )
 from geh_wholesale.codelists import CalculationType, ChargeResolution
@@ -37,7 +33,6 @@ from ...constants import Colname
 from ...databases import wholesale_internal
 from ...databases.table_column_names import TableColumnNames
 from . import transformations as T
-from .data_structures import ChargePriceInformation, ChargePrices
 
 
 class PreparedDataReader:

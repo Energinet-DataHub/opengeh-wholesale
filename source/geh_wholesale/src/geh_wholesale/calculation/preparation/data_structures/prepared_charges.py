@@ -13,12 +13,14 @@
 # limitations under the License.
 from dataclasses import dataclass
 
-import geh_wholesale.calculation.preparation.data_structures as d
+from geh_wholesale.calculation.preparation.data_structures.prepared_fees import PreparedFees
+from geh_wholesale.calculation.preparation.data_structures.prepared_subscriptions import PreparedSubscriptions
+from geh_wholesale.calculation.preparation.data_structures.prepared_tariffs import PreparedTariffs
 
 
 @dataclass
 class PreparedChargesContainer:
-    hourly_tariffs: d.PreparedTariffs | None = None
-    daily_tariffs: d.PreparedTariffs | None = None
-    subscriptions: d.PreparedSubscriptions | None = None
-    fees: d.PreparedFees | None = None
+    hourly_tariffs: PreparedTariffs | None = None
+    daily_tariffs: PreparedTariffs | None = None
+    subscriptions: PreparedSubscriptions | None = None
+    fees: PreparedFees | None = None
