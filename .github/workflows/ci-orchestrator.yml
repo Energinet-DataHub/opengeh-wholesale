@@ -42,6 +42,14 @@ jobs:
     if: ${{ needs.changes.outputs.dotnet == 'true' || needs.changes.outputs.db_migrations == 'true' }}
     uses: ./.github/workflows/ci-dotnet.yml
 
+  verify_migration_scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify migration scripts
+        uses: ./.github/actions/verify-migration-scripts
+        with:
+          scrips_dir_path: ./source/geh_wholesale/datamigration/migration_scripts
+
   ci_python:
     strategy:
       fail-fast: false
@@ -61,13 +69,15 @@ jobs:
             paths: tests/calculation tests/codelists tests/common tests/optimize_job tests/databases tests/infrastructure
           - name: Entry point tests
             paths: tests/entry_points
+          - name: Test Unity Catalog
+            paths: datamigration/unity_catalog
     name: ${{ matrix.tests_filter_expression.name }}
     uses: Energinet-DataHub/.github/.github/workflows/python-uv-ci.yml@v14
     with:
       packages_directory: source
       tests_directory: ${{ matrix.tests_filter_expression.paths }}
       pytest_addopts: --ignore-glob='**/calculator_job/test_start*.py'
-      create_subsystem_release: true
+      create_prerelease: false # Prerelease is created by the integration tests
 
   ci_python_integration:
     name: Integration tests
@@ -76,6 +86,7 @@ jobs:
       packages_directory: source
       tests_directory: tests/calculator_job
       pytest_addopts: --ignore-glob='**/calculator_job/test_*_calculation.py'
+      create_prerelease: true
       create_subsystem_release: true
       environment: AzureAuth
       azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
