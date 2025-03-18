@@ -19,7 +19,7 @@ from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
-class UnityCatalogDatabaseNames(pydantic_settings):
+class UnityCatalogDatabaseNames(BaseSettings):
     """Configuration class inheriting pydantic's BaseSettings to automatically load environmental variable.
 
     Used to define and validate settings for the unity catalog used by package.
@@ -43,25 +43,16 @@ class UnityCatalogDatabaseNames(pydantic_settings):
         return values
 
 
-class UnityCatalogDatabaseNames:
-    """Unity Catalog database names are defined in the dh3infrastructure repository"""
-
-    WHOLESALE_RESULTS = "wholesale_results"
-    WHOLESALE_BASIS_DATA_INTERNAL = "wholesale_basis_data_internal"
-    WHOLESALE_BASIS_DATA = "wholesale_basis_data"
-    WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
-    WHOLESALE_INTERNAL = "wholesale_internal"
-    WHOLESALE_SAP = "wholesale_sap"
-    SHARED_WHOLESALE_INPUT = "shared_wholesale_input"
-
-    @classmethod
-    def get_names(cls) -> list[str]:
-        values = []
-        for attr in dir(cls):
-            value = getattr(cls, attr)
-            if not attr.startswith("__") and isinstance(value, str):
-                values.append(value)
-        return values
+# class UnityCatalogDatabaseNames:
+#    """Unity Catalog database names are defined in the dh3infrastructure repository"""
+#
+#    WHOLESALE_RESULTS = "wholesale_results"
+#    WHOLESALE_BASIS_DATA_INTERNAL = "wholesale_basis_data_internal"
+#    WHOLESALE_BASIS_DATA = "wholesale_basis_data"
+#    WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
+#    WHOLESALE_INTERNAL = "wholesale_internal"
+#    WHOLESALE_SAP = "wholesale_sap"
+#    SHARED_WHOLESALE_INPUT = "shared_wholesale_input"
 
 
 class MigrationsWholesaleDatabase:
