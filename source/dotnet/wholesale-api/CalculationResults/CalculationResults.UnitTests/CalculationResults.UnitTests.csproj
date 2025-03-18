@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\..\..\..\databricks\calculation_engine\contracts\**">
+    <EmbeddedResource Include="..\..\..\..\geh_wholesale\contracts\**">
       <Link>DeltaTableContracts\%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
