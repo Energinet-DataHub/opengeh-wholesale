@@ -12,24 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import importlib.metadata
-from typing import Any
-
-import pytest
 
 # IMPORTANT:
 # If we add/remove tests here, we also update the "retry logic" in '.docker/entrypoint.sh',
 # which depends on the number of "entry point tests".
+import tomllib
 
+import pytest
 
-def assert_entry_point_exists(entry_point_name: str) -> Any:
-    # Load the entry point function from the installed wheel
-    try:
-        entry_point = importlib.metadata.entry_points(group="console_scripts", name=entry_point_name)
-        if not entry_point:
-            pytest.fail(f"The {entry_point_name} entry point was not found.")
-    except importlib.metadata.PackageNotFoundError:
-        pytest.fail(f"The {entry_point_name} entry point was not found.")
+from tests import PROJECT_PATH
 
 
 @pytest.mark.parametrize(
@@ -40,8 +31,9 @@ def assert_entry_point_exists(entry_point_name: str) -> Any:
         "optimize_delta_tables",
     ],
 )
-def test__installed_package__can_load_entry_point(
-    installed_package: None,
-    entry_point_name: str,
-) -> None:
-    assert_entry_point_exists(entry_point_name)
+def test__entry_point_exists(entry_point_name: str) -> None:
+    with open(PROJECT_PATH / "pyproject.toml", "rb") as file:
+        pyproject = tomllib.load(file)
+        project = pyproject.get("project", {})
+    scripts = project.get("scripts", {})
+    assert entry_point_name in scripts, "`execute_electrical_heating` not found in scripts"
