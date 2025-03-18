@@ -43,11 +43,30 @@ jobs:
     uses: ./.github/workflows/ci-dotnet.yml
 
   ci_python:
-    name: Unit tests
+    strategy:
+      fail-fast: false
+      matrix:
+        tests_filter_expression:
+          - name: Energy (calculator_job)
+            paths: tests/calculator_job/test_energy_calculation.py
+          - name: Wholesale (calculator_job)
+            paths: tests/calculator_job/test_wholesale_calculation.py
+          - name: Energy logic
+            paths: tests/scenarios/energy_calculation
+          - name: Wholesale logic
+            paths: tests/scenarios/wholesale_calculation
+          - name: Data products
+            paths: tests/scenarios/data_products contracts
+          - name: Unit tests
+            paths: tests/calculation tests/codelists tests/common tests/optimize_job tests/databases tests/infrastructure
+          - name: Entry point tests
+            paths: tests/entry_points
+    name: ${{ matrix.tests_filter_expression.name }}
     uses: Energinet-DataHub/.github/.github/workflows/python-uv-ci.yml@v14
     with:
       packages_directory: source
-      pytest_addopts: --ignore-glob='**/calculator_job/**'
+      tests_directory: ${{ matrix.tests_filter_expression.paths }}
+      pytest_addopts: --ignore-glob='**/calculator_job/test_start*.py'
       create_subsystem_release: true
 
   ci_python_integration:
@@ -56,6 +75,7 @@ jobs:
     with:
       packages_directory: source
       tests_directory: tests/calculator_job
+      pytest_addopts: --ignore-glob='**/calculator_job/test_*_calculation.py'
       create_subsystem_release: true
       environment: AzureAuth
       azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
