@@ -32,7 +32,7 @@ description: |
 inputs:
   scrips_dir_path:
     required: true
-    description: "The path to the directory containing the scripts"
+    description: The path to the directory containing the scripts
 
 runs:
   using: composite
