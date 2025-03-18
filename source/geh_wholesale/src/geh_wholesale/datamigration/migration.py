@@ -8,7 +8,7 @@ from geh_wholesale.infrastructure import paths
 
 from .substitutions import get_substitutions
 
-MIGRATION_SCRIPTS_FOLDER_PATH = "package.datamigration.migration_scripts"
+MIGRATION_SCRIPTS_FOLDER_PATH = "geh_wholesale.datamigration.migration_scripts"
 
 
 def migrate_data_lake(

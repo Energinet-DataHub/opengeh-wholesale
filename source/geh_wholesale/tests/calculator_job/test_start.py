@@ -38,9 +38,9 @@ class TestWhenInvokedWithValidArguments:
         mock_prepared_data_reader = Mock()
         mock_prepared_data_reader.is_calculation_id_unique.return_value = True
 
-        with patch("package.calculation.execute", mock_calculation_execute):
+        with patch("geh_wholesale.calculation.execute", mock_calculation_execute):
             with patch(
-                "package.calculation.PreparedDataReader",
+                "geh_wholesale.calculation.PreparedDataReader",
                 return_value=mock_prepared_data_reader,
             ):
                 # Act

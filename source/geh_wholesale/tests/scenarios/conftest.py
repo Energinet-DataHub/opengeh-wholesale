@@ -53,7 +53,7 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
     scenario_path = str(Path(request.module.__file__).parent)
 
     # To avoid creating data for a full month, we mock the function is_exactly_one_calendar_month
-    with patch("package.calculation.calculator_args.is_exactly_one_calendar_month") as mock:
+    with patch("geh_wholesale.calculation.calculator_args.is_exactly_one_calendar_month") as mock:
         mock.return_value = True
         with open(f"{scenario_path}/when/calculation_arguments.yml", "r") as file:
             sys_args = yaml.safe_load(file)[0]

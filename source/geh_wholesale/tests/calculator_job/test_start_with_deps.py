@@ -30,7 +30,7 @@ from geh_wholesale.infrastructure.paths import WholesaleInternalDatabase
     "calculation_id_already_used",
     [True, False],
 )
-@patch("package.calculator_job.calculation.execute")
+@patch("geh_wholesale.calculator_job.calculation.execute")
 def test_start_with_deps__throws_exception_when_calculation_id_already_used(
     calculation_executor_mock,
     spark: SparkSession,
