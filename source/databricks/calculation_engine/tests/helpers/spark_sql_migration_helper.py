@@ -53,7 +53,7 @@ def _create_databases(spark: SparkSession) -> None:
 
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {schema_migration_schema_name}")
 
-    for database in UnityCatalogDatabaseNames.get_names():
+    for database in UnityCatalogDatabaseNames().get_names():
         print(f"Creating database {database}")
         spark.sql(f"CREATE DATABASE IF NOT EXISTS {database}")
 
