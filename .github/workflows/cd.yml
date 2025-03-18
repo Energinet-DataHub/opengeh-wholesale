@@ -29,28 +29,22 @@ jobs:
     uses: ./.github/workflows/detect-changes.yml
 
   #
-  # CD Docker image
-  #
-
-  cd_docker:
-    needs: changes
-    if: ${{ needs.changes.outputs.docker == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/python-build-and-push-docker-image.yml@v14
-    with:
-      docker_changed: ${{ needs.changes.outputs.docker == 'true' }}
-      # 'docker_changed_in_commit' value is same as 'docker_changed' because we want to build and push docker image when docker changed
-      docker_changed_in_commit: ${{ needs.changes.outputs.docker == 'true' }}
-
-  #
   # CD Databricks
   #
-
-  databricks_promote_prerelease:
+  cd_python:
+    name: Continuous Deployment
     needs: changes
-    if: ${{ needs.changes.outputs.any_databricks == 'true' }}
-    uses: Energinet-DataHub/.github/.github/workflows/promote-prerelease.yml@v14
+    uses: Energinet-DataHub/.github/.github/workflows/python-uv-cd.yml@v14
     with:
-      release_name_prefix: databricks
+      packages_directory: source
+      subsystem_name: wholesale
+      notification_email: 5543d1b6.energinet.onmicrosoft.com@emea.teams.ms # Wholesale - Dev Test
+      sender_email: ${{ vars.email_internal_sender }}
+      postfix_latest: true
+      dispatch_deployment_event: true
+    secrets:
+      gh_token: ${{ secrets.GITHUB_TOKEN }}
+      send_grid_api_key: ${{ secrets.sendgrid_instance_system_notifications_api_key }}
 
   #
   # CD .NET
@@ -70,11 +64,7 @@ jobs:
   dispatch_deploment_event:
     if: ${{ always() && !cancelled() && !failure() && (needs.changes.outputs.any_databricks == 'true' || needs.changes.outputs.dotnet == 'true' || needs.changes.outputs.db_migrations == 'true') }}
     runs-on: ubuntu-latest
-    needs: [
-      changes,
-      databricks_promote_prerelease,
-      dotnet_promote_prerelease
-    ]
+    needs: [changes, cd_python, dotnet_promote_prerelease]
     steps:
       - run: echo "${{ toJSON(needs) }}"
 
@@ -103,13 +93,7 @@ jobs:
   #
 
   dispatch_failed:
-    needs:
-      [
-        databricks_promote_prerelease,
-        dotnet_promote_prerelease,
-        dispatch_deploment_event,
-        cd_docker
-      ]
+    needs: [cd_python, dotnet_promote_prerelease, dispatch_deploment_event]
     if: |
       always() &&
       contains(needs.*.result, 'failure')
