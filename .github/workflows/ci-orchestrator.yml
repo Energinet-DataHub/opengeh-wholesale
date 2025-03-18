@@ -45,6 +45,8 @@ jobs:
   verify_migration_scripts:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
       - name: Verify migration scripts
         uses: ./.github/actions/verify-migration-scripts
         with:
@@ -70,7 +72,7 @@ jobs:
           - name: Entry point tests
             paths: tests/entry_points
           - name: Test Unity Catalog
-            paths: datamigration/unity_catalog
+            paths: tests/datamigration/unity_catalog
     name: ${{ matrix.tests_filter_expression.name }}
     uses: Energinet-DataHub/.github/.github/workflows/python-uv-ci.yml@v14
     with:

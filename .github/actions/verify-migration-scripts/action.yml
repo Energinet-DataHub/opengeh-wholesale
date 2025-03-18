@@ -37,9 +37,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout current branch
-      uses: actions/checkout@v4
-
     - name: Detect file changes
       uses: dorny/paths-filter@v3
       id: filter
