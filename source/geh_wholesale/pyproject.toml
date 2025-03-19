@@ -1,5 +1,5 @@
 [project]
-name = "geh-wholesale"
+name = "geh_wholesale"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -31,6 +31,13 @@ build-backend = "hatchling.build"
 
 [tool.hatch.metadata]
 allow-direct-references = true
+
+[tool.hatch.build]
+exclude = [
+  "/.*",
+  "/tests",
+  "/notebooks",
+]
 
 [dependency-groups]
 dev = [
