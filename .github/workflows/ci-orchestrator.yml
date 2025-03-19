@@ -124,6 +124,7 @@ jobs:
         ci_packages,
         ci_python,
         ci_python_integration,
+        verify_migration_scripts,
         render_c4model_views,
       ]
     if: |
