@@ -37,26 +37,64 @@ jobs:
   changes:
     uses: ./.github/workflows/detect-changes.yml
 
-  ci_docker:
-    needs: changes
-    uses: Energinet-DataHub/.github/.github/workflows/python-build-and-push-docker-image.yml@v14
-    with:
-      docker_changed: ${{ needs.changes.outputs.docker == 'true' }}
-      docker_changed_in_commit: ${{ needs.changes.outputs.docker_in_commit == 'true' }}
-
   ci_dotnet:
     needs: changes
     if: ${{ needs.changes.outputs.dotnet == 'true' || needs.changes.outputs.db_migrations == 'true' }}
     uses: ./.github/workflows/ci-dotnet.yml
 
-  ci_databricks:
-    needs: [changes, ci_docker]
-    if: ${{ needs.changes.outputs.any_databricks == 'true' }}
-    uses: ./.github/workflows/ci-databricks.yml
+  verify_migration_scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v4
+      - name: Verify migration scripts
+        uses: ./.github/actions/verify-migration-scripts
+        with:
+          scrips_dir_path: ./source/geh_wholesale/datamigration/migration_scripts
+
+  ci_python:
+    strategy:
+      fail-fast: false
+      matrix:
+        tests_filter_expression:
+          - name: Energy (calculator_job)
+            paths: tests/calculator_job/test_energy_calculation.py
+          - name: Wholesale (calculator_job)
+            paths: tests/calculator_job/test_wholesale_calculation.py
+          - name: Energy logic
+            paths: tests/scenarios/energy_calculation
+          - name: Wholesale logic
+            paths: tests/scenarios/wholesale_calculation
+          - name: Data products
+            paths: tests/scenarios/data_products contracts
+          - name: Unit tests
+            paths: tests/calculation tests/codelists tests/common tests/optimize_job tests/databases tests/infrastructure
+          - name: Entry point tests
+            paths: tests/entry_points
+          - name: Test Unity Catalog
+            paths: tests/datamigration/unity_catalog
+    name: ${{ matrix.tests_filter_expression.name }}
+    uses: Energinet-DataHub/.github/.github/workflows/python-uv-ci.yml@v14
     with:
-      has_calculator_job_changes: ${{ needs.changes.outputs.calculator_job == 'true' }}
-      has_delta_migration_changes: ${{ needs.changes.outputs.delta_migrations == 'true' }}
-      image_tag: ${{ needs.ci_docker.outputs.image_tag }}
+      packages_directory: source
+      tests_directory: ${{ matrix.tests_filter_expression.paths }}
+      pytest_addopts: --ignore-glob='**/calculator_job/test_start*.py'
+      create_prerelease: false # Prerelease is created by the integration tests
+
+  ci_python_integration:
+    name: Integration tests
+    uses: Energinet-DataHub/.github/.github/workflows/python-uv-ci.yml@v14
+    with:
+      packages_directory: source
+      tests_directory: tests/calculator_job
+      pytest_addopts: --ignore-glob='**/calculator_job/test_*_calculation.py'
+      create_prerelease: true
+      create_subsystem_release: true
+      environment: AzureAuth
+      azure_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
+      azure_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
+      azure_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
+      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
 
   ci_packages:
     needs: changes
@@ -76,7 +114,6 @@ jobs:
   #
   # Branch policy status check
   #
-
   allow_merge_ci_orchestrator:
     runs-on: ubuntu-latest
     needs:
@@ -84,8 +121,10 @@ jobs:
         changes,
         ci_base,
         ci_dotnet,
-        ci_databricks,
         ci_packages,
+        ci_python,
+        ci_python_integration,
+        verify_migration_scripts,
         render_c4model_views,
       ]
     if: |

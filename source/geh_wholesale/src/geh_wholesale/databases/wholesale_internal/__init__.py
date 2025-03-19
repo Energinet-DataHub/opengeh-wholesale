@@ -1,0 +1,1 @@
+from .repository import WholesaleInternalRepository as WholesaleInternalRepository

@@ -1,0 +1,95 @@
+[project]
+name = "geh-wholesale"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Jens Peder Meldgaard", email = "jpm@halfspace.io" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "configargparse>=1.7",
+    "pyspark==3.5.1",
+    "azure-identity==1.17.1",
+    "dependency-injector==4.43.0",
+    "urllib3==2.2.*",
+    "delta-spark==3.2.0",
+    "python-dateutil==2.8.2",
+    "azure-monitor-opentelemetry==1.6.4",
+    "azure-core==1.32.0",
+    "geh_common @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@geh_common_5.1.2",
+]
+
+[project.scripts]
+start_calculator = "geh_wholesale.calculator_job:start"
+migrate_data_lake = "geh_wholesale.datamigration.migration:migrate_data_lake"
+optimize_delta_tables = "geh_wholesale.optimize_job.delta_optimization:optimize_tables"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[dependency-groups]
+dev = [
+    "pytest-cov>=6.0.0",
+    "pytest>=8.3.4",
+    "ruff>=0.9.1",
+    "databricks-sdk>=0.41.0",
+    "pytest-order>=1.3.0",
+    "pytest-xdist>=3.6.1",
+]
+
+[tool.pytest.ini_options]
+# -s ensures that print("<text>") is written to output.
+addopts = [
+    "--import-mode=importlib",
+    "--cov-report=term",
+    "--cov-report=xml:coverage.xml",
+    "--cov=geh_wholesale",
+    "-ra",
+    "-vv",
+    "-s",
+    # pytest-xdist options
+    # "-n=auto",
+    # "--dist=load",
+]
+
+[tool.coverage.report]
+fail_under = 0
+show_missing = true
+exclude_lines = ["pragma: no cover", "raise NotImplementedError"]
+
+[tool.ruff]
+line-length = 120
+show-fixes = true
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint]
+# See more here: https://docs.astral.sh/ruff/rules/
+select = ["D", "D401", "E", "F", "I", "T201", "UP", "PT"]
+ignore = [
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D106",
+    "D107",
+    "D417",
+    "E501",
+    "UP006",
+    "UP007",
+    "UP035",
+]
+exclude = ["notebooks/*"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D", "UP"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
