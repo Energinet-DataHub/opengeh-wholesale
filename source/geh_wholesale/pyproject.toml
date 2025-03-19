@@ -32,6 +32,13 @@ build-backend = "hatchling.build"
 [tool.hatch.metadata]
 allow-direct-references = true
 
+[tool.hatch.build]
+exclude = [
+  "/.*",
+  "/tests",
+  "/notebooks",
+]
+
 [dependency-groups]
 dev = [
     "pytest-cov>=6.0.0",
