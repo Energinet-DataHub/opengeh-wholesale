@@ -22,7 +22,7 @@ from geh_wholesale.infrastructure.paths import UnityCatalogDatabaseNames
 
 def test__when_migrations_executed__all_databases_are_created(spark: SparkSession, migrations_executed: None) -> None:
     # Arrange
-    expected = UnityCatalogDatabaseNames.get_names()
+    expected = UnityCatalogDatabaseNames().get_names()
     actual = [db.name for db in spark.catalog.listDatabases("wholesale_*")]
     errors = []
 
