@@ -14,18 +14,30 @@
 
 # Resource names and variables defined in the infrastructure repository (https://github.com/Energinet-DataHub/dh3-infrastructure)
 
+
+from pydantic import Field
+from pydantic_settings import BaseSettings
+
 import geh_wholesale.infrastructure.environment_variables as env_vars
 
 
-class UnityCatalogDatabaseNames:
+class UnityCatalogDatabaseNames(BaseSettings):
     """Unity Catalog database names are defined in the dh3infrastructure repository."""
 
-    WHOLESALE_RESULTS = "wholesale_results"
-    WHOLESALE_BASIS_DATA_INTERNAL = "wholesale_basis_data_internal"
-    WHOLESALE_BASIS_DATA = "wholesale_basis_data"
-    WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
-    WHOLESALE_INTERNAL = "wholesale_internal"
-    WHOLESALE_SAP = "wholesale_sap"
+    WHOLESALE_RESULTS: str = Field(init=False)
+    WHOLESALE_BASIS_DATA_INTERNAL: str = Field(init=False)
+    WHOLESALE_BASIS_DATA: str = Field(init=False)
+    WHOLESALE_RESULTS_INTERNAL: str = Field(init=False)
+    WHOLESALE_INTERNAL: str = Field(init=False)
+    WHOLESALE_SAP: str = Field(init=False)
+    WHOLESALE_MIGRATION: str = Field(init=False)
+    # WHOLESALE_RESULTS = "wholesale_results"
+    # WHOLESALE_BASIS_DATA_INTERNAL = "wholesale_basis_data_internal"
+    # WHOLESALE_BASIS_DATA = "wholesale_basis_data"
+    # WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
+    # WHOLESALE_INTERNAL = "wholesale_internal"
+    # WHOLESALE_SAP = "wholesale_sap"
+    # WHOLESALE_MIGRATION = "shared_wholesale_input"
 
     @classmethod
     def get_names(cls) -> list[str]:
@@ -38,7 +50,7 @@ class UnityCatalogDatabaseNames:
 
 
 class MigrationsWholesaleDatabase:
-    DATABASE_NAME = "shared_wholesale_input"
+    WHOLESALE_MIGRATION = UnityCatalogDatabaseNames().WHOLESALE_MIGRATION
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods_view_v1"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points_view_v1"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods_view_v1"
@@ -55,7 +67,7 @@ class MigrationsWholesaleDatabase:
 
 
 class WholesaleInternalDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_INTERNAL
+    DATABASE_NAME = UnityCatalogDatabaseNames().WHOLESALE_INTERNAL
     EXECUTED_MIGRATIONS_TABLE_NAME = "executed_migrations"
     CALCULATIONS_TABLE_NAME = "calculations"
     GRID_LOSS_METERING_POINT_IDS_TABLE_NAME = "grid_loss_metering_points"
@@ -76,7 +88,7 @@ class WholesaleInternalDatabase:
 
 
 class WholesaleResultsInternalDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS_INTERNAL
+    DATABASE_NAME = UnityCatalogDatabaseNames().WHOLESALE_RESULTS_INTERNAL
     ENERGY_TABLE_NAME = "energy"
     ENERGY_PER_ES_TABLE_NAME = "energy_per_es"
     ENERGY_PER_BRP_TABLE_NAME = "energy_per_brp"
@@ -99,7 +111,7 @@ class WholesaleResultsInternalDatabase:
 
 
 class WholesaleResultsDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_RESULTS
+    DATABASE_NAME = UnityCatalogDatabaseNames().WHOLESALE_RESULTS
     ENERGY_V1_VIEW_NAME = "energy_v1"
     ENERGY_PER_BRP_V1_VIEW_NAME = "energy_per_brp_v1"
     ENERGY_PER_ES_V1_VIEW_NAME = "energy_per_es_v1"
@@ -124,7 +136,7 @@ class WholesaleResultsDatabase:
 
 
 class WholesaleSapDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_SAP
+    DATABASE_NAME = UnityCatalogDatabaseNames().WHOLESALE_SAP
     LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME = "latest_calculations_history_v1"
     ENERGY_V1_VIEW_NAME = "energy_v1"
     AMOUNTS_PER_CHARGE_V1_VIEW_NAME = "amounts_per_charge_v1"
@@ -137,7 +149,7 @@ class WholesaleSapDatabase:
 
 
 class WholesaleBasisDataDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_BASIS_DATA
+    DATABASE_NAME = UnityCatalogDatabaseNames().WHOLESALE_BASIS_DATA
 
     METERING_POINT_PERIODS_VIEW_NAME = "metering_point_periods_v1"
     TIME_SERIES_POINTS_VIEW_NAME = "time_series_points_v1"
@@ -157,7 +169,7 @@ class WholesaleBasisDataDatabase:
 
 
 class WholesaleBasisDataInternalDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.WHOLESALE_BASIS_DATA_INTERNAL
+    DATABASE_NAME = UnityCatalogDatabaseNames().WHOLESALE_BASIS_DATA_INTERNAL
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods"
     TIME_SERIES_POINTS_TABLE_NAME = "time_series_points"
     CHARGE_LINK_PERIODS_TABLE_NAME = "charge_link_periods"
