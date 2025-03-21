@@ -8,13 +8,13 @@ def get_substitutions(catalog_name: str, is_testing: bool) -> dict[str, str]:
     """
     return {
         "{CATALOG_NAME}": catalog_name,
-        "{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}": paths.WholesaleResultsInternalDatabase.DATABASE_NAME,
-        "{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}": paths.WholesaleBasisDataInternalDatabase.DATABASE_NAME,
-        "{WHOLESALE_BASIS_DATA_DATABASE_NAME}": paths.WholesaleBasisDataDatabase.DATABASE_NAME,
-        "{WHOLESALE_INTERNAL_DATABASE_NAME}": paths.WholesaleInternalDatabase.DATABASE_NAME,
-        "{WHOLESALE_RESULTS_DATABASE_NAME}": paths.WholesaleResultsDatabase.DATABASE_NAME,
-        "{WHOLESALE_SAP_DATABASE_NAME}": paths.WholesaleSapDatabase.DATABASE_NAME,
-        "{SHARED_WHOLESALE_INPUT}": paths.MigrationsWholesaleDatabase.DATABASE_NAME,
+        "{WHOLESALE_RESULTS_INTERNAL_DATABASE_NAME}": paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
+        "{WHOLESALE_BASIS_DATA_INTERNAL_DATABASE_NAME}": paths.WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL,
+        "{WHOLESALE_BASIS_DATA_DATABASE_NAME}": paths.WholesaleBasisDataDatabase().DATABASE_WHOLESALE_BASIS_DATA,
+        "{WHOLESALE_INTERNAL_DATABASE_NAME}": paths.WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL,
+        "{WHOLESALE_RESULTS_DATABASE_NAME}": paths.WholesaleResultsDatabase().DATABASE_WHOLESALE_RESULTS,
+        "{WHOLESALE_SAP_DATABASE_NAME}": paths.WholesaleSapDatabase().DATABASE_WHOLESALE_RESULTS,
+        "{SHARED_WHOLESALE_INPUT}": paths.MigrationsWholesaleDatabase().DATABASE_WHOLESALE_MIGRATION,
         # Flags
         "{DATABRICKS-ONLY}": (
             "--" if is_testing else ""

@@ -64,14 +64,16 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/calculation_input"
-        table_location = f"{calculation_input_path}/{WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
+        table_location = (
+            f"{calculation_input_path}/{WholesaleInternalDatabase().GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
+        )
         row = _create_grid_loss_metering_point_row()
         df = spark.createDataFrame(data=[row], schema=grid_loss_metering_point_ids_schema)
         write_dataframe_to_table(
             spark,
             df,
-            WholesaleInternalDatabase.DATABASE_NAME,
-            WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
+            WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL,
+            WholesaleInternalDatabase().GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
             table_location,
             grid_loss_metering_point_ids_schema,
         )

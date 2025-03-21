@@ -45,5 +45,5 @@ def _write(
 ) -> None:
     with logging_configuration.start_span(name):
         df.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
-            f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+            f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
         )

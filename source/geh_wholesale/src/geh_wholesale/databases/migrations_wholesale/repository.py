@@ -42,13 +42,14 @@ class MigrationsWholesaleRepository:
         self._catalog_name = catalog_name
         self._calculation_input_database_name = calculation_input_database_name
         self._time_series_points_table_name = (
-            time_series_points_table_name or MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME
+            time_series_points_table_name or MigrationsWholesaleDatabase().TIME_SERIES_POINTS_TABLE_NAME
         )
         self._metering_point_periods_table_name = (
-            metering_point_periods_table_name or MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME
+            metering_point_periods_table_name or MigrationsWholesaleDatabase().METERING_POINT_PERIODS_TABLE_NAME
         )
         self._grid_loss_metering_point_ids_table_name = (
-            grid_loss_metering_point_ids_table_name or WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME
+            grid_loss_metering_point_ids_table_name
+            or WholesaleInternalDatabase().GRID_LOSS_METERING_POINT_IDS_TABLE_NAME
         )
 
     def read_metering_point_periods(
@@ -76,7 +77,7 @@ class MigrationsWholesaleRepository:
             self._spark,
             self._catalog_name,
             self._calculation_input_database_name,
-            MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
+            MigrationsWholesaleDatabase().CHARGE_LINK_PERIODS_TABLE_NAME,
             charge_link_periods_schema,
         )
 
@@ -85,7 +86,7 @@ class MigrationsWholesaleRepository:
             self._spark,
             self._catalog_name,
             self._calculation_input_database_name,
-            MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+            MigrationsWholesaleDatabase().CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
             charge_price_information_periods_schema,
         )
 

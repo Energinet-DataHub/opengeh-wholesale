@@ -77,7 +77,7 @@ class TestWhenValidInput:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
         table_location = (
-            f"{calculation_input_path}/{MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
+            f"{calculation_input_path}/{MigrationsWholesaleDatabase().CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
         )
         row = _create_charge_price_information_period_row()
         df = spark.createDataFrame(data=[row], schema=charge_price_information_periods_schema)

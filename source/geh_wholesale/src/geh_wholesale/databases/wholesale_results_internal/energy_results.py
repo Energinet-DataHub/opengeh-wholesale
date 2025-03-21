@@ -37,7 +37,7 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     _write(
         "exchange_per_neighbor",
         energy_results_output.exchange_per_neighbor,
-        WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
+        WholesaleResultsInternalDatabase().EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
         schemas.exchange_per_neighbor_schema,
     )
 
@@ -56,7 +56,7 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     _write(
         "energy",
         energy,
-        WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME,
         schemas.energy_schema,
     )
 
@@ -69,7 +69,7 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     _write(
         "energy_per_brp",
         energy_per_brp,
-        WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+        WholesaleResultsInternalDatabase().ENERGY_PER_BRP_TABLE_NAME,
         schemas.energy_per_brp_schema,
     )
 
@@ -82,7 +82,7 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     _write(
         "energy_per_es",
         energy_per_es,
-        WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+        WholesaleResultsInternalDatabase().ENERGY_PER_ES_TABLE_NAME,
         schemas.energy_per_es_schema,
     )
 
@@ -103,7 +103,7 @@ def write_energy_results(energy_results_output: EnergyResultsOutput) -> None:
     _write(
         "grid_loss_metering_point_time_series",
         grid_loss_metering_point_time_series,
-        WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
+        WholesaleResultsInternalDatabase().GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
         schemas.grid_loss_metering_point_time_series_schema,
     )
 
@@ -138,5 +138,5 @@ def _write(
         df = df.select(schema.fieldNames())
 
         df.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
-            f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}.{table_name}"
+            f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_WHOLESALE_RESULTS_INTERNAL}.{table_name}"
         )

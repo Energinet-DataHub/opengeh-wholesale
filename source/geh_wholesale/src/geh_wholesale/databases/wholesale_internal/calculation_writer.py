@@ -45,11 +45,11 @@ def write_calculation(
 
     # We had to use sql statement to insert the data because the DataFrame.write.insertInto() method does not support IDENTITY columns
     # Also, since IDENTITY COLUMN requires an exclusive lock on the table, we allow up to METADATA_CHANGED_RETRIES retries of the transaction.
-    table_targeted_by_query = f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+    table_targeted_by_query = f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL}.{WholesaleInternalDatabase().CALCULATIONS_TABLE_NAME}"
     execute_spark_sql_in_retry_loop(
         spark,
         METADATA_CHANGED_RETRIES,
-        f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+        f"INSERT INTO {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL}.{WholesaleInternalDatabase().CALCULATIONS_TABLE_NAME}"
         f" ({TableColumnNames.calculation_id}, {TableColumnNames.calculation_type}, {TableColumnNames.calculation_period_start}, {TableColumnNames.calculation_period_end}, {TableColumnNames.calculation_execution_time_start}, {TableColumnNames.calculation_succeeded_time}, {TableColumnNames.is_internal_calculation}, {TableColumnNames.calculation_version_dh2}, {TableColumnNames.calculation_version})"
         f" VALUES ('{args.calculation_id}', '{args.calculation_type.value}', '{calculation_period_start_datetime}', '{calculation_period_end_datetime}', '{calculation_execution_time_start}', NULL, '{args.is_internal_calculation}', NULL, NULL);",
         table_targeted_by_query,
@@ -58,7 +58,7 @@ def write_calculation(
     # And since the combination with DH2 calculations requires the identity column to decide the calculation_version,
     # we have to perform a separate update after the insert to finalize the calculation_version.
     spark.sql(
-        f"UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+        f"UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL}.{WholesaleInternalDatabase().CALCULATIONS_TABLE_NAME}"
         f" SET {TableColumnNames.calculation_version} = {TableColumnNames.calculation_version_dh3}"
         f" WHERE {TableColumnNames.calculation_id} = '{args.calculation_id}'"
     )
@@ -72,7 +72,7 @@ def write_calculation_grid_areas(
 ) -> None:
     """Write the calculation grid areas to the calculation grid areas table."""
     calculations_grid_areas.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
-        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATION_GRID_AREAS_TABLE_NAME}"
+        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL}.{WholesaleInternalDatabase().CALCULATION_GRID_AREAS_TABLE_NAME}"
     )
 
 
@@ -84,7 +84,7 @@ def write_calculation_succeeded_time(
     """Write the succeeded time to the calculation table."""
     spark.sql(
         f"""
-        UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}
+        UPDATE {infrastructure_settings.catalog_name}.{WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL}.{WholesaleInternalDatabase().CALCULATIONS_TABLE_NAME}
         SET {TableColumnNames.calculation_succeeded_time} = current_timestamp()
         WHERE {TableColumnNames.calculation_id} = '{calculation_id}'
         """

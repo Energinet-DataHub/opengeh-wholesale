@@ -37,14 +37,14 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        table_location = f"{calculation_input_path}/{MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME}"
+        table_location = f"{calculation_input_path}/{MigrationsWholesaleDatabase().METERING_POINT_PERIODS_TABLE_NAME}"
         row = factory.create_row()
         df = factory.create(spark, row)
         write_dataframe_to_table(
             spark,
             df,
             "test_database",
-            MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+            MigrationsWholesaleDatabase().METERING_POINT_PERIODS_TABLE_NAME,
             table_location,
             metering_point_periods_schema,
         )

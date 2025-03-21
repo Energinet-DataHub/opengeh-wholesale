@@ -173,12 +173,16 @@ def calculation_input_folder(data_lake_path: str) -> str:
 
 @pytest.fixture(scope="session")
 def calculation_input_database() -> str:
-    return paths.MigrationsWholesaleDatabase.DATABASE_NAME
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("WHOLESALE_MIGRATION", "shared_wholesale_input")
+        return paths.MigrationsWholesaleDatabase().DATABASE_WHOLESALE_MIGRATION
 
 
 @pytest.fixture(scope="session")
 def wholesale_internal_database() -> str:
-    return paths.WholesaleInternalDatabase.DATABASE_NAME
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("WHOLESALE_INTERNAL", "shared_wholesale_input")
+        return paths.WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL
 
 
 @pytest.fixture(scope="session")
@@ -192,11 +196,19 @@ def migrations_executed(
     energy_input_data_written_to_delta: None,
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
-    # Execute all migrations
-    sql_migration_helper.migrate(
-        spark,
-        migrations_execution=test_session_configuration.migrations.execute,
-    )
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("WHOLESALE_RESULTS", "wholesale_results")
+        ctx.setenv("WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
+        ctx.setenv("WHOWHOLESALE_BASIS_DATALESALE_MIGRATION", "wholesale_basis_data")
+        ctx.setenv("WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
+        ctx.setenv("WHOLESALE_INTERNAL", "wholesale_internal")
+        ctx.setenv("WHOLESALE_SAP", "wholesale_sap")
+        ctx.setenv("WHOLESALE_MIGRATION", "shared_wholesale_input")
+        # Execute all migrations
+        sql_migration_helper.migrate(
+            spark,
+            migrations_execution=test_session_configuration.migrations.execute,
+        )
 
 
 @pytest.fixture(scope="session")
@@ -364,16 +376,18 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
     wholesale_internal_database: str,
     migrations_executed: None,
 ) -> None:
-    # grid loss
-    df = read_csv_path(
-        spark,
-        f"{test_files_folder_path}/GridLossMeteringPointIds.csv",
-        schema=grid_loss_metering_point_ids_schema,
-        sep=";",
-    )
-    df.write.format("delta").mode("overwrite").saveAsTable(
-        f"{wholesale_internal_database}.{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
-    )
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("WHOLESALE_INTERNAL", "shared_wholesale_input")
+        # grid loss
+        df = read_csv_path(
+            spark,
+            f"{test_files_folder_path}/GridLossMeteringPointIds.csv",
+            schema=grid_loss_metering_point_ids_schema,
+            sep=";",
+        )
+        df.write.format("delta").mode("overwrite").saveAsTable(
+            f"{wholesale_internal_database}.{paths.WholesaleInternalDatabase().GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
+        )
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -405,50 +419,52 @@ def energy_input_data_written_to_delta(
     test_session_configuration: TestSessionConfiguration,
     calculation_input_database: str,
 ) -> None:
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME,
-        schema=metering_point_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME}",
-    )
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("WHOLESALE_MIGRATION", "shared_wholesale_input")
+        _write_input_test_data_to_table(
+            spark,
+            file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
+            database_name=calculation_input_database,
+            table_name=paths.MigrationsWholesaleDatabase().METERING_POINT_PERIODS_TABLE_NAME,
+            schema=metering_point_periods_schema,
+            table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase().METERING_POINT_PERIODS_TABLE_NAME}",
+        )
 
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/TimeSeriesPoints.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
-        schema=time_series_points_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME}",
-    )
+        _write_input_test_data_to_table(
+            spark,
+            file_name=f"{test_files_folder_path}/TimeSeriesPoints.csv",
+            database_name=calculation_input_database,
+            table_name=paths.MigrationsWholesaleDatabase().TIME_SERIES_POINTS_TABLE_NAME,
+            schema=time_series_points_schema,
+            table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase().TIME_SERIES_POINTS_TABLE_NAME}",
+        )
 
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/ChargePriceInformationPeriods.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-        schema=charge_price_information_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}",
-    )
+        _write_input_test_data_to_table(
+            spark,
+            file_name=f"{test_files_folder_path}/ChargePriceInformationPeriods.csv",
+            database_name=calculation_input_database,
+            table_name=paths.MigrationsWholesaleDatabase().CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+            schema=charge_price_information_periods_schema,
+            table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase().CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}",
+        )
 
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-        schema=charge_link_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}",
-    )
+        _write_input_test_data_to_table(
+            spark,
+            file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
+            database_name=calculation_input_database,
+            table_name=paths.MigrationsWholesaleDatabase().CHARGE_LINK_PERIODS_TABLE_NAME,
+            schema=charge_link_periods_schema,
+            table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase().CHARGE_LINK_PERIODS_TABLE_NAME}",
+        )
 
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
-        schema=charge_price_points_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}",
-    )
+        _write_input_test_data_to_table(
+            spark,
+            file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
+            database_name=calculation_input_database,
+            table_name=paths.MigrationsWholesaleDatabase().CHARGE_PRICE_POINTS_TABLE_NAME,
+            schema=charge_price_points_schema,
+            table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase().CHARGE_PRICE_POINTS_TABLE_NAME}",
+        )
 
 
 @pytest.fixture(scope="session")
@@ -459,35 +475,37 @@ def price_input_data_written_to_delta(
     test_session_configuration: TestSessionConfiguration,
     calculation_input_database: str,
 ) -> None:
-    # Charge master data periods
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/ChargePriceInformationPeriods.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
-        schema=charge_price_information_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}",
-    )
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("WHOLESALE_MIGRATION", "shared_wholesale_input")
+        # Charge master data periods
+        _write_input_test_data_to_table(
+            spark,
+            file_name=f"{test_files_folder_path}/ChargePriceInformationPeriods.csv",
+            database_name=calculation_input_database,
+            table_name=paths.MigrationsWholesaleDatabase().CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+            schema=charge_price_information_periods_schema,
+            table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase().CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}",
+        )
 
-    # Charge link periods
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
-        schema=charge_link_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}",
-    )
+        # Charge link periods
+        _write_input_test_data_to_table(
+            spark,
+            file_name=f"{test_files_folder_path}/ChargeLinkPeriods.csv",
+            database_name=calculation_input_database,
+            table_name=paths.MigrationsWholesaleDatabase().CHARGE_LINK_PERIODS_TABLE_NAME,
+            schema=charge_link_periods_schema,
+            table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase().CHARGE_LINK_PERIODS_TABLE_NAME}",
+        )
 
-    # Charge price points
-    _write_input_test_data_to_table(
-        spark,
-        file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
-        database_name=calculation_input_database,
-        table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
-        schema=charge_price_points_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}",
-    )
+        # Charge price points
+        _write_input_test_data_to_table(
+            spark,
+            file_name=f"{test_files_folder_path}/ChargePricePoints.csv",
+            database_name=calculation_input_database,
+            table_name=paths.MigrationsWholesaleDatabase().CHARGE_PRICE_POINTS_TABLE_NAME,
+            schema=charge_price_points_schema,
+            table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase().CHARGE_PRICE_POINTS_TABLE_NAME}",
+        )
 
 
 def _write_input_test_data_to_table(

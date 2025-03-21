@@ -150,7 +150,7 @@ def wholesale_fixing_energy_results_df(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME}"
+        f"{paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL}.{paths.WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME}"
     )
     return results_df.where(F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id)
 
@@ -161,7 +161,7 @@ def wholesale_fixing_amounts_per_charge_df(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME}"
+        f"{paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL}.{paths.WholesaleResultsInternalDatabase().AMOUNTS_PER_CHARGE_TABLE_NAME}"
     )
     return results_df.where(F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id)
 
@@ -172,7 +172,7 @@ def wholesale_fixing_total_monthly_amounts_df(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+        f"{paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL}.{paths.WholesaleResultsInternalDatabase().TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
     )
     return results_df.where(F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id)
 
@@ -183,6 +183,6 @@ def wholesale_fixing_monthly_amounts_per_charge_df(
     executed_wholesale_fixing: None,
 ) -> DataFrame:
     results_df = spark.read.table(
-        f"{paths.WholesaleResultsInternalDatabase.DATABASE_NAME}.{paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
+        f"{paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL}.{paths.WholesaleResultsInternalDatabase().MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
     )
     return results_df.where(F.col(TableColumnNames.calculation_id) == C.executed_wholesale_calculation_id)

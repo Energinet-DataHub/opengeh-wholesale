@@ -21,7 +21,15 @@ from geh_common.migrations.utility import delta_table_helper
 from pyspark.sql import SparkSession
 
 from geh_wholesale.datamigration.migration import migrate_data_lake
-from geh_wholesale.infrastructure.paths import UnityCatalogDatabaseNames
+from geh_wholesale.infrastructure.paths import (
+    MigrationsWholesaleDatabase,
+    WholesaleBasisDataDatabase,
+    WholesaleBasisDataInternalDatabase,
+    WholesaleInternalDatabase,
+    WholesaleResultsDatabase,
+    WholesaleResultsInternalDatabase,
+    WholesaleSapDatabase,
+)
 
 catalog_name = "spark_catalog"
 schema_migration_schema_name = "schema_migration"
@@ -44,6 +52,22 @@ class MigrationsExecution(Enum):
     """Execute only the migrations that have been modified since the last execution."""
 
 
+def get_database_names() -> list[str]:
+    database_classes = [
+        MigrationsWholesaleDatabase(),
+        WholesaleInternalDatabase(),
+        WholesaleResultsInternalDatabase(),
+        WholesaleResultsDatabase(),
+        WholesaleSapDatabase(),
+        WholesaleBasisDataDatabase(),
+        WholesaleBasisDataInternalDatabase(),
+    ]
+    database_values = [
+        getattr(cls, next(attr for attr in dir(cls) if attr.startswith("DATABASE_"))) for cls in database_classes
+    ]
+    return database_values
+
+
 def _create_databases(spark: SparkSession) -> None:
     """
     Create Unity Catalog databases as they are not created by migration scripts.
@@ -52,8 +76,8 @@ def _create_databases(spark: SparkSession) -> None:
     """
 
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {schema_migration_schema_name}")
-
-    for database in UnityCatalogDatabaseNames().get_names():
+    # remove get_names() functon and replace with list of database names
+    for database in get_database_names():
         print(f"Creating database {database}")  # noqa: T201
         spark.sql(f"CREATE DATABASE IF NOT EXISTS {database}")
 

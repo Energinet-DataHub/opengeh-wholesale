@@ -54,7 +54,7 @@ def test__input_metering_point_period_schema__matches_published_contract(
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME}"
+        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase().METERING_POINT_PERIODS_TABLE_NAME}"
     )
     _assert_is_equal(test_input_data.schema, metering_point_periods_schema)
 
@@ -66,7 +66,7 @@ def test__input_charge_link_period_schema__matches_published_contract(
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}"
+        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase().CHARGE_LINK_PERIODS_TABLE_NAME}"
     )
     _assert_is_equal(test_input_data.schema, charge_link_periods_schema)
 
@@ -78,7 +78,7 @@ def test__input_charge_price_points_schema__matches_published_contract(
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}"
+        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase().CHARGE_PRICE_POINTS_TABLE_NAME}"
     )
     _assert_is_equal(test_input_data.schema, charge_price_points_schema)
 
@@ -90,7 +90,7 @@ def test__input_charge_price_information_periods_schema__matches_published_contr
 ) -> None:
     # Assert
     test_input_data = spark.read.table(
-        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
+        f"{calculation_input_database}.{paths.MigrationsWholesaleDatabase().CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}"
     )
     _assert_is_equal(test_input_data.schema, charge_price_information_periods_schema)
 

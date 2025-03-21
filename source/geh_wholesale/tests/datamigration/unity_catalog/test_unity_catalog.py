@@ -14,59 +14,76 @@
 
 import inspect
 
+import pytest
 from pyspark.sql import SparkSession
 
+import tests.helpers.spark_sql_migration_helper as sql_migration_helper
 from geh_wholesale.infrastructure import paths
-from geh_wholesale.infrastructure.paths import UnityCatalogDatabaseNames
 
 
 def test__when_migrations_executed__all_databases_are_created(spark: SparkSession, migrations_executed: None) -> None:
-    # Arrange
-    expected = UnityCatalogDatabaseNames().get_names()
-    actual = [db.name for db in spark.catalog.listDatabases("wholesale_*")]
-    errors = []
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("WHOLESALE_RESULTS", "wholesale_results")
+        ctx.setenv("WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
+        ctx.setenv("WHOWHOLESALE_BASIS_DATALESALE_MIGRATION", "wholesale_basis_data")
+        ctx.setenv("WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
+        ctx.setenv("WHOLESALE_INTERNAL", "wholesale_internal")
+        ctx.setenv("WHOLESALE_SAP", "wholesale_sap")
+        ctx.setenv("WHOLESALE_MIGRATION", "shared_wholesale_input")
+        # Arrange
+        expected = sql_migration_helper.get_database_names()
+        actual = [db.name for db in spark.catalog.listDatabases("wholesale_*")]
+        errors = []
 
-    # Act
-    for database_name in expected:
-        try:
-            assert database_name in actual
+        # Act
+        for database_name in expected:
+            try:
+                assert database_name in actual
 
-        except Exception as e:
-            errors.append(f"{database_name}: {e}")
+            except Exception as e:
+                errors.append(f"{database_name}: {e}")
 
-    # Assert
-    assert len(expected) == len(actual), "Number of databases do not match."
-    assert not errors, "\n".join(errors) if errors else "All assertions passed."
+        # Assert
+        assert len(expected) == len(actual), "Number of databases do not match."
+        assert not errors, "\n".join(errors) if errors else "All assertions passed."
 
 
 def test_all_tables_and_views_created_after_migrations(spark: SparkSession, migrations_executed: None) -> None:
     """
     Validates that all expected tables and views are created in the workspace after migrations are executed.
     """
-    # Arrange
-    expected = _get_database_objects(paths)
-    errors: list = []
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("WHOLESALE_RESULTS", "wholesale_results")
+        ctx.setenv("WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
+        ctx.setenv("WHOWHOLESALE_BASIS_DATALESALE_MIGRATION", "wholesale_basis_data")
+        ctx.setenv("WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
+        ctx.setenv("WHOLESALE_INTERNAL", "wholesale_internal")
+        ctx.setenv("WHOLESALE_SAP", "wholesale_sap")
+        ctx.setenv("WHOLESALE_MIGRATION", "shared_wholesale_input")
+        # Arrange
+        expected = _get_database_objects(paths)
+        errors: list = []
 
-    # Helper: Retrieve the names of tables or views from the catalog
-    def get_names_by_type(objects, *obj_types):
-        return [obj.name for obj in objects if obj.tableType in obj_types]
+        # Helper: Retrieve the names of tables or views from the catalog
+        def get_names_by_type(objects, *obj_types):
+            return [obj.name for obj in objects if obj.tableType in obj_types]
 
-    # Act: Validate each expected database and its objects
-    for db_name, expected_objects in expected.items():
-        # Retrieve actual tables and views from the database
-        actual_objects = spark.catalog.listTables(db_name)
-        actual_tables = get_names_by_type(actual_objects, "MANAGED", "TABLE")
-        actual_views = get_names_by_type(actual_objects, "VIEW")
+        # Act: Validate each expected database and its objects
+        for db_name, expected_objects in expected.items():
+            # Retrieve actual tables and views from the database
+            actual_objects = spark.catalog.listTables(db_name)
+            actual_tables = get_names_by_type(actual_objects, "MANAGED", "TABLE")
+            actual_views = get_names_by_type(actual_objects, "VIEW")
 
-        _validate_the_number_of_tables(actual_tables, db_name, errors, expected_objects)
-        _validate_each_table_exists(actual_tables, db_name, errors, expected_objects)
+            _validate_the_number_of_tables(actual_tables, db_name, errors, expected_objects)
+            _validate_each_table_exists(actual_tables, db_name, errors, expected_objects)
 
-        _validate_the_number_of_views(actual_views, db_name, errors, expected_objects)
-        _validate_each_view_exists(actual_views, db_name, errors, expected_objects)
+            _validate_the_number_of_views(actual_views, db_name, errors, expected_objects)
+            _validate_each_view_exists(actual_views, db_name, errors, expected_objects)
 
-    # Assert
-    if errors:
-        raise AssertionError("\n".join(errors))
+        # Assert
+        if errors:
+            raise AssertionError("\n".join(errors))
 
 
 def _validate_the_number_of_tables(actual_tables, db_name, errors, expected_objects) -> None:
