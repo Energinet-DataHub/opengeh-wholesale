@@ -29,8 +29,8 @@ def migrate_data_lake(
 
 def _create_spark_config(catalog_name: str, is_testing: bool) -> SparkSqlMigrationsConfiguration:
     return SparkSqlMigrationsConfiguration(
-        migration_schema_name=paths.WholesaleInternalDatabase.DATABASE_NAME,
-        migration_table_name=paths.WholesaleInternalDatabase.EXECUTED_MIGRATIONS_TABLE_NAME,
+        migration_schema_name=paths.WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL,
+        migration_table_name=paths.WholesaleInternalDatabase().EXECUTED_MIGRATIONS_TABLE_NAME,
         migration_scripts_folder_path=MIGRATION_SCRIPTS_FOLDER_PATH,
         substitution_variables=get_substitutions(catalog_name, is_testing),
         catalog_name=catalog_name,

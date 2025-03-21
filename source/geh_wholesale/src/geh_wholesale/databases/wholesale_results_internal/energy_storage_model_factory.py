@@ -40,7 +40,7 @@ def create(
         args,
         _get_column_group_for_calculation_result_id(),
         df,
-        WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+        WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME,
     )
     metering_point_resolution = get_energy_result_resolution(
         args.quarterly_resolution_transition_datetime,

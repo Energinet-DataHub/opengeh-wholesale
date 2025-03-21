@@ -74,14 +74,14 @@ class TestWhenValidInput:
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        calculations_table_location = f"{calculation_input_path}/{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+        calculations_table_location = f"{calculation_input_path}/{WholesaleInternalDatabase().CALCULATIONS_TABLE_NAME}"
         row = _create_calculation_row()
         df = spark.createDataFrame(data=[row], schema=calculations_schema)
         write_dataframe_to_table(
             spark,
             df,
-            WholesaleInternalDatabase.DATABASE_NAME,
-            WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
+            WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL,
+            WholesaleInternalDatabase().CALCULATIONS_TABLE_NAME,
             calculations_table_location,
             calculations_schema,
         )

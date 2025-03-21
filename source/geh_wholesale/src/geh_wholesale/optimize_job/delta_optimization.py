@@ -46,9 +46,9 @@ def optimize_tables(catalog_name: str | None = None) -> None:
     catalog_name = catalog_name or env_vars.get_catalog_name()
 
     database_table_dicts = {
-        f"{catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_NAME}": WholesaleResultsInternalDatabase.TABLE_NAMES,
-        f"{catalog_name}.{WholesaleBasisDataInternalDatabase.DATABASE_NAME}": WholesaleBasisDataInternalDatabase.TABLE_NAMES,
-        f"{catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}": WholesaleInternalDatabase.TABLE_NAMES,
+        f"{catalog_name}.{WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL}": WholesaleResultsInternalDatabase().TABLE_NAMES,
+        f"{catalog_name}.{WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL}": WholesaleBasisDataInternalDatabase().TABLE_NAMES,
+        f"{catalog_name}.{WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL}": WholesaleInternalDatabase().TABLE_NAMES,
     }
 
     total_tables = sum(len(table_names) for table_names in database_table_dicts.values())

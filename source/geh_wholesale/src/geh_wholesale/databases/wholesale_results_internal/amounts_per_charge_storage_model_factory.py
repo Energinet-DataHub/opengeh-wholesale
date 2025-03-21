@@ -30,7 +30,7 @@ def create(args: CalculatorArgs, wholesale_results: WholesaleResults) -> DataFra
         args,
         _get_column_group_for_calculation_result_id(),
         wholesale_results.df,
-        WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
+        WholesaleResultsInternalDatabase().AMOUNTS_PER_CHARGE_TABLE_NAME,
     )
     wholesale_results = _select_output_columns(wholesale_results)
 

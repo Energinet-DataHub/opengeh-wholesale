@@ -37,7 +37,7 @@ from geh_wholesale.databases.wholesale_results_internal.schemas import (
 )
 from geh_wholesale.infrastructure.paths import WholesaleResultsInternalDatabase
 
-TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_NAME}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
+TABLE_NAME = f"{WholesaleResultsInternalDatabase.DATABASE_WHOLESALE_RESULTS_INTERNAL}.{WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME}"
 
 # Writer constructor parameters
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"

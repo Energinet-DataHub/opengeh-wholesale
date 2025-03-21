@@ -28,7 +28,7 @@ def create(args: CalculatorArgs, monthly_amounts: MonthlyAmountPerCharge) -> Dat
         args,
         _get_column_group_for_calculation_result_id(),
         monthly_amounts.df,
-        WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
+        WholesaleResultsInternalDatabase().MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
     )
     monthly_amounts = _select_output_columns(monthly_amounts)
 

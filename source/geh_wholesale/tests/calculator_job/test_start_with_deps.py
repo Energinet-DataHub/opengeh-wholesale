@@ -83,5 +83,5 @@ def add_calculation_row(
 
     calculations_df = spark.createDataFrame(data, calculations_schema)
     calculations_df.write.format("delta").mode("append").saveAsTable(
-        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase.DATABASE_NAME}.{WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME}"
+        f"{infrastructure_settings.catalog_name}.{WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL}.{WholesaleInternalDatabase().CALCULATIONS_TABLE_NAME}"
     )

@@ -39,8 +39,8 @@ class WholesaleResultsInternalRepository:
         return read_table(
             self._spark,
             self._catalog_name,
-            WholesaleResultsInternalDatabase.DATABASE_NAME,
-            WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
+            WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
+            WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME,
             energy_schema,
         )
 
@@ -48,8 +48,8 @@ class WholesaleResultsInternalRepository:
         return read_table(
             self._spark,
             self._catalog_name,
-            WholesaleResultsInternalDatabase.DATABASE_NAME,
-            WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
+            WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
+            WholesaleResultsInternalDatabase().ENERGY_PER_ES_TABLE_NAME,
             energy_per_es_schema,
         )
 
@@ -57,8 +57,8 @@ class WholesaleResultsInternalRepository:
         return read_table(
             self._spark,
             self._catalog_name,
-            WholesaleResultsInternalDatabase.DATABASE_NAME,
-            WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
+            WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
+            WholesaleResultsInternalDatabase().ENERGY_PER_BRP_TABLE_NAME,
             energy_per_brp_schema,
         )
 
@@ -66,7 +66,7 @@ class WholesaleResultsInternalRepository:
         return read_table(
             self._spark,
             self._catalog_name,
-            WholesaleResultsInternalDatabase.DATABASE_NAME,
-            WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
+            WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
+            WholesaleResultsInternalDatabase().AMOUNTS_PER_CHARGE_TABLE_NAME,
             amounts_per_charge_schema,
         )
