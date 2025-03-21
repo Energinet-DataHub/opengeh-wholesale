@@ -4,5 +4,5 @@ notes: |
 
 cases_tested:
   "Sap Results Tests":
-      "Correct Calculation Ids Included In Output"
-        "Only Calculation Ids With Succeeded Time Included"
+    - "Correct Calculation Ids Included In Output"
+    - "Only Calculation Ids With Succeeded Time Included"
