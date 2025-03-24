@@ -53,66 +53,72 @@ def test_files_folder_path(tests_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def spark(
-    test_session_configuration: TestSessionConfiguration,
-    tests_path: str,
-) -> Generator[SparkSession, None, None]:
-    warehouse_location = f"{tests_path}/__spark-warehouse__"
-    metastore_path = f"{tests_path}/__metastore_db__"
+def spark(test_session_configuration: TestSessionConfiguration, tests_path: str) -> Generator[SparkSession, None, None]:
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("DATABASE_WHOLESALE_RESULTS", "wholesale_results")
+        ctx.setenv("DATABASE_WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
+        ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA", "wholesale_basis_data")
+        ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
+        ctx.setenv("DATABASE_WHOLESALE_INTERNAL", "wholesale_internal")
+        ctx.setenv("DATABASE_WHOLESALE_SAP", "wholesale_sap")
+        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
 
-    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
-        if os.path.exists(warehouse_location):
-            print(f"Removing warehouse before clean run (path={warehouse_location})")  # noqa: T201
-            shutil.rmtree(warehouse_location)
-        if os.path.exists(metastore_path):
-            print(f"Removing metastore before clean run (path={metastore_path})")  # noqa: T201
-            shutil.rmtree(metastore_path)
+        warehouse_location = f"{tests_path}/__spark-warehouse__"
+        metastore_path = f"{tests_path}/__metastore_db__"
 
-    session = configure_spark_with_delta_pip(
-        SparkSession.builder.config("spark.sql.warehouse.dir", warehouse_location)
-        .config("spark.sql.streaming.schemaInference", True)
-        .config("spark.ui.showConsoleProgress", "false")
-        .config("spark.ui.enabled", "false")
-        .config("spark.ui.dagGraph.retainedRootRDDs", "1")
-        .config("spark.ui.retainedJobs", "1")
-        .config("spark.ui.retainedStages", "1")
-        .config("spark.ui.retainedTasks", "1")
-        .config("spark.sql.ui.retainedExecutions", "1")
-        .config("spark.worker.ui.retainedExecutors", "1")
-        .config("spark.worker.ui.retainedDrivers", "1")
-        .config("spark.default.parallelism", 1)
-        .config("spark.driver.memory", "2g")
-        .config("spark.executor.memory", "2g")
-        .config("spark.rdd.compress", False)
-        .config("spark.shuffle.compress", False)
-        .config("spark.shuffle.spill.compress", False)
-        .config("spark.sql.shuffle.partitions", 1)
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-        .config(
-            "spark.sql.catalog.spark_catalog",
-            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
-        )
-        # Enable Hive support for persistence across test sessions
-        .config("spark.sql.catalogImplementation", "hive")
-        .config(
-            "javax.jdo.option.ConnectionURL",
-            f"jdbc:derby:;databaseName={metastore_path};create=true",
-        )
-        .config(
-            "javax.jdo.option.ConnectionDriverName",
-            "org.apache.derby.jdbc.EmbeddedDriver",
-        )
-        .config("javax.jdo.option.ConnectionUserName", "APP")
-        .config("javax.jdo.option.ConnectionPassword", "mine")
-        .config("datanucleus.autoCreateSchema", "true")
-        .config("hive.metastore.schema.verification", "false")
-        .config("hive.metastore.schema.verification.record.version", "false")
-        .config("spark.sql.session.timeZone", "UTC")
-        .enableHiveSupport()
-    ).getOrCreate()
+        if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
+            if os.path.exists(warehouse_location):
+                print(f"Removing warehouse before clean run (path={warehouse_location})")  # noqa: T201
+                shutil.rmtree(warehouse_location)
+            if os.path.exists(metastore_path):
+                print(f"Removing metastore before clean run (path={metastore_path})")  # noqa: T201
+                shutil.rmtree(metastore_path)
 
-    yield session
-    session.stop()
+        session = configure_spark_with_delta_pip(
+            SparkSession.builder.config("spark.sql.warehouse.dir", warehouse_location)
+            .config("spark.sql.streaming.schemaInference", True)
+            .config("spark.ui.showConsoleProgress", "false")
+            .config("spark.ui.enabled", "false")
+            .config("spark.ui.dagGraph.retainedRootRDDs", "1")
+            .config("spark.ui.retainedJobs", "1")
+            .config("spark.ui.retainedStages", "1")
+            .config("spark.ui.retainedTasks", "1")
+            .config("spark.sql.ui.retainedExecutions", "1")
+            .config("spark.worker.ui.retainedExecutors", "1")
+            .config("spark.worker.ui.retainedDrivers", "1")
+            .config("spark.default.parallelism", 1)
+            .config("spark.driver.memory", "2g")
+            .config("spark.executor.memory", "2g")
+            .config("spark.rdd.compress", False)
+            .config("spark.shuffle.compress", False)
+            .config("spark.shuffle.spill.compress", False)
+            .config("spark.sql.shuffle.partitions", 1)
+            .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+            .config(
+                "spark.sql.catalog.spark_catalog",
+                "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+            )
+            # Enable Hive support for persistence across test sessions
+            .config("spark.sql.catalogImplementation", "hive")
+            .config(
+                "javax.jdo.option.ConnectionURL",
+                f"jdbc:derby:;databaseName={metastore_path};create=true",
+            )
+            .config(
+                "javax.jdo.option.ConnectionDriverName",
+                "org.apache.derby.jdbc.EmbeddedDriver",
+            )
+            .config("javax.jdo.option.ConnectionUserName", "APP")
+            .config("javax.jdo.option.ConnectionPassword", "mine")
+            .config("datanucleus.autoCreateSchema", "true")
+            .config("hive.metastore.schema.verification", "false")
+            .config("hive.metastore.schema.verification.record.version", "false")
+            .config("spark.sql.session.timeZone", "UTC")
+            .enableHiveSupport()
+        ).getOrCreate()
+
+        yield session
+        session.stop()
 
 
 @pytest.fixture(scope="session")
@@ -174,14 +180,14 @@ def calculation_input_folder(data_lake_path: str) -> str:
 @pytest.fixture(scope="session")
 def calculation_input_database() -> str:
     with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("WHOLESALE_MIGRATION", "shared_wholesale_input")
+        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
         return paths.MigrationsWholesaleDatabase().DATABASE_WHOLESALE_MIGRATION
 
 
 @pytest.fixture(scope="session")
 def wholesale_internal_database() -> str:
     with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("WHOLESALE_INTERNAL", "shared_wholesale_input")
+        ctx.setenv("DATABASE_WHOLESALE_INTERNAL", "shared_wholesale_input")
         return paths.WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL
 
 
@@ -197,13 +203,13 @@ def migrations_executed(
     test_session_configuration: TestSessionConfiguration,
 ) -> None:
     with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("WHOLESALE_RESULTS", "wholesale_results")
-        ctx.setenv("WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
-        ctx.setenv("WHOWHOLESALE_BASIS_DATALESALE_MIGRATION", "wholesale_basis_data")
-        ctx.setenv("WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
-        ctx.setenv("WHOLESALE_INTERNAL", "wholesale_internal")
-        ctx.setenv("WHOLESALE_SAP", "wholesale_sap")
-        ctx.setenv("WHOLESALE_MIGRATION", "shared_wholesale_input")
+        ctx.setenv("DATABASE_WHOLESALE_RESULTS", "wholesale_results")
+        ctx.setenv("DATABASE_WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
+        ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA", "wholesale_basis_data")
+        ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
+        ctx.setenv("DATABASE_WHOLESALE_INTERNAL", "wholesale_internal")
+        ctx.setenv("DATABASE_WHOLESALE_SAP", "wholesale_sap")
+        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
         # Execute all migrations
         sql_migration_helper.migrate(
             spark,
@@ -377,7 +383,7 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
     migrations_executed: None,
 ) -> None:
     with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("WHOLESALE_INTERNAL", "shared_wholesale_input")
+        ctx.setenv("DATABASE_WHOLESALE_INTERNAL", "shared_wholesale_input")
         # grid loss
         df = read_csv_path(
             spark,
@@ -420,7 +426,7 @@ def energy_input_data_written_to_delta(
     calculation_input_database: str,
 ) -> None:
     with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("WHOLESALE_MIGRATION", "shared_wholesale_input")
+        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
         _write_input_test_data_to_table(
             spark,
             file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
@@ -476,7 +482,7 @@ def price_input_data_written_to_delta(
     calculation_input_database: str,
 ) -> None:
     with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("WHOLESALE_MIGRATION", "shared_wholesale_input")
+        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
         # Charge master data periods
         _write_input_test_data_to_table(
             spark,

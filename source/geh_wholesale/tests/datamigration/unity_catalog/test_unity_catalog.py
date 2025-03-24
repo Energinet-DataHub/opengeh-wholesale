@@ -23,13 +23,13 @@ from geh_wholesale.infrastructure import paths
 
 def test__when_migrations_executed__all_databases_are_created(spark: SparkSession, migrations_executed: None) -> None:
     with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("WHOLESALE_RESULTS", "wholesale_results")
-        ctx.setenv("WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
-        ctx.setenv("WHOWHOLESALE_BASIS_DATALESALE_MIGRATION", "wholesale_basis_data")
-        ctx.setenv("WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
-        ctx.setenv("WHOLESALE_INTERNAL", "wholesale_internal")
-        ctx.setenv("WHOLESALE_SAP", "wholesale_sap")
-        ctx.setenv("WHOLESALE_MIGRATION", "shared_wholesale_input")
+        ctx.setenv("DATABASE_WHOLESALE_RESULTS", "wholesale_results")
+        ctx.setenv("DATABASE_WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
+        ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA", "wholesale_basis_data")
+        ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
+        ctx.setenv("DATABASE_WHOLESALE_INTERNAL", "wholesale_internal")
+        ctx.setenv("DATABASE_WHOLESALE_SAP", "wholesale_sap")
+        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
         # Arrange
         expected = sql_migration_helper.get_database_names()
         actual = [db.name for db in spark.catalog.listDatabases("wholesale_*")]
@@ -53,13 +53,13 @@ def test_all_tables_and_views_created_after_migrations(spark: SparkSession, migr
     Validates that all expected tables and views are created in the workspace after migrations are executed.
     """
     with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("WHOLESALE_RESULTS", "wholesale_results")
-        ctx.setenv("WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
-        ctx.setenv("WHOWHOLESALE_BASIS_DATALESALE_MIGRATION", "wholesale_basis_data")
-        ctx.setenv("WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
-        ctx.setenv("WHOLESALE_INTERNAL", "wholesale_internal")
-        ctx.setenv("WHOLESALE_SAP", "wholesale_sap")
-        ctx.setenv("WHOLESALE_MIGRATION", "shared_wholesale_input")
+        ctx.setenv("DATABASE_WHOLESALE_RESULTS", "wholesale_results")
+        ctx.setenv("DATABASE_WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
+        ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA", "wholesale_basis_data")
+        ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
+        ctx.setenv("DATABASE_WHOLESALE_INTERNAL", "wholesale_internal")
+        ctx.setenv("DATABASE_WHOLESALE_SAP", "wholesale_sap")
+        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
         # Arrange
         expected = _get_database_objects(paths)
         errors: list = []

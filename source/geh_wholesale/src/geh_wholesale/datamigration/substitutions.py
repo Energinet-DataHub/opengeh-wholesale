@@ -13,7 +13,7 @@ def get_substitutions(catalog_name: str, is_testing: bool) -> dict[str, str]:
         "{WHOLESALE_BASIS_DATA_DATABASE_NAME}": paths.WholesaleBasisDataDatabase().DATABASE_WHOLESALE_BASIS_DATA,
         "{WHOLESALE_INTERNAL_DATABASE_NAME}": paths.WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL,
         "{WHOLESALE_RESULTS_DATABASE_NAME}": paths.WholesaleResultsDatabase().DATABASE_WHOLESALE_RESULTS,
-        "{WHOLESALE_SAP_DATABASE_NAME}": paths.WholesaleSapDatabase().DATABASE_WHOLESALE_RESULTS,
+        "{WHOLESALE_SAP_DATABASE_NAME}": paths.WholesaleSapDatabase().DATABASE_WHOLESALE_SAP,
         "{SHARED_WHOLESALE_INPUT}": paths.MigrationsWholesaleDatabase().DATABASE_WHOLESALE_MIGRATION,
         # Flags
         "{DATABRICKS-ONLY}": (

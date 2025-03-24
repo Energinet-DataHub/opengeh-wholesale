@@ -22,7 +22,6 @@ from pyspark.sql import SparkSession
 
 from geh_wholesale.datamigration.migration import migrate_data_lake
 from geh_wholesale.infrastructure.paths import (
-    MigrationsWholesaleDatabase,
     WholesaleBasisDataDatabase,
     WholesaleBasisDataInternalDatabase,
     WholesaleInternalDatabase,
@@ -54,7 +53,6 @@ class MigrationsExecution(Enum):
 
 def get_database_names() -> list[str]:
     database_classes = [
-        MigrationsWholesaleDatabase(),
         WholesaleInternalDatabase(),
         WholesaleResultsInternalDatabase(),
         WholesaleResultsDatabase(),

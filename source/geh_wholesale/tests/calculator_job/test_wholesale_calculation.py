@@ -269,49 +269,55 @@ def test__when_wholesale_calculation__basis_data_is_stored(
     executed_wholesale_fixing: None,
     basis_data_table_name: str,
 ) -> None:
-    # Arrange
-    actual = spark.read.table(
-        f"{paths.WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL}.{basis_data_table_name}"
-    ).where(f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id)
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
+        # Arrange
+        actual = spark.read.table(
+            f"{paths.WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL}.{basis_data_table_name}"
+        ).where(f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id)
 
-    # Act: Calculator job is executed just once per session.
-    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+        # Act: Calculator job is executed just once per session.
+        #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
-    # Assert
-    assert actual.count() > 0
+        # Assert
+        assert actual.count() > 0
 
 
 def test__when_calculation_is_stored__contains_calculation_succeeded_time(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> None:
-    # Arrange
-    actual = spark.read.table(
-        f"{paths.WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL}.{paths.WholesaleInternalDatabase().CALCULATIONS_TABLE_NAME}"
-    ).where(f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id)
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("DATABASE_WHOLESALE_INTERNAL", "wholesale_internal")
+        # Arrange
+        actual = spark.read.table(
+            f"{paths.WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL}.{paths.WholesaleInternalDatabase().CALCULATIONS_TABLE_NAME}"
+        ).where(f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id)
 
-    # Act: Calculator job is executed just once per session.
-    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+        # Act: Calculator job is executed just once per session.
+        #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
-    # Assert
-    assert actual.count() == 1
-    assert actual.collect()[0][TableColumnNames.calculation_succeeded_time] is not None
+        # Assert
+        assert actual.count() == 1
+        assert actual.collect()[0][TableColumnNames.calculation_succeeded_time] is not None
 
 
 def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
     spark: SparkSession,
     executed_wholesale_fixing: None,
 ) -> None:
-    # Arrange
-    actual = spark.read.table(
-        f"{paths.WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL}.{paths.WholesaleInternalDatabase().CALCULATION_GRID_AREAS_TABLE_NAME}"
-    ).where(f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id)
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("DATABASE_WHOLESALE_INTERNAL", "wholesale_internal")
+        # Arrange
+        actual = spark.read.table(
+            f"{paths.WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL}.{paths.WholesaleInternalDatabase().CALCULATION_GRID_AREAS_TABLE_NAME}"
+        ).where(f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id)
 
-    # Act: Calculator job is executed just once per session.
-    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+        # Act: Calculator job is executed just once per session.
+        #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
-    # Assert: The result is created if there are rows
-    assert actual.count() > 0
+        # Assert: The result is created if there are rows
+        assert actual.count() > 0
 
 
 @pytest.mark.parametrize(
@@ -350,16 +356,18 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
     expected_schema: StructType,
     infrastructure_settings: InfrastructureSettings,
 ) -> None:
-    # Arrange
-    actual = spark.read.table(
-        f"{infrastructure_settings.catalog_name}.{paths.WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL}.{basis_data_table_name}"
-    )
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
+        # Arrange
+        actual = spark.read.table(
+            f"{infrastructure_settings.catalog_name}.{paths.WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL}.{basis_data_table_name}"
+        )
 
-    # Act: Calculator job is executed just once per session.
-    #      See the fixtures `results_df` and `executed_wholesale_fixing`
+        # Act: Calculator job is executed just once per session.
+        #      See the fixtures `results_df` and `executed_wholesale_fixing`
 
-    # Assert
-    assert actual.schema == expected_schema
+        # Assert
+        assert actual.schema == expected_schema
 
 
 @pytest.mark.parametrize(
@@ -398,15 +406,15 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
             True,
         ),
         (
-            f"{paths.WholesaleSapDatabase().DATABASE_WHOLESALE_RESULTS}.{paths.WholesaleSapDatabase().LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME}",
+            f"{paths.WholesaleSapDatabase().DATABASE_WHOLESALE_SAP}.{paths.WholesaleSapDatabase().LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.WholesaleSapDatabase().DATABASE_WHOLESALE_RESULTS}.{paths.WholesaleSapDatabase().ENERGY_V1_VIEW_NAME}",
+            f"{paths.WholesaleSapDatabase().DATABASE_WHOLESALE_SAP}.{paths.WholesaleSapDatabase().ENERGY_V1_VIEW_NAME}",
             True,
         ),
         (
-            f"{paths.WholesaleSapDatabase().DATABASE_WHOLESALE_RESULTS}.{paths.WholesaleSapDatabase().AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
+            f"{paths.WholesaleSapDatabase().DATABASE_WHOLESALE_SAP}.{paths.WholesaleSapDatabase().AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
             True,
         ),
     ],
@@ -414,7 +422,10 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
 def test__when_wholesale_fixing__view_has_data_if_expected(
     spark: SparkSession, executed_wholesale_fixing: None, view_name: str, has_data: bool
 ) -> None:
-    actual = spark.sql(f"SELECT * FROM {view_name}").where(
-        f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
-    )
-    assert actual.count() > 0 if has_data else actual.count() == 0
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("DATABASE_WHOLESALE_RESULTS", "wholesale_results")
+        ctx.setenv("DATABASE_WHOLESALE_SAP", "wholesale_sap")
+        actual = spark.sql(f"SELECT * FROM {view_name}").where(
+            f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
+        )
+        assert actual.count() > 0 if has_data else actual.count() == 0

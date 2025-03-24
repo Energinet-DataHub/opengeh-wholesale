@@ -28,7 +28,7 @@ import geh_wholesale.infrastructure.environment_variables as env_vars
 # WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
 # WHOLESALE_INTERNAL = "wholesale_internal"
 # WHOLESALE_SAP = "wholesale_sap"
-# WHOLESALE_MIGRATION = "shared_wholesale_input"
+# WHOLESALE_MIGRATION = "shared_wholesale_input" ## NOT A DATABASE
 
 
 class MigrationsWholesaleDatabase(BaseSettings):
@@ -118,7 +118,7 @@ class WholesaleResultsDatabase(BaseSettings):
 
 
 class WholesaleSapDatabase(BaseSettings):
-    DATABASE_WHOLESALE_RESULTS: str = Field(init=False)
+    DATABASE_WHOLESALE_SAP: str = Field(init=False)
     LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME: ClassVar[str] = "latest_calculations_history_v1"
     ENERGY_V1_VIEW_NAME: ClassVar[str] = "energy_v1"
     AMOUNTS_PER_CHARGE_V1_VIEW_NAME: ClassVar[str] = "amounts_per_charge_v1"

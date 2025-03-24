@@ -99,19 +99,27 @@ def executed_balance_fixing(
     This act is made as a session-scoped fixture because it is a slow process
     and because lots of assertions can be made and split into separate tests
     without awaiting the execution in each test."""
+    with pytest.MonkeyPatch.context() as ctx:
+        ctx.setenv("DATABASE_WHOLESALE_RESULTS", "wholesale_results")
+        ctx.setenv("DATABASE_WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
+        ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA", "wholesale_basis_data")
+        ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
+        ctx.setenv("DATABASE_WHOLESALE_INTERNAL", "wholesale_internal")
+        ctx.setenv("DATABASE_WHOLESALE_SAP", "wholesale_sap")
+        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
 
-    migrations_wholesale_repository = migrations_wholesale.MigrationsWholesaleRepository(
-        spark, "spark_catalog", calculation_input_database
-    )
-    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
-    prepared_data_reader = PreparedDataReader(migrations_wholesale_repository, wholesale_internal_repository)
-    calculation.execute(
-        calculator_args_balance_fixing,
-        prepared_data_reader,
-        CalculationCore(),
-        CalculationMetadataService(),
-        CalculationOutputService(),
-    )
+        migrations_wholesale_repository = migrations_wholesale.MigrationsWholesaleRepository(
+            spark, "spark_catalog", calculation_input_database
+        )
+        wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
+        prepared_data_reader = PreparedDataReader(migrations_wholesale_repository, wholesale_internal_repository)
+        calculation.execute(
+            calculator_args_balance_fixing,
+            prepared_data_reader,
+            CalculationCore(),
+            CalculationMetadataService(),
+            CalculationOutputService(),
+        )
 
 
 @pytest.fixture(scope="session")
