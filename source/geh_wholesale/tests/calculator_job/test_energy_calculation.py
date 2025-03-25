@@ -97,23 +97,23 @@ def test__balance_fixing_energy_result_type__is_created(
 ) -> None:
     monkeypatch.setenv("DATABASE_WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
     actual_table_name = paths.WholesaleResultsInternalDatabase().model_dump().get(table_name)
-    # actual = (
-    #    spark.read.table(
-    #        f"{paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL}.{actual_table_name}"
-    #    )
-    #    .where(f.col(TableColumnNames.calculation_id) == c.executed_balance_fixing_calculation_id)
-    #    .where(f.col(TableColumnNames.time_series_type) == time_series_type)
-    # )
+    actual = (
+       spark.read.table(
+           f"{paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL}.{actual_table_name}"
+       )
+       .where(f.col(TableColumnNames.calculation_id) == c.executed_balance_fixing_calculation_id)
+       .where(f.col(TableColumnNames.time_series_type) == time_series_type)
+    )
 
-    # Assert: Result(s) are created if there are rows
-    # assert actual.count() > 0
+    #Assert: Result(s) are created if there are rows
+    assert actual.count() > 0
 
 
 @pytest.mark.parametrize(
     "basis_data_table_name",
     [
-        "METERING_POINT_PERIODS_TABLE_NAME",
-        "TIME_SERIES_POINTS_TABLE_NAME",
+        paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
+        paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
     ],
 )
 def test__when_energy_calculation__basis_data_is_stored(
@@ -124,10 +124,9 @@ def test__when_energy_calculation__basis_data_is_stored(
     infrastructure_settings: InfrastructureSettings,
 ) -> None:
     monkeypatch.setenv("DATABASE_WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
-    actual_table_name = paths.WholesaleBasisDataInternalDatabase().model_dump().get(basis_data_table_name)
     # Arrange
     actual = spark.read.table(
-        f"{infrastructure_settings.catalog_name}.{paths.WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL}.{actual_table_name}"
+        f"{infrastructure_settings.catalog_name}.{paths.WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL}.{basis_data_table_name}"
     ).where(f.col(TableColumnNames.calculation_id) == c.executed_balance_fixing_calculation_id)
 
     # Act: Calculator job is executed just once per session.
@@ -173,31 +172,51 @@ def test__when_energy_calculation__calculation_grid_areas_are_stored(
 
 
 @pytest.mark.parametrize(
-    ("database", "table_name", "view_name"),
+    ("database_class", "database_name", "view_name"),
     [
         (
             paths.WholesaleInternalDatabase,
             "DATABASE_WHOLESALE_INTERNAL",
-            "SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME",
+            paths.WholesaleInternalDatabase.SUCCEEDED_EXTERNAL_CALCULATIONS_V1_VIEW_NAME,
         ),
-        (paths.WholesaleResultsDatabase, "DATABASE_WHOLESALE_RESULTS", "ENERGY_V1_VIEW_NAME"),
-        (paths.WholesaleResultsDatabase, "DATABASE_WHOLESALE_RESULTS", "ENERGY_PER_BRP_V1_VIEW_NAME"),
-        (paths.WholesaleResultsDatabase, "DATABASE_WHOLESALE_RESULTS", "ENERGY_PER_ES_V1_VIEW_NAME"),
         (
             paths.WholesaleResultsDatabase,
             "DATABASE_WHOLESALE_RESULTS",
-            "GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME",
+            paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
         ),
-        (paths.WholesaleResultsDatabase, "DATABASE_WHOLESALE_RESULTS", "EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME"),
-        (paths.WholesaleSapDatabase, "DATABASE_WHOLESALE_SAP", "LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME,"),
-        (paths.WholesaleSapDatabase, "DATABASE_WHOLESALE_SAP", "ENERGY_V1_VIEW_NAME"),
+        (
+            paths.WholesaleResultsDatabase,
+            "DATABASE_WHOLESALE_RESULTS",
+            paths.WholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME,
+        ),
+        (
+            paths.WholesaleResultsDatabase,
+            "DATABASE_WHOLESALE_RESULTS",
+            paths.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME,
+        ),
+        (
+            paths.WholesaleResultsDatabase,
+            "DATABASE_WHOLESALE_RESULTS",
+            paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME,
+        ),
+        (
+            paths.WholesaleResultsDatabase,
+            "DATABASE_WHOLESALE_RESULTS",
+            paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME,
+        ),
+        (
+            paths.WholesaleSapDatabase,
+            "DATABASE_WHOLESALE_SAP",
+            paths.WholesaleSapDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME,
+        ),
+        (paths.WholesaleSapDatabase, "DATABASE_WHOLESALE_SAP", paths.WholesaleSapDatabase.ENERGY_V1_VIEW_NAME),
     ],
 )
 def test__when_balance_fixing__view_has_data_if_expected_result(
     spark: SparkSession,
     executed_balance_fixing: None,
-    database,
-    table_name: str,
+    database_class,
+    database_name: str,
     view_name: str,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -205,11 +224,9 @@ def test__when_balance_fixing__view_has_data_if_expected_result(
     monkeypatch.setenv("DATABASE_WHOLESALE_SAP", "wholesale_sap")
     monkeypatch.setenv("DATABASE_WHOLESALE_INTERNAL", "wholesale_internal")
 
-    actual_table_name = database().model_dump().get(table_name)
-    actual_view_name = database().model_dump().get(view_name)
+    actual_database_name = database_class().model_dump().get(database_name)
 
-    # full_view = f"{actual_table_name}.{actual_view_name}"
-    # actual = spark.sql(f"SELECT * FROM {full_view}").where(
-    #    f.col(TableColumnNames.calculation_id) == c.executed_balance_fixing_calculation_id
-    # )
-    # assert actual.count() > 0 if True else actual.count() == 0
+    actual = spark.sql(f"SELECT * FROM {actual_database_name}.{view_name}").where(
+        f.col(TableColumnNames.calculation_id) == c.executed_balance_fixing_calculation_id
+    )
+    assert actual.count() > 0 if True else actual.count() == 0

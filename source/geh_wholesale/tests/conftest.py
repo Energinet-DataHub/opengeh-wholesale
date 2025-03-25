@@ -61,7 +61,7 @@ def spark(test_session_configuration: TestSessionConfiguration, tests_path: str)
         ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
         ctx.setenv("DATABASE_WHOLESALE_INTERNAL", "wholesale_internal")
         ctx.setenv("DATABASE_WHOLESALE_SAP", "wholesale_sap")
-        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
+        ctx.setenv("DATABASE_SHARED_WHOLESALE_INPUT", "shared_wholesale_input")
 
         warehouse_location = f"{tests_path}/__spark-warehouse__"
         metastore_path = f"{tests_path}/__metastore_db__"
@@ -180,14 +180,14 @@ def calculation_input_folder(data_lake_path: str) -> str:
 @pytest.fixture(scope="session")
 def calculation_input_database() -> str:
     with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
-        return paths.MigrationsWholesaleDatabase().DATABASE_WHOLESALE_MIGRATION
+        ctx.setenv("DATABASE_SHARED_WHOLESALE_INPUT", "shared_wholesale_input")
+        return paths.MigrationsWholesaleDatabase().DATABASE_SHARED_WHOLESALE_INPUT
 
 
 @pytest.fixture(scope="session")
 def wholesale_internal_database() -> str:
     with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("DATABASE_WHOLESALE_INTERNAL", "shared_wholesale_input")
+        ctx.setenv("DATABASE_SHARED_WHOLESALE_INPUT", "shared_wholesale_input")
         return paths.WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL
 
 
@@ -209,7 +209,7 @@ def migrations_executed(
         ctx.setenv("DATABASE_WHOLESALE_BASIS_DATA_INTERNAL", "wholesale_basis_data_internal")
         ctx.setenv("DATABASE_WHOLESALE_INTERNAL", "wholesale_internal")
         ctx.setenv("DATABASE_WHOLESALE_SAP", "wholesale_sap")
-        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
+        ctx.setenv("DATABASE_SHARED_WHOLESALE_INPUT", "shared_wholesale_input")
         # Execute all migrations
         sql_migration_helper.migrate(
             spark,
@@ -426,7 +426,7 @@ def energy_input_data_written_to_delta(
     calculation_input_database: str,
 ) -> None:
     with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
+        ctx.setenv("DATABASE_SHARED_WHOLESALE_INPUT", "shared_wholesale_input")
         _write_input_test_data_to_table(
             spark,
             file_name=f"{test_files_folder_path}/MeteringPointsPeriods.csv",
@@ -482,7 +482,7 @@ def price_input_data_written_to_delta(
     calculation_input_database: str,
 ) -> None:
     with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("DATABASE_WHOLESALE_MIGRATION", "shared_wholesale_input")
+        ctx.setenv("DATABASE_SHARED_WHOLESALE_INPUT", "shared_wholesale_input")
         # Charge master data periods
         _write_input_test_data_to_table(
             spark,

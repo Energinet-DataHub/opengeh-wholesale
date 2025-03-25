@@ -9,79 +9,95 @@ from geh_wholesale.infrastructure import paths
 
 
 @pytest.mark.parametrize(
-    ("schema_name", "table_name"),
+    ("database_class", "schema_name", "table_name"),
     [
         (
-            paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
-            paths.WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase,
+            "DATABASE_WHOLESALE_RESULTS_INTERNAL",
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
         ),
         (
-            paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
-            paths.WholesaleResultsInternalDatabase().ENERGY_PER_BRP_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase,
+            "DATABASE_WHOLESALE_RESULTS_INTERNAL",
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_BRP_TABLE_NAME,
         ),
         (
-            paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
-            paths.WholesaleResultsInternalDatabase().ENERGY_PER_ES_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase,
+            "DATABASE_WHOLESALE_RESULTS_INTERNAL",
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
         ),
         (
-            paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
-            paths.WholesaleResultsInternalDatabase().GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase,
+            "DATABASE_WHOLESALE_RESULTS_INTERNAL",
+            paths.WholesaleResultsInternalDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_TABLE_NAME,
         ),
         (
-            paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
-            paths.WholesaleResultsInternalDatabase().EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase,
+            "DATABASE_WHOLESALE_RESULTS_INTERNAL",
+            paths.WholesaleResultsInternalDatabase.EXCHANGE_PER_NEIGHBOR_TABLE_NAME,
         ),
         (
-            paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
-            paths.WholesaleResultsInternalDatabase().AMOUNTS_PER_CHARGE_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase,
+            "DATABASE_WHOLESALE_RESULTS_INTERNAL",
+            paths.WholesaleResultsInternalDatabase.AMOUNTS_PER_CHARGE_TABLE_NAME,
         ),
         (
-            paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
-            paths.WholesaleResultsInternalDatabase().TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase,
+            "DATABASE_WHOLESALE_RESULTS_INTERNAL",
+            paths.WholesaleResultsInternalDatabase.TOTAL_MONTHLY_AMOUNTS_TABLE_NAME,
         ),
         (
-            paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL,
-            paths.WholesaleResultsInternalDatabase().MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase,
+            "DATABASE_WHOLESALE_RESULTS_INTERNAL",
+            paths.WholesaleResultsInternalDatabase.MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME,
         ),
         (
-            paths.WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL,
-            paths.WholesaleBasisDataInternalDatabase().METERING_POINT_PERIODS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase,
+            "DATABASE_WHOLESALE_BASIS_DATA_INTERNAL",
+            paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
         ),
         (
-            paths.WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL,
-            paths.WholesaleBasisDataInternalDatabase().TIME_SERIES_POINTS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase,
+            "DATABASE_WHOLESALE_BASIS_DATA_INTERNAL",
+            paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
         ),
         (
-            paths.WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL,
-            paths.WholesaleBasisDataInternalDatabase().CHARGE_LINK_PERIODS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase,
+            "DATABASE_WHOLESALE_BASIS_DATA_INTERNAL",
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
         ),
         (
-            paths.WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL,
-            paths.WholesaleBasisDataInternalDatabase().CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase,
+            "DATABASE_WHOLESALE_BASIS_DATA_INTERNAL",
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
         ),
         (
-            paths.WholesaleBasisDataInternalDatabase().DATABASE_WHOLESALE_BASIS_DATA_INTERNAL,
-            paths.WholesaleBasisDataInternalDatabase().CHARGE_PRICE_POINTS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase,
+            "DATABASE_WHOLESALE_BASIS_DATA_INTERNAL",
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
         ),
         (
-            paths.WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL,
-            paths.WholesaleInternalDatabase().CALCULATIONS_TABLE_NAME,
+            paths.WholesaleInternalDatabase,
+            "DATABASE_WHOLESALE_INTERNAL",
+            paths.WholesaleInternalDatabase.CALCULATIONS_TABLE_NAME,
         ),
         (
-            paths.WholesaleInternalDatabase().DATABASE_WHOLESALE_INTERNAL,
-            paths.WholesaleInternalDatabase().GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
+            paths.WholesaleInternalDatabase,
+            "DATABASE_WHOLESALE_INTERNAL",
+            paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
         ),
     ],
 )
 def test__when_migrations_executed__created_table_is_managed(
-    spark: SparkSession, migrations_executed: None, schema_name: str, table_name: str
+    spark: SparkSession, migrations_executed: None, database_class, schema_name: str, table_name: str
 ) -> None:
     """
     It has been decided that all Delta Tables in the system should be managed, since it gives several benefits
     such enabling more Databricks features and ensuring that access rights are only managed by Unity Catalog
     """
 
-    table_description = spark.sql(f"DESCRIBE EXTENDED {schema_name}.{table_name}")
+    actual_schema_name = database_class().model_dump().get(schema_name)
+    table_description = spark.sql(f"DESCRIBE EXTENDED {actual_schema_name}.{table_name}")
     table_description.show()
 
     is_managed = any(

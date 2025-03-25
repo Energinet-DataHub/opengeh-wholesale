@@ -22,17 +22,9 @@ from pydantic_settings import BaseSettings
 
 import geh_wholesale.infrastructure.environment_variables as env_vars
 
-# WHOLESALE_RESULTS = "wholesale_results"
-# WHOLESALE_BASIS_DATA_INTERNAL = "wholesale_basis_data_internal"
-# WHOLESALE_BASIS_DATA = "wholesale_basis_data"
-# WHOLESALE_RESULTS_INTERNAL = "wholesale_results_internal"
-# WHOLESALE_INTERNAL = "wholesale_internal"
-# WHOLESALE_SAP = "wholesale_sap"
-# WHOLESALE_MIGRATION = "shared_wholesale_input" ## NOT A DATABASE
-
 
 class MigrationsWholesaleDatabase(BaseSettings):
-    DATABASE_WHOLESALE_MIGRATION: str = Field(init=False)
+    DATABASE_SHARED_WHOLESALE_INPUT: str = Field(init=False)  # "shared_wholesale_input"
     METERING_POINT_PERIODS_TABLE_NAME: ClassVar[str] = "metering_point_periods_view_v1"
     TIME_SERIES_POINTS_TABLE_NAME: ClassVar[str] = "time_series_points_view_v1"
     CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME: ClassVar[str] = "charge_price_information_periods_view_v1"
@@ -49,7 +41,7 @@ class MigrationsWholesaleDatabase(BaseSettings):
 
 
 class WholesaleInternalDatabase(BaseSettings):
-    DATABASE_WHOLESALE_INTERNAL: str = Field(init=False)
+    DATABASE_WHOLESALE_INTERNAL: str = Field(init=False)  # wholesale_internal
     EXECUTED_MIGRATIONS_TABLE_NAME: ClassVar[str] = "executed_migrations"
     CALCULATIONS_TABLE_NAME: ClassVar[str] = "calculations"
     GRID_LOSS_METERING_POINT_IDS_TABLE_NAME: ClassVar[str] = "grid_loss_metering_points"
@@ -70,7 +62,7 @@ class WholesaleInternalDatabase(BaseSettings):
 
 
 class WholesaleResultsInternalDatabase(BaseSettings):
-    DATABASE_WHOLESALE_RESULTS_INTERNAL: str = Field(init=False)
+    DATABASE_WHOLESALE_RESULTS_INTERNAL: str = Field(init=False)  # wholesale_results_internal
     ENERGY_TABLE_NAME: ClassVar[str] = "energy"
     ENERGY_PER_ES_TABLE_NAME: ClassVar[str] = "energy_per_es"
     ENERGY_PER_BRP_TABLE_NAME: ClassVar[str] = "energy_per_brp"
@@ -93,7 +85,7 @@ class WholesaleResultsInternalDatabase(BaseSettings):
 
 
 class WholesaleResultsDatabase(BaseSettings):
-    DATABASE_WHOLESALE_RESULTS: str = Field(init=False)
+    DATABASE_WHOLESALE_RESULTS: str = Field(init=False)  # "wholesale_results"
     ENERGY_V1_VIEW_NAME: ClassVar[str] = "energy_v1"
     ENERGY_PER_BRP_V1_VIEW_NAME: ClassVar[str] = "energy_per_brp_v1"
     ENERGY_PER_ES_V1_VIEW_NAME: ClassVar[str] = "energy_per_es_v1"
@@ -118,7 +110,7 @@ class WholesaleResultsDatabase(BaseSettings):
 
 
 class WholesaleSapDatabase(BaseSettings):
-    DATABASE_WHOLESALE_SAP: str = Field(init=False)
+    DATABASE_WHOLESALE_SAP: str = Field(init=False)  # wholesale_sap
     LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME: ClassVar[str] = "latest_calculations_history_v1"
     ENERGY_V1_VIEW_NAME: ClassVar[str] = "energy_v1"
     AMOUNTS_PER_CHARGE_V1_VIEW_NAME: ClassVar[str] = "amounts_per_charge_v1"
@@ -131,7 +123,7 @@ class WholesaleSapDatabase(BaseSettings):
 
 
 class WholesaleBasisDataDatabase(BaseSettings):
-    DATABASE_WHOLESALE_BASIS_DATA: str = Field(init=False)
+    DATABASE_WHOLESALE_BASIS_DATA: str = Field(init=False)  # "wholesale_basis_data"
 
     METERING_POINT_PERIODS_VIEW_NAME: ClassVar[str] = "metering_point_periods_v1"
     TIME_SERIES_POINTS_VIEW_NAME: ClassVar[str] = "time_series_points_v1"
@@ -151,7 +143,7 @@ class WholesaleBasisDataDatabase(BaseSettings):
 
 
 class WholesaleBasisDataInternalDatabase(BaseSettings):
-    DATABASE_WHOLESALE_BASIS_DATA_INTERNAL: str = Field(init=False)
+    DATABASE_WHOLESALE_BASIS_DATA_INTERNAL: str = Field(init=False)  # wholesale_basis_data_internal
     METERING_POINT_PERIODS_TABLE_NAME: ClassVar[str] = "metering_point_periods"
     TIME_SERIES_POINTS_TABLE_NAME: ClassVar[str] = "time_series_points"
     CHARGE_LINK_PERIODS_TABLE_NAME: ClassVar[str] = "charge_link_periods"

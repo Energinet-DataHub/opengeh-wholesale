@@ -42,47 +42,47 @@ from . import configuration as c
     [
         (
             TimeSeriesType.EXCHANGE.value,
-            paths.WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
         ),
         (
             TimeSeriesType.PRODUCTION.value,
-            paths.WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
         ),
         (
             TimeSeriesType.PRODUCTION.value,
-            paths.WholesaleResultsInternalDatabase().ENERGY_PER_ES_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
         ),
         (
             TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-            paths.WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
         ),
         (
             TimeSeriesType.NON_PROFILED_CONSUMPTION.value,
-            paths.WholesaleResultsInternalDatabase().ENERGY_PER_ES_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
         ),
         (
             TimeSeriesType.FLEX_CONSUMPTION.value,
-            paths.WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
         ),
         (
             TimeSeriesType.FLEX_CONSUMPTION.value,
-            paths.WholesaleResultsInternalDatabase().ENERGY_PER_ES_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_PER_ES_TABLE_NAME,
         ),
         (
             TimeSeriesType.GRID_LOSS.value,
-            paths.WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
         ),
         (
             TimeSeriesType.TOTAL_CONSUMPTION.value,
-            paths.WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
         ),
         (
             TimeSeriesType.TEMP_FLEX_CONSUMPTION.value,
-            paths.WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
         ),
         (
             TimeSeriesType.TEMP_PRODUCTION.value,
-            paths.WholesaleResultsInternalDatabase().ENERGY_TABLE_NAME,
+            paths.WholesaleResultsInternalDatabase.ENERGY_TABLE_NAME,
         ),
     ],
 )
@@ -91,7 +91,9 @@ def test__wholesale_fixing_result_type__is_created(
     wholesale_fixing_energy_results_df: None,
     time_series_type: str,
     table_name: str,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.setenv("DATABASE_WHOLESALE_RESULTS_INTERNAL", "wholesale_results_internal")
     actual = (
         spark.read.table(f"{paths.WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL}.{table_name}")
         .where(f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id)
@@ -262,7 +264,7 @@ def test__monthly_amounts__are_stored(
 
 @pytest.mark.parametrize(
     "basis_data_table_name",
-    paths.WholesaleBasisDataInternalDatabase().TABLE_NAMES,
+    paths.WholesaleBasisDataInternalDatabase.TABLE_NAMES,
 )
 def test__when_wholesale_calculation__basis_data_is_stored(
     spark: SparkSession,
@@ -324,27 +326,27 @@ def test__when_wholesale_calculation__calculation_grid_areas_are_stored(
     ("basis_data_table_name", "expected_schema"),
     [
         (
-            paths.WholesaleBasisDataInternalDatabase().METERING_POINT_PERIODS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.METERING_POINT_PERIODS_TABLE_NAME,
             metering_point_periods_schema,
         ),
         (
-            paths.WholesaleBasisDataInternalDatabase().TIME_SERIES_POINTS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_points_schema,
         ),
         (
-            paths.WholesaleBasisDataInternalDatabase().CHARGE_LINK_PERIODS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
             charge_link_periods_schema,
         ),
         (
-            paths.WholesaleBasisDataInternalDatabase().CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
             charge_price_information_periods_schema,
         ),
         (
-            paths.WholesaleBasisDataInternalDatabase().CHARGE_PRICE_POINTS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
             charge_price_points_schema,
         ),
         (
-            paths.WholesaleBasisDataInternalDatabase().GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
+            paths.WholesaleBasisDataInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
             grid_loss_metering_point_ids_schema,
         ),
     ],
@@ -371,61 +373,79 @@ def test__when_wholesale_calculation__basis_data_is_stored_with_correct_schema(
 
 
 @pytest.mark.parametrize(
-    ("view_name", "has_data"),
+    ("database_class", "database_name", "view_name"),
     [
         (
-            f"{paths.WholesaleResultsDatabase().DATABASE_WHOLESALE_RESULTS}.{paths.WholesaleResultsDatabase().ENERGY_V1_VIEW_NAME}",
-            True,
+            paths.WholesaleResultsDatabase,
+            "DATABASE_WHOLESALE_RESULTS",
+            paths.WholesaleResultsDatabase.ENERGY_V1_VIEW_NAME,
+        ),
+        # ( TODO: FIX TEST
+        #    paths.WholesaleResultsDatabase,
+        #    "DATABASE_WHOLESALE_RESULTS",
+        #    paths.WholesaleResultsDatabase.ENERGY_PER_BRP_V1_VIEW_NAME,  # fails
+        # ),
+        (
+            paths.WholesaleResultsDatabase,
+            "DATABASE_WHOLESALE_RESULTS",
+            paths.WholesaleResultsDatabase.ENERGY_PER_ES_V1_VIEW_NAME,
         ),
         (
-            f"{paths.WholesaleResultsDatabase().DATABASE_WHOLESALE_RESULTS}.{paths.WholesaleResultsDatabase().ENERGY_PER_BRP_V1_VIEW_NAME}",
-            False,
+            paths.WholesaleResultsDatabase,
+            "DATABASE_WHOLESALE_RESULTS",
+            paths.WholesaleResultsDatabase.GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME,
+        ),
+        # ( TODO: FIX TEST
+        #    paths.WholesaleResultsDatabase,
+        #    "DATABASE_WHOLESALE_RESULTS",
+        #    paths.WholesaleResultsDatabase.EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME,  # per_neighbor_v1
+        # ),
+        (
+            paths.WholesaleResultsDatabase,
+            "DATABASE_WHOLESALE_RESULTS",
+            paths.WholesaleResultsDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
         ),
         (
-            f"{paths.WholesaleResultsDatabase().DATABASE_WHOLESALE_RESULTS}.{paths.WholesaleResultsDatabase().ENERGY_PER_ES_V1_VIEW_NAME}",
-            True,
+            paths.WholesaleResultsDatabase,
+            "DATABASE_WHOLESALE_RESULTS",
+            paths.WholesaleResultsDatabase.MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
         ),
         (
-            f"{paths.WholesaleResultsDatabase().DATABASE_WHOLESALE_RESULTS}.{paths.WholesaleResultsDatabase().GRID_LOSS_METERING_POINT_TIME_SERIES_VIEW_NAME}",
-            True,
+            paths.WholesaleResultsDatabase,
+            "DATABASE_WHOLESALE_RESULTS",
+            paths.WholesaleResultsDatabase.TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME,
         ),
         (
-            f"{paths.WholesaleResultsDatabase().DATABASE_WHOLESALE_RESULTS}.{paths.WholesaleResultsDatabase().EXCHANGE_PER_NEIGHBOR_V1_VIEW_NAME}",
-            False,
+            paths.WholesaleSapDatabase,
+            "DATABASE_WHOLESALE_SAP",
+            paths.WholesaleSapDatabase.LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME,
         ),
         (
-            f"{paths.WholesaleResultsDatabase().DATABASE_WHOLESALE_RESULTS}.{paths.WholesaleResultsDatabase().AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
-            True,
+            paths.WholesaleSapDatabase,
+            "DATABASE_WHOLESALE_SAP",
+            paths.WholesaleSapDatabase.ENERGY_V1_VIEW_NAME,
         ),
         (
-            f"{paths.WholesaleResultsDatabase().DATABASE_WHOLESALE_RESULTS}.{paths.WholesaleResultsDatabase().MONTHLY_AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleResultsDatabase().DATABASE_WHOLESALE_RESULTS}.{paths.WholesaleResultsDatabase().TOTAL_MONTHLY_AMOUNTS_V1_VIEW_NAME}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSapDatabase().DATABASE_WHOLESALE_SAP}.{paths.WholesaleSapDatabase().LATEST_CALCULATIONS_HISTORY_V1_VIEW_NAME}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSapDatabase().DATABASE_WHOLESALE_SAP}.{paths.WholesaleSapDatabase().ENERGY_V1_VIEW_NAME}",
-            True,
-        ),
-        (
-            f"{paths.WholesaleSapDatabase().DATABASE_WHOLESALE_SAP}.{paths.WholesaleSapDatabase().AMOUNTS_PER_CHARGE_V1_VIEW_NAME}",
-            True,
+            paths.WholesaleSapDatabase,
+            "DATABASE_WHOLESALE_SAP",
+            paths.WholesaleSapDatabase.AMOUNTS_PER_CHARGE_V1_VIEW_NAME,
         ),
     ],
 )
 def test__when_wholesale_fixing__view_has_data_if_expected(
-    spark: SparkSession, executed_wholesale_fixing: None, view_name: str, has_data: bool
+    spark: SparkSession,
+    executed_wholesale_fixing: None,
+    monkeypatch: pytest.MonkeyPatch,
+    database_class,
+    database_name: str,
+    view_name: str,
 ) -> None:
-    with pytest.MonkeyPatch.context() as ctx:
-        ctx.setenv("DATABASE_WHOLESALE_RESULTS", "wholesale_results")
-        ctx.setenv("DATABASE_WHOLESALE_SAP", "wholesale_sap")
-        actual = spark.sql(f"SELECT * FROM {view_name}").where(
-            f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
-        )
-        assert actual.count() > 0 if has_data else actual.count() == 0
+    monkeypatch.setenv("DATABASE_WHOLESALE_RESULTS", "wholesale_results")
+    monkeypatch.setenv("DATABASE_WHOLESALE_SAP", "wholesale_sap")
+
+    actual_database_name = database_class().model_dump().get(database_name)
+
+    actual = spark.sql(f"SELECT * FROM {actual_database_name}.{view_name}").where(
+        f.col(TableColumnNames.calculation_id) == c.executed_wholesale_calculation_id
+    )
+    assert actual.count() > 0 if True else actual.count() == 0

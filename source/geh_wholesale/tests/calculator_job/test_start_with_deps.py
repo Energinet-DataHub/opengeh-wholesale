@@ -34,12 +34,14 @@ from geh_wholesale.infrastructure.paths import WholesaleInternalDatabase
 def test_start_with_deps__throws_exception_when_calculation_id_already_used(
     calculation_executor_mock,
     spark: SparkSession,
+    monkeypatch: pytest.MonkeyPatch,
     any_calculator_args: CalculatorArgs,
     infrastructure_settings: InfrastructureSettings,
     calculation_id_already_used: bool,
     migrations_executed: bool,
 ) -> None:
     # Arrange
+    monkeypatch.setenv("DATABASE_WHOLESALE_INTERNAL", "wholesale_internal")
     calculation_id = str(uuid.uuid4())
     any_calculator_args.calculation_id = calculation_id
 

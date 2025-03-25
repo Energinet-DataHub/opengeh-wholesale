@@ -37,11 +37,12 @@ from geh_wholesale.databases.wholesale_results_internal import (
 from geh_wholesale.databases.wholesale_results_internal.schemas import (
     monthly_amounts_schema_uc,
 )
-from geh_wholesale.infrastructure.paths import (
-    WholesaleResultsInternalDatabase,
-)
 
-TABLE_NAME = f"{WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL}.{WholesaleResultsInternalDatabase().MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
+# from geh_wholesale.infrastructure.paths import (
+#    WholesaleResultsInternalDatabase,
+# )
+
+# TABLE_NAME = f"{WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL}.{WholesaleResultsInternalDatabase().MONTHLY_AMOUNTS_PER_CHARGE_TABLE_NAME}"
 
 # Writer constructor parameters
 DEFAULT_CALCULATION_ID = "0b15a420-9fc8-409a-a169-fbd49479d718"

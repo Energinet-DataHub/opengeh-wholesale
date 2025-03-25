@@ -138,5 +138,5 @@ def _write(
         df = df.select(schema.fieldNames())
 
         df.write.format("delta").mode("append").option("mergeSchema", "false").insertInto(
-            f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase.DATABASE_WHOLESALE_RESULTS_INTERNAL}.{table_name}"
+            f"{infrastructure_settings.catalog_name}.{WholesaleResultsInternalDatabase().DATABASE_WHOLESALE_RESULTS_INTERNAL}.{table_name}"
         )
