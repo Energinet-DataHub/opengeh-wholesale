@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon.Xunit.Attributes;
+using Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
+using Energinet.DataHub.Core.TestCommon.Xunit.Orderers;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;
@@ -26,8 +27,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations;
 
 [ExecutionContext(AzureEnvironment.AllDev)]
 [TestCaseOrderer(
-    ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
-    ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
+    ordererTypeName: TestCaseOrdererLocation.OrdererTypeName,
+    ordererAssemblyName: TestCaseOrdererLocation.OrdererAssemblyName)]
 public class BalanceFixingCalculationJobScenario : SubsystemTestsBase<CalculationJobScenarioFixture>
 {
     public BalanceFixingCalculationJobScenario(LazyFixtureFactory<CalculationJobScenarioFixture> lazyFixtureFactory)

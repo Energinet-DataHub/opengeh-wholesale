@@ -6,7 +6,7 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="7.1.1" />
+    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="7.3.0-alpha-395" />
     <PackageReference Include="FluentAssertions" Version="[7.0.0]" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />

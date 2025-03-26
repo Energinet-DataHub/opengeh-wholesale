@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon.Xunit.Attributes;
+using Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
+using Energinet.DataHub.Core.TestCommon.Xunit.Orderers;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Energinet.DataHub.Wholesale.SubsystemTests.Performance.Fixtures;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -26,8 +27,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Performance;
 
 // For the moment we don't use this test, so it's not marked with an 'ExecutionEnvironment' attribute
 [TestCaseOrderer(
-    ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
-    ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
+    ordererTypeName: TestCaseOrdererLocation.OrdererTypeName,
+    ordererAssemblyName: TestCaseOrdererLocation.OrdererAssemblyName)]
 public class CalculationJobScenario : SubsystemTestsBase<CalculationJobScenarioFixture>
 {
     public CalculationJobScenario(LazyFixtureFactory<CalculationJobScenarioFixture> lazyFixtureFactory)

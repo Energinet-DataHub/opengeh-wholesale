@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixtures;

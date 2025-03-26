@@ -13,10 +13,11 @@
 // limitations under the License.
 
 using Azure.Monitor.Query;
+using Energinet.DataHub.Core.TestCommon.Xunit.Attributes;
+using Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
+using Energinet.DataHub.Core.TestCommon.Xunit.Orderers;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
 using Xunit;
 
@@ -28,8 +29,8 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry;
 /// </summary>
 [ExecutionContext(AzureEnvironment.AllDev)]
 [TestCaseOrderer(
-    ordererTypeName: "Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Orderers.ScenarioStepOrderer",
-    ordererAssemblyName: "Energinet.DataHub.Wholesale.SubsystemTests")]
+    ordererTypeName: TestCaseOrdererLocation.OrdererTypeName,
+    ordererAssemblyName: TestCaseOrdererLocation.OrdererAssemblyName)]
 public class RequestTelemetryScenario : SubsystemTestsBase<TelemetryScenarioFixture<RequestTelemetryScenarioState>>
 {
     public RequestTelemetryScenario(LazyFixtureFactory<TelemetryScenarioFixture<RequestTelemetryScenarioState>> lazyFixtureFactory)

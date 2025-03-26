@@ -15,12 +15,11 @@
 using Azure.Identity;
 using Azure.Monitor.Query;
 using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Xunit.Abstractions;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Telemetry.Fixtures;

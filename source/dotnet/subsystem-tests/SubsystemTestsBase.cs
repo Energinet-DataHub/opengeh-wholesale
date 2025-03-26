@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
+using Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
 using Xunit;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests;

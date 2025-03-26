@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using Energinet.DataHub.Core.TestCommon;
+using Energinet.DataHub.Core.TestCommon.Xunit.Extensions;
+using Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using Energinet.DataHub.Wholesale.SubsystemTests.Performance.States;
 using Microsoft.Azure.Databricks.Client;
 using Microsoft.Azure.Databricks.Client.Models;
