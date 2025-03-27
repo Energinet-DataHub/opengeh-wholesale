@@ -223,7 +223,7 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3
                     {
                         foreach (var item_ in gridAreaCodes)
                         { urlBuilder_.Append(System.Uri.EscapeDataString("gridAreaCodes")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append('&'); }
-                        }
+                    }
                     if (executionState != null)
                     {
                         urlBuilder_.Append(System.Uri.EscapeDataString("executionState")).Append('=').Append(System.Uri.EscapeDataString(ConvertToString(executionState, System.Globalization.CultureInfo.InvariantCulture))).Append('&');
