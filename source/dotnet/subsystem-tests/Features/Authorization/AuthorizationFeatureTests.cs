@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System.Net;
+using Energinet.DataHub.Core.TestCommon.Xunit.Attributes;
+using Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization.Fixtures;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Attributes;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.LazyFixture;
 using FluentAssertions;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Authorization;
