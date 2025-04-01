@@ -34,17 +34,14 @@ from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureS
 # it will be called from the entry point when deployed.
 def start() -> None:
     # Parse params for LoggingSettings
-    logging_settings = config.LoggingSettings(
-        cloud_role_name="dbr-calculation-engine",
-        subsystem="wholesale-aggregations",  # Will be used as trace_name
-    )
 
     # Parse params for CalculatorArgs and InfrastructureSettings
     args = CalculatorArgs()
     infrastructure_settings = InfrastructureSettings()
 
     config.configure_logging(
-        logging_settings=logging_settings,
+        cloud_role_name="dbr-calculation-engine",
+        subsystem="wholesale-aggregations",  #  Will be used as trace_name
         extras=dict(calculation_id=args.calculation_id),
     )
 
