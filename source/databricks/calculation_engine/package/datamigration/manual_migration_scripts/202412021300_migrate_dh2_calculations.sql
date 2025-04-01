@@ -17,6 +17,13 @@
 -- * wholesale_internal
 --   * calculation_grid_areas
 
+-- NOTE:
+-- When using this script, please pay attention to the two/three outlier IDs that you have to identify.
+-- Khatozen knows what this is about, but in brief, there are a few transactions which have multiple versions where both versions should be allowed through.
+-- But there are also one set of transactions which overlap in weird ways for their period start/end, where only the newest one should be manually taken.
+-- The scripts to help identify them, are at the end of STEP 0.
+
+
 
 -- STEP 0: 
 -- Verify the input
@@ -24,27 +31,27 @@ CREATE OR REPLACE TEMP VIEW calc_ids_from_dh2_view AS
 SELECT calc_ids.calculation_id
 FROM (
     SELECT DISTINCT calculation_id 
-    FROM ctl_shres_t_we_001.shared_wholesale_input.calculation_results_energy_view_v1
+    FROM ctl_shres_p_we_001.shared_wholesale_input.calculation_results_energy_view_v1
     UNION
     SELECT DISTINCT calculation_id 
-    FROM ctl_shres_t_we_001.shared_wholesale_input.calculation_results_energy_per_brp_view_v1
+    FROM ctl_shres_p_we_001.shared_wholesale_input.calculation_results_energy_per_brp_view_v1
     UNION
     SELECT DISTINCT calculation_id 
-    FROM ctl_shres_t_we_001.shared_wholesale_input.calculation_results_energy_per_es_view_v1
+    FROM ctl_shres_p_we_001.shared_wholesale_input.calculation_results_energy_per_es_view_v1
     UNION
     SELECT DISTINCT calculation_id 
-    FROM ctl_shres_t_we_001.shared_wholesale_input.calculation_grid_areas_view_v1
+    FROM ctl_shres_p_we_001.shared_wholesale_input.calculation_grid_areas_view_v1
     UNION
     SELECT DISTINCT calculation_id 
-    FROM ctl_shres_t_we_001.shared_wholesale_input.amounts_per_charge_view_v1
+    FROM ctl_shres_p_we_001.shared_wholesale_input.amounts_per_charge_view_v1
     UNION
     SELECT DISTINCT calculation_id 
-    FROM ctl_shres_t_we_001.shared_wholesale_input.monthly_amounts_per_charge_view_v1
+    FROM ctl_shres_p_we_001.shared_wholesale_input.monthly_amounts_per_charge_view_v1
     UNION
     SELECT DISTINCT calculation_id 
-    FROM ctl_shres_t_we_001.shared_wholesale_input.total_amounts_per_charge_view_v1
+    FROM ctl_shres_p_we_001.shared_wholesale_input.total_monthly_amounts_view_v1
 ) AS calc_ids
-FULL OUTER JOIN ctl_shres_t_we_001.shared_wholesale_input.calculations_view_v1 AS calc_view
+FULL OUTER JOIN ctl_shres_p_we_001.shared_wholesale_input.calculations_view_v1 AS calc_view
 ON calc_ids.calculation_id = calc_view.calculation_id
 WHERE calc_view.calculation_id IS NULL or calc_ids.calculation_id IS NULL;
 
@@ -57,8 +64,6 @@ SELECT CASE
     ELSE "All calculations have an entry in the input's calculation table"
 END AS UnparentedCalculationIdsCheck
 FROM no_unparanted_calculations_check;
-
-
 
 -- The following temp views help us identify multiple versions from DH2.
 -- We want to only keep the newest ones, except for a specific outlier.
@@ -79,7 +84,9 @@ INNER JOIN ( SELECT DISTINCT calculation_id, resolution FROM (
     )
 ) r on c.calculation_id = r.calculation_id; 
 
-
+-- This view is used throughout to filter out "bad" transactions from the migration.
+-- It leaves only the newest calculation versions, except for 2 outlier-cases which are special-cased to be kept or excluded specifically.
+-- Those two are covered in the 2 queries below this one, which are for diagnostics primarily.
 CREATE OR REPLACE TEMP VIEW only_newest_calc_versions AS 
 SELECT c.* FROM calc_versions c
 INNER JOIN (
@@ -90,55 +97,83 @@ INNER JOIN (
   and c.calculation_period_end = m.calculation_period_end 
   and c.resolution = m.resolution 
   and c.grid_area_code = m.grid_area_code 
-WHERE max_row_num = row_num or calculation_id in ('a92b382f-a352-67af-eab8-abb5493eb47b', '5d39c80d-0880-8683-05ad-899fbf15f566'); -- The two outliers, which are both kept.
+WHERE (max_row_num = row_num or 
+calculation_id in ('4ee428d7-a52e-da21-3733-789d576d8f1c')) -- The two outliers, which are both kept.
+ and (calculation_id not in ('24a14780-7748-2875-c414-76abf651b288', '590af23e-ad6b-da07-e50b-f5e9221815e8')); -- The transactions with overlap that are mis-registered above. (see query 2 steps down) 
+
+-- This query contains the ~24 transactions that Khatozen should manually check to find the one special-case that we want to keep.
+select t.* from calc_versions t
+inner join (select * from only_newest_calc_versions where row_num > 1) u on  
+t.calculation_type = u.calculation_type AND 	
+t.calculation_period_start = u.calculation_period_start AND 	
+t.calculation_period_end = u.calculation_period_end AND 	 
+t.resolution = u.resolution AND 	
+t.grid_area_code = u.grid_area_code  
+order by t.calculation_type, t.calculation_period_start, t.calculation_period_end, t.resolution, t.grid_area_code;
+
+-- This query contains a check for transactions with overlap that is not handled by the above.
+-- Here the transactions with a weird overlap should be taken and allowed through.
+-- If a row is present here, it means that A was fully covered by B, and that B is likely the correct one. (Check with Khatozen first)
+SELECT * FROM (
+select b.calculation_id as B, a.calculation_id as A, a.calculation_period_start as A_start, a.calculation_period_end as A_end, b.calculation_period_start as B_start, b.calculation_period_end as B_end, a.calculation_type, a.resolution, a.grid_area_code, a.row_num as A_row_num, b.row_num as B_row_num
+FROM calc_versions a
+INNER JOIN calc_versions b 
+ON a.calculation_type <=> b.calculation_type and a.resolution <=> b.resolution and a.grid_area_code <=> b.grid_area_code and 
+  (b.calculation_period_start between a.calculation_period_start and a.calculation_period_end) and 
+  (b.calculation_period_end between a.calculation_period_start and a.calculation_period_end) and
+  ( a.calculation_period_start != b.calculation_period_start or a.calculation_period_end != b.calculation_period_end)
+WHERE a.calculation_id != b.calculation_id
+ORDER BY a.calculation_period_start
+);
+
 
 
 -- STEP 1: Delete existing rows across Wholesale's domain
-MERGE INTO ctl_shres_t_we_001.wholesale_results_internal.energy e1
-USING ctl_shres_t_we_001.wholesale_internal.calculations c
+MERGE INTO ctl_shres_p_we_001.wholesale_results_internal.energy e1
+USING ctl_shres_p_we_001.wholesale_internal.calculations c
 ON c.calculation_id <=> e1.calculation_id and c.calculation_version_dh2 is not null
 WHEN MATCHED THEN DELETE;
 
-MERGE INTO ctl_shres_t_we_001.wholesale_results_internal.energy_per_brp e2
-USING ctl_shres_t_we_001.wholesale_internal.calculations c
+MERGE INTO ctl_shres_p_we_001.wholesale_results_internal.energy_per_brp e2
+USING ctl_shres_p_we_001.wholesale_internal.calculations c
 ON c.calculation_id <=> e2.calculation_id and c.calculation_version_dh2 is not null
 WHEN MATCHED THEN DELETE;
 
-MERGE INTO ctl_shres_t_we_001.wholesale_results_internal.energy_per_es e3
-USING ctl_shres_t_we_001.wholesale_internal.calculations c
+MERGE INTO ctl_shres_p_we_001.wholesale_results_internal.energy_per_es e3
+USING ctl_shres_p_we_001.wholesale_internal.calculations c
 ON c.calculation_id <=> e3.calculation_id and c.calculation_version_dh2 is not null
 WHEN MATCHED THEN DELETE;
 
-MERGE INTO ctl_shres_t_we_001.wholesale_internal.calculation_grid_areas g1
-USING ctl_shres_t_we_001.wholesale_internal.calculations c
+MERGE INTO ctl_shres_p_we_001.wholesale_internal.calculation_grid_areas g1
+USING ctl_shres_p_we_001.wholesale_internal.calculations c
 ON c.calculation_id <=> g1.calculation_id and c.calculation_version_dh2 is not null
 WHEN MATCHED THEN DELETE;
 
-MERGE INTO ctl_shres_t_we_001.wholesale_results_internal.amounts_per_charge a1
-USING ctl_shres_t_we_001.wholesale_internal.calculations c
+MERGE INTO ctl_shres_p_we_001.wholesale_results_internal.amounts_per_charge a1
+USING ctl_shres_p_we_001.wholesale_internal.calculations c
 ON c.calculation_id <=> a1.calculation_id and c.calculation_version_dh2 is not null
 WHEN MATCHED THEN DELETE;
 
-MERGE INTO ctl_shres_t_we_001.wholesale_results_internal.monthly_amounts_per_charge a2
-USING ctl_shres_t_we_001.wholesale_internal.calculations c
+MERGE INTO ctl_shres_p_we_001.wholesale_results_internal.monthly_amounts_per_charge a2
+USING ctl_shres_p_we_001.wholesale_internal.calculations c
 ON c.calculation_id <=> a2.calculation_id and c.calculation_version_dh2 is not null
 WHEN MATCHED THEN DELETE;
 
-MERGE INTO ctl_shres_t_we_001.wholesale_results_internal.total_monthly_amounts a3
-USING ctl_shres_t_we_001.wholesale_internal.calculations c
+MERGE INTO ctl_shres_p_we_001.wholesale_results_internal.total_monthly_amounts a3
+USING ctl_shres_p_we_001.wholesale_internal.calculations c
 ON c.calculation_id <=> a3.calculation_id and c.calculation_version_dh2 is not null
 WHEN MATCHED THEN DELETE;
 
 
 
 -- STEP 2: Remove the DH2 calculations from the main table
-DELETE FROM ctl_shres_t_we_001.wholesale_internal.calculations
+DELETE FROM ctl_shres_p_we_001.wholesale_internal.calculations
 WHERE calculation_version_dh2 is not null;
 
 
+
 -- STEP 3: Re-migrate each of the tables with calculations from DH2.
--- TODO: Replace "0" with whatever version is given by VOLT later.
-INSERT INTO ctl_shres_t_we_001.wholesale_internal.calculations 
+INSERT INTO ctl_shres_p_we_001.wholesale_internal.calculations 
   (
     calculation_id,
     calculation_type,
@@ -160,9 +195,10 @@ SELECT
   False AS is_internal_calculation,
   r.version AS calculation_version_dh2,
   r.version AS calculation_version
-FROM ctl_shres_t_we_001.shared_wholesale_input.calculations_view_v1 c
-INNER JOIN (SELECT DISTINCT calculation_id, version FROM ctl_shres_t_we_001.shared_wholesale_input.calculation_results) r on c.calculation_id = r.calculation_id
+FROM ctl_shres_p_we_001.shared_wholesale_input.calculations_view_v1 c
+INNER JOIN (SELECT DISTINCT calculation_id, version FROM ctl_shres_p_we_001.shared_wholesale_input.calculation_results) r on c.calculation_id = r.calculation_id
 INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
+
 
 -- Result ID for the tables we are migrating is faking a MD5 hash based on the same group-by columns used for the UUID.
 -- For the energy tables it is calculation_id, grid_area_code, from_grid_area_code, balance_responsible_party_id, energy_supplier_id and time_series_type.
@@ -184,11 +220,11 @@ WITH energy_view_with_hash AS (
       )
     ) AS md5_hash_of_result_id_group
   FROM
-    ctl_shres_t_we_001.shared_wholesale_input.calculation_results_energy_view_v1
+    ctl_shres_p_we_001.shared_wholesale_input.calculation_results_energy_view_v1
 )
-INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.energy 
+INSERT INTO ctl_shres_p_we_001.wholesale_results_internal.energy 
 SELECT 
-  calculation_id,   
+  c.calculation_id,   
   CONCAT(
     SUBSTRING(md5_hash_of_result_id_group, 1, 8), '-',
     SUBSTRING(md5_hash_of_result_id_group, 9, 4), '-',
@@ -196,12 +232,12 @@ SELECT
     SUBSTRING(md5_hash_of_result_id_group, 17, 4), '-',
     SUBSTRING(md5_hash_of_result_id_group, 21, 12)
   ) AS result_id,
-  grid_area_code, 
-  time_series_type, 
-  resolution, 
-  time, 
-  quantity, 
-  quantity_qualities
+  c.grid_area_code, 
+  c.time_series_type, 
+  c.resolution, 
+  c.time, 
+  c.quantity, 
+  c.quantity_qualities
 FROM energy_view_with_hash c
 INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
 
@@ -222,11 +258,11 @@ WITH energy_per_brp_view_with_hash AS (
       )
     ) AS md5_hash_of_result_id_group
   FROM
-    ctl_shres_t_we_001.shared_wholesale_input.calculation_results_energy_per_brp_view_v1
+    ctl_shres_p_we_001.shared_wholesale_input.calculation_results_energy_per_brp_view_v1
 )
-INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.energy_per_brp
+INSERT INTO ctl_shres_p_we_001.wholesale_results_internal.energy_per_brp
 SELECT 
-  calculation_id,
+  c.calculation_id,
   CONCAT(
     SUBSTRING(md5_hash_of_result_id_group, 1, 8), '-',
     SUBSTRING(md5_hash_of_result_id_group, 9, 4), '-',
@@ -234,13 +270,13 @@ SELECT
     SUBSTRING(md5_hash_of_result_id_group, 17, 4), '-',
     SUBSTRING(md5_hash_of_result_id_group, 21, 12)
   ) AS result_id,
-  grid_area_code, 
-  balance_responsible_party_id, 
-  time_series_type, 
-  resolution,
-  time, 
-  quantity, 
-  quantity_qualities
+  c.grid_area_code, 
+  c.balance_responsible_party_id, 
+  c.time_series_type, 
+  c.resolution,
+  c.time, 
+  c.quantity, 
+  c.quantity_qualities
 FROM energy_per_brp_view_with_hash c
 INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
  
@@ -261,11 +297,11 @@ WITH energy_per_es_view_with_hash AS (
       )
     ) AS md5_hash_of_result_id_group
   FROM
-    ctl_shres_t_we_001.shared_wholesale_input.calculation_results_energy_per_es_view_v1
+    ctl_shres_p_we_001.shared_wholesale_input.calculation_results_energy_per_es_view_v1
 )
-INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.energy_per_es
+INSERT INTO ctl_shres_p_we_001.wholesale_results_internal.energy_per_es
 SELECT 
-  calculation_id,
+  c.calculation_id,
   CONCAT(
     SUBSTRING(md5_hash_of_result_id_group, 1, 8), '-',
     SUBSTRING(md5_hash_of_result_id_group, 9, 4), '-',
@@ -273,21 +309,21 @@ SELECT
     SUBSTRING(md5_hash_of_result_id_group, 17, 4), '-',
     SUBSTRING(md5_hash_of_result_id_group, 21, 12)
   ) as result_id,
-  grid_area_code, 
-  energy_supplier_id,
-  balance_responsible_party_id, 
-  time_series_type, 
-  resolution,
-  time, 
-  quantity, 
-  quantity_qualities
+  c.grid_area_code, 
+  c.energy_supplier_id,
+  c.balance_responsible_party_id, 
+  c.time_series_type, 
+  c.resolution,
+  c.time, 
+  c.quantity, 
+  c.quantity_qualities
 FROM energy_per_es_view_with_hash c
 INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
 
 
 -- Target table: wholesale_internal.calculation_grid_areas
-INSERT INTO ctl_shres_t_we_001.wholesale_internal.calculation_grid_areas
-SELECT calculation_id, grid_area_code FROM ctl_shres_t_we_001.shared_wholesale_input.calculation_grid_areas_view_v1 c
+INSERT INTO ctl_shres_p_we_001.wholesale_internal.calculation_grid_areas
+SELECT c.calculation_id, grid_area_code FROM ctl_shres_p_we_001.shared_wholesale_input.calculation_grid_areas_view_v1 c
 INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
 
 
@@ -309,11 +345,12 @@ WITH amounts_per_charge_view_with_hash AS (
       )
     ) AS md5_hash_of_result_id_group
   FROM
-    ctl_shres_t_we_001.shared_wholesale_input.amounts_per_charge_view_v1
+    ctl_shres_p_we_001.shared_wholesale_input.amounts_per_charge_view_v1
+  WHERE calculation_id not in ('4ee428d7-a52e-da21-3733-789d576d8f1c')
 )
-INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.amounts_per_charge 
+INSERT INTO ctl_shres_p_we_001.wholesale_results_internal.amounts_per_charge 
 SELECT
-  calculation_id,
+  c.calculation_id,
   CONCAT(
     SUBSTRING(md5_hash_of_result_id_group, 1, 8), '-',
     SUBSTRING(md5_hash_of_result_id_group, 9, 4), '-',
@@ -321,26 +358,26 @@ SELECT
     SUBSTRING(md5_hash_of_result_id_group, 17, 4), '-',
     SUBSTRING(md5_hash_of_result_id_group, 21, 12)
   ) as result_id,
-  grid_area_code,
-  energy_supplier_id,
-  quantity,
-  quantity_unit,
-  quantity_qualities,
-  time,
-  resolution,
-  metering_point_type,
-  settlement_method,
-  price,
-  amount,
-  is_tax,
-  charge_code,
-  charge_type,
-  charge_owner_id
+  c.grid_area_code,
+  c.energy_supplier_id,
+  c.quantity,
+  c.quantity_unit,
+  c.quantity_qualities,
+  c.time,
+  c.resolution,
+  c.metering_point_type,
+  c.settlement_method,
+  c.price,
+  c.amount,
+  c.is_tax,
+  c.charge_code,
+  c.charge_type,
+  c.charge_owner_id
 FROM
   amounts_per_charge_view_with_hash c
 INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
   
- 
+
 -- Target table: wholesale_results_internal.monthly_amounts_per_charge
 WITH monthly_amounts_per_charge_view_with_hash AS (
   SELECT
@@ -357,11 +394,12 @@ WITH monthly_amounts_per_charge_view_with_hash AS (
       )
     ) AS md5_hash_of_result_id_group
   FROM
-    ctl_shres_t_we_001.shared_wholesale_input.monthly_amounts_per_charge_view_v1
+    ctl_shres_p_we_001.shared_wholesale_input.monthly_amounts_per_charge_view_v1
+  WHERE calculation_id not in ('4ee428d7-a52e-da21-3733-789d576d8f1c')
 )
-INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.monthly_amounts_per_charge 
+INSERT INTO ctl_shres_p_we_001.wholesale_results_internal.monthly_amounts_per_charge 
 SELECT
-  calculation_id,
+  c.calculation_id,
   CONCAT(
     SUBSTRING(md5_hash_of_result_id_group, 1, 8), '-',
     SUBSTRING(md5_hash_of_result_id_group, 9, 4), '-',
@@ -369,15 +407,15 @@ SELECT
     SUBSTRING(md5_hash_of_result_id_group, 17, 4), '-',
     SUBSTRING(md5_hash_of_result_id_group, 21, 12)
   ) as result_id,
-  grid_area_code,
-  energy_supplier_id,
-  quantity_unit,
-  time,
-  amount,
-  is_tax,
-  charge_code,
-  charge_type,
-  charge_owner_id
+  c.grid_area_code,
+  c.energy_supplier_id,
+  c.quantity_unit,
+  c.time,
+  c.amount,
+  c.is_tax,
+  c.charge_code,
+  c.charge_type,
+  c.charge_owner_id
 FROM
   monthly_amounts_per_charge_view_with_hash c
 INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
@@ -397,11 +435,12 @@ WITH total_amounts_per_charge_view_with_hash AS (
       )
     ) as md5_hash_of_result_id_group
   FROM
-    ctl_shres_t_we_001.shared_wholesale_input.total_amounts_per_charge_view_v1
+    ctl_shres_p_we_001.shared_wholesale_input.total_monthly_amounts_view_v1
+  WHERE calculation_id not in ('4ee428d7-a52e-da21-3733-789d576d8f1c')
 )
-INSERT INTO ctl_shres_t_we_001.wholesale_results_internal.total_monthly_amounts 
+INSERT INTO ctl_shres_p_we_001.wholesale_results_internal.total_monthly_amounts 
 SELECT
-  calculation_id,
+  c.calculation_id,
   CONCAT(
     SUBSTRING(md5_hash_of_result_id_group, 1, 8), '-',
     SUBSTRING(md5_hash_of_result_id_group, 9, 4), '-',
@@ -409,13 +448,11 @@ SELECT
     SUBSTRING(md5_hash_of_result_id_group, 17, 4), '-',
     SUBSTRING(md5_hash_of_result_id_group, 21, 12)
   ) as result_id,
-  grid_area_code,
-  energy_supplier_id,
-  time,
-  amount,
-  charge_owner_id
+  c.grid_area_code,
+  c.energy_supplier_id,
+  c.time,
+  c.amount,
+  c.charge_owner_id
 FROM
   total_amounts_per_charge_view_with_hash c
 INNER JOIN (SELECT DISTINCT calculation_id FROM only_newest_calc_versions) n on c.calculation_id = n.calculation_id;
-
-
