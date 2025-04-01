@@ -50,30 +50,31 @@ internal class CalculationTrigger
 
     [Function(nameof(StartCalculation))]
     [Authorize(Roles = PermissionCalculationsManage)]
-    public async Task<IActionResult> StartCalculation(
+    public Task<IActionResult> StartCalculation(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest httpRequest,
         [FromBody] StartCalculationRequestDto startCalculationRequestDto,
         FunctionContext executionContext)
     {
-        await _auditLogger.LogWithCommitAsync(
-                AuditLogActivity.StartNewCalculation,
-                httpRequest.GetDisplayUrl(),
-                startCalculationRequestDto,
-                AuditLogEntityType.Calculation,
-                null)
-            .ConfigureAwait(false);
-
-        var calculationId = await _calculationsClient.CreateAndCommitAsync(
-            startCalculationRequestDto.CalculationType,
-            startCalculationRequestDto.GridAreaCodes,
-            startCalculationRequestDto.StartDate,
-            startCalculationRequestDto.EndDate,
-            startCalculationRequestDto.ScheduledAt,
-            _userContext.CurrentUser.UserId,
-            startCalculationRequestDto.IsInternalCalculation).ConfigureAwait(false);
-
-        _logger.LogInformation("Calculation created with id {calculationId}", calculationId);
-
-        return new OkObjectResult(calculationId.Id);
+        throw new InvalidOperationException("Starting new calculation in Wholesale is not allowed, the Process Manager should be used instead.");
+        // await _auditLogger.LogWithCommitAsync(
+        //         AuditLogActivity.StartNewCalculation,
+        //         httpRequest.GetDisplayUrl(),
+        //         startCalculationRequestDto,
+        //         AuditLogEntityType.Calculation,
+        //         null)
+        //     .ConfigureAwait(false);
+        //
+        // var calculationId = await _calculationsClient.CreateAndCommitAsync(
+        //     startCalculationRequestDto.CalculationType,
+        //     startCalculationRequestDto.GridAreaCodes,
+        //     startCalculationRequestDto.StartDate,
+        //     startCalculationRequestDto.EndDate,
+        //     startCalculationRequestDto.ScheduledAt,
+        //     _userContext.CurrentUser.UserId,
+        //     startCalculationRequestDto.IsInternalCalculation).ConfigureAwait(false);
+        //
+        // _logger.LogInformation("Calculation created with id {calculationId}", calculationId);
+        //
+        // return new OkObjectResult(calculationId.Id);
     }
 }

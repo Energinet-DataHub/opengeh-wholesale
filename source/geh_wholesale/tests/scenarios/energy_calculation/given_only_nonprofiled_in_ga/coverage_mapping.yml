@@ -1,0 +1,12 @@
+notes: |
+  ## PURPOSE
+  The purpose of this test is the scenario where a grid area only has non-profiled consumption metering points,
+  specifically that grid loss calculation is correct.
+  
+  ## DESIGN CONSIDERATIONS
+  - Input period is post May 2023 so that results are quarterly
+
+cases_tested:
+  "Unusual Grid Area Setups":
+    - "Grid Area With Only Non Profiled Mp"
+    - "Energy Supplier Only Has Grid Loss Mp Or System Correction Mp"

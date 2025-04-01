@@ -1,0 +1,8 @@
+notes: |
+  ## Purpose
+  The purpose is checking the latest calculation history view used for SAP.
+
+cases_tested:
+  "Sap Results Tests":
+      "Correct Calculation Ids Included In Output"
+        "Only Calculation Ids With Succeeded Time Included"

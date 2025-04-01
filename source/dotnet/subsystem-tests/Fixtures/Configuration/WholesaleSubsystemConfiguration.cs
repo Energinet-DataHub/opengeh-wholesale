@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.Core.TestCommon.Xunit.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Identity;
 using Microsoft.Extensions.Configuration;
