@@ -12,7 +12,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, Generator, Optional
-from unittest.mock import patch
+from unittest import mock
 
 import geh_common.telemetry.logging_configuration as config
 import pytest
@@ -377,24 +377,24 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
 
 
 @pytest.fixture(scope="session", autouse=True)
-def configure_logging_dummy():
+def configure_logging_dummy(monkeypatch: pytest.MonkeyPatch) -> config.LoggingSettings:
     """
     Configures the logging initially.
     """
-    # cleanup_logging()
-    # if "disable_autouse" in request.keywords:
-    #     yield
-    # else:
+    orchestration_instance_id = uuid.uuid4()
+    sys_args = ["program_name", "--orchestration-instance-id", str(orchestration_instance_id)]
+    subsystem = "unit-tests"
+    cloud_role_name = "dbr-calculation-engine-tests"
+    monkeypatch.setenv("APPLICATIONINSIGHTS_CONNECTION_STRING", "connectionString")
+    monkeypatch.setattr(sys, "argv", sys_args)
+    monkeypatch.setattr("geh_common.telemetry.logging_configuration.configure_azure_monitor", mock.Mock())
 
-    # patch to avoid error when trying to configure azure monitor
-    with patch("geh_common.telemetry.logging_configuration.configure_azure_monitor"):
-        logging_settings = config.LoggingSettings(
-            cloud_role_name="dbr-calculation-engine-tests",
-            subsystem="unit-tests",
-            orchestration_instance_id=uuid.uuid4(),
-            applicationinsights_connection_string="connectionString",
-        )
-        yield config.configure_logging(logging_settings=logging_settings)
+    logging_settings = config.configure_logging(
+        subsystem=subsystem,
+        cloud_role_name=cloud_role_name,
+    )
+
+    return logging_settings
 
 
 @pytest.fixture(scope="session")

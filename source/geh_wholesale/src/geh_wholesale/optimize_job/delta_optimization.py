@@ -33,13 +33,10 @@ def optimize_tables(catalog_name: str | None = None) -> None:
 
     OPTIMIZE documentation: https://docs.delta.io/latest/optimizations-oss.html
     """
-    applicationinsights_connection_string = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
-    logging_settings = config.LoggingSettings(
+    config.configure_logging(
         cloud_role_name="dbr-optimize-tables",
         subsystem="optimize-tables-job",
-        applicationinsights_connection_string=applicationinsights_connection_string,
     )
-    config.configure_logging(logging_settings=logging_settings)
     logger = Logger(__name__)
 
     spark = initialize_spark()
