@@ -7,7 +7,7 @@ authors = [{ name = "Jens Peder Meldgaard", email = "jpm@halfspace.io" }]
 requires-python = ">=3.11"
 dependencies = [
     "configargparse>=1.7",
-    "pyspark==3.5.1",
+    "pyspark==3.5.3",
     "azure-identity==1.17.1",
     "dependency-injector==4.43.0",
     "urllib3==2.2.*",
