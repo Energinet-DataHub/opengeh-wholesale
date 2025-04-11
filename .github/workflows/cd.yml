@@ -42,9 +42,12 @@ jobs:
       sender_email: ${{ vars.email_internal_sender }}
       postfix_latest: true
       dispatch_deployment_event: true
+      environment_repository_path: ${{ vars.environment_repository_path }}
+      dh3serviceaccount_appid: ${{ vars.dh3serviceaccount_appid }}
     secrets:
       gh_token: ${{ secrets.GITHUB_TOKEN }}
       send_grid_api_key: ${{ secrets.sendgrid_instance_system_notifications_api_key }}
+      dh3serviceaccount_privatekey: ${{ secrets.dh3serviceaccount_privatekey }}
 
   #
   # CD .NET
