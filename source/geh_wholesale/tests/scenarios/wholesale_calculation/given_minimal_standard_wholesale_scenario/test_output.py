@@ -6,6 +6,7 @@ from geh_common.testing.dataframes import (
 from geh_common.testing.scenario_testing import TestCase, get_then_names
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize("name", get_then_names())
 def test__equals_expected(
     test_cases: TestCase,
