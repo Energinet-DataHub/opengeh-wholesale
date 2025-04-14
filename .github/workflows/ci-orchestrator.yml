@@ -68,7 +68,7 @@ jobs:
           - name: Data products
             paths: tests/scenarios/data_products contracts
           - name: Unit tests
-            paths: tests/calculation tests/codelists tests/common tests/optimize_job tests/databases tests/infrastructure
+            paths: tests/calculation tests/codelists tests/common tests/databases tests/infrastructure
           - name: Entry point tests
             paths: tests/entry_points
           - name: Test Unity Catalog

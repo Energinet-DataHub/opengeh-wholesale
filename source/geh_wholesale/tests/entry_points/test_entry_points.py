@@ -28,7 +28,6 @@ from tests import PROJECT_PATH
     [
         "start_calculator",
         "migrate_data_lake",
-        "optimize_delta_tables",
     ],
 )
 def test__entry_point_exists(entry_point_name: str) -> None:
@@ -36,4 +35,4 @@ def test__entry_point_exists(entry_point_name: str) -> None:
         pyproject = tomllib.load(file)
         project = pyproject.get("project", {})
     scripts = project.get("scripts", {})
-    assert entry_point_name in scripts, "`execute_electrical_heating` not found in scripts"
+    assert entry_point_name in scripts, f"Entry point `{entry_point_name}` not found in scripts"

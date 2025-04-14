@@ -21,7 +21,6 @@ dependencies = [
 [project.scripts]
 start_calculator = "geh_wholesale.calculator_job:start"
 migrate_data_lake = "geh_wholesale.datamigration.migration:migrate_data_lake"
-optimize_delta_tables = "geh_wholesale.optimize_job.delta_optimization:optimize_tables"
 
 [build-system]
 requires = ["hatchling"]
