@@ -188,8 +188,8 @@ INSERT INTO ctl_shres_p_we_001.wholesale_internal.calculations
 SELECT
   c.calculation_id,
   c.calculation_type,
-  c.calculation_period_start,
-  c.calculation_period_end,
+  FROM_UTC_TIMESTAMP(c.calculation_period_start, 'Europe/Copenhagen') as calculation_period_start,
+  FROM_UTC_TIMESTAMP(c.calculation_period_end, 'Europe/Copenhagen') as calculation_period_end,
   c.calculation_period_execution_time_start,
   c.calculation_period_succeeded_time,
   False AS is_internal_calculation,
