@@ -1,0 +1,14 @@
+notes: |
+  ## PURPOSE
+  The purpose is to test how we handle a Grid Loss MP or System Correction metering point being discontinued.
+
+  ## DESIGN CONSIDERATIONS
+  
+                        Calculation period
+                        |-------------------------------------------|
+  Grid loss MP:           ...________|                    |_________
+  System Correction MP:   ...________________|      |_______________
+
+
+
+cases_tested:
