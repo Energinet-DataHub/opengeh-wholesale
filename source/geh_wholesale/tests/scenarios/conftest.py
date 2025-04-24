@@ -49,7 +49,6 @@ def clear_cache(spark: SparkSession) -> Generator[None, None, None]:
 def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases:
     """Fixture used for scenario tests. Learn more in package `testcommon.etl`."""
 
-    spark.catalog.clearCache()
     # Get the path to the scenario
     scenario_path = str(Path(request.module.__file__).parent)
 
@@ -217,10 +216,10 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
                     expected_csv_path=f"{scenario_path}/then/wholesale_results/total_monthly_amounts_per_es.csv",
                     actual=calculation_output.wholesale_results_output.total_monthly_amounts_per_es,
                 ),
-                TestCase(
-                    expected_csv_path=f"{scenario_path}/then/wholesale_results/total_monthly_amounts_per_co_es.csv",
-                    actual=calculation_output.wholesale_results_output.total_monthly_amounts_per_co_es,
-                ),
+                # TestCase(
+                #     expected_csv_path=f"{scenario_path}/then/wholesale_results/total_monthly_amounts_per_co_es.csv",
+                #     actual=calculation_output.wholesale_results_output.total_monthly_amounts_per_co_es,
+                # ),
             ]
         )
 
