@@ -376,6 +376,15 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
     )
 
 
+@pytest.fixture(scope="module", autouse=True)
+def clear_cache(spark: SparkSession) -> Generator[None, None, None]:
+    """
+    Clear the cache after each test module to avoid memory issues.
+    """
+    yield
+    spark.catalog.clearCache()
+
+
 @pytest.fixture(scope="session", autouse=True)
 def configure_logging_dummy() -> config.LoggingSettings:
     """
