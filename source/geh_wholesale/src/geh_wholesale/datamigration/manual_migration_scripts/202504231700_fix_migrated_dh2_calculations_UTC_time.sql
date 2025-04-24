@@ -3,5 +3,5 @@
 
 UPDATE ctl_shres_p_we_001.wholesale_internal.calculations 
 SET 
-  calculation_period_start = CASE WHEN HOUR(calculation_period_start) = 0 THEN FROM_UTC_TIMESTAMP(calculation_period_start, 'Europe/Copenhagen') ELSE calculation_period_start END,
-  calculation_period_end = CASE WHEN HOUR(calculation_period_end) = 0 THEN FROM_UTC_TIMESTAMP(calculation_period_end, 'Europe/Copenhagen') ELSE calculation_period_end END;
+  calculation_period_start = CASE WHEN HOUR(calculation_period_start) = 0 THEN TO_UTC_TIMESTAMP(calculation_period_start, 'Europe/Copenhagen') ELSE calculation_period_start END,
+  calculation_period_end = CASE WHEN HOUR(calculation_period_end) = 0 THEN TO_UTC_TIMESTAMP(calculation_period_end, 'Europe/Copenhagen') ELSE calculation_period_end END;
