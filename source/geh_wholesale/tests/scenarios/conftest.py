@@ -49,6 +49,7 @@ def clear_cache(spark: SparkSession) -> Generator[None, None, None]:
 def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases:
     """Fixture used for scenario tests. Learn more in package `testcommon.etl`."""
 
+    spark.catalog.clearCache()
     # Get the path to the scenario
     scenario_path = str(Path(request.module.__file__).parent)
 
