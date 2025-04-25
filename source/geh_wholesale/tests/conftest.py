@@ -81,8 +81,8 @@ def spark(
         .config("spark.worker.ui.retainedExecutors", "1")
         .config("spark.worker.ui.retainedDrivers", "1")
         .config("spark.default.parallelism", 1)
-        .config("spark.driver.memory", "2g")
-        .config("spark.executor.memory", "2g")
+        .config("spark.driver.memory", "1g")
+        .config("spark.executor.memory", "1g")
         .config("spark.rdd.compress", False)
         .config("spark.shuffle.compress", False)
         .config("spark.shuffle.spill.compress", False)
@@ -374,15 +374,6 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
     df.write.format("delta").mode("overwrite").saveAsTable(
         f"{wholesale_internal_database}.{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
     )
-
-
-@pytest.fixture(scope="module", autouse=True)
-def clear_cache(spark: SparkSession) -> Generator[None, None, None]:
-    """
-    Clear the cache after each test module to avoid memory issues.
-    """
-    yield
-    spark.catalog.clearCache()
 
 
 @pytest.fixture(scope="session", autouse=True)
