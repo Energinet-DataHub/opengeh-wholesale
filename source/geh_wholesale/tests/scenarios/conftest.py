@@ -213,12 +213,12 @@ def test_cases(spark: SparkSession, request: pytest.FixtureRequest) -> TestCases
                     actual=calculation_output.wholesale_results_output.monthly_tariff_from_hourly_per_co_es,
                 ),
                 TestCase(
-                    expected_csv_path=f"{scenario_path}/then/wholesale_results/total_monthly_amounts_per_es.csv",
-                    actual=calculation_output.wholesale_results_output.total_monthly_amounts_per_es,
-                ),
-                TestCase(
                     expected_csv_path=f"{scenario_path}/then/wholesale_results/total_monthly_amounts_per_co_es.csv",
                     actual=calculation_output.wholesale_results_output.total_monthly_amounts_per_co_es,
+                ),
+                TestCase(
+                    expected_csv_path=f"{scenario_path}/then/wholesale_results/total_monthly_amounts_per_es.csv",
+                    actual=calculation_output.wholesale_results_output.total_monthly_amounts_per_es,
                 ),
             ]
         )
