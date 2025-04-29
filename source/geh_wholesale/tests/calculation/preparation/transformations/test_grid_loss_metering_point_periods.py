@@ -28,6 +28,7 @@ from geh_wholesale.databases.wholesale_internal import WholesaleInternalReposito
 from geh_wholesale.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
+from tests.calculation.energy.grid_loss_metering_point_periods_factories import DEFAULT_FROM_DATE, DEFAULT_TO_DATE
 
 
 @patch.object(wholesale_internal, WholesaleInternalRepository.__name__)
@@ -69,6 +70,8 @@ def test__get_grid_loss_metering_point_periods__given_three_metering_point_perio
     grid_loss_metering_point_periods = get_grid_loss_metering_point_periods(
         grid_areas,
         metering_point_period,
+        DEFAULT_FROM_DATE,
+        DEFAULT_TO_DATE,
         repository_mock,
     )
 
@@ -121,6 +124,8 @@ def test__get_grid_loss_metering_point_periods__given_metering_point_period_with
     grid_loss_metering_point_periods = get_grid_loss_metering_point_periods(
         grid_areas,
         metering_point_period,
+        DEFAULT_FROM_DATE,
+        DEFAULT_TO_DATE,
         repository_mock,
     )
 
@@ -171,5 +176,7 @@ def test__get_grid_loss_metering_point_periods__when_no_grid_loss_metering_point
         get_grid_loss_metering_point_periods(
             grid_areas,
             metering_point_period,
+            DEFAULT_FROM_DATE,
+            DEFAULT_TO_DATE,
             repository_mock,
         )

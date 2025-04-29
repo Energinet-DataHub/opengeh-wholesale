@@ -13,6 +13,8 @@
 # limitations under the License.
 """By having a conftest.py in this directory, we are able to add all packages defined in the geh_stream directory in our tests."""
 
+from datetime import datetime
+
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col
 
@@ -27,6 +29,8 @@ from geh_wholesale.databases import wholesale_internal
 def get_grid_loss_metering_point_periods(
     grid_areas: list[str],
     metering_point_periods_df: DataFrame,
+    period_start_datetime: datetime,
+    period_end_datetime: datetime,
     repository: wholesale_internal.WholesaleInternalRepository,
 ) -> GridLossMeteringPointPeriods:
     grid_loss_metering_point_periods = (
@@ -44,6 +48,10 @@ def get_grid_loss_metering_point_periods(
             col(Colname.metering_point_type),
             col(Colname.energy_supplier_id),
             col(Colname.balance_responsible_party_id),
+        )
+        .where(
+            (col(Colname.from_date) <= period_start_datetime)
+            & (col(Colname.to_date).isNull() | (col(Colname.to_date) >= period_end_datetime))
         )
     )
 
