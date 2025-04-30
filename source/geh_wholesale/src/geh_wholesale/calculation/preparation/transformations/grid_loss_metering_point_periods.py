@@ -1,22 +1,9 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-"""By having a conftest.py in this directory, we are able to add all packages defined in the geh_stream directory in our tests."""
-
 from datetime import datetime
 
 from pyspark.sql import DataFrame
+from pyspark.sql import functions as F
 from pyspark.sql.functions import col
+from pyspark.sql.window import Window
 
 from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
     GridLossMeteringPointPeriods,
@@ -49,18 +36,19 @@ def get_grid_loss_metering_point_periods(
             col(Colname.energy_supplier_id),
             col(Colname.balance_responsible_party_id),
         )
-        .where(
-            (col(Colname.from_date) <= period_start_datetime)
-            & (col(Colname.to_date).isNull() | (col(Colname.to_date) >= period_end_datetime))
-        )
+        .where(F.col(Colname.grid_area_code).isin(grid_areas))
+        .where(F.col(Colname.from_date) <= period_end_datetime)
+        .where(F.col(Colname.to_date).isNull() | (F.col(Colname.to_date) >= period_start_datetime))
     )
 
-    _throw_if_no_grid_loss_metering_point_periods_in_grid_area(grid_areas, grid_loss_metering_point_periods)
+    _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
+        grid_areas, grid_loss_metering_point_periods, period_start_datetime, period_end_datetime
+    )
 
     return GridLossMeteringPointPeriods(grid_loss_metering_point_periods)
 
 
-def _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
+def _throw_if_no_grid_loss_metering_point_periods_in_grid_area_old(
     grid_areas: list[str], grid_loss_metering_point_periods: DataFrame
 ) -> None:
     for grid_area in grid_areas:
@@ -81,3 +69,39 @@ def _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
             == 0
         ):
             raise ValueError(f"No metering point for positive grid loss found for grid area {grid_area}")
+
+
+def _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
+    grid_areas: list[str], df: DataFrame, period_start_datetime: datetime, period_end_datetime: datetime
+):
+    # Sort within each grid_area
+    window = Window.partitionBy(Colname.grid_area_code).orderBy(Colname.from_date)
+    df = df.withColumn("prev_to", F.lag(Colname.to_date).over(window))
+
+    # Start new group if there's a gap
+    df = df.withColumn("has_gap", (F.col(Colname.from_date) > F.col("prev_to")).cast("int"))
+
+    # Find grid areas without gaps
+    grid_areas_with_coverage = (
+        df.groupBy(Colname.grid_area_code)
+        .agg(
+            F.sum("has_gap").alias("has_gaps"),
+            F.min(Colname.from_date).alias("min_from_date"),
+            F.max(Colname.to_date).alias("max_to_date"),
+        )
+        .where(F.col("has_gaps") == F.lit(0))
+        .where(F.col("min_from_date") <= F.lit(period_start_datetime))
+        .where(F.col("max_to_date").isNull() | (F.col("max_to_date") >= F.lit(period_end_datetime)))
+        .select(Colname.grid_area_code)
+    )
+
+    # Identify grid areas without gaps
+    grid_areas_with_coverage = [row[Colname.grid_area_code] for row in grid_areas_with_coverage.collect()]
+
+    # Find grid areas from input that are not in the DataFrame without gaps
+    grid_areas_without_coverage = [grid_area for grid_area in grid_areas if grid_area not in grid_areas_with_coverage]
+
+    if grid_areas_without_coverage:
+        raise ValueError(
+            f"The following grid areas are missing positive or negative grid loss metering points: {', '.join(grid_areas_without_coverage)}"
+        )
