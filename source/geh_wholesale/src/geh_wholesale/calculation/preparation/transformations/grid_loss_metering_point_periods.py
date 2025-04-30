@@ -8,7 +8,6 @@ from pyspark.sql.window import Window
 from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
     GridLossMeteringPointPeriods,
 )
-from geh_wholesale.codelists import MeteringPointType
 from geh_wholesale.constants import Colname
 from geh_wholesale.databases import wholesale_internal
 
@@ -48,58 +47,54 @@ def get_grid_loss_metering_point_periods(
     return GridLossMeteringPointPeriods(grid_loss_metering_point_periods)
 
 
-def _throw_if_no_grid_loss_metering_point_periods_in_grid_area_old(
-    grid_areas: list[str], grid_loss_metering_point_periods: DataFrame
-) -> None:
-    for grid_area in grid_areas:
-        current_grid_loss_metering_point_periods = grid_loss_metering_point_periods.where(
-            col(Colname.grid_area_code) == grid_area
-        )
-        if (
-            current_grid_loss_metering_point_periods.filter(
-                col(Colname.metering_point_type) == MeteringPointType.PRODUCTION.value
-            ).count()
-            == 0
-        ):
-            raise ValueError(f"No metering point for negative grid loss found for grid area {grid_area}")
-        if (
-            current_grid_loss_metering_point_periods.filter(
-                col(Colname.metering_point_type) == MeteringPointType.CONSUMPTION.value
-            ).count()
-            == 0
-        ):
-            raise ValueError(f"No metering point for positive grid loss found for grid area {grid_area}")
-
-
 def _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
-    grid_areas: list[str], df: DataFrame, period_start_datetime: datetime, period_end_datetime: datetime
+    calculation_grid_areas: list[str], df: DataFrame, period_start_datetime: datetime, period_end_datetime: datetime
 ):
-    # Sort within each grid_area
-    window = Window.partitionBy(Colname.grid_area_code).orderBy(Colname.from_date)
+    df.show()
+    # Sort within each grid_area and metering_point_type
+    window = Window.partitionBy(Colname.grid_area_code, Colname.metering_point_type).orderBy(Colname.from_date)
+
+    # Get the previous row's to_date within the same grid_area and metering_point_type
     df = df.withColumn("prev_to", F.lag(Colname.to_date).over(window))
 
     # Start new group if there's a gap
-    df = df.withColumn("has_gap", (F.col(Colname.from_date) > F.col("prev_to")).cast("int"))
+    df = df.withColumn(
+        "has_gap",
+        F.when(F.col("prev_to").isNull(), F.lit(0)).otherwise(
+            (F.col(Colname.from_date) > F.col("prev_to")).cast("int")
+        ),
+    )
 
-    # Find grid areas without gaps
-    grid_areas_with_coverage = (
-        df.groupBy(Colname.grid_area_code)
+    df.show()
+
+    # Find metering points without gaps
+    grid_areas_with_coverage_df = (
+        df.groupBy(Colname.grid_area_code, Colname.metering_point_type)
         .agg(
             F.sum("has_gap").alias("has_gaps"),
             F.min(Colname.from_date).alias("min_from_date"),
             F.max(Colname.to_date).alias("max_to_date"),
         )
+        # Filter out grid areas with gaps
         .where(F.col("has_gaps") == F.lit(0))
         .where(F.col("min_from_date") <= F.lit(period_start_datetime))
         .where(F.col("max_to_date").isNull() | (F.col("max_to_date") >= F.lit(period_end_datetime)))
-        .select(Colname.grid_area_code)
+        .select(Colname.grid_area_code, Colname.metering_point_type)
+        # Now select only grid areas with both positive and negative metering points
+        .groupBy(Colname.grid_area_code)
+        .agg(F.count("*").alias("count"))
+        .where(F.col("count") == 2)
     )
 
+    grid_areas_with_coverage_df.show()
+
     # Identify grid areas without gaps
-    grid_areas_with_coverage = [row[Colname.grid_area_code] for row in grid_areas_with_coverage.collect()]
+    grid_areas_with_coverage = [row[Colname.grid_area_code] for row in grid_areas_with_coverage_df.collect()]
 
     # Find grid areas from input that are not in the DataFrame without gaps
-    grid_areas_without_coverage = [grid_area for grid_area in grid_areas if grid_area not in grid_areas_with_coverage]
+    grid_areas_without_coverage = [
+        grid_area for grid_area in calculation_grid_areas if grid_area not in grid_areas_with_coverage
+    ]
 
     if grid_areas_without_coverage:
         raise ValueError(

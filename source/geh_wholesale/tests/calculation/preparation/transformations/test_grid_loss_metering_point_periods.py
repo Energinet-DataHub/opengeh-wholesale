@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from unittest.mock import patch
 
 import pytest
-from pyspark.sql import SparkSession
+from pyspark.sql import DataFrame, SparkSession
 
 import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
 from geh_wholesale.calculation.preparation.transformations.grid_loss_metering_point_periods import (
@@ -58,7 +58,7 @@ def test__get_grid_loss_metering_point_periods__given_three_metering_point_perio
         grid_area="804",
         metering_point_type=MeteringPointType.CONSUMPTION,
     )
-    metering_point_period = factory.create(spark, data=[row1, row2, row3])
+    metering_point_periods = factory.create(spark, data=[row1, row2, row3])
 
     grid_loss_metering_point_ids = spark.createDataFrame(
         [
@@ -72,7 +72,7 @@ def test__get_grid_loss_metering_point_periods__given_three_metering_point_perio
     repository_mock.read_grid_loss_metering_point_ids.return_value = grid_loss_metering_point_ids
     actual_df = get_grid_loss_metering_point_periods(
         grid_areas,
-        metering_point_period,
+        metering_point_periods,
         DEFAULT_FROM_DATE,
         DEFAULT_TO_DATE,
         repository_mock,
@@ -104,15 +104,15 @@ def test__get_grid_loss_metering_point_periods__given_metering_point_period_with
         metering_point_id=metering_point_id_2,
         grid_area="804",
         metering_point_type=MeteringPointType.CONSUMPTION,
-        from_date=datetime(2020, 1, 1, 0, 0, tzinfo=DEFAULT_FROM_DATE.tzinfo),
-        to_date=datetime(2020, 1, 2, 0, 0, tzinfo=DEFAULT_TO_DATE.tzinfo),
+        from_date=datetime(2019, 12, 31, 23, 0, tzinfo=UTC),
+        to_date=datetime(2020, 1, 1, 23, 0, tzinfo=UTC),
     )
     row3 = factory.create_row(
         metering_point_id=metering_point_id_2,
         grid_area="804",
         metering_point_type=MeteringPointType.CONSUMPTION,
-        from_date=datetime(2020, 1, 2, 0, 0, tzinfo=DEFAULT_FROM_DATE.tzinfo),
-        to_date=datetime(2020, 1, 3, 0, 0, tzinfo=DEFAULT_TO_DATE.tzinfo),
+        from_date=datetime(2020, 1, 1, 23, 0, tzinfo=UTC),
+        to_date=datetime(2020, 1, 2, 23, 0, tzinfo=UTC),
     )
     metering_point_period = factory.create(spark, data=[row1, row2, row3])
 
@@ -141,11 +141,11 @@ def test__get_grid_loss_metering_point_periods__given_metering_point_period_with
 @pytest.mark.acceptance_test
 @patch.object(wholesale_internal, WholesaleInternalRepository.__name__)
 def test__get_grid_loss_metering_point_periods__when_no_grid_loss_metering_point_id_in_grid_area__raise_exception(
-    repository_mock: WholesaleInternalRepository, spark
+    repository_mock: WholesaleInternalRepository, spark: SparkSession
 ) -> None:
     # Arrange
     grid_area = "grid_area_without_grid_loss_metering_point"
-    metering_point_period = factory.create(spark, data=[])
+    metering_point_periods = factory.create(spark, data=[])
     grid_loss_metering_points = spark.createDataFrame([], grid_loss_metering_point_ids_schema)
     repository_mock.read_grid_loss_metering_point_ids.return_value = grid_loss_metering_points
 
@@ -156,8 +156,59 @@ def test__get_grid_loss_metering_point_periods__when_no_grid_loss_metering_point
     ):
         get_grid_loss_metering_point_periods(
             [grid_area],
-            metering_point_period,
+            metering_point_periods,
             DEFAULT_FROM_DATE,
             DEFAULT_TO_DATE,
             repository_mock,
+        )
+
+
+########################
+
+
+@pytest.mark.skip(reason="TODO BJM")
+@pytest.mark.parametrize(
+    "metering_point_periods",
+    [
+        # Calculation period:         +---------------------+
+        # Metering point periods:     +----+
+        ([1],),
+        # Calculation period:         +---------------------+
+        # Metering point periods:      +----+--------------------
+        ([2],),
+        # Calculation period:         +---------------------+
+        # Metering point periods:   +----+  +-------------------
+        ([3],),
+        # Calculation period:         +---------------------+
+        # Metering point periods:     +----+  +-------------+
+        ([4],),
+    ],
+)
+def test__get_grid_loss_metering_point_periods__when_missing_grid_loss_metering_point__raises_exception(
+    spark: SparkSession,
+    monkeypatch: pytest.MonkeyPatch,
+    metering_point_periods: DataFrame,
+) -> None:
+    # Arrange
+    grid_area = "804"
+    metering_point_periods = factory.create(spark, data=[])
+    grid_loss_metering_points = spark.createDataFrame([(1,), (2,)], grid_loss_metering_point_ids_schema)
+    repository = wholesale_internal.WholesaleInternalRepository(spark, "catalog-name", "table-name")
+    monkeypatch.setattr(
+        repository,
+        WholesaleInternalRepository.read_grid_loss_metering_point_ids.__name__,
+        lambda self: grid_loss_metering_points,
+    )
+
+    # Act and Assert
+    with pytest.raises(
+        ValueError,
+        match=f"The following grid areas are missing positive or negative grid loss metering points: {grid_area}",
+    ):
+        get_grid_loss_metering_point_periods(
+            [grid_area],
+            metering_point_periods,
+            DEFAULT_FROM_DATE,
+            DEFAULT_TO_DATE,
+            repository,
         )
