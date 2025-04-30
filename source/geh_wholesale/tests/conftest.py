@@ -356,26 +356,6 @@ def dependency_injection_container(spark: SparkSession) -> Container:
     return create_and_configure_container(spark, infrastructure_settings)
 
 
-@pytest.fixture(scope="session")
-def grid_loss_metering_point_ids_input_data_written_to_delta(
-    spark: SparkSession,
-    test_files_folder_path: str,
-    test_session_configuration: TestSessionConfiguration,
-    wholesale_internal_database: str,
-    migrations_executed: None,
-) -> None:
-    # grid loss
-    df = read_csv_path(
-        spark,
-        f"{test_files_folder_path}/GridLossMeteringPointIds.csv",
-        schema=grid_loss_metering_point_ids_schema,
-        sep=";",
-    )
-    df.write.format("delta").mode("overwrite").saveAsTable(
-        f"{wholesale_internal_database}.{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
-    )
-
-
 @pytest.fixture(scope="session", autouse=True)
 def configure_logging_dummy() -> config.LoggingSettings:
     """
@@ -396,6 +376,26 @@ def configure_logging_dummy() -> config.LoggingSettings:
         )
 
         return logging_settings
+
+
+@pytest.fixture(scope="session")
+def grid_loss_metering_point_ids_input_data_written_to_delta(
+    spark: SparkSession,
+    test_files_folder_path: str,
+    test_session_configuration: TestSessionConfiguration,
+    wholesale_internal_database: str,
+    migrations_executed: None,
+) -> None:
+    # grid loss
+    df = read_csv_path(
+        spark,
+        f"{test_files_folder_path}/GridLossMeteringPointIds.csv",
+        schema=grid_loss_metering_point_ids_schema,
+        sep=";",
+    )
+    df.write.format("delta").mode("overwrite").saveAsTable(
+        f"{wholesale_internal_database}.{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
+    )
 
 
 @pytest.fixture(scope="session")
