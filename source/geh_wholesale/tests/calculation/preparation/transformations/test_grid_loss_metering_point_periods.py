@@ -146,8 +146,8 @@ def test__get_grid_loss_metering_point_periods__when_no_grid_loss_metering_point
     # Arrange
     grid_area = "grid_area_without_grid_loss_metering_point"
     metering_point_periods = factory.create(spark, data=[])
-    grid_loss_metering_points = spark.createDataFrame([], grid_loss_metering_point_ids_schema)
-    repository_mock.read_grid_loss_metering_point_ids.return_value = grid_loss_metering_points
+    grid_loss_metering_point_ids = spark.createDataFrame([], grid_loss_metering_point_ids_schema)
+    repository_mock.read_grid_loss_metering_point_ids.return_value = grid_loss_metering_point_ids
 
     # Act and Assert
     with pytest.raises(
@@ -163,52 +163,91 @@ def test__get_grid_loss_metering_point_periods__when_no_grid_loss_metering_point
         )
 
 
-########################
+CALCULATION_PERIOD_START = datetime(2020, 1, 1, 0, 0, tzinfo=UTC)
+GRID_AREA = "804"
+POSITIVE_GRID_LOSS_METERING_POINT_ID = "571313180480500149"
+NEGATIVE_GRID_LOSS_METERING_POINT_ID = "571313180400100657"
 
 
-@pytest.mark.skip(reason="TODO BJM")
+def _create_case(spark: SparkSession, offsets: list[tuple[int, int | None]]) -> DataFrame:
+    metering_point_periods = []
+
+    # Create positive grid loss metering points
+    for offset in offsets:
+        positive_grid_loss_metering_point = factory.create_row(
+            metering_point_id=POSITIVE_GRID_LOSS_METERING_POINT_ID,
+            grid_area=GRID_AREA,
+            metering_point_type=MeteringPointType.CONSUMPTION,
+            from_date=CALCULATION_PERIOD_START + timedelta(days=offset[0]),
+            to_date=CALCULATION_PERIOD_START + timedelta(days=offset[1]) if offset[1] else None,
+        )
+        metering_point_periods.append(positive_grid_loss_metering_point)
+
+    # Create negative grid loss metering points spanning the whole calculation period
+    factory.create_row(
+        metering_point_id=NEGATIVE_GRID_LOSS_METERING_POINT_ID,
+        grid_area=GRID_AREA,
+        metering_point_type=MeteringPointType.PRODUCTION,
+        from_date=CALCULATION_PERIOD_START,
+        to_date=None,
+    )
+    metering_point_periods.append(positive_grid_loss_metering_point)
+
+    return factory.create(spark, data=metering_point_periods)
+
+
 @pytest.mark.parametrize(
-    "metering_point_periods",
+    "metering_point_periods_offsets",
     [
+        # Day offsets:                0    4                31
+        # Case: From day 4 the positive grid loss metering point is missing
         # Calculation period:         +---------------------+
         # Metering point periods:     +----+
-        ([1],),
+        [(0, 4)],
+        # Case: Day 0 is missing the positive grid loss metering point
         # Calculation period:         +---------------------+
         # Metering point periods:      +----+--------------------
-        ([2],),
+        [(1, 4), (4, None)],
+        # Case: Day 4 is missing the positive grid loss metering point
         # Calculation period:         +---------------------+
-        # Metering point periods:   +----+  +-------------------
-        ([3],),
-        # Calculation period:         +---------------------+
-        # Metering point periods:     +----+  +-------------+
-        ([4],),
+        # Metering point periods:   +-----+ +-------------------
+        [(-1, 4), (5, None)],
     ],
 )
 def test__get_grid_loss_metering_point_periods__when_missing_grid_loss_metering_point__raises_exception(
     spark: SparkSession,
     monkeypatch: pytest.MonkeyPatch,
-    metering_point_periods: DataFrame,
+    metering_point_periods_offsets: list[tuple[int, int | None]],
 ) -> None:
-    # Arrange
-    grid_area = "804"
-    metering_point_periods = factory.create(spark, data=[])
-    grid_loss_metering_points = spark.createDataFrame([(1,), (2,)], grid_loss_metering_point_ids_schema)
+    """The test always creates a negative grid loss metering point that spans the whole calculation period.
+    So the testing of failure is only dependent on the positive grid loss metering point.
+    """
+    # Arrange: Create metering point periods
+    metering_point_periods = _create_case(spark, metering_point_periods_offsets)
+
+    # Arrange: Create grid loss metering points
+    grid_loss_metering_point_ids = spark.createDataFrame(
+        [(POSITIVE_GRID_LOSS_METERING_POINT_ID,), (NEGATIVE_GRID_LOSS_METERING_POINT_ID,)],
+        grid_loss_metering_point_ids_schema,
+    )
+
+    # Arrange: Mock the repository to return the grid loss metering points
     repository = wholesale_internal.WholesaleInternalRepository(spark, "catalog-name", "table-name")
     monkeypatch.setattr(
         repository,
         WholesaleInternalRepository.read_grid_loss_metering_point_ids.__name__,
-        lambda self: grid_loss_metering_points,
+        lambda: grid_loss_metering_point_ids,
     )
 
     # Act and Assert
     with pytest.raises(
         ValueError,
-        match=f"The following grid areas are missing positive or negative grid loss metering points: {grid_area}",
+        match=f"The following grid areas are missing positive or negative grid loss metering points: {GRID_AREA}",
     ):
         get_grid_loss_metering_point_periods(
-            [grid_area],
+            [GRID_AREA],
             metering_point_periods,
-            DEFAULT_FROM_DATE,
-            DEFAULT_TO_DATE,
+            CALCULATION_PERIOD_START,
+            CALCULATION_PERIOD_START + timedelta(days=31),
             repository,
         )

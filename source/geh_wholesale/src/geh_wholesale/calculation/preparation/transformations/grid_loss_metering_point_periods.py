@@ -50,7 +50,6 @@ def get_grid_loss_metering_point_periods(
 def _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
     calculation_grid_areas: list[str], df: DataFrame, period_start_datetime: datetime, period_end_datetime: datetime
 ):
-    df.show()
     # Sort within each grid_area and metering_point_type
     window = Window.partitionBy(Colname.grid_area_code, Colname.metering_point_type).orderBy(Colname.from_date)
 
@@ -64,8 +63,6 @@ def _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
             (F.col(Colname.from_date) > F.col("prev_to")).cast("int")
         ),
     )
-
-    df.show()
 
     # Find metering points without gaps
     grid_areas_with_coverage_df = (
@@ -85,8 +82,6 @@ def _throw_if_no_grid_loss_metering_point_periods_in_grid_area(
         .agg(F.count("*").alias("count"))
         .where(F.col("count") == 2)
     )
-
-    grid_areas_with_coverage_df.show()
 
     # Identify grid areas without gaps
     grid_areas_with_coverage = [row[Colname.grid_area_code] for row in grid_areas_with_coverage_df.collect()]
