@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-from datetime import UTC, datetime
+from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession
 
@@ -37,9 +37,9 @@ DEFAULT_TO_GRID_AREA = None
 DEFAULT_PARENT_METERING_POINT_ID = None
 DEFAULT_ENERGY_SUPPLIER_ID = "9999999999999"
 DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123"
-DEFAULT_FROM_DATE = datetime(2019, 12, 31, 23, 0, tzinfo=UTC)
+DEFAULT_FROM_DATE = datetime(2019, 12, 31, 23, 0)
 """Midnight the 1st of January 2020 assuming local time zone is Europe/copenhagen"""
-DEFAULT_TO_DATE = datetime(2020, 1, 1, 23, 0, tzinfo=UTC)
+DEFAULT_TO_DATE = datetime(2020, 1, 1, 23, 0)
 """Midnight the 2st of January 2020 assuming local time zone is Europe/copenhagen"""
 
 
