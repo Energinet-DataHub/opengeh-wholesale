@@ -32,7 +32,6 @@ limitations under the License.
   <ItemGroup>
     <ProjectReference Include="..\Events\Events.Infrastructure\Events.Infrastructure.csproj" />
     <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
-    <ProjectReference Include="..\WebApi\WebApi.csproj" />
   </ItemGroup>
 
   <ItemGroup>
