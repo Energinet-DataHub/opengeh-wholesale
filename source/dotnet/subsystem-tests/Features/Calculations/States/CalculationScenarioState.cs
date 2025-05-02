@@ -30,6 +30,4 @@ public class CalculationScenarioState
     public string OrchestrationInstanceId { get; set; } = string.Empty;
 
     public CalculationDto? Calculation { get; set; }
-
-    public IReadOnlyCollection<CalculationCompletedV1> ReceivedCalculationCompletedV1 { get; set; } = [];
 }
