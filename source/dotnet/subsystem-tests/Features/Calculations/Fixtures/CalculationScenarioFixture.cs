@@ -27,7 +27,6 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.Xunit.Extensions;
 using Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
@@ -109,23 +108,6 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     private ServiceBusClient ServiceBusClient { get; }
 
     private LogsQueryClient LogsQueryClient { get; }
-
-    public async Task<Guid> StartCalculationAsync(StartCalculationRequestDto calculationInput)
-    {
-        using var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
-        request.Content = new StringContent(
-            JsonConvert.SerializeObject(calculationInput),
-            Encoding.UTF8,
-            "application/json");
-
-        using var actualResponse = await WholesaleOrchestrationsApiClient.SendAsync(request);
-        actualResponse.EnsureSuccessStatusCode();
-        var calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
-
-        DiagnosticMessageSink.WriteDiagnosticMessage($"Calculation for {calculationInput.CalculationType} with id '{calculationId}' started.");
-
-        return calculationId;
-    }
 
     /// <summary>
     /// Wait for the calculation to complete or fail.
