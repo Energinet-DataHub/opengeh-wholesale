@@ -69,7 +69,7 @@ def spark(
             shutil.rmtree(metastore_path)
 
     if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.MODIFIED.value:
-        _spark, data_dir = get_spark_test_session(static_data_dir=tests_path)
+        _spark, data_dir = get_spark_test_session(static_data_dir=tests_path, use_hive=True)
     else:
         _spark, data_dir = get_spark_test_session()
 
