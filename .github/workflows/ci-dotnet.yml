@@ -24,6 +24,24 @@ jobs:
     with:
       solution_file_path: source/dotnet/Wholesale.sln
 
+  # Tests that do not require the integration test environment
+  unit_tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        tests_filter_expression:
+          - name: Calculations
+            paths: \source\dotnet\wholesale-api\Calculations\Calculations.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Calculations.UnitTests.dll
+          - name: Calculation Results
+            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.UnitTests.dll
+    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v14
+    with:
+      download_attempt_limit: 30
+      azure_functions_core_tools_version: 4.0.5413
+      # Matrix parameters
+      job_name: Unit Tests ${{ matrix.tests_filter_expression.name }}
+      tests_dll_file_path: ${{ matrix.tests_filter_expression.paths }}
+
   # Tests that require the integration test environment
   integration_tests:
     strategy:
