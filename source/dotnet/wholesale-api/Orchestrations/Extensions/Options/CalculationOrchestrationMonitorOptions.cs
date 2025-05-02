@@ -18,7 +18,6 @@ namespace Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 
 /// <summary>
 /// Options for the calculation orchestration monitor loops implemented as part of the
-/// <see cref="CalculationOrchestration"/>.
 /// </summary>
 public class CalculationOrchestrationMonitorOptions
 {
