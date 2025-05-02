@@ -289,8 +289,6 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     protected override async Task OnInitializeAsync()
     {
         await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);
-        WholesaleWebApiClient = await WholesaleClientFactory.CreateWebApiClientAsync(Configuration, useAuthentication: true);
-        WholesaleOrchestrationsApiClient = await WholesaleClientFactory.CreateOrchestrationsApiClientAsync(Configuration, useAuthentication: true);
         await CreateTopicSubscriptionAsync();
         IntegrationEventReceiver = ServiceBusClient.CreateReceiver(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
         WholesaleInboxSender = ServiceBusClient.CreateSender(Configuration.ServiceBus.WholesaleInboxQueueName);
