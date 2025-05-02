@@ -22,27 +22,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 
-public class DatabaseContext : DbContext, IDatabaseContext, IOutboxContext
+public class DatabaseContext : DbContext, IDatabaseContext
 {
     private const string Schema = "calculations";
-
-    public DatabaseContext(DbContextOptions<DatabaseContext> options)
-        : base(options)
-    {
-    }
-
-    // Added to support Moq in tests
-    public DatabaseContext()
-    {
-    }
 
     public virtual DbSet<Calculation> Calculations { get; private set; } = null!;
 
     public virtual DbSet<Interfaces.GridArea.GridAreaOwner> GridAreaOwners { get; private set; } = null!;
 
     public virtual DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; private set; } = null!;
-
-    public virtual DbSet<OutboxMessage> Outbox { get; private set; }
 
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 
