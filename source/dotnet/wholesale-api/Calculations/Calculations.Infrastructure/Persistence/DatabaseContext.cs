@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Outbox.Domain;
 using Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
@@ -25,6 +24,15 @@ namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 public class DatabaseContext : DbContext, IDatabaseContext
 {
     private const string Schema = "calculations";
+
+    // Parameterless constructor for Activator.CreateInstance
+    public DatabaseContext() { }
+
+    // Constructor with DbContextOptions
+    public DatabaseContext(DbContextOptions<DatabaseContext> options)
+        : base(options)
+    {
+    }
 
     public virtual DbSet<Calculation> Calculations { get; private set; } = null!;
 
