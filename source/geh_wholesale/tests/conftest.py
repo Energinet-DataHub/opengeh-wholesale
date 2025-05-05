@@ -57,21 +57,21 @@ def spark(
     test_session_configuration: TestSessionConfiguration,
     tests_path: str,
 ) -> Generator[SparkSession, None, None]:
-    warehouse_location = f"{tests_path}/__spark-warehouse__"
-    metastore_path = f"{tests_path}/__metastore_db__"
+    # warehouse_location = f"{tests_path}/__spark-warehouse__"
+    # metastore_path = f"{tests_path}/__metastore_db__"
 
-    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
-        if os.path.exists(warehouse_location):
-            print(f"Removing warehouse before clean run (path={warehouse_location})")  # noqa: T201
-            shutil.rmtree(warehouse_location)
-        if os.path.exists(metastore_path):
-            print(f"Removing metastore before clean run (path={metastore_path})")  # noqa: T201
-            shutil.rmtree(metastore_path)
+    # if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
+    #     if os.path.exists(warehouse_location):
+    #         print(f"Removing warehouse before clean run (path={warehouse_location})")  # noqa: T201
+    #         shutil.rmtree(warehouse_location)
+    #     if os.path.exists(metastore_path):
+    #         print(f"Removing metastore before clean run (path={metastore_path})")  # noqa: T201
+    #         shutil.rmtree(metastore_path)
 
-    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.MODIFIED.value:
-        _spark, data_dir = get_spark_test_session(static_data_dir=tests_path, use_hive=True)
-    else:
-        _spark, data_dir = get_spark_test_session()
+    # if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.MODIFIED.value:
+    #     _spark, data_dir = get_spark_test_session(static_data_dir=tests_path, use_hive=True)
+    # else:
+    #     _spark, data_dir = get_spark_test_session()
 
     yield _spark
     _spark.stop()
@@ -471,3 +471,34 @@ def _write_input_test_data_to_table(
         table_location,
         schema,
     )
+
+
+# pytest-xdist plugin does not work with SparkSession as a fixture. The session scope is not supported.
+# Therefore, we need to create a global variable to store the Spark session and data directory.
+# This is a workaround to avoid creating a new Spark session for each test.
+def _spark_session_creation() -> tuple[SparkSession, str]:
+    tests_path = "/workspace/source/geh_wholesale/tests"
+    settings_file_path = Path(tests_path) / "test.local.settings.yml"
+    settings = _load_settings_from_file(settings_file_path)
+    test_session_configuration = TestSessionConfiguration(settings)
+
+    warehouse_location = f"{tests_path}/spark-warehouse"
+    metastore_path = f"{tests_path}/metastore_db"
+
+    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
+        if os.path.exists(warehouse_location):
+            print(f"Removing warehouse before clean run (path={warehouse_location})")  # noqa: T201
+            shutil.rmtree(warehouse_location)
+        if os.path.exists(metastore_path):
+            print(f"Removing metastore before clean run (path={metastore_path})")  # noqa: T201
+            shutil.rmtree(metastore_path)
+
+    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.MODIFIED.value:
+        _spark, data_dir = get_spark_test_session(static_data_dir=tests_path, use_hive=True)
+    else:
+        _spark, data_dir = get_spark_test_session()
+
+    return _spark, data_dir
+
+
+_spark, data_dir = _spark_session_creation()
