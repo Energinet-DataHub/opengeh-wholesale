@@ -53,26 +53,7 @@ def test_files_folder_path(tests_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def spark(
-    test_session_configuration: TestSessionConfiguration,
-    tests_path: str,
-) -> Generator[SparkSession, None, None]:
-    # warehouse_location = f"{tests_path}/__spark-warehouse__"
-    # metastore_path = f"{tests_path}/__metastore_db__"
-
-    # if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
-    #     if os.path.exists(warehouse_location):
-    #         print(f"Removing warehouse before clean run (path={warehouse_location})")  # noqa: T201
-    #         shutil.rmtree(warehouse_location)
-    #     if os.path.exists(metastore_path):
-    #         print(f"Removing metastore before clean run (path={metastore_path})")  # noqa: T201
-    #         shutil.rmtree(metastore_path)
-
-    # if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.MODIFIED.value:
-    #     _spark, data_dir = get_spark_test_session(static_data_dir=tests_path, use_hive=True)
-    # else:
-    #     _spark, data_dir = get_spark_test_session()
-
+def spark() -> Generator[SparkSession, None, None]:
     yield _spark
     _spark.stop()
 
