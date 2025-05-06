@@ -12,16 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.States;
 
 public class CalculationScenarioState
 {
-    public StartCalculationRequestDto? CalculationInput { get; set; }
-
     public IList<string> SubscribedIntegrationEventNames { get; }
         = [];
 
@@ -30,6 +26,4 @@ public class CalculationScenarioState
     public string OrchestrationInstanceId { get; set; } = string.Empty;
 
     public CalculationDto? Calculation { get; set; }
-
-    public IReadOnlyCollection<CalculationCompletedV1> ReceivedCalculationCompletedV1 { get; set; } = [];
 }

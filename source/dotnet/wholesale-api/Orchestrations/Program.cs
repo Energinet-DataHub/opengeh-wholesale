@@ -23,8 +23,6 @@ using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Extensions.Depende
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Security;
 using Energinet.DataHub.Wholesale.Common.Infrastructure.Telemetry;
 using Energinet.DataHub.Wholesale.Common.Interfaces.Security;
-using Energinet.DataHub.Wholesale.Edi.Extensions.DependencyInjection;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.DependencyInjection;
 using Energinet.DataHub.Wholesale.Orchestrations.Extensions.Options;
 using Microsoft.Azure.Functions.Worker;
@@ -59,11 +57,6 @@ var host = new HostBuilder()
             .AddOptions<CalculationOrchestrationMonitorOptions>()
             .BindConfiguration(CalculationOrchestrationMonitorOptions.SectionName);
 
-        // ServiceBus channels
-        services.AddIntegrationEventsPublishing(context.Configuration);
-        services
-            .AddInboxSubscription()
-            .AddCalculationOrchestrationInboxRequestHandler();
         // => Dead-letter logging
         services.AddDeadLetterHandlerForIsolatedWorker(context.Configuration);
         services
@@ -84,7 +77,6 @@ var host = new HostBuilder()
         services.AddOutboxProcessing();
 
         // Modules
-        services.AddEdiModule(context.Configuration); // Edi module has Wholesale inbox handlers for requests from EDI; and a client to send messages to EDI inbox
         services.AddCalculationsModule(context.Configuration);
         services.AddCalculationEngineModule(context.Configuration);
         services.AddCalculationResultsModule(context.Configuration);

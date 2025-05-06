@@ -32,26 +32,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Publish Web API
-      shell: bash
-      run: |
-        dotnet publish \
-          '.\source\dotnet\wholesale-api\WebApi\WebApi.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '${{ inputs.output_path }}\functions\webapi'
-
-    - name: Publish Orchestrations
-      shell: bash
-      run: |
-        dotnet publish \
-          '.\source\dotnet\wholesale-api\Orchestrations\Orchestrations.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '${{ inputs.output_path }}\functions\orchestrations'
-
     - name: Publish Database Migration
       shell: bash
       run: |

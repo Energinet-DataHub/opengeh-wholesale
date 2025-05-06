@@ -27,42 +27,6 @@ inputs:
 runs:
   using: composite
   steps:
-    # To ensure code coverage tooling is available in bin folder, we use publish on test assemblies
-    # See https://github.com/coverlet-coverage/coverlet/issues/521#issuecomment-522429394
-    - name: Publish WebApi IntegrationTests
-      shell: bash
-      run: |
-        dotnet publish \
-          '.\source\dotnet\wholesale-api\WebApi.IntegrationTests\WebApi.IntegrationTests.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '.\source\dotnet\wholesale-api\WebApi.IntegrationTests\bin\Release\net8.0'
-
-    # To ensure code coverage tooling is available in bin folder, we use publish on test assemblies
-    # See https://github.com/coverlet-coverage/coverlet/issues/521#issuecomment-522429394
-    - name: Publish Orchestrations IntegrationTests
-      shell: bash
-      run: |
-        dotnet publish \
-          '.\source\dotnet\wholesale-api\Orchestrations.IntegrationTests\Orchestrations.IntegrationTests.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '.\source\dotnet\wholesale-api\Orchestrations.IntegrationTests\bin\Release\net8.0'
-
-    # To ensure code coverage tooling is available in bin folder, we use publish on test assemblies
-    # See https://github.com/coverlet-coverage/coverlet/issues/521#issuecomment-522429394
-    - name: Publish UnitTests
-      shell: bash
-      run: |
-        dotnet publish \
-          '.\source\dotnet\wholesale-api\WebApi.UnitTests\WebApi.UnitTests.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '.\source\dotnet\wholesale-api\WebApi.UnitTests\bin\Release\net8.0'
-
     - name: Copy all directories and files in source/dotnet except the obj-directories
       shell: bash
       run: |

@@ -29,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Orchestrations\Orchestrations.csproj" />
     <ProjectReference Include="..\Test.Core\Test.Core.csproj" />
   </ItemGroup>
 
