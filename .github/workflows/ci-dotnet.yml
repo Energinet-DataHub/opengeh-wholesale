@@ -48,13 +48,7 @@ jobs:
       fail-fast: false
       matrix:
         tests_filter_expression:
-          - name: Calculations
-            paths: \source\dotnet\wholesale-api\Calculations\Calculations.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Calculations.IntegrationTests.dll
-            filter: empty # Means skip
-            use_azure_functions_tools: false
-            contentroot_variable_name: empty # Means skip
-
-            ### AggregatedTimeSeriesQueriesCsvTests is split into multiple parts for performance reasons
+          ### AggregatedTimeSeriesQueriesCsvTests is split into multiple parts for performance reasons
           - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTestsWithSharedData
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
             filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTestsWithSharedData)
