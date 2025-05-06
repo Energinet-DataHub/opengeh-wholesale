@@ -27,10 +27,6 @@ using Energinet.DataHub.Core.Databricks.SqlStatementExecution;
 using Energinet.DataHub.Core.TestCommon;
 using Energinet.DataHub.Core.TestCommon.Xunit.Extensions;
 using Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
-using Energinet.DataHub.EnergySupplying.RequestResponse.InboxEvents;
-using Energinet.DataHub.Wholesale.Contracts.IntegrationEvents;
-using Energinet.DataHub.Wholesale.Events.Infrastructure.IntegrationEvents;
-using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.States;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
@@ -112,23 +108,6 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     private ServiceBusClient ServiceBusClient { get; }
 
     private LogsQueryClient LogsQueryClient { get; }
-
-    public async Task<Guid> StartCalculationAsync(StartCalculationRequestDto calculationInput)
-    {
-        using var request = new HttpRequestMessage(HttpMethod.Post, "api/StartCalculation");
-        request.Content = new StringContent(
-            JsonConvert.SerializeObject(calculationInput),
-            Encoding.UTF8,
-            "application/json");
-
-        using var actualResponse = await WholesaleOrchestrationsApiClient.SendAsync(request);
-        actualResponse.EnsureSuccessStatusCode();
-        var calculationId = await actualResponse.Content.ReadFromJsonAsync<Guid>();
-
-        DiagnosticMessageSink.WriteDiagnosticMessage($"Calculation for {calculationInput.CalculationType} with id '{calculationId}' started.");
-
-        return calculationId;
-    }
 
     /// <summary>
     /// Wait for the calculation to complete or fail.
@@ -215,69 +194,6 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
             $"Wait for calculation with id '{calculationId}' state to be one of [{stateNames}] finished with '{nameof(isSuccess)}={isSuccess}', '{nameof(calculation.OrchestrationState)}={calculation?.OrchestrationState}'.");
 
         return (isSuccess, calculation);
-    }
-
-    public async Task<IReadOnlyCollection<IEventMessage>> WaitForIntegrationEventsAsync(
-        Guid calculationId,
-        IReadOnlyCollection<string> integrationEventNames,
-        TimeSpan waitTimeLimit)
-    {
-        using var cts = new CancellationTokenSource(waitTimeLimit);
-        var stopwatch = Stopwatch.StartNew();
-
-        var collectedIntegrationEvents = new List<IEventMessage>();
-        while (!cts.Token.IsCancellationRequested)
-        {
-            var messageOrNull = await IntegrationEventReceiver.ReceiveMessageAsync(maxWaitTime: TimeSpan.FromMinutes(1));
-            if (messageOrNull?.Body == null)
-            {
-                if (collectedIntegrationEvents.Count > 0)
-                    break;
-            }
-            else
-            {
-                var (shouldCollect, eventMessage) = ShouldCollectMessage(messageOrNull, calculationId, integrationEventNames);
-                if (shouldCollect)
-                {
-                    collectedIntegrationEvents.Add(eventMessage!);
-                }
-
-                // We should always complete (delete) messages since we use a subscription
-                // and no other receiver is using the same, so we will never by mistake
-                // interfere with other scenarios or message receivers in the live environment.
-                await IntegrationEventReceiver.CompleteMessageAsync(messageOrNull);
-            }
-        }
-
-        stopwatch.Stop();
-        DiagnosticMessageSink.WriteDiagnosticMessage($"""
-            Message receiver loop for calculation with id '{calculationId}' took '{stopwatch.Elapsed}' to complete.
-            It was listening for messages on entity path '{IntegrationEventReceiver.EntityPath}', and collected '{collectedIntegrationEvents.Count}' messages spanning various event types.
-            """);
-
-        return collectedIntegrationEvents;
-    }
-
-    public async Task SendActorMessagesEnqueuedMessageAsync(Guid calculationId, string orchestrationInstanceId)
-    {
-        var actorMessagesEnqueuedMessage = new ActorMessagesEnqueuedV1
-        {
-            CalculationId = calculationId.ToString(),
-            OrchestrationInstanceId = orchestrationInstanceId,
-            Success = true,
-        };
-
-        var serviceBusMessage = new ServiceBusMessage(actorMessagesEnqueuedMessage.ToByteArray())
-        {
-            Subject = ActorMessagesEnqueuedV1.EventName,
-            ApplicationProperties =
-            {
-                { "ReferenceId", Guid.Parse("00000000-0000-0000-0000-000000000001").ToString() },
-            },
-        };
-
-        // Act
-        await WholesaleInboxSender.SendMessageAsync(serviceBusMessage);
     }
 
     public async Task<Response<LogsQueryResult>> QueryLogAnalyticsAsync(string query, QueryTimeRange queryTimeRange)
@@ -373,8 +289,6 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
     protected override async Task OnInitializeAsync()
     {
         await DatabricksClientExtensions.StartWarehouseAsync(Configuration.DatabricksWorkspace);
-        WholesaleWebApiClient = await WholesaleClientFactory.CreateWebApiClientAsync(Configuration, useAuthentication: true);
-        WholesaleOrchestrationsApiClient = await WholesaleClientFactory.CreateOrchestrationsApiClientAsync(Configuration, useAuthentication: true);
         await CreateTopicSubscriptionAsync();
         IntegrationEventReceiver = ServiceBusClient.CreateReceiver(Configuration.ServiceBus.SubsystemRelayTopicName, _subscriptionName);
         WholesaleInboxSender = ServiceBusClient.CreateSender(Configuration.ServiceBus.WholesaleInboxQueueName);
@@ -401,41 +315,5 @@ public sealed class CalculationScenarioFixture : LazyFixtureBase
 
         await ServiceBusAdministrationClient.CreateSubscriptionAsync(options);
         DiagnosticMessageSink.WriteDiagnosticMessage($"ServiceBus subscription '{options.SubscriptionName}' created for topic '{options.TopicName}'.");
-    }
-
-    /// <summary>
-    /// Returns <see langword="true"/> if we should collect the message type; otherwise <see langword="false"/> .
-    /// </summary>
-    private (bool ShouldCollect, IEventMessage? EventMessage) ShouldCollectMessage(ServiceBusReceivedMessage message, Guid calculationId, IReadOnlyCollection<string> integrationEventNames)
-    {
-        var shouldCollect = false;
-        IEventMessage? eventMessage = null;
-
-        if (integrationEventNames.Contains(message.Subject))
-        {
-            var data = message.Body.ToArray();
-
-            switch (message.Subject)
-            {
-                case CalculationCompletedV1.EventName:
-                    var calculationCompleted = CalculationCompletedV1.Parser.ParseFrom(data);
-                    if (calculationCompleted.CalculationId == calculationId.ToString())
-                    {
-                        DiagnosticMessageSink.WriteDiagnosticMessage($"""
-                            {nameof(CalculationCompletedV1)} received with values:
-                                {nameof(calculationCompleted.CalculationId)}={calculationCompleted.CalculationId}
-                                {nameof(calculationCompleted.CalculationType)}={calculationCompleted.CalculationType}
-                                {nameof(calculationCompleted.InstanceId)}={calculationCompleted.InstanceId}
-                                {nameof(calculationCompleted.CalculationVersion)}={calculationCompleted.CalculationVersion}
-                            """);
-                        eventMessage = calculationCompleted;
-                        shouldCollect = true;
-                    }
-
-                    break;
-            }
-        }
-
-        return (shouldCollect, eventMessage);
     }
 }

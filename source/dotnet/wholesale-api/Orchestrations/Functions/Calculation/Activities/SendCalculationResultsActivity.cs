@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Wholesale.Calculations.Application;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
-using Energinet.DataHub.Wholesale.Events.Application.Communication;
 using Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Model;
 using Microsoft.Azure.Functions.Worker;
 using NodaTime;
@@ -22,13 +21,11 @@ using NodaTime;
 namespace Energinet.DataHub.Wholesale.Orchestrations.Functions.Calculation.Activities;
 
 internal class SendCalculationResultsActivity(
-    ICalculationIntegrationEventPublisher integrationEventsPublisher,
     ICalculationRepository calculationRepository,
     ICalculationDtoMapper calculationDtoMapper,
     IClock clock,
     IUnitOfWork calculationUnitOfWork)
 {
-    private readonly ICalculationIntegrationEventPublisher _integrationEventsPublisher = integrationEventsPublisher;
     private readonly ICalculationRepository _calculationRepository = calculationRepository;
     private readonly ICalculationDtoMapper _calculationDtoMapper = calculationDtoMapper;
     private readonly IClock _clock = clock;
@@ -43,8 +40,6 @@ internal class SendCalculationResultsActivity(
     {
         var calculation = await _calculationRepository.GetAsync(input.CalculationId).ConfigureAwait(false);
         var calculationDto = _calculationDtoMapper.Map(calculation);
-
-        await _integrationEventsPublisher.PublishAsync(calculationDto, input.OrchestrationInstanceId, CancellationToken.None).ConfigureAwait(false);
 
         await _calculationUnitOfWork.CommitAsync().ConfigureAwait(false);
     }
