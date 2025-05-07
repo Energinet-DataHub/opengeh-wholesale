@@ -36,7 +36,6 @@ public static class DataLakeHealthCheckBuilderExtensions
             name ?? Name,
             serviceProvider => new DataLakeHealthRegistration(
                 serviceProvider.GetRequiredService<DataLakeFileSystemClient>(),
-                serviceProvider.GetRequiredService<IClock>(),
                 options(serviceProvider)),
             failureStatus,
             tags,

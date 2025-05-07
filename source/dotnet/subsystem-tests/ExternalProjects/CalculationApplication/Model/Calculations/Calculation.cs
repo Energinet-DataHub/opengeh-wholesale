@@ -243,44 +243,6 @@ public class Calculation
     public bool IsInternalCalculation { get; }
 
     /// <summary>
-    /// Get the ISO 8601 duration for the given calculation type.
-    /// </summary>
-    public string GetResolution()
-    {
-        return CalculationType switch
-        {
-            CalculationType.BalanceFixing
-            or CalculationType.Aggregation
-            or CalculationType.WholesaleFixing
-            or CalculationType.FirstCorrectionSettlement
-            or CalculationType.SecondCorrectionSettlement
-            or CalculationType.ThirdCorrectionSettlement
-                => "PT15M",
-
-            _ => throw new NotImplementedException(),
-        };
-    }
-
-    /// <summary>
-    /// Get the unit for result values (an energy unit for aggregations and a price unit/currency for settlements).
-    /// </summary>
-    public QuantityUnit GetQuantityUnit()
-    {
-        return CalculationType switch
-        {
-            CalculationType.BalanceFixing
-            or CalculationType.Aggregation
-            or CalculationType.WholesaleFixing
-            or CalculationType.FirstCorrectionSettlement
-            or CalculationType.SecondCorrectionSettlement
-            or CalculationType.ThirdCorrectionSettlement
-                => QuantityUnit.Kwh,
-
-            _ => throw new NotImplementedException(),
-        };
-    }
-
-    /// <summary>
     /// The calculation orchestration has started (after the schedule has been met)
     /// </summary>
     public void MarkAsStarted()

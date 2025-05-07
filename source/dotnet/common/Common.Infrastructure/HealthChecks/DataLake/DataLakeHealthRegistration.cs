@@ -24,7 +24,7 @@ public class DataLakeHealthRegistration : IHealthCheck
     private readonly DataLakeFileSystemClient _dataLakeFileSystemClient;
     private readonly DataLakeOptions _options;
 
-    public DataLakeHealthRegistration(DataLakeFileSystemClient dataLakeFileSystemClient, IClock clock, DataLakeOptions options)
+    public DataLakeHealthRegistration(DataLakeFileSystemClient dataLakeFileSystemClient, DataLakeOptions options)
     {
         _dataLakeFileSystemClient = dataLakeFileSystemClient;
         _options = options;
