@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.Outbox.Domain;
 using Energinet.DataHub.Core.Outbox.Infrastructure.DbContext;
 using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence.Calculations;
@@ -22,17 +21,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Persistence;
 
-public class DatabaseContext : DbContext, IDatabaseContext, IOutboxContext
+public class DatabaseContext : DbContext, IDatabaseContext
 {
     private const string Schema = "calculations";
 
+    // Parameterless constructor for Activator.CreateInstance
+    public DatabaseContext() { }
+
+    // Constructor with DbContextOptions
     public DatabaseContext(DbContextOptions<DatabaseContext> options)
         : base(options)
-    {
-    }
-
-    // Added to support Moq in tests
-    public DatabaseContext()
     {
     }
 
@@ -41,8 +39,6 @@ public class DatabaseContext : DbContext, IDatabaseContext, IOutboxContext
     public virtual DbSet<Interfaces.GridArea.GridAreaOwner> GridAreaOwners { get; private set; } = null!;
 
     public virtual DbSet<Application.IntegrationEvents.ReceivedIntegrationEvent> ReceivedIntegrationEvents { get; private set; } = null!;
-
-    public virtual DbSet<OutboxMessage> Outbox { get; private set; }
 
     public Task<int> SaveChangesAsync() => base.SaveChangesAsync();
 

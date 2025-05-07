@@ -30,16 +30,10 @@ jobs:
       fail-fast: false
       matrix:
         tests_filter_expression:
-          - name: Web API
-            paths: \source\dotnet\wholesale-api\WebApi.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.WebApi.UnitTests.dll
           - name: Calculations
             paths: \source\dotnet\wholesale-api\Calculations\Calculations.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Calculations.UnitTests.dll
           - name: Calculation Results
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.UnitTests.dll
-          - name: Events
-            paths: \source\dotnet\wholesale-api\Events\Events.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Events.UnitTests.dll
-          - name: EDI
-            paths: \source\dotnet\wholesale-api\Edi.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Edi.UnitTests.dll
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v14
     with:
       download_attempt_limit: 30
@@ -54,17 +48,6 @@ jobs:
       fail-fast: false
       matrix:
         tests_filter_expression:
-          - name: Orchestrations
-            paths: \source\dotnet\wholesale-api\Orchestrations.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Orchestrations.IntegrationTests.dll
-            filter: empty # Means skip
-            use_azure_functions_tools: true
-            contentroot_variable_name: empty # Means skip
-          - name: Web API
-            paths: \source\dotnet\wholesale-api\WebApi.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.WebApi.IntegrationTests.dll
-            filter: empty # Means skip
-            use_azure_functions_tools: true
-            contentroot_variable_name: ASPNETCORE_TEST_CONTENTROOT_ENERGINET_DATAHUB_WHOLESALE_WEBAPI
-            contentroot_variable_value: \source\dotnet\wholesale-api\WebApi
           - name: Calculations
             paths: \source\dotnet\wholesale-api\Calculations\Calculations.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Calculations.IntegrationTests.dll
             filter: empty # Means skip
@@ -105,7 +88,6 @@ jobs:
             use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
 
-
             ### SettlemtReports_v2 tests is split into multiple parts for performance reasons
           - name: Calculation Results - SettlemtReports SettlementReportMeteringPoint or SettlementReportMonthlyAmount
             paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
@@ -125,11 +107,6 @@ jobs:
             use_azure_functions_tools: true
             contentroot_variable_name: empty # Means skip
 
-          - name: Events
-            paths: \source\dotnet\wholesale-api\Events\Events.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Events.IntegrationTests.dll
-            filter: empty # Means skip
-            use_azure_functions_tools: false
-            contentroot_variable_name: empty # Means skip
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v14
     with:
       download_attempt_limit: 30
