@@ -15,7 +15,7 @@ from datetime import datetime
 from typing import List
 
 import pytest
-from pyspark.sql import DataFrame, Row, SparkSession
+from pyspark.sql import Row, SparkSession
 
 import tests.calculation.preparation.transformations.metering_point_periods_factory as factory
 from geh_wholesale.calculation.preparation.data_structures.grid_loss_metering_point_periods import (
@@ -25,13 +25,10 @@ from geh_wholesale.calculation.preparation.transformations.grid_loss_metering_po
     get_grid_loss_metering_point_ids,
 )
 from geh_wholesale.codelists import MeteringPointType
-from geh_wholesale.databases.wholesale_internal.schemas import (
-    grid_loss_metering_point_ids_schema,
-)
 
 
 class DefaultValues:
-    DEFAULT_GRID_AREA = ["804"]
+    DEFAULT_GRID_AREA = "804"
     DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
     DEFAULT_TO_DATE = datetime(2020, 1, 2, 0, 0)
     DEFAULT_METERING_POINT_TYPE = MeteringPointType.PRODUCTION
@@ -57,10 +54,6 @@ def _get_grid_loss_metering_point_periods(spark: SparkSession, data: List[str]) 
     metering_point_period = factory.create(spark, data=grid_loss_metering_point_periods)
 
     return GridLossMeteringPointPeriods(metering_point_period)
-
-
-def _get_metering_point_dataframe(spark: SparkSession, data: List[str]) -> DataFrame:
-    return spark.createDataFrame(data, grid_loss_metering_point_ids_schema)
 
 
 @pytest.mark.parametrize(
