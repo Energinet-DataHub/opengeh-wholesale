@@ -32,16 +32,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Publish Database Migration
-      shell: bash
-      run: |
-        dotnet publish \
-          '.\source\dotnet\database-migration\DatabaseMigration.csproj' \
-          --no-build \
-          --no-restore \
-          --configuration Release \
-          --output '${{ inputs.output_path }}\databasemigration'
-
     - name: Publish Subsystem Tests
       shell: bash
       run: |

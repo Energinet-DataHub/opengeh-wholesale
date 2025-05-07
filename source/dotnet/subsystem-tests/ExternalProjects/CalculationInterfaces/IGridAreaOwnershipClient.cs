@@ -12,14 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.States;
+namespace Energinet.DataHub.Wholesale.Calculations.Interfaces;
 
-public class CalculationScenarioState
+public interface IGridAreaOwnershipClient
 {
-    public IList<string> SubscribedIntegrationEventNames { get; }
-        = [];
-
-    public Guid CalculationId { get; set; }
-
-    public string OrchestrationInstanceId { get; set; } = string.Empty;
+    Task<IEnumerable<string>> GetOwnedByAsync(string actorNumber);
 }

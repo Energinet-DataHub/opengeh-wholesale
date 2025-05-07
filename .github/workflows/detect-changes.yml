@@ -25,8 +25,6 @@ on:
     outputs:
       dotnet:
         value: ${{ jobs.changes.outputs.dotnet }}
-      db_migrations:
-        value: ${{ jobs.changes.outputs.db_migrations }}
       packages:
         value: ${{ jobs.changes.outputs.packages }}
       render_c4model_views:
@@ -39,7 +37,6 @@ jobs:
     # Set job outputs to values from filter step
     outputs:
       dotnet: ${{ steps.filter.outputs.dotnet }}
-      db_migrations: ${{ steps.filter.outputs.db_migrations }}
       packages: ${{ steps.filter.outputs.packages }}
       render_c4model_views: ${{ steps.filter.outputs.render_c4model_views }}
     steps:
@@ -60,14 +57,6 @@ jobs:
               - '.github/actions/dotnet-*/**'
               - 'source/dotnet/!(Packages/**)/**'
               - 'source/databricks/calculation_engine/contracts/calculation-job-parameters-reference.txt'
-              - 'source/dotnet/!(database-migration/**)/**'
-            db_migrations:
-              - '.github/workflows/ci-dotnet.yml'  # If building and packaging of database migrations currently part of Wholesale.sln changes
-              - 'source/dotnet/database-migration/**'
-            packages:
-              - 'source/dotnet/wholesale-integration-events-package/**'
-              - 'source/dotnet/wholesale-api/Events/Events.Infrastructure/IntegrationEvents/**'
-              - '.github/workflows/packages-publish.yml'
             render_c4model_views:
               - 'docs/diagrams/c4-model/views.dsl'
               - 'docs/diagrams/c4-model/views.json'
