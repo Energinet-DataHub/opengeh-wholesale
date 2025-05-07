@@ -67,13 +67,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\wholesale-api\Common.Infrastructure\Common.Infrastructure.csproj" />
-    <ProjectReference Include="..\wholesale-api\Common.Interfaces\Common.Interfaces.csproj" />
-    <ProjectReference Include="..\wholesale-api\Test.Core\Test.Core.csproj" />
+    <Folder Include="ExternalProjects\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ExternalProjects\" />
+    <ProjectReference Include="..\common\Common.Infrastructure\Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\common\Common.Interfaces\Common.Interfaces.csproj" />
+    <ProjectReference Include="..\common\Test.Core\Test.Core.csproj" />
   </ItemGroup>
 
 </Project>
