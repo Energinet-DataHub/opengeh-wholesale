@@ -1,4 +1,0 @@
-{
-  // On your developer machine download the file below to be able to run integration tests locally:
-  // github.com/Energinet-DataHub/dh3-dev-secrets/blob/main/opengeh-wholesale/apps/WebApi/IntegrationTests/integrationtest.local.settings.json
-}
