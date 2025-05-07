@@ -14,7 +14,6 @@
 
 using Energinet.DataHub.Core.TestCommon.Xunit.Configuration;
 using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Extensions;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Identity;
 using Microsoft.Extensions.Configuration;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
@@ -29,7 +28,6 @@ public sealed class WholesaleSubsystemConfiguration : SubsystemTestConfiguration
 {
     public WholesaleSubsystemConfiguration()
     {
-        UserTokenConfiguration = B2CUserTokenConfiguration.CreateFromConfiguration(Root);
         DatabricksCatalogName = Root.GetValue<string>("DATABRICKS_CATALOG_NAME")!;
 
         var secretsConfiguration = Root.BuildSecretsConfiguration();
@@ -37,11 +35,6 @@ public sealed class WholesaleSubsystemConfiguration : SubsystemTestConfiguration
         DatabricksWorkspace = DatabricksWorkspaceConfiguration.CreateFromConfiguration(secretsConfiguration);
         LogAnalyticsWorkspaceId = secretsConfiguration.GetValue<string>("log-shared-workspace-id")!;
     }
-
-    /// <summary>
-    /// Settings necessary to retrieve a user token for authentication with Wholesale Web API in live environment.
-    /// </summary>
-    public B2CUserTokenConfiguration UserTokenConfiguration { get; }
 
     /// <summary>
     /// Settings necessary to use the shared Service Bus.
