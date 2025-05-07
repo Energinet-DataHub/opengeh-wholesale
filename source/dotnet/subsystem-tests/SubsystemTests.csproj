@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Monitor.Query" Version="1.5.0" />
+    <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="11.2.4" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="11.2.4" />
     <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="2.5.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
@@ -71,7 +72,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\common\Common.Infrastructure\Common.Infrastructure.csproj" />
     <ProjectReference Include="..\common\Common.Interfaces\Common.Interfaces.csproj" />
     <ProjectReference Include="..\common\Test.Core\Test.Core.csproj" />
   </ItemGroup>
