@@ -6,7 +6,6 @@ from geh_common.testing.dataframes import (
 from geh_common.testing.scenario_testing import TestCase, get_then_names
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize("name", get_then_names())
 def test__equals_expected(
     test_cases: TestCase,
@@ -14,7 +13,6 @@ def test__equals_expected(
     assert_dataframes_configuration: AssertDataframesConfiguration,
 ) -> None:
     test_case = test_cases[name]
-
     assert_dataframes_and_schemas(
         actual=test_case.actual,
         expected=test_case.expected,

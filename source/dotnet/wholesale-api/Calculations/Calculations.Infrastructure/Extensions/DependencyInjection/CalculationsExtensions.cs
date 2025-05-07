@@ -109,7 +109,6 @@ public static class CalculationsExtensions
         services.TryAddTransient<IJsonSerializer, JsonSerializer>();
         services.TryAddTransient<IAuditLogger, AuditLogger>();
 
-        services.AddOutboxClient<DatabaseContext>();
         services.AddRevisionLogIntegrationModule(configuration);
     }
 }
