@@ -6,7 +6,8 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="[7.0.0]" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
-    <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="8.0.1" />
+    <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime"
+      Version="8.0.1" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -21,11 +22,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\database-migration\DatabaseMigration.csproj" />
-    <ProjectReference Include="..\..\Common.Infrastructure\Common.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
-    <ProjectReference Include="..\Events.Infrastructure\Events.Infrastructure.csproj" />
+  <ProjectReference Include="..\..\Common.Infrastructure\Common.Infrastructure.csproj" />
+  <ProjectReference Include="..\..\Test.Core\Test.Core.csproj" />
+  <ProjectReference Include="..\Events.Infrastructure\Events.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="integrationtest.local.settings.json">
