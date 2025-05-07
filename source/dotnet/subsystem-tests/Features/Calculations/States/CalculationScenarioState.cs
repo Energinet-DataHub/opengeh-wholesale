@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Wholesale.SubsystemTests.Clients.v3;
-
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.States;
 
 public class CalculationScenarioState
@@ -24,6 +22,4 @@ public class CalculationScenarioState
     public Guid CalculationId { get; set; }
 
     public string OrchestrationInstanceId { get; set; } = string.Empty;
-
-    public CalculationDto? Calculation { get; set; }
 }
