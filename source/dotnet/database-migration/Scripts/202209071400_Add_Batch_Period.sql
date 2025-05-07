@@ -1,5 +1,0 @@
-﻿ALTER TABLE Batch
-    ADD PeriodStart DATETIME2;
-ALTER TABLE Batch
-    ADD PeriodEnd DATETIME2;
-GO

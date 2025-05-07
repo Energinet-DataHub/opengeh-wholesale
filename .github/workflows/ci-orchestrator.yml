@@ -39,7 +39,7 @@ jobs:
 
   ci_dotnet:
     needs: changes
-    if: ${{ needs.changes.outputs.dotnet == 'true' || needs.changes.outputs.db_migrations == 'true' }}
+    if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: ./.github/workflows/ci-dotnet.yml
 
   verify_migration_scripts:
@@ -96,11 +96,6 @@ jobs:
       azure_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
       azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
 
-  ci_packages:
-    needs: changes
-    if: ${{ needs.changes.outputs.packages == 'true' }}
-    uses: ./.github/workflows/packages-publish.yml
-
   render_c4model_views:
     needs: changes
     if: ${{ needs.changes.outputs.render_c4model_views == 'true' }}
@@ -121,7 +116,6 @@ jobs:
         changes,
         ci_base,
         ci_dotnet,
-        ci_packages,
         ci_python,
         ci_python_integration,
         verify_migration_scripts,

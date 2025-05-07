@@ -67,9 +67,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\wholesale-api\Calculations\Calculations.Application\Calculations.Application.csproj" />
-    <ProjectReference Include="..\wholesale-api\Calculations\Calculations.Infrastructure\Calculations.Infrastructure.csproj" />
-    <ProjectReference Include="..\wholesale-api\Test.Core\Test.Core.csproj" />
+    <Folder Include="ExternalProjects\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\common\Common.Infrastructure\Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\common\Common.Interfaces\Common.Interfaces.csproj" />
+    <ProjectReference Include="..\common\Test.Core\Test.Core.csproj" />
   </ItemGroup>
 
 </Project>
