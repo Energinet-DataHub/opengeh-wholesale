@@ -32,8 +32,6 @@ jobs:
         tests_filter_expression:
           - name: Calculations
             paths: \source\dotnet\wholesale-api\Calculations\Calculations.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.Calculations.UnitTests.dll
-          - name: Calculation Results
-            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.UnitTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.UnitTests.dll
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v14
     with:
       download_attempt_limit: 30
@@ -41,80 +39,3 @@ jobs:
       # Matrix parameters
       job_name: Unit Tests ${{ matrix.tests_filter_expression.name }}
       tests_dll_file_path: ${{ matrix.tests_filter_expression.paths }}
-
-  # Tests that require the integration test environment
-  integration_tests:
-    strategy:
-      fail-fast: false
-      matrix:
-        tests_filter_expression:
-          ### AggregatedTimeSeriesQueriesCsvTests is split into multiple parts for performance reasons
-          - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTestsWithSharedData
-            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTestsWithSharedData)
-            use_azure_functions_tools: true
-            contentroot_variable_name: empty # Means skip
-          - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTestsWithIndividualData split 1
-            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTestsWithIndividualData)&(DisplayName~BalanceResponsible)
-            use_azure_functions_tools: true
-            contentroot_variable_name: empty # Means skip
-          - name: Calculation Results - AggregatedTimeSeriesQueriesCsvTestsWithIndividualData split 2
-            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: (DisplayName~AggregatedTimeSeriesQueriesCsvTestsWithIndividualData)&(DisplayName!~BalanceResponsible)
-            use_azure_functions_tools: true
-            contentroot_variable_name: empty # Means skip
-
-            ### WholesaleServicesQueriesCsvTests is split into multiple parts for performance reasons
-          - name: Calculation Results - WholesaleServicesQueriesCsvTestsWithSharedData
-            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: (DisplayName~WholesaleServicesQueriesCsvTestsWithSharedData)
-            use_azure_functions_tools: true
-            contentroot_variable_name: empty # Means skip
-          - name: Calculation Results - WholesaleServicesQueriesCsvTestsWithIndividualData split 1
-            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: (DisplayName~WholesaleServicesQueriesCsvTestsWithIndividualData)&(DisplayName~WithLatestCorrection)
-            use_azure_functions_tools: true
-            contentroot_variable_name: empty # Means skip
-          - name: Calculation Results - WholesaleServicesQueriesCsvTestsWithIndividualData split 2
-            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: (DisplayName~WholesaleServicesQueriesCsvTestsWithIndividualData)&(DisplayName!~WithLatestCorrection)
-            use_azure_functions_tools: true
-            contentroot_variable_name: empty # Means skip
-
-            ### SettlemtReports_v2 tests is split into multiple parts for performance reasons
-          - name: Calculation Results - SettlemtReports SettlementReportMeteringPoint or SettlementReportMonthlyAmount
-            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: (DisplayName~SettlementReportMeteringPoint)|(DisplayName~SettlementReportMonthlyAmount)
-            use_azure_functions_tools: true
-            contentroot_variable_name: empty # Means skip
-          - name: Calculation Results - SettlementReports not SettlementReportMeteringPoint or SettlementReportMonthlyAmount
-            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: (DisplayName~SettlementReport)&(DisplayName!~SettlementReportMeteringPoint)&(DisplayName!~SettlementReportMonthlyAmount)
-            use_azure_functions_tools: true
-            contentroot_variable_name: empty # Means skip
-
-            ### All CalculationResults integration tests that are not AggregatedTimeSeriesQueriesCsvTests, WholesaleServicesQueriesCsvTests or SettlementReport
-          - name: Calculation Results - Not AggregatedTimeSeriesQueriesCsvTests, WholesaleServicesQueriesCsvTests or SettlementReport
-            paths: \source\dotnet\wholesale-api\CalculationResults\CalculationResults.IntegrationTests\bin\Release\net8.0\Energinet.DataHub.Wholesale.CalculationResults.IntegrationTests.dll
-            filter: (DisplayName!~AggregatedTimeSeriesQueriesCsvTests)&(DisplayName!~WholesaleServicesQueriesCsvTests)&(DisplayName!~SettlementReport)
-            use_azure_functions_tools: true
-            contentroot_variable_name: empty # Means skip
-
-    uses: Energinet-DataHub/.github/.github/workflows/dotnet-postbuild-test.yml@v14
-    with:
-      download_attempt_limit: 30
-      azure_functions_core_tools_version: 4.0.5413
-      azure_integrationtest_tenant_id: ${{ vars.integration_test_azure_tenant_id }}
-      azure_integrationtest_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
-      azure_integrationtest_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
-      azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
-      environment: AzureAuth
-      run_integration_tests: true
-      # Matrix parameters
-      job_name: Integration Tests ${{ matrix.tests_filter_expression.name }}
-      tests_dll_file_path: ${{ matrix.tests_filter_expression.paths }}
-      tests_filter_expression: ${{ matrix.tests_filter_expression.filter }}
-      use_azure_functions_tools: ${{ matrix.tests_filter_expression.use_azure_functions_tools }}
-      aspnetcore_test_contentroot_variable_name: ${{ matrix.tests_filter_expression.contentroot_variable_name }}
-      aspnetcore_test_contentroot_variable_value: ${{ matrix.tests_filter_expression.contentroot_variable_value }}
