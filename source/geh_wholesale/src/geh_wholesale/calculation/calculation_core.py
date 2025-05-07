@@ -71,7 +71,7 @@ class CalculationCore:
         metering_point_time_series.cache_internal()
 
         grid_loss_metering_point_periods = prepared_data_reader.get_grid_loss_metering_point_periods(
-            args.grid_areas, metering_point_periods
+            args.grid_areas, metering_point_periods, args.period_start_datetime, args.period_end_datetime
         )
 
         (
@@ -148,7 +148,7 @@ class CalculationCore:
         ).where(is_parent_metering_point(Colname.metering_point_type))
 
         grid_loss_metering_point_periods = prepared_data_reader.get_grid_loss_metering_point_periods(
-            args.grid_areas, parent_metering_point_periods
+            args.grid_areas, parent_metering_point_periods, args.period_start_datetime, args.period_end_datetime
         )
 
         metering_point_periods__except_grid_loss = prepared_data_reader.get_metering_point_periods__except_grid_loss(

@@ -60,10 +60,18 @@ class PreparedDataReader:
 
     @use_span("get_grid_loss_metering_point_periods")
     def get_grid_loss_metering_point_periods(
-        self, grid_areas: list[str], metering_point_periods_df: DataFrame
+        self,
+        grid_areas: list[str],
+        metering_point_periods_df: DataFrame,
+        period_start_datetime: datetime,
+        period_end_datetime: datetime,
     ) -> GridLossMeteringPointPeriods:
         return T.get_grid_loss_metering_point_periods(
-            grid_areas, metering_point_periods_df, self._wholesale_internal_repository
+            grid_areas,
+            metering_point_periods_df,
+            period_start_datetime,
+            period_end_datetime,
+            self._wholesale_internal_repository,
         )
 
     @use_span("get_metering_point_time_series")
