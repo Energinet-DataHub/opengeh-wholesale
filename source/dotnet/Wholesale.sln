@@ -5,8 +5,6 @@ VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A65AE4F0-E4A5-4F6C-AB74-F8A278C31AD9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseMigration", "database-migration\DatabaseMigration.csproj", "{ABA195E8-C392-42BA-958E-F03447A2B301}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ConfigurationFiles", "_ConfigurationFiles", "{2F06D7A0-5E4C-4245-8E2E-CD342C13C840}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -58,10 +56,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ABA195E8-C392-42BA-958E-F03447A2B301}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABA195E8-C392-42BA-958E-F03447A2B301}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABA195E8-C392-42BA-958E-F03447A2B301}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABA195E8-C392-42BA-958E-F03447A2B301}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EFA0CC43-7B22-4842-9AC0-E0FDA4F844BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EFA0CC43-7B22-4842-9AC0-E0FDA4F844BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFA0CC43-7B22-4842-9AC0-E0FDA4F844BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -120,7 +114,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A65AE4F0-E4A5-4F6C-AB74-F8A278C31AD9} = {1563FA3D-F631-463A-B09D-81177B8FA237}
-		{ABA195E8-C392-42BA-958E-F03447A2B301} = {1563FA3D-F631-463A-B09D-81177B8FA237}
 		{EFA0CC43-7B22-4842-9AC0-E0FDA4F844BA} = {A65AE4F0-E4A5-4F6C-AB74-F8A278C31AD9}
 		{7CC39847-4152-40C9-9A30-891965B19DD5} = {6E82058A-D327-44E7-A4BC-3635966A6FC5}
 		{FE1A2F74-7664-4D82-BCCA-60DC3CD1C608} = {6E82058A-D327-44E7-A4BC-3635966A6FC5}
