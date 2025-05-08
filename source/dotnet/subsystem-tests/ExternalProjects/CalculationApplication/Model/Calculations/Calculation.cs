@@ -150,29 +150,11 @@ public class Calculation
     /// </summary>
     public Instant ScheduledAt { get; }
 
-    /// <summary>
-    /// When the calculation orchestration actually started (after the schedule is met).
-    /// </summary>
-    public Instant? ExecutionTimeStart { get; private set; }
-
     public Instant CreatedTime { get; }
 
     public Guid CreatedByUserId { get; }
 
-    /// <summary>
-    /// The user who canceled the scheduled calculation.
-    /// </summary>
-    public Guid? CanceledByUserId { get; private set; }
-
     public Instant? ExecutionTimeEnd { get; private set; }
-
-    public Instant? ActorMessagesEnqueuingTimeStart { get; private set; }
-
-    public Instant? ActorMessagesEnqueuedTimeEnd { get; private set; }
-
-    public Instant? CompletedTime { get; private set; }
-
-    public CalculationJobId? CalculationJobId { get; private set; }
 
     public OrchestrationInstanceId OrchestrationInstanceId { get; }
 
