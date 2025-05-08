@@ -21,7 +21,6 @@ namespace Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculation
 public class Calculation
 {
     private readonly List<GridAreaCode> _gridAreaCodes;
-    private CalculationOrchestrationState _orchestrationState;
 
     public Calculation(
         Instant createdTime,
@@ -60,7 +59,6 @@ public class Calculation
         Version = version;
         IsInternalCalculation = isInternalCalculation;
 
-        _orchestrationState = CalculationOrchestrationState.Scheduled;
         ExecutionState = CalculationExecutionState.Created;
         OrchestrationInstanceId = new OrchestrationInstanceId(Guid.NewGuid().ToString("N"));
     }
@@ -148,43 +146,6 @@ public class Calculation
     public CalculationExecutionState ExecutionState { get; private set; }
 
     /// <summary>
-    /// Get/set the orchestration state of the calculation.
-    /// Throws a <see cref="BusinessValidationException"/> if the state transition is invalid.
-    /// </summary>
-    public CalculationOrchestrationState OrchestrationState
-    {
-        get => _orchestrationState;
-        private set
-        {
-            if (_orchestrationState == value)
-                return; // Do nothing if the state isn't changing
-
-            CalculationOrchestrationState[] validStateTransitions = _orchestrationState switch
-            {
-                CalculationOrchestrationState.Scheduled => [CalculationOrchestrationState.Started, CalculationOrchestrationState.Canceled],
-                // The state can move from Started -> Calculated if the calculation was so quick we didn't see the Calculating state
-                CalculationOrchestrationState.Started => [CalculationOrchestrationState.Calculating, CalculationOrchestrationState.Calculated],
-
-                // The state can move from Calculating  -> Started if the databricks job is canceled and the calculation is reset and started again
-                CalculationOrchestrationState.Calculating => [CalculationOrchestrationState.Calculated, CalculationOrchestrationState.CalculationFailed, CalculationOrchestrationState.Started],
-                CalculationOrchestrationState.Calculated => [CalculationOrchestrationState.ActorMessagesEnqueuing, CalculationOrchestrationState.Completed],
-                CalculationOrchestrationState.CalculationFailed => [CalculationOrchestrationState.Scheduled],
-                CalculationOrchestrationState.ActorMessagesEnqueuing => [CalculationOrchestrationState.ActorMessagesEnqueued, CalculationOrchestrationState.ActorMessagesEnqueuingFailed],
-                CalculationOrchestrationState.ActorMessagesEnqueued => [CalculationOrchestrationState.Completed],
-                CalculationOrchestrationState.ActorMessagesEnqueuingFailed => [], // We do not support retries, so we are stuck in failed
-                CalculationOrchestrationState.Completed => [],
-                CalculationOrchestrationState.Canceled => [],
-                _ => throw new ArgumentOutOfRangeException(nameof(_orchestrationState), _orchestrationState, "Unsupported CalculationOrchestrationState to get valid state transitions for"),
-            };
-
-            if (!validStateTransitions.Contains(value))
-                ThrowInvalidStateTransitionException(_orchestrationState, value);
-
-            _orchestrationState = value;
-        }
-    }
-
-    /// <summary>
     /// When they calculation is scheduled to run.
     /// </summary>
     public Instant ScheduledAt { get; }
@@ -241,9 +202,4 @@ public class Calculation
     /// Results should not be exposed to external users/actors.
     /// </summary>
     public bool IsInternalCalculation { get; }
-
-    private void ThrowInvalidStateTransitionException(CalculationOrchestrationState currentState, CalculationOrchestrationState desiredState)
-    {
-        throw new BusinessValidationException($"Cannot change {nameof(CalculationOrchestrationState)} from {currentState} to {desiredState}");
-    }
 }
