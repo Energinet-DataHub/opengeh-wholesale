@@ -18,7 +18,7 @@ using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.Calculations.Infrastructure.Calculations;
 
-public class DatabricksCalculationParametersFactory : ICalculationParametersFactory
+public class DatabricksCalculationParametersFactory
 {
     public RunParameters CreateParameters(Calculation calculation)
     {
