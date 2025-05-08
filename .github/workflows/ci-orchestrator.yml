@@ -20,6 +20,13 @@ on:
   merge_group:
     types: [checks_requested]
 
+permissions: # Use same permissions as in measurements
+  checks: write
+  contents: write
+  id-token: write
+  issues: read
+  pull-requests: write
+
 jobs:
   #
   # License and Markdown Check.
@@ -62,11 +69,11 @@ jobs:
           - name: Wholesale (calculator_job)
             paths: tests/calculator_job/test_wholesale_calculation.py
           - name: Energy logic
-            paths: tests/scenarios/energy_calculation
+            paths: tests/scenario_tests/energy_calculation
           - name: Wholesale logic
-            paths: tests/scenarios/wholesale_calculation
+            paths: tests/scenario_tests/wholesale_calculation
           - name: Data products
-            paths: tests/scenarios/data_products contracts
+            paths: tests/scenario_tests/data_products contracts
           - name: Unit tests
             paths: tests/calculation tests/codelists tests/common tests/databases tests/infrastructure
           - name: Entry point tests
@@ -95,6 +102,15 @@ jobs:
       azure_subscription_id: ${{ vars.integration_test_azure_subscription_id }}
       azure_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
       azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
+
+  ci_covernator:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Covernator
+        uses: Energinet-DataHub/.github/.github/actions/python-covernator-generate-files@v14
+        with:
+          project_name: geh-wholesale
+          project_directory: source/geh_wholesale
 
   render_c4model_views:
     needs: changes
