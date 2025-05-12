@@ -32,6 +32,7 @@ from geh_wholesale.codelists.calculation_type import (
 from geh_wholesale.databases import migrations_wholesale, wholesale_internal
 from geh_wholesale.databases.table_column_names import TableColumnNames
 from geh_wholesale.infrastructure import paths
+from tests import SPARK_CATALOG_NAME
 
 from . import configuration as C
 
@@ -101,9 +102,9 @@ def executed_balance_fixing(
     without awaiting the execution in each test."""
 
     migrations_wholesale_repository = migrations_wholesale.MigrationsWholesaleRepository(
-        spark, "spark_catalog", calculation_input_database
+        spark, SPARK_CATALOG_NAME, calculation_input_database
     )
-    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
+    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, SPARK_CATALOG_NAME)
     prepared_data_reader = PreparedDataReader(migrations_wholesale_repository, wholesale_internal_repository)
     calculation.execute(
         calculator_args_balance_fixing,
@@ -131,9 +132,9 @@ def executed_wholesale_fixing(
     without awaiting the execution in each test."""
 
     migrations_wholesale_repository = migrations_wholesale.MigrationsWholesaleRepository(
-        spark, "spark_catalog", calculation_input_database
+        spark, SPARK_CATALOG_NAME, calculation_input_database
     )
-    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
+    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, SPARK_CATALOG_NAME)
     prepared_data_reader = PreparedDataReader(migrations_wholesale_repository, wholesale_internal_repository)
     calculation.execute(
         calculator_args_wholesale_fixing,

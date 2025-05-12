@@ -251,7 +251,7 @@ def dependency_injection_container(spark: SparkSession) -> Container:
             os,
             "environ",
             {
-                EnvironmentVariable.CATALOG_NAME.value: "spark_catalog",
+                EnvironmentVariable.CATALOG_NAME.value: SPARK_CATALOG_NAME,
                 EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME.value: "wholesale_migrations_wholesale",
                 EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.value: "foo",
                 EnvironmentVariable.TENANT_ID.value: "tenant_id",
