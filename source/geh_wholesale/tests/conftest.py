@@ -5,7 +5,6 @@ defined in the geh_stream directory in our tests.
 
 import os
 import shutil
-import subprocess
 import sys
 import uuid
 from datetime import datetime, timezone
@@ -38,7 +37,7 @@ from geh_wholesale.databases.wholesale_internal.schemas import (
 from geh_wholesale.infrastructure import paths
 from geh_wholesale.infrastructure.environment_variables import EnvironmentVariable
 from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
-from tests import PROJECT_PATH, SPARK_CATALOG_NAME
+from tests import PROJECT_PATH, SPARK_CATALOG_NAME, TESTS_PATH
 from tests.testsession_configuration import (
     TestSessionConfiguration,
 )
@@ -73,8 +72,8 @@ _spark, datadir = get_spark_test_session(
 
 
 @pytest.fixture(scope="session")
-def test_files_folder_path(tests_path: str) -> str:
-    return f"{tests_path}/test_files"
+def test_files_folder_path() -> str:
+    return f"{TESTS_PATH}/test_files"
 
 
 @pytest.fixture(scope="session")
@@ -84,25 +83,14 @@ def spark() -> Generator[SparkSession, None, None]:
 
 
 @pytest.fixture(scope="session")
-def calculation_engine_path() -> str:
-    """
-    Returns the <repo-root>/source folder path.
-    Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
-    The correctness also relies on the prerequisite that this function is actually located in a
-    file located directly in the tests folder.
-    """
-    return f"{PROJECT_PATH}/src/geh_wholesale"
-
-
-@pytest.fixture(scope="session")
-def contracts_path(calculation_engine_path: str) -> str:
+def contracts_path() -> str:
     """
     Returns the source/contract folder path.
     Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
     The correctness also relies on the prerequisite that this function is actually located in a
     file located directly in the tests folder.
     """
-    return f"{calculation_engine_path}/contracts"
+    return f"{PROJECT_PATH}/contracts"
 
 
 @pytest.fixture(scope="session")
@@ -119,23 +107,7 @@ def timestamp_factory() -> Callable[[str], Optional[datetime]]:
 
 
 @pytest.fixture(scope="session")
-def tests_path() -> str:
-    """
-    Returns the tests folder path.
-    Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
-    The correctness also relies on the prerequisite that this function is actually located in a
-    file located directly in the tests folder.
-    """
-    return f"{PROJECT_PATH}/tests"
-
-
-@pytest.fixture(scope="session")
-def data_lake_path(tests_path: str, worker_id: str) -> str:
-    return f"{tests_path}/__data_lake__/{worker_id}"
-
-
-@pytest.fixture(scope="session")
-def calculation_input_folder(data_lake_path: str) -> str:
+def calculation_input_folder() -> str:
     return "input"
 
 
@@ -158,47 +130,7 @@ def migrations_executed(
 
 
 @pytest.fixture(scope="session")
-def virtual_environment() -> Generator:
-    """Fixture ensuring execution in a virtual environment.
-    Uses `virtualenv` instead of conda environments due to problems
-    activating the virtual environment from pytest."""
-
-    # Create and activate the virtual environment
-    subprocess.call(["uv", "venv", ".wholesale-pytest", "--no-project"], shell=True, executable="/bin/bash")
-    subprocess.call("source .wholesale-pytest/bin/activate", shell=True, executable="/bin/bash")
-
-    yield None
-
-    # Deactivate virtual environment upon test suite tear down
-    subprocess.call("deactivate", shell=True, executable="/bin/bash")
-
-
-@pytest.fixture(scope="session")
-def installed_package(virtual_environment: Generator, calculation_engine_path: str) -> None:
-    """Ensures that the wholesale package is installed (after building it)."""
-
-    # Build the package wheel
-    os.chdir(calculation_engine_path)
-    subprocess.call("uv run python -m build --wheel", shell=True, executable="/bin/bash")
-
-    # Uninstall the package in case it was left by a cancelled test suite
-    subprocess.call(
-        "uv pip uninstall geh_wholesale",
-        shell=True,
-        executable="/bin/bash",
-    )
-
-    # Intall wheel, which will also create console scripts for invoking
-    # the entry points of the package
-    subprocess.call(
-        f"uv pip install {calculation_engine_path}/dist/geh_wholesale-1.0-py3-none-any.whl",
-        shell=True,
-        executable="/bin/bash",
-    )
-
-
-@pytest.fixture(scope="session")
-def test_session_configuration(tests_path: str) -> TestSessionConfiguration:
+def test_session_configuration() -> TestSessionConfiguration:
     return test_session_config
 
 
@@ -290,7 +222,6 @@ def configure_logging_dummy() -> config.LoggingSettings:
 def grid_loss_metering_point_ids_input_data_written_to_delta(
     spark: SparkSession,
     test_files_folder_path: str,
-    test_session_configuration: TestSessionConfiguration,
     migrations_executed: None,
 ) -> None:
     _write_input_test_data_to_table(
@@ -306,7 +237,6 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
 def energy_input_data_written_to_delta(
     spark: SparkSession,
     test_files_folder_path: str,
-    test_session_configuration: TestSessionConfiguration,
     calculation_input_database: str,
 ) -> None:
     _write_input_test_data_to_table(
@@ -354,7 +284,6 @@ def energy_input_data_written_to_delta(
 def price_input_data_written_to_delta(
     spark: SparkSession,
     test_files_folder_path: str,
-    test_session_configuration: TestSessionConfiguration,
     calculation_input_database: str,
 ) -> None:
     # Charge master data periods
