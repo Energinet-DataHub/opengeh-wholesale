@@ -17,8 +17,8 @@ from unittest import mock
 import geh_common.telemetry.logging_configuration as config
 import pytest
 import yaml
-from delta import configure_spark_with_delta_pip
 from geh_common.pyspark.read_csv import read_csv_path
+from geh_common.testing.spark.spark_test_session import get_spark_test_session
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType
 
@@ -53,66 +53,9 @@ def test_files_folder_path(tests_path: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def spark(
-    test_session_configuration: TestSessionConfiguration,
-    tests_path: str,
-) -> Generator[SparkSession, None, None]:
-    warehouse_location = f"{tests_path}/__spark-warehouse__"
-    metastore_path = f"{tests_path}/__metastore_db__"
-
-    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
-        if os.path.exists(warehouse_location):
-            print(f"Removing warehouse before clean run (path={warehouse_location})")  # noqa: T201
-            shutil.rmtree(warehouse_location)
-        if os.path.exists(metastore_path):
-            print(f"Removing metastore before clean run (path={metastore_path})")  # noqa: T201
-            shutil.rmtree(metastore_path)
-
-    session = configure_spark_with_delta_pip(
-        SparkSession.builder.config("spark.sql.warehouse.dir", warehouse_location)
-        .config("spark.sql.streaming.schemaInference", True)
-        .config("spark.ui.showConsoleProgress", "false")
-        .config("spark.ui.enabled", "false")
-        .config("spark.ui.dagGraph.retainedRootRDDs", "1")
-        .config("spark.ui.retainedJobs", "1")
-        .config("spark.ui.retainedStages", "1")
-        .config("spark.ui.retainedTasks", "1")
-        .config("spark.sql.ui.retainedExecutions", "1")
-        .config("spark.worker.ui.retainedExecutors", "1")
-        .config("spark.worker.ui.retainedDrivers", "1")
-        .config("spark.default.parallelism", 1)
-        .config("spark.driver.memory", "4g")
-        .config("spark.executor.memory", "4g")
-        .config("spark.rdd.compress", False)
-        .config("spark.shuffle.compress", False)
-        .config("spark.shuffle.spill.compress", False)
-        .config("spark.sql.shuffle.partitions", 1)
-        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-        .config(
-            "spark.sql.catalog.spark_catalog",
-            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
-        )
-        # Enable Hive support for persistence across test sessions
-        .config("spark.sql.catalogImplementation", "hive")
-        .config(
-            "javax.jdo.option.ConnectionURL",
-            f"jdbc:derby:;databaseName={metastore_path};create=true",
-        )
-        .config(
-            "javax.jdo.option.ConnectionDriverName",
-            "org.apache.derby.jdbc.EmbeddedDriver",
-        )
-        .config("javax.jdo.option.ConnectionUserName", "APP")
-        .config("javax.jdo.option.ConnectionPassword", "mine")
-        .config("datanucleus.autoCreateSchema", "true")
-        .config("hive.metastore.schema.verification", "false")
-        .config("hive.metastore.schema.verification.record.version", "false")
-        .config("spark.sql.session.timeZone", "UTC")
-        .enableHiveSupport()
-    ).getOrCreate()
-
-    yield session
-    session.stop()
+def spark() -> Generator[SparkSession, None, None]:
+    yield _spark
+    _spark.stop()
 
 
 @pytest.fixture(scope="session")
@@ -509,3 +452,34 @@ def _write_input_test_data_to_table(
         table_location,
         schema,
     )
+
+
+# pytest-xdist plugin does not work with SparkSession as a fixture. The session scope is not supported.
+# Therefore, we need to create a global variable to store the Spark session and data directory.
+# This is a workaround to avoid creating a new Spark session for each test.
+def _spark_session_creation() -> tuple[SparkSession, str]:
+    tests_path = "/workspace/source/geh_wholesale/tests"
+    settings_file_path = Path(tests_path) / "test.local.settings.yml"
+    settings = _load_settings_from_file(settings_file_path)
+    test_session_configuration = TestSessionConfiguration(settings)
+
+    warehouse_location = f"{tests_path}/spark-warehouse"
+    metastore_path = f"{tests_path}/metastore_db"
+
+    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
+        if os.path.exists(warehouse_location):
+            print(f"Removing warehouse before clean run (path={warehouse_location})")  # noqa: T201
+            shutil.rmtree(warehouse_location)
+        if os.path.exists(metastore_path):
+            print(f"Removing metastore before clean run (path={metastore_path})")  # noqa: T201
+            shutil.rmtree(metastore_path)
+
+    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.MODIFIED.value:
+        _spark, data_dir = get_spark_test_session(static_data_dir=tests_path, use_hive=True)
+    else:
+        _spark, data_dir = get_spark_test_session()
+
+    return _spark, data_dir
+
+
+_spark, data_dir = _spark_session_creation()
