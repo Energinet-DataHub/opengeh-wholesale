@@ -49,7 +49,6 @@ def raw_time_series_points_factory(spark, timestamp_factory):
         }
         rows = [Row(**row)]
         df = spark.createDataFrame(rows, time_series_points_schema)
-        df.schema = time_series_points_schema
         return df
 
     return factory

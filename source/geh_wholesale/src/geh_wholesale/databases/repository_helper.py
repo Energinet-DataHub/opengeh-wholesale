@@ -33,9 +33,4 @@ def read_table(
     # Select only the columns that are defined in the contract to avoid potential downstream issues
     df = df.select(contract.fieldNames())
 
-    # When reading Parquet/Delta files, all columns are automatically converted to be nullable for compatibility reasons
-    # See 'https://github.com/delta-io/delta/issues/873#issuecomment-1012426632' for more context
-    # This is a workaround to ensure that the schema of the DataFrame matches the contract
-    df.schema = contract
-
     return df

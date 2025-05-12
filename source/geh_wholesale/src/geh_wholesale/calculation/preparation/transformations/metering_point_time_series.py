@@ -38,8 +38,11 @@ def get_metering_point_time_series(
     Thus, there will be no missing points for a given metering point when it's connected. It may, however, not be
     connected for the entire period of the calculation.
     """
-    assert_schema(raw_time_series_points_df.schema, time_series_points_schema)
-    assert_schema(metering_point_periods_df.schema, metering_point_periods_schema)
+    # When reading Parquet/Delta files, all columns are automatically converted to be nullable for compatibility reasons
+    # See 'https://github.com/delta-io/delta/issues/873#issuecomment-1012426632' for more context
+    # This is a workaround to ensure that the schema of the DataFrame matches the contract
+    assert_schema(raw_time_series_points_df.schema, time_series_points_schema, ignore_nullability=True)
+    assert_schema(metering_point_periods_df.schema, metering_point_periods_schema, ignore_nullability=True)
 
     quarterly_mp_df = metering_point_periods_df.where(
         f.col(Colname.resolution) == MeteringPointResolution.QUARTER.value
