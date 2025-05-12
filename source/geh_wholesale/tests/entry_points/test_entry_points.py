@@ -13,26 +13,12 @@
 # limitations under the License.
 
 
-# IMPORTANT:
-# If we add/remove tests here, we also update the "retry logic" in '.docker/entrypoint.sh',
-# which depends on the number of "entry point tests".
-import tomllib
-
-import pytest
+from geh_common.testing.job.project_script import assert_pyproject_toml_project_script_exists
 
 from tests import PROJECT_PATH
 
 
-@pytest.mark.parametrize(
-    "entry_point_name",
-    [
-        "start_calculator",
-        "migrate_data_lake",
-    ],
-)
-def test__entry_point_exists(entry_point_name: str) -> None:
-    with open(PROJECT_PATH / "pyproject.toml", "rb") as file:
-        pyproject = tomllib.load(file)
-        project = pyproject.get("project", {})
-    scripts = project.get("scripts", {})
-    assert entry_point_name in scripts, f"Entry point `{entry_point_name}` not found in scripts"
+def test__entry_point_exists() -> None:
+    assert_pyproject_toml_project_script_exists(
+        pyproject_toml_path=PROJECT_PATH / "pyproject.toml",
+    )
