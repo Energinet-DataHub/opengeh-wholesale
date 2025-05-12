@@ -221,6 +221,7 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
 def energy_input_data_written_to_delta(
     spark: SparkSession,
     calculation_input_database: str,
+    migrations_executed: None,
 ) -> None:
     _write_input_test_data_to_table(
         spark,
@@ -267,6 +268,7 @@ def energy_input_data_written_to_delta(
 def price_input_data_written_to_delta(
     spark: SparkSession,
     calculation_input_database: str,
+    migrations_executed: None,
 ) -> None:
     # Charge master data periods
     _write_input_test_data_to_table(
