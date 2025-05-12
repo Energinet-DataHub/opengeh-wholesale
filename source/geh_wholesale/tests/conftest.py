@@ -39,7 +39,7 @@ from geh_wholesale.databases.wholesale_internal.schemas import (
 from geh_wholesale.infrastructure import paths
 from geh_wholesale.infrastructure.environment_variables import EnvironmentVariable
 from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
-from tests import PROJECT_PATH
+from tests import PROJECT_PATH, SPARK_CATALOG_NAME
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 from tests.integration_test_configuration import IntegrationTestConfiguration
 from tests.testsession_configuration import (
@@ -263,7 +263,7 @@ def infrastructure_settings(monkeypatch: pytest.MonkeyPatch) -> InfrastructureSe
         os,
         "environ",
         {
-            EnvironmentVariable.CATALOG_NAME.value: "spark_catalog",
+            EnvironmentVariable.CATALOG_NAME.value: SPARK_CATALOG_NAME,
             EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME.value: "wholesale_migrations_wholesale",
             EnvironmentVariable.DATA_STORAGE_ACCOUNT_NAME.value: "foo",
             EnvironmentVariable.TENANT_ID.value: "tenant_id",

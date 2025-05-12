@@ -22,8 +22,9 @@ from pyspark.sql import SparkSession
 
 from geh_wholesale.datamigration.migration import migrate_data_lake
 from geh_wholesale.infrastructure.paths import UnityCatalogDatabaseNames
+from tests import SPARK_CATALOG_NAME
 
-catalog_name = "spark_catalog"
+catalog_name = SPARK_CATALOG_NAME
 schema_migration_schema_name = "schema_migration"
 schema_migration_location = "schema_migration"
 schema_migration_table_name = "executed_migrations"
