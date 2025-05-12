@@ -27,7 +27,10 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Monitor.Query" Version="1.5.0" />
+    <PackageReference Include="Energinet.DataHub.Core.Databricks.Jobs" Version="11.2.4" />
     <PackageReference Include="Energinet.DataHub.Core.Databricks.SqlStatementExecution" Version="11.2.4" />
+    <PackageReference Include="Energinet.DataHub.Core.FunctionApp.TestCommon" Version="7.1.1" />
+    <PackageReference Include="Energinet.DataHub.Core.TestCommon" Version="7.3.0" />
     <PackageReference Include="Microsoft.Azure.Databricks.Client" Version="2.5.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
@@ -37,7 +40,7 @@
     <PackageReference Include="FluentAssertions" Version="[7.0.0]" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.66.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -46,10 +49,6 @@
     <PackageReference Include="coverlet.collector" Version="6.0.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="NSwag.MSBuild" Version="14.1.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.11.20">
       <PrivateAssets>all</PrivateAssets>
@@ -68,12 +67,6 @@
 
   <ItemGroup>
     <Folder Include="ExternalProjects\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\common\Common.Infrastructure\Common.Infrastructure.csproj" />
-    <ProjectReference Include="..\common\Common.Interfaces\Common.Interfaces.csproj" />
-    <ProjectReference Include="..\common\Test.Core\Test.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -82,7 +82,6 @@ def test__when_migrations_executed__created_table_is_managed(
     """
 
     table_description = spark.sql(f"DESCRIBE EXTENDED {schema_name}.{table_name}")
-    table_description.show()
 
     is_managed = any(
         prop["col_name"] == "Type" and prop["data_type"] == "MANAGED" for prop in table_description.collect()

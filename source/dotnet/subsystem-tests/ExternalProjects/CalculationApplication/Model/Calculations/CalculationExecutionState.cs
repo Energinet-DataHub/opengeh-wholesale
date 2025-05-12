@@ -23,34 +23,4 @@ public enum CalculationExecutionState
     /// The calculation is created.
     /// </summary>
     Created = -2,
-
-    /// <summary>
-    /// The calculation is submitted.
-    /// </summary>
-    Submitted = -1,
-
-    /// <summary>
-    /// The calculation is pending.
-    /// </summary>
-    Pending = 0,
-
-    /// <summary>
-    /// The calculation is currently executing.
-    /// </summary>
-    Executing = 1,
-
-    /// <summary>
-    /// The calculation has (successfully) completed.
-    /// </summary>
-    Completed = 2,
-
-    /// <summary>
-    /// The calculation has (Failed) failed.
-    /// </summary>
-    Failed = 3,
-
-    /// <summary>
-    /// The calculation has been cancelled.
-    /// </summary>
-    Canceled,
 }

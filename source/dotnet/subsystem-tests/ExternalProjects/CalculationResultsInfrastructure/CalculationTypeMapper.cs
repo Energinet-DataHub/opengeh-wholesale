@@ -18,24 +18,6 @@ namespace Energinet.DataHub.Wholesale.CalculationResults.Infrastructure.SqlState
 
 public static class CalculationTypeMapper
 {
-    public static CalculationType FromDeltaTableValue(string calculationType)
-    {
-        return calculationType switch
-        {
-            DeltaTableConstants.DeltaTableCalculationType.BalanceFixing => CalculationType.BalanceFixing,
-            DeltaTableConstants.DeltaTableCalculationType.Aggregation => CalculationType.Aggregation,
-            DeltaTableConstants.DeltaTableCalculationType.WholesaleFixing => CalculationType.WholesaleFixing,
-            DeltaTableConstants.DeltaTableCalculationType.FirstCorrectionSettlement => CalculationType.FirstCorrectionSettlement,
-            DeltaTableConstants.DeltaTableCalculationType.SecondCorrectionSettlement => CalculationType.SecondCorrectionSettlement,
-            DeltaTableConstants.DeltaTableCalculationType.ThirdCorrectionSettlement => CalculationType.ThirdCorrectionSettlement,
-
-            _ => throw new ArgumentOutOfRangeException(
-                nameof(calculationType),
-                actualValue: calculationType,
-                "Value does not contain a valid string representation of a calculation type."),
-        };
-    }
-
     public static string ToDeltaTableValue(CalculationType calculationType)
     {
         return calculationType switch

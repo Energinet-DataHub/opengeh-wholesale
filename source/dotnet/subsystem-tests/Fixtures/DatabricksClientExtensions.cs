@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.Core.TestCommon;
-using Energinet.DataHub.Wholesale.SubsystemTests.Fixtures.Configuration;
 using Microsoft.Azure.Databricks.Client;
-using Microsoft.Azure.Databricks.Client.Models;
 
 namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 
@@ -31,59 +28,12 @@ namespace Energinet.DataHub.Wholesale.SubsystemTests.Fixtures;
 public static class DatabricksClientExtensions
 {
     /// <summary>
-    /// Start Databricks SQL warehouse.
-    /// It can be used to "warm up" the warehouse for tests to reduce timeouts.
-    /// </summary>
-    public static async Task StartWarehouseAsync(DatabricksWorkspaceConfiguration configuration)
-    {
-        using var client = DatabricksClient.CreateClient(configuration.BaseUrl, configuration.Token);
-        await client.SQL.Warehouse.Start(configuration.WarehouseId);
-    }
-
-    /// <summary>
-    /// Start Databricks SQL warehouse and wait for it to be in the specified state.
-    /// </summary>
-    public static async Task<bool> StartWarehouseAndWaitForWarehouseStateAsync(
-        DatabricksWorkspaceConfiguration configuration,
-        WarehouseState waitForState = WarehouseState.RUNNING,
-        int waitTimeInMinutes = 10)
-    {
-        var delay = TimeSpan.FromSeconds(15);
-        var waitTimeLimit = TimeSpan.FromMinutes(waitTimeInMinutes);
-        using var databricksClient = DatabricksClient.CreateClient(configuration.BaseUrl, configuration.Token);
-        await databricksClient.SQL.Warehouse.Start(configuration.WarehouseId);
-
-        var isState = await Awaiter.TryWaitUntilConditionAsync(
-            async () =>
-            {
-                var warehouseInfo = await databricksClient.SQL.Warehouse.Get(configuration.WarehouseId);
-                return warehouseInfo.State == waitForState;
-            },
-            waitTimeLimit,
-            delay);
-
-        return isState;
-    }
-
-    /// <summary>
     /// Retrieve calculator job id from databricks.
     /// </summary>
     public static async Task<long> GetCalculatorJobIdAsync(this DatabricksClient databricksClient)
     {
         var job = await databricksClient.Jobs
             .ListPageable(name: "CalculatorJob")
-            .SingleAsync();
-
-        return job.JobId;
-    }
-
-    /// <summary>
-    /// Retrieve "job id" by "job name" from databricks.
-    /// </summary>
-    public static async Task<long> GetJobIdAsync(this DatabricksClient databricksClient, string jobName)
-    {
-        var job = await databricksClient.Jobs
-            .ListPageable(name: jobName)
             .SingleAsync();
 
         return job.JobId;
