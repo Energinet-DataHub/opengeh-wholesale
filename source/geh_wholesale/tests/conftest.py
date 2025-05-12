@@ -51,8 +51,23 @@ def _load_settings_from_file(file_path: Path) -> dict:
         return {}
 
 
+def _write_input_test_data_to_table(
+    spark: SparkSession,
+    file_name: str,
+    database_name: str,
+    table_name: str,
+    schema: StructType,
+) -> None:
+    df = read_csv_path(spark, file_name, schema=schema, sep=";")
+    fqn = f"{SPARK_CATALOG_NAME}.{database_name}.{table_name}"
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS {SPARK_CATALOG_NAME}.{database_name}")
+    df.write.saveAsTable(fqn, format="delta", mode="overwrite")
+    spark.sql(f"ALTER TABLE {fqn} CLUSTER BY ({schema.fieldNames()[0]})")
+    spark.sql(f"ALTER TABLE {fqn} SET TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')")
+
+
 settings_file_path = TESTS_PATH / "test.local.settings.yml"
-static_data_dir = TESTS_PATH / "__spark-warehouse__"
+static_data_dir = TESTS_PATH / "__spark-warehouse__" / os.environ.get("PYTEST_XDIST_WORKER", "driver")
 test_files_folder_path = TESTS_PATH / "test_files"
 
 settings = _load_settings_from_file(settings_file_path)
@@ -99,19 +114,6 @@ def calculation_input_folder() -> str:
 @pytest.fixture(scope="session")
 def calculation_input_database() -> str:
     return paths.MigrationsWholesaleDatabase.DATABASE_NAME
-
-
-@pytest.fixture(scope="session")
-def migrations_executed(
-    spark: SparkSession,
-    energy_input_data_written_to_delta: None,
-    test_session_configuration: TestSessionConfiguration,
-) -> None:
-    # Execute all migrations
-    sql_migration_helper.migrate(
-        spark,
-        migrations_execution=test_session_configuration.migrations.execute,
-    )
 
 
 @pytest.fixture(scope="session")
@@ -201,6 +203,18 @@ def configure_logging_dummy() -> config.LoggingSettings:
         )
 
         return logging_settings
+
+
+@pytest.fixture(scope="session")
+def migrations_executed(
+    spark: SparkSession,
+    test_session_configuration: TestSessionConfiguration,
+) -> None:
+    # Execute all migrations
+    sql_migration_helper.migrate(
+        spark,
+        migrations_execution=test_session_configuration.migrations.execute,
+    )
 
 
 @pytest.fixture(scope="session")
@@ -296,18 +310,3 @@ def price_input_data_written_to_delta(
         table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
         schema=charge_price_points_schema,
     )
-
-
-def _write_input_test_data_to_table(
-    spark: SparkSession,
-    file_name: str,
-    database_name: str,
-    table_name: str,
-    schema: StructType,
-) -> None:
-    df = read_csv_path(spark, file_name, schema=schema, sep=";")
-    fqn = f"{SPARK_CATALOG_NAME}.{database_name}.{table_name}"
-    spark.sql(f"CREATE DATABASE IF NOT EXISTS {SPARK_CATALOG_NAME}.{database_name}")
-    df.write.saveAsTable(fqn, format="delta", mode="overwrite")
-    spark.sql(f"ALTER TABLE {fqn} CLUSTER BY ({schema.fieldNames()[0]})")
-    spark.sql(f"ALTER TABLE {fqn} SET TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')")
