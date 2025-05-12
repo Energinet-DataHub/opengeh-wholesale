@@ -67,7 +67,7 @@ def _write_input_test_data_to_table(
 
 
 settings_file_path = TESTS_PATH / "test.local.settings.yml"
-static_data_dir = TESTS_PATH / "__spark-warehouse__" / os.environ.get("PYTEST_XDIST_WORKER", "driver")
+static_data_dir = TESTS_PATH / "__spark-warehouse__"
 test_files_folder_path = TESTS_PATH / "test_files"
 
 settings = _load_settings_from_file(settings_file_path)
