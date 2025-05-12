@@ -37,7 +37,7 @@ from geh_wholesale.databases.wholesale_internal.schemas import (
 from geh_wholesale.infrastructure import paths
 from geh_wholesale.infrastructure.environment_variables import EnvironmentVariable
 from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
-from tests import PROJECT_PATH, SPARK_CATALOG_NAME, TESTS_PATH
+from tests import SPARK_CATALOG_NAME, TESTS_PATH
 from tests.testsession_configuration import (
     TestSessionConfiguration,
 )
@@ -51,11 +51,12 @@ def _load_settings_from_file(file_path: Path) -> dict:
         return {}
 
 
-settings_file_path = Path(__file__).parent / "test.local.settings.yml"
+settings_file_path = TESTS_PATH / "test.local.settings.yml"
+static_data_dir = TESTS_PATH / "__spark-warehouse__"
+test_files_folder_path = TESTS_PATH / "test_files"
+
 settings = _load_settings_from_file(settings_file_path)
 test_session_config = TestSessionConfiguration(settings)
-static_data_dir = Path(__file__).parent / "__spark-warehouse__"
-
 
 if test_session_config.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
     if static_data_dir.exists():
@@ -72,25 +73,9 @@ _spark, datadir = get_spark_test_session(
 
 
 @pytest.fixture(scope="session")
-def test_files_folder_path() -> str:
-    return f"{TESTS_PATH}/test_files"
-
-
-@pytest.fixture(scope="session")
 def spark() -> Generator[SparkSession, None, None]:
     yield _spark
     _spark.stop()
-
-
-@pytest.fixture(scope="session")
-def contracts_path() -> str:
-    """
-    Returns the source/contract folder path.
-    Please note that this only works if current folder haven't been changed prior using `os.chdir()`.
-    The correctness also relies on the prerequisite that this function is actually located in a
-    file located directly in the tests folder.
-    """
-    return f"{PROJECT_PATH}/contracts"
 
 
 @pytest.fixture(scope="session")
@@ -221,7 +206,6 @@ def configure_logging_dummy() -> config.LoggingSettings:
 @pytest.fixture(scope="session")
 def grid_loss_metering_point_ids_input_data_written_to_delta(
     spark: SparkSession,
-    test_files_folder_path: str,
     migrations_executed: None,
 ) -> None:
     _write_input_test_data_to_table(
@@ -236,7 +220,6 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
 @pytest.fixture(scope="session")
 def energy_input_data_written_to_delta(
     spark: SparkSession,
-    test_files_folder_path: str,
     calculation_input_database: str,
 ) -> None:
     _write_input_test_data_to_table(
@@ -283,7 +266,6 @@ def energy_input_data_written_to_delta(
 @pytest.fixture(scope="session")
 def price_input_data_written_to_delta(
     spark: SparkSession,
-    test_files_folder_path: str,
     calculation_input_database: str,
 ) -> None:
     # Charge master data periods

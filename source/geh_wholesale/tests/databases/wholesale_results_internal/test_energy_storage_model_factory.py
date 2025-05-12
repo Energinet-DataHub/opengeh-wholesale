@@ -185,11 +185,7 @@ def test__create__with_correct_row_values(
     assert actual.collect()[0][column_name] == column_value
 
 
-def test__create__with_correct_number_of_calculation_result_ids(
-    spark: SparkSession,
-    contracts_path: str,
-    args: CalculatorArgs,
-) -> None:
+def test__create__with_correct_number_of_calculation_result_ids(spark: SparkSession, args: CalculatorArgs) -> None:
     # Arrange
     result_df = _create_energy_results_corresponding_to_four_calculation_results(spark)
     EXPECTED_NUMBER_OF_CALCULATION_RESULT_IDS = 4
@@ -307,9 +303,7 @@ def test__write__when_rows_belong_to_same_result__adds_same_calculation_result_i
     assert rows[0][TableColumnNames.result_id] != rows[1][TableColumnNames.result_id]
 
 
-def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names(
-    contracts_path: str,
-) -> None:
+def test__get_column_group_for_calculation_result_id__excludes_expected_other_column_names() -> None:
     # This class is a guard against adding new columns without considering how the column affects the generation of calculation result IDs
 
     # Arrange
