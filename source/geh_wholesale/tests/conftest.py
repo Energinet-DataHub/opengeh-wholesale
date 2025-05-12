@@ -3,7 +3,6 @@ By having a conftest.py in this directory, we are able to add all packages
 defined in the geh_stream directory in our tests.
 """
 
-import logging
 import os
 import shutil
 import subprocess
@@ -40,10 +39,36 @@ from geh_wholesale.infrastructure import paths
 from geh_wholesale.infrastructure.environment_variables import EnvironmentVariable
 from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
 from tests import PROJECT_PATH, SPARK_CATALOG_NAME
-from tests.helpers.delta_table_utils import write_dataframe_to_table
-from tests.integration_test_configuration import IntegrationTestConfiguration
 from tests.testsession_configuration import (
     TestSessionConfiguration,
+)
+
+
+def _load_settings_from_file(file_path: Path) -> dict:
+    if file_path.exists():
+        with file_path.open() as stream:
+            return yaml.safe_load(stream)
+    else:
+        return {}
+
+
+settings_file_path = Path(__file__).parent / "test.local.settings.yml"
+settings = _load_settings_from_file(settings_file_path)
+test_session_config = TestSessionConfiguration(settings)
+static_data_dir = Path(__file__).parent / "__spark-warehouse__"
+
+
+if test_session_config.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
+    if static_data_dir.exists():
+        shutil.rmtree(static_data_dir)
+    static_data_dir.mkdir(parents=True, exist_ok=True)
+
+_spark, datadir = get_spark_test_session(
+    config_overrides={
+        "spark.driver.memory": "4g",
+        "spark.executor.memory": "4g",
+    },
+    static_data_dir=static_data_dir,
 )
 
 
@@ -120,16 +145,6 @@ def calculation_input_database() -> str:
 
 
 @pytest.fixture(scope="session")
-def wholesale_internal_database() -> str:
-    return paths.WholesaleInternalDatabase.DATABASE_NAME
-
-
-@pytest.fixture(scope="session")
-def calculation_input_path(data_lake_path: str, calculation_input_folder: str) -> str:
-    return f"{data_lake_path}/{calculation_input_folder}"
-
-
-@pytest.fixture(scope="session")
 def migrations_executed(
     spark: SparkSession,
     energy_input_data_written_to_delta: None,
@@ -149,7 +164,7 @@ def virtual_environment() -> Generator:
     activating the virtual environment from pytest."""
 
     # Create and activate the virtual environment
-    subprocess.call(["virtualenv", ".wholesale-pytest"], shell=True, executable="/bin/bash")
+    subprocess.call(["uv", "venv", ".wholesale-pytest", "--no-project"], shell=True, executable="/bin/bash")
     subprocess.call("source .wholesale-pytest/bin/activate", shell=True, executable="/bin/bash")
 
     yield None
@@ -184,57 +199,7 @@ def installed_package(virtual_environment: Generator, calculation_engine_path: s
 
 @pytest.fixture(scope="session")
 def test_session_configuration(tests_path: str) -> TestSessionConfiguration:
-    settings_file_path = Path(tests_path) / "test.local.settings.yml"
-    settings = _load_settings_from_file(settings_file_path)
-    return TestSessionConfiguration(settings)
-
-
-@pytest.fixture(scope="session")
-def integration_test_configuration(tests_path: str) -> IntegrationTestConfiguration:
-    """
-    Load settings for integration tests either from a local YAML settings file or from environment variables.
-    Proceeds even if certain Azure-related keys are not present in the settings file.
-    """
-
-    settings_file_path = Path(tests_path) / "integrationtest.local.settings.yml"
-
-    def load_settings_from_env() -> dict:
-        return {
-            key: os.getenv(key)
-            for key in [
-                "AZURE_KEYVAULT_URL",
-                "AZURE_CLIENT_ID",
-                "AZURE_CLIENT_SECRET",
-                "AZURE_TENANT_ID",
-                "AZURE_SUBSCRIPTION_ID",
-            ]
-            if os.getenv(key) is not None
-        }
-
-    settings = _load_settings_from_file(settings_file_path) or load_settings_from_env()
-
-    # Set environment variables from loaded settings
-    for key, value in settings.items():
-        if value is not None:
-            os.environ[key] = value
-
-    if "AZURE_KEYVAULT_URL" in settings:
-        return IntegrationTestConfiguration(azure_keyvault_url=settings["AZURE_KEYVAULT_URL"])
-
-    logging.error(
-        f"Integration test configuration could not be loaded from {settings_file_path} or environment variables."
-    )
-    raise Exception(
-        "Failed to load integration test settings. Ensure that the Azure Key Vault URL is provided in the settings file or as an environment variable."
-    )
-
-
-def _load_settings_from_file(file_path: Path) -> dict:
-    if file_path.exists():
-        with file_path.open() as stream:
-            return yaml.safe_load(stream)
-    else:
-        return {}
+    return test_session_config
 
 
 @pytest.fixture
@@ -326,18 +291,14 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
     spark: SparkSession,
     test_files_folder_path: str,
     test_session_configuration: TestSessionConfiguration,
-    wholesale_internal_database: str,
     migrations_executed: None,
 ) -> None:
-    # grid loss
-    df = read_csv_path(
+    _write_input_test_data_to_table(
         spark,
-        f"{test_files_folder_path}/GridLossMeteringPointIds.csv",
+        file_name=f"{test_files_folder_path}/GridLossMeteringPointIds.csv",
+        database_name=paths.WholesaleInternalDatabase.DATABASE_NAME,
+        table_name=paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
         schema=grid_loss_metering_point_ids_schema,
-        sep=";",
-    )
-    df.write.format("delta").mode("overwrite").saveAsTable(
-        f"{wholesale_internal_database}.{paths.WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME}"
     )
 
 
@@ -345,7 +306,6 @@ def grid_loss_metering_point_ids_input_data_written_to_delta(
 def energy_input_data_written_to_delta(
     spark: SparkSession,
     test_files_folder_path: str,
-    calculation_input_path: str,
     test_session_configuration: TestSessionConfiguration,
     calculation_input_database: str,
 ) -> None:
@@ -355,7 +315,6 @@ def energy_input_data_written_to_delta(
         database_name=calculation_input_database,
         table_name=paths.MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME,
         schema=metering_point_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.METERING_POINT_PERIODS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(
@@ -364,7 +323,6 @@ def energy_input_data_written_to_delta(
         database_name=calculation_input_database,
         table_name=paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
         schema=time_series_points_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(
@@ -373,7 +331,6 @@ def energy_input_data_written_to_delta(
         database_name=calculation_input_database,
         table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
         schema=charge_price_information_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(
@@ -382,7 +339,6 @@ def energy_input_data_written_to_delta(
         database_name=calculation_input_database,
         table_name=paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
         schema=charge_link_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}",
     )
 
     _write_input_test_data_to_table(
@@ -391,7 +347,6 @@ def energy_input_data_written_to_delta(
         database_name=calculation_input_database,
         table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
         schema=charge_price_points_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}",
     )
 
 
@@ -399,7 +354,6 @@ def energy_input_data_written_to_delta(
 def price_input_data_written_to_delta(
     spark: SparkSession,
     test_files_folder_path: str,
-    calculation_input_path: str,
     test_session_configuration: TestSessionConfiguration,
     calculation_input_database: str,
 ) -> None:
@@ -410,7 +364,6 @@ def price_input_data_written_to_delta(
         database_name=calculation_input_database,
         table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
         schema=charge_price_information_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME}",
     )
 
     # Charge link periods
@@ -420,7 +373,6 @@ def price_input_data_written_to_delta(
         database_name=calculation_input_database,
         table_name=paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME,
         schema=charge_link_periods_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_LINK_PERIODS_TABLE_NAME}",
     )
 
     # Charge price points
@@ -430,7 +382,6 @@ def price_input_data_written_to_delta(
         database_name=calculation_input_database,
         table_name=paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME,
         schema=charge_price_points_schema,
-        table_location=f"{calculation_input_path}/{paths.MigrationsWholesaleDatabase.CHARGE_PRICE_POINTS_TABLE_NAME}",
     )
 
 
@@ -439,47 +390,11 @@ def _write_input_test_data_to_table(
     file_name: str,
     database_name: str,
     table_name: str,
-    table_location: str,
     schema: StructType,
 ) -> None:
     df = read_csv_path(spark, file_name, schema=schema, sep=";")
-
-    write_dataframe_to_table(
-        spark,
-        df,
-        database_name,
-        table_name,
-        table_location,
-        schema,
-    )
-
-
-# pytest-xdist plugin does not work with SparkSession as a fixture. The session scope is not supported.
-# Therefore, we need to create a global variable to store the Spark session and data directory.
-# This is a workaround to avoid creating a new Spark session for each test.
-def _spark_session_creation() -> tuple[SparkSession, str]:
-    tests_path = "/workspace/source/geh_wholesale/tests"
-    settings_file_path = Path(tests_path) / "test.local.settings.yml"
-    settings = _load_settings_from_file(settings_file_path)
-    test_session_configuration = TestSessionConfiguration(settings)
-
-    warehouse_location = f"{tests_path}/spark-warehouse"
-    metastore_path = f"{tests_path}/metastore_db"
-
-    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.ALL.value:
-        if os.path.exists(warehouse_location):
-            print(f"Removing warehouse before clean run (path={warehouse_location})")  # noqa: T201
-            shutil.rmtree(warehouse_location)
-        if os.path.exists(metastore_path):
-            print(f"Removing metastore before clean run (path={metastore_path})")  # noqa: T201
-            shutil.rmtree(metastore_path)
-
-    if test_session_configuration.migrations.execute.value == sql_migration_helper.MigrationsExecution.MODIFIED.value:
-        _spark, data_dir = get_spark_test_session(static_data_dir=tests_path, use_hive=True)
-    else:
-        _spark, data_dir = get_spark_test_session()
-
-    return _spark, data_dir
-
-
-_spark, data_dir = _spark_session_creation()
+    fqn = f"{SPARK_CATALOG_NAME}.{database_name}.{table_name}"
+    spark.sql(f"CREATE DATABASE IF NOT EXISTS {SPARK_CATALOG_NAME}.{database_name}")
+    df.write.saveAsTable(fqn, format="delta", mode="overwrite")
+    spark.sql(f"ALTER TABLE {fqn} CLUSTER BY ({schema.fieldNames()[0]})")
+    spark.sql(f"ALTER TABLE {fqn} SET TBLPROPERTIES (delta.deletedFileRetentionDuration = 'interval 30 days')")
