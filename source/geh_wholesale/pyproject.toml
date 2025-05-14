@@ -3,7 +3,6 @@ name = "geh_wholesale"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-authors = [{ name = "Jens Peder Meldgaard", email = "jpm@halfspace.io" }]
 requires-python = ">=3.11"
 dependencies = [
     "configargparse>=1.7",
@@ -54,7 +53,7 @@ addopts = [
     "-s",
     # pytest-xdist options
     # "-n=auto",
-    # "--dist=load",
+    # "--dist=loadfile",
 ]
 
 [tool.coverage.report]

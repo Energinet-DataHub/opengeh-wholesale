@@ -24,6 +24,7 @@ from geh_wholesale.constants import Colname
 from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
 from geh_wholesale.databases.migrations_wholesale.schemas import metering_point_periods_schema
 from geh_wholesale.infrastructure.paths import MigrationsWholesaleDatabase
+from tests import SPARK_CATALOG_NAME
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 
@@ -48,7 +49,7 @@ class TestWhenValidInput:
             table_location,
             metering_point_periods_schema,
         )
-        reader = MigrationsWholesaleRepository(spark, "spark_catalog", "test_database")
+        reader = MigrationsWholesaleRepository(spark, SPARK_CATALOG_NAME, "test_database")
 
         # Act
         actual = reader.read_metering_point_periods()

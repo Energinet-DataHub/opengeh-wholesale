@@ -29,6 +29,7 @@ from geh_wholesale.databases.wholesale_internal.schemas import (
 from geh_wholesale.infrastructure.paths import (
     WholesaleInternalDatabase,
 )
+from tests import SPARK_CATALOG_NAME
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 
@@ -87,7 +88,7 @@ class TestWhenValidInput:
         )
         expected = df
 
-        repository = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
+        repository = wholesale_internal.WholesaleInternalRepository(spark, SPARK_CATALOG_NAME)
 
         # Act
         actual = repository.read_calculations()

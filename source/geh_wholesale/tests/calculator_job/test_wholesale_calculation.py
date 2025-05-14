@@ -116,7 +116,9 @@ ENERGY_RESULT_TYPES = {
 
 @pytest.mark.parametrize(
     "time_series_type",
-    ENERGY_RESULT_TYPES,
+    # Sets must be sorted when used in together with pytest-xdist.
+    # see: https://pytest-xdist.readthedocs.io/en/stable/known-limitations.html#workarounds
+    sorted(ENERGY_RESULT_TYPES),
 )
 def test__energy_result__is_created(
     wholesale_fixing_energy_results_df: DataFrame,
