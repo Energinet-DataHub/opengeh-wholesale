@@ -1,4 +1,3 @@
-
 import pyspark.sql.functions as f
 from pyspark.sql import DataFrame
 from pyspark.sql.types import ArrayType, DecimalType, StringType

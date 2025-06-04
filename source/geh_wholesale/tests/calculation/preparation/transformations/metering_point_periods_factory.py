@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession

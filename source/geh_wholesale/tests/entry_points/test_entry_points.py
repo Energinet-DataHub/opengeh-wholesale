@@ -1,4 +1,3 @@
-
 from geh_common.testing.job.project_script import assert_pyproject_toml_project_script_exists
 
 from tests import PROJECT_PATH

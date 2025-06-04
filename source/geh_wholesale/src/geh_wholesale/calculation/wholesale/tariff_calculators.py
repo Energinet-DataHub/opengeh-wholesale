@@ -1,4 +1,3 @@
-
 from geh_wholesale.calculation.preparation.data_structures.prepared_tariffs import (
     PreparedTariffs,
 )

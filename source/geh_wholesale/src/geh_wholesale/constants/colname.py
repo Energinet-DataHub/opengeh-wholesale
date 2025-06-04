@@ -1,4 +1,3 @@
-
 class Colname:
     balance_responsible_party_id = "balance_responsible_party_id"
     calculation_execution_time_start = "calculation_execution_time_start"
