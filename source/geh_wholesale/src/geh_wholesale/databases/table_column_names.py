@@ -1,4 +1,3 @@
-
 class TableColumnNames:
     """This class contains all the names of the columns in the Delta tables owned my the Wholesale subsystem.
 
