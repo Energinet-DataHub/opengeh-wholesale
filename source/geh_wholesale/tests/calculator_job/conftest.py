@@ -89,14 +89,6 @@ def calculator_args_wholesale_fixing() -> CalculatorArgs:
         return CalculatorArgs()
 
 
-@pytest.fixture
-def mock_feature_manager_false() -> MagicMock:
-    """Mock FeatureManager where is_enabled always returns False."""
-    mock = MagicMock(spec=FeatureManager)
-    mock.is_enabled.return_value = False
-    return mock
-
-
 def migrations_wholesale_repository(
     spark: SparkSession,
     mock_feature_manager_true: FeatureManager,

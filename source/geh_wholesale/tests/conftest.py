@@ -15,6 +15,7 @@ from unittest import mock
 import geh_common.telemetry.logging_configuration as config
 import pytest
 import yaml
+from featuremanagement import FeatureManager
 from geh_common.pyspark.read_csv import read_csv_path
 from geh_common.testing.spark.spark_test_session import get_spark_test_session
 from pyspark.sql import SparkSession
@@ -38,6 +39,7 @@ from geh_wholesale.infrastructure import paths
 from geh_wholesale.infrastructure.environment_variables import EnvironmentVariable
 from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
 from tests import SPARK_CATALOG_NAME, TESTS_PATH
+from tests.calculator_job.conftest import MagicMock
 from tests.testsession_configuration import (
     TestSessionConfiguration,
 )
@@ -220,6 +222,14 @@ def migrations_executed(
         spark,
         migrations_execution=test_session_configuration.migrations.execute,
     )
+
+
+@pytest.fixture
+def mock_feature_manager_false() -> mock.MagicMock:
+    """Mock FeatureManager where is_enabled always returns False."""
+    mock = MagicMock(spec=FeatureManager)
+    mock.is_enabled.return_value = False
+    return mock
 
 
 @pytest.fixture(scope="session")
