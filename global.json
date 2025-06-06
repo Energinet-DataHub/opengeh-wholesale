@@ -1,6 +1,6 @@
 {
   "sdk": {
-    "version": "8.0.100",
+    "version": "9.0.100", // We use .NET 9, featureband .100 --> https://learn.microsoft.com/en-us/dotnet/core/porting/versioning-sdk-msbuild-vs
     "rollForward": "latestFeature",
     "allowPrerelease": false
   }
