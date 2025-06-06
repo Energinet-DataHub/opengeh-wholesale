@@ -2,7 +2,6 @@ import os
 import sys
 import uuid
 from datetime import datetime, timezone
-from unittest.mock import MagicMock
 
 import pyspark.sql.functions as F
 import pytest
