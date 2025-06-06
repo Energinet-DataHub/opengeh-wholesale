@@ -41,8 +41,8 @@ jobs:
               - '.github/workflows/cd.yml'
               - '.github/workflows/ci-dotnet.yml'
               - '.github/actions/dotnet-*/**'
-              - 'source/dotnet/!(Packages/**)/**'
-              - 'source/databricks/calculation_engine/contracts/calculation-job-parameters-reference.txt'
+              - 'source/dotnet/**'
+              - 'source/geh_wholesale/contracts/calculation-job-parameters-reference.txt'
             render_c4model_views:
               - 'docs/diagrams/c4-model/views.dsl'
               - 'docs/diagrams/c4-model/views.json'
