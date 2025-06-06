@@ -39,7 +39,6 @@ from geh_wholesale.infrastructure import paths
 from geh_wholesale.infrastructure.environment_variables import EnvironmentVariable
 from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
 from tests import SPARK_CATALOG_NAME, TESTS_PATH
-from tests.calculator_job.conftest import MagicMock
 from tests.testsession_configuration import (
     TestSessionConfiguration,
 )
@@ -225,11 +224,11 @@ def migrations_executed(
 
 
 @pytest.fixture
-def mock_feature_manager_false() -> mock.MagicMock:
+def mock_feature_manager_false() -> FeatureManager:
     """Mock FeatureManager where is_enabled always returns False."""
-    mock = MagicMock(spec=FeatureManager)
-    mock.is_enabled.return_value = False
-    return mock
+    mock_feature_manager = mock.Mock()
+    mock_feature_manager.is_enabled.return_value = False
+    return mock_feature_manager
 
 
 @pytest.fixture(scope="session")
