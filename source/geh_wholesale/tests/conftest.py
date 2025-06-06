@@ -160,6 +160,8 @@ def infrastructure_settings(monkeypatch: pytest.MonkeyPatch) -> InfrastructureSe
             EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
             EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
             EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
+            EnvironmentVariable.MEASUREMENTS_GOLD_DATABASE_NAME.value: "measurements_gold",
+            EnvironmentVariable.MEASUREMENTS_GOLD_CURRENT_V1_VIEW_NAME.value: "current_v1",
         },
     )
     return InfrastructureSettings()
@@ -183,6 +185,8 @@ def dependency_injection_container(spark: SparkSession) -> Container:
                 EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
                 EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
                 EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
+                EnvironmentVariable.MEASUREMENTS_GOLD_DATABASE_NAME.value: "measurements_gold",
+                EnvironmentVariable.MEASUREMENTS_GOLD_CURRENT_V1_VIEW_NAME.value: "current_v1",
             },
         )
         infrastructure_settings = InfrastructureSettings()
