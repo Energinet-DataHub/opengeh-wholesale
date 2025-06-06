@@ -11,9 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from featuremanagement import FeatureManager
+from geh_common.data_products.measurements_core.measurements_gold.current_v1 import (
+    schema as measurements_current_v1_schmea,
+)
 from pyspark.sql import DataFrame, SparkSession
 
+from geh_wholesale.databases.feature_flag_manager import FeatureFlags
 from geh_wholesale.infrastructure.paths import (
+    MeasurementsDatabase,
     MigrationsWholesaleDatabase,
     WholesaleInternalDatabase,
 )
@@ -32,11 +38,14 @@ class MigrationsWholesaleRepository:
     def __init__(
         self,
         spark: SparkSession,
+        feature_manager: FeatureManager,
         catalog_name: str,
         calculation_input_database_name: str,
+        measurements_gold_database_name: str,
         time_series_points_table_name: str | None = None,
         metering_point_periods_table_name: str | None = None,
         grid_loss_metering_point_ids_table_name: str | None = None,
+        measurements_current_v1_table_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._catalog_name = catalog_name
@@ -51,6 +60,10 @@ class MigrationsWholesaleRepository:
             grid_loss_metering_point_ids_table_name or WholesaleInternalDatabase.GRID_LOSS_METERING_POINT_IDS_TABLE_NAME
         )
 
+        self._measurements_gold_database_name = measurements_gold_database_name
+        self._measurements_current_v1_table_name = measurements_current_v1_table_name or MeasurementsDatabase.CURRENT_V1
+        self._feature_manager = feature_manager
+
     def read_metering_point_periods(
         self,
     ) -> DataFrame:
@@ -63,13 +76,25 @@ class MigrationsWholesaleRepository:
         )
 
     def read_time_series_points(self) -> DataFrame:
-        return read_table(
-            self._spark,
-            self._catalog_name,
-            self._calculation_input_database_name,
-            self._time_series_points_table_name,
-            time_series_points_schema,
-        )
+        # This a temporary release toggle to switch between using measurements and
+        # migrations wholesale repository when fetching time series points.
+
+        if self._feature_manager.is_enabled(FeatureFlags.measuredata_measurements, ""):
+            return read_table(
+                self._spark,
+                self._catalog_name,
+                self._measurements_gold_database_name,
+                self._measurements_current_v1_table_name,
+                measurements_current_v1_schmea,
+            )
+        else:
+            return read_table(
+                self._spark,
+                self._catalog_name,
+                self._calculation_input_database_name,
+                self._time_series_points_table_name,
+                time_series_points_schema,
+            )
 
     def read_charge_link_periods(self) -> DataFrame:
         return read_table(

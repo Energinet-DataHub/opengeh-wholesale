@@ -27,6 +27,8 @@ class UnityCatalogDatabaseNames:
     WHOLESALE_INTERNAL = "wholesale_internal"
     WHOLESALE_SAP = "wholesale_sap"
 
+    MEASUREMENTS_GOLD = "measurements_gold"
+
     @classmethod
     def get_names(cls) -> list[str]:
         values = []
@@ -174,6 +176,13 @@ class WholesaleBasisDataInternalDatabase:
         GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
     ]
 
+class MeasurementsDatabase:
+    DATABASE_NAME = UnityCatalogDatabaseNames.MEASUREMENTS_GOLD
+    CURRENT_V1 = "current_v1"
+
+    VIEW_NAMES = [
+        CURRENT_V1,
+    ]
 
 WHOLESALE_CONTAINER_NAME = "wholesale"
 """The name of the container in the storage account"""
