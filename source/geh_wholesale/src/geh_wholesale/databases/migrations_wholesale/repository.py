@@ -15,6 +15,7 @@ from featuremanagement import FeatureManager
 from geh_common.data_products.measurements_core.measurements_gold.current_v1 import (
     schema as measurements_current_v1_schmea,
 )
+
 from pyspark.sql import DataFrame, SparkSession
 
 from geh_wholesale.databases.feature_flag_manager import FeatureFlags
