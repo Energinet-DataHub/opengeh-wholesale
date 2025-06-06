@@ -13,6 +13,8 @@ DEFAULT_ENV_VARS = {
     EnvironmentVariable.TENANT_ID.value: "tenant_id",
     EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
     EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
+    EnvironmentVariable.MEASUREMENTS_GOLD_DATABASE_NAME.value: "measurements_gold_database",
+    EnvironmentVariable.MEASUREMENTS_GOLD_CURRENT_V1_VIEW_NAME.value: "measurements_gold_current_v1_view",
 }
 DEFAULT_ARGS = {
     "calculation-input-folder-name": "calculation_input_folder",

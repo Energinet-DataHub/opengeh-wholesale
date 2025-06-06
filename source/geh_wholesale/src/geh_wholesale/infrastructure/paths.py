@@ -13,6 +13,8 @@ class UnityCatalogDatabaseNames:
     WHOLESALE_INTERNAL = "wholesale_internal"
     WHOLESALE_SAP = "wholesale_sap"
 
+    MEASUREMENTS_GOLD = "measurements_gold"
+
     @classmethod
     def get_names(cls) -> list[str]:
         values = []
@@ -158,6 +160,15 @@ class WholesaleBasisDataInternalDatabase:
         CHARGE_PRICE_INFORMATION_PERIODS_TABLE_NAME,
         CHARGE_PRICE_POINTS_TABLE_NAME,
         GRID_LOSS_METERING_POINT_IDS_TABLE_NAME,
+    ]
+
+
+class MeasurementsGoldDatabase:
+    DATABASE_NAME = UnityCatalogDatabaseNames.MEASUREMENTS_GOLD
+    CURRENT_V1 = "current_v1"
+
+    VIEW_NAMES = [
+        CURRENT_V1,
     ]
 
 
