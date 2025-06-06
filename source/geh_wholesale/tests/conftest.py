@@ -117,6 +117,11 @@ def calculation_input_database() -> str:
 
 
 @pytest.fixture(scope="session")
+def measurements_gold_database() -> str:
+    return paths.MeasurementsGoldDatabase.DATABASE_NAME
+
+
+@pytest.fixture(scope="session")
 def test_session_configuration() -> TestSessionConfiguration:
     return test_session_config
 

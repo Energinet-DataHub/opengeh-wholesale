@@ -19,7 +19,7 @@ from pyspark.sql import DataFrame, SparkSession
 
 from geh_wholesale.databases.feature_flag_manager import FeatureFlags
 from geh_wholesale.infrastructure.paths import (
-    MeasurementsDatabase,
+    MeasurementsGoldDatabase,
     MigrationsWholesaleDatabase,
     WholesaleInternalDatabase,
 )
@@ -45,7 +45,7 @@ class MigrationsWholesaleRepository:
         time_series_points_table_name: str | None = None,
         metering_point_periods_table_name: str | None = None,
         grid_loss_metering_point_ids_table_name: str | None = None,
-        measurements_current_v1_table_name: str | None = None,
+        measurements_current_v1_view_name: str | None = None,
     ) -> None:
         self._spark = spark
         self._catalog_name = catalog_name
@@ -61,7 +61,9 @@ class MigrationsWholesaleRepository:
         )
 
         self._measurements_gold_database_name = measurements_gold_database_name
-        self._measurements_current_v1_table_name = measurements_current_v1_table_name or MeasurementsDatabase.CURRENT_V1
+        self._measurements_current_v1_table_name = (
+            measurements_current_v1_view_name or MeasurementsGoldDatabase.CURRENT_V1
+        )
         self._feature_manager = feature_manager
 
     def read_metering_point_periods(
@@ -78,7 +80,6 @@ class MigrationsWholesaleRepository:
     def read_time_series_points(self) -> DataFrame:
         # This a temporary release toggle to switch between using measurements and
         # migrations wholesale repository when fetching time series points.
-
         if self._feature_manager.is_enabled(FeatureFlags.measuredata_measurements, ""):
             return read_table(
                 self._spark,
