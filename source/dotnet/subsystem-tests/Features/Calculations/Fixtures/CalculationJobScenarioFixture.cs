@@ -187,6 +187,8 @@ public sealed class CalculationJobScenarioFixture : LazyFixtureBase
     /// </summary>
     private static CalculationState ConvertToCalculationState(Run run)
     {
+// TODO: Fix usage of obsolete RunLifeCycleState and RunResultState
+#pragma warning disable CS0618 // Type or member is obsolete
         return run.State.LifeCycleState switch
         {
             RunLifeCycleState.PENDING => CalculationState.Pending,
@@ -204,6 +206,7 @@ public sealed class CalculationJobScenarioFixture : LazyFixtureBase
             },
             _ => throw new ArgumentOutOfRangeException(nameof(run.State)),
         };
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     private DatabricksSqlWarehouseQueryExecutor GetDatabricksSqlWarehouseQueryExecutor()

@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_ConfigurationFiles", "_Con
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 		stylecop.json = stylecop.json
+		..\..\global.json = ..\..\global.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SubsystemTests", "subsystem-tests\SubsystemTests.csproj", "{10888CA5-5DAE-4581-AC08-3A55BA9991CD}"
