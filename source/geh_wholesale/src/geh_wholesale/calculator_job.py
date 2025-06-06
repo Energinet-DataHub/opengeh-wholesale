@@ -52,7 +52,7 @@ def start_with_deps(
 
     feature_manager = FeatureManagerFactory(
         get_storage_account_credential(),
-        infrastructure_settings.azure_app_configuration_endpoint,
+        infrastructure_settings.azure_app_configuration__endpoint,
     ).build()
 
     prepared_data_reader = create_prepared_data_reader(infrastructure_settings, spark, feature_manager)

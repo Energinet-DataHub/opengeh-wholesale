@@ -19,6 +19,7 @@ class EnvironmentVariable(Enum):
     QUARTERLY_RESOLUTION_TRANSITION_DATETIME = "QUARTERLY_RESOLUTION_TRANSITION_DATETIME"
     MEASUREMENTS_GOLD_DATABASE_NAME = "MEASUREMENTS_GOLD_DATABASE_NAME"
     MEASUREMENTS_GOLD_CURRENT_V1_VIEW_NAME = "CURRENT_V1_VIEW_NAME"
+    AZURE_APP_CONFIGURATION__ENDPOINT = "AZURE_APP_CONFIGURATION__ENDPOINT"
 
 
 def get_storage_account_credential() -> ClientSecretCredential:
@@ -64,6 +65,10 @@ def get_calculation_input_folder_name() -> str:
 
 def get_calculation_input_database_name() -> str:
     return get_env_variable_or_throw(EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME)
+
+
+def get_measurements_gold_database_name() -> str:
+    return get_env_variable_or_throw(EnvironmentVariable.MEASUREMENTS_GOLD_DATABASE_NAME)
 
 
 def get_env_variables_or_throw(environment_variable: list[EnvironmentVariable]) -> dict:
