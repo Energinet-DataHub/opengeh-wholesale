@@ -1,4 +1,4 @@
-﻿namespace Energinet.DataHub.Wholesale.Calculations.Application.Model;
+﻿namespace Energinet.DataHub.Wholesale.SubsystemTests.Models;
 
 public enum CalculationState
 {

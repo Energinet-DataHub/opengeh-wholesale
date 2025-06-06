@@ -1,9 +1,8 @@
 ﻿using Energinet.DataHub.Core.TestCommon.Xunit.Attributes;
 using Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
 using Energinet.DataHub.Core.TestCommon.Xunit.Orderers;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
+using Energinet.DataHub.Wholesale.SubsystemTests.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;
@@ -29,15 +28,11 @@ public class BalanceFixingCalculationJobScenario : SubsystemTestsBase<Calculatio
         var createdTime = SystemClock.Instance.GetCurrentInstant();
         var createdByUserId = Guid.Parse("DED7734B-DD56-43AD-9EE8-0D7EFDA6C783");
         Fixture.ScenarioState.CalculationJobInput = new Calculation(
-            createdTime: createdTime,
-            calculationType: Common.Interfaces.Models.CalculationType.BalanceFixing,
+            calculationType: CalculationType.BalanceFixing,
             gridAreaCodes: new List<GridAreaCode> { new("543") },
             periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero)),
             periodEnd: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero)),
-            scheduledAt: createdTime, // Schedule to run immediately
-            dateTimeZone: DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             createdByUserId: createdByUserId,
-            version: createdTime.ToDateTimeUtc().Ticks,
             false);
     }
 
