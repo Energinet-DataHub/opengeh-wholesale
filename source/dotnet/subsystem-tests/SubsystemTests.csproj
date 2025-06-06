@@ -65,8 +65,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ExternalProjects\" />
-  </ItemGroup>
-
 </Project>

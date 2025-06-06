@@ -1,4 +1,4 @@
-﻿namespace Energinet.DataHub.Wholesale.Common.Interfaces.Models;
+﻿namespace Energinet.DataHub.Wholesale.SubsystemTests.Models;
 
 /// <summary>
 /// Defines the wholesale calculation type
