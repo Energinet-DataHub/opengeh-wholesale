@@ -33,4 +33,4 @@ class InfrastructureSettings(BaseSettings):  # type: ignore
     grid_loss_metering_point_ids_table_name: str | None = Field(init=False, default=None)
     measurements_gold_current_v1_view_name: str | None = Field(init=False, default=None)
 
-    azure_app_configuration__endpoint: str = Field(init=False)
+    azure_app_configuration_endpoint: str = Field(init=False)

@@ -227,7 +227,7 @@ def migrations_executed(
     )
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def mock_feature_manager_false() -> FeatureManager:
     """Mock FeatureManager where is_enabled always returns False."""
     mock_feature_manager = mock.Mock()
@@ -235,7 +235,7 @@ def mock_feature_manager_false() -> FeatureManager:
     return mock_feature_manager
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def mock_feature_manager_true() -> FeatureManager:
     """Mock FeatureManager where is_enabled always returns True."""
     mock_feature_manager = mock.Mock()
