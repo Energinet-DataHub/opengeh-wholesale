@@ -235,6 +235,14 @@ def mock_feature_manager_false() -> FeatureManager:
     return mock_feature_manager
 
 
+@pytest.fixture
+def mock_feature_manager_true() -> FeatureManager:
+    """Mock FeatureManager where is_enabled always returns True."""
+    mock_feature_manager = mock.Mock()
+    mock_feature_manager.is_enabled.return_value = True
+    return mock_feature_manager
+
+
 @pytest.fixture(scope="session")
 def grid_loss_metering_point_ids_input_data_written_to_delta(
     spark: SparkSession,

@@ -75,6 +75,7 @@ def calculator_args_wholesale_fixing() -> CalculatorArgs:
         return CalculatorArgs()
 
 
+@pytest.fixture(scope="session")
 def migrations_wholesale_repository(
     spark: SparkSession,
     mock_feature_manager_true: FeatureManager,
