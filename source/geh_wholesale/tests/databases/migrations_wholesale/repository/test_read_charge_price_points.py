@@ -5,6 +5,7 @@ from unittest import mock
 
 import pyspark.sql.functions as f
 import pytest
+from featuremanagement import FeatureManager
 from pyspark.sql import SparkSession
 
 from geh_wholesale.constants import Colname
@@ -39,8 +40,10 @@ class TestWhenContractMismatch:
         row = _create_change_price_point_row()
         reader = MigrationsWholesaleRepository(
             mock.Mock(),
+            mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
+            "dummy_database_name2",
         )
         df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
         df = df.drop(Colname.charge_code)
@@ -57,6 +60,7 @@ class TestWhenValidInput:
     def test_returns_expected_df(
         self,
         spark: SparkSession,
+        mock_feature_manager_false: FeatureManager,
         tmp_path: pathlib.Path,
         calculation_input_folder: str,
     ) -> None:
@@ -74,7 +78,9 @@ class TestWhenValidInput:
             charge_price_points_schema,
         )
         expected = df
-        reader = MigrationsWholesaleRepository(spark, SPARK_CATALOG_NAME, "test_database")
+        reader = MigrationsWholesaleRepository(
+            spark, mock_feature_manager_false, SPARK_CATALOG_NAME, "test_database", "test_database2"
+        )
 
         # Act
         actual = reader.read_charge_price_points()
@@ -92,8 +98,10 @@ class TestWhenValidInputAndExtraColumns:
         row = _create_change_price_point_row()
         reader = MigrationsWholesaleRepository(
             mock.Mock(),
+            mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
+            "dummy_database_name2",
         )
         df = spark.createDataFrame(data=[row], schema=charge_price_points_schema)
         df = df.withColumn("test", f.lit("test"))

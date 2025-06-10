@@ -33,8 +33,10 @@ class TestWhenContractMismatch:
         row = _create_time_series_point_row()
         reader = MigrationsWholesaleRepository(
             mock.Mock(),
+            mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
+            "dummy_database_name2",
         )
         df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
         df = df.drop(Colname.metering_point_id)
