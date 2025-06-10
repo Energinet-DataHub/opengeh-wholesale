@@ -50,10 +50,7 @@ def start_with_deps(
     spark = initialize_spark()
     create_and_configure_container(spark, infrastructure_settings)
 
-    feature_manager = FeatureManagerFactory(
-        get_storage_account_credential(),
-        infrastructure_settings.azure_app_configuration__endpoint,
-    ).build()
+    feature_manager = create_feature_manager(infrastructure_settings)
 
     prepared_data_reader = create_prepared_data_reader(infrastructure_settings, spark, feature_manager)
 
@@ -96,3 +93,11 @@ def create_prepared_data_reader(
         migrations_wholesale_repository, wholesale_internal_repository
     )
     return prepared_data_reader
+
+
+def create_feature_manager(infrastructure_settings: InfrastructureSettings) -> FeatureManager:
+    feature_manager = FeatureManagerFactory(
+        get_storage_account_credential(),
+        infrastructure_settings.azure_app_configuration_endpoint,
+    ).build()
+    return feature_manager

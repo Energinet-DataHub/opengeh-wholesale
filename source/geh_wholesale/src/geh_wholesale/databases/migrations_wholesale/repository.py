@@ -80,7 +80,7 @@ class MigrationsWholesaleRepository:
     def read_time_series_points(self) -> DataFrame:
         # This a temporary release toggle to switch between using measurements and
         # migrations wholesale repository when fetching time series points.
-        if self._feature_manager.is_enabled(FeatureFlags.measuredata_measurements, ""):
+        if self._feature_manager.is_enabled(FeatureFlags.measuredata_measurements):
             return read_table(
                 self._spark,
                 self._catalog_name,
