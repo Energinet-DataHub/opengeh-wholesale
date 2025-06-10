@@ -7,13 +7,14 @@ from unittest.mock import patch
 import pyspark.sql.functions as f
 import pytest
 from featuremanagement import FeatureManager
+from geh_common.data_products.measurements_core.measurements_gold import current_v1 as measurements_gold_current_v1
 from pyspark.sql import SparkSession
 
 from geh_wholesale.constants import Colname
 from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
 from geh_wholesale.databases.migrations_wholesale.repository import measurements_current_v1_schmea
 from geh_wholesale.databases.migrations_wholesale.schemas import time_series_points_schema
-from geh_wholesale.infrastructure.paths import MeasurementsGoldDatabase, MigrationsWholesaleDatabase
+from geh_wholesale.infrastructure.paths import MigrationsWholesaleDatabase
 from tests import SPARK_CATALOG_NAME
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
@@ -154,6 +155,6 @@ class TestFeatureFlagWhenToggling:
                 mock.ANY,
                 SPARK_CATALOG_NAME,
                 "test_database2",
-                MeasurementsGoldDatabase.CURRENT_V1,
+                measurements_gold_current_v1.view_name,
                 measurements_current_v1_schmea,
             )
