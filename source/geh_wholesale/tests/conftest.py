@@ -161,7 +161,7 @@ def infrastructure_settings(monkeypatch: pytest.MonkeyPatch) -> InfrastructureSe
             EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
             EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
             EnvironmentVariable.MEASUREMENTS_GOLD_DATABASE_NAME.value: "measurements_gold",
-            EnvironmentVariable.AZURE_APP_CONFIGURATION__ENDPOINT.value: "https://example.azconfig.io",
+            EnvironmentVariable.AZURE_APP_CONFIGURATION_ENDPOINT.value: "https://example.azconfig.io",
         },
     )
     return InfrastructureSettings()
@@ -186,7 +186,7 @@ def dependency_injection_container(spark: SparkSession) -> Container:
                 EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
                 EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
                 EnvironmentVariable.MEASUREMENTS_GOLD_DATABASE_NAME.value: "measurements_gold",
-                EnvironmentVariable.AZURE_APP_CONFIGURATION__ENDPOINT.value: "https://example.azconfig.io",
+                EnvironmentVariable.AZURE_APP_CONFIGURATION_ENDPOINT.value: "https://example.azconfig.io",
             },
         )
         infrastructure_settings = InfrastructureSettings()
