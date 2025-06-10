@@ -78,14 +78,14 @@ def calculator_args_wholesale_fixing() -> CalculatorArgs:
 @pytest.fixture(scope="session")
 def migrations_wholesale_repository(
     spark: SparkSession,
-    mock_feature_manager_true: FeatureManager,
+    mock_feature_manager_false: FeatureManager,
     calculation_input_database: str,
     measurements_gold_database: str,
 ) -> migrations_wholesale.MigrationsWholesaleRepository:
     """Create a migrations wholesale repository."""
     return migrations_wholesale.MigrationsWholesaleRepository(
         spark,
-        mock_feature_manager_true,
+        mock_feature_manager_false,
         SPARK_CATALOG_NAME,
         calculation_input_database,
         measurements_gold_database,
