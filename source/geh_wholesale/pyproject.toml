@@ -16,7 +16,7 @@ dependencies = [
     "azure-core==1.32.0",
     "featuremanagement==2.1.0",
     "azure-appconfiguration-provider==2.1.0",
-    "geh_common @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@geh_common_5.9.0#subdirectory=source/geh_common",
+    "geh_common @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@geh_common_5.10.11#subdirectory=source/geh_common",
 ]
 
 [project.scripts]

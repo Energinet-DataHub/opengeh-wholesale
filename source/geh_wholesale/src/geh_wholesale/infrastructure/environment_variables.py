@@ -66,10 +66,6 @@ def get_calculation_input_database_name() -> str:
     return get_env_variable_or_throw(EnvironmentVariable.CALCULATION_INPUT_DATABASE_NAME)
 
 
-def get_measurements_gold_database_name() -> str:
-    return get_env_variable_or_throw(EnvironmentVariable.MEASUREMENTS_GOLD_DATABASE_NAME)
-
-
 def get_env_variables_or_throw(environment_variable: list[EnvironmentVariable]) -> dict:
     env_variables = dict()
     for env_var in environment_variable:

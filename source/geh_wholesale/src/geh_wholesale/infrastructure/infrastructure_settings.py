@@ -19,7 +19,6 @@ class InfrastructureSettings(BaseSettings):  # type: ignore
 
     catalog_name: str = Field(init=False)
     calculation_input_database_name: str = Field(init=False)
-    measurements_gold_database_name: str = Field(init=False)
     data_storage_account_name: str = Field(init=False)
 
     # (repr=False) prevents the field from being printed in the repr of the model
@@ -31,6 +30,5 @@ class InfrastructureSettings(BaseSettings):  # type: ignore
     time_series_points_table_name: str | None = Field(init=False, default=None)
     metering_point_periods_table_name: str | None = Field(init=False, default=None)
     grid_loss_metering_point_ids_table_name: str | None = Field(init=False, default=None)
-    measurements_gold_current_v1_view_name: str | None = Field(init=False, default=None)
 
     azure_app_configuration_endpoint: str = Field(init=False)

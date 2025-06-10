@@ -1,5 +1,6 @@
 import geh_common.telemetry.logging_configuration as config
 from featuremanagement import FeatureManager
+from geh_common.data_products.measurements_core.measurements_gold import current_v1
 from geh_common.telemetry.decorators import start_trace
 from geh_common.telemetry.logger import Logger
 from pyspark.sql import SparkSession
@@ -77,11 +78,11 @@ def create_prepared_data_reader(
         feature_manager,
         settings.catalog_name,
         settings.calculation_input_database_name,
-        settings.measurements_gold_database_name,
+        current_v1.database_name,
         settings.time_series_points_table_name,
         settings.metering_point_periods_table_name,
         settings.grid_loss_metering_point_ids_table_name,
-        settings.measurements_gold_current_v1_view_name,
+        current_v1.view_name,
     )
 
     wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(
