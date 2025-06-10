@@ -1,16 +1,3 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 import pathlib
 from datetime import datetime
 from unittest import mock
@@ -25,6 +12,7 @@ from geh_wholesale.databases.wholesale_internal.schemas import (
     grid_loss_metering_point_ids_schema,
 )
 from geh_wholesale.infrastructure.paths import WholesaleInternalDatabase
+from tests import SPARK_CATALOG_NAME
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 
@@ -76,7 +64,7 @@ class TestWhenValidInput:
             grid_loss_metering_point_ids_schema,
         )
         expected = df
-        reader = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
+        reader = wholesale_internal.WholesaleInternalRepository(spark, SPARK_CATALOG_NAME)
 
         # Act
         actual = reader.read_grid_loss_metering_point_ids()
@@ -91,7 +79,7 @@ class TestWhenValidInputAndExtraColumns:
     def test_returns_expected_df(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_grid_loss_metering_point_row()
-        reader = wholesale_internal.WholesaleInternalRepository(mock.Mock(), "spark_catalog")
+        reader = wholesale_internal.WholesaleInternalRepository(mock.Mock(), SPARK_CATALOG_NAME)
         df = spark.createDataFrame(data=[row], schema=grid_loss_metering_point_ids_schema)
         df = df.withColumn("test", f.lit("test"))
 

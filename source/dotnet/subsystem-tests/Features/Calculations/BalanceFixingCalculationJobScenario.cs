@@ -1,23 +1,8 @@
-﻿// Copyright 2020 Energinet DataHub A/S
-//
-// Licensed under the Apache License, Version 2.0 (the "License2");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-using Energinet.DataHub.Core.TestCommon.Xunit.Attributes;
+﻿using Energinet.DataHub.Core.TestCommon.Xunit.Attributes;
 using Energinet.DataHub.Core.TestCommon.Xunit.LazyFixture;
 using Energinet.DataHub.Core.TestCommon.Xunit.Orderers;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model;
-using Energinet.DataHub.Wholesale.Calculations.Application.Model.Calculations;
 using Energinet.DataHub.Wholesale.SubsystemTests.Features.Calculations.Fixtures;
+using Energinet.DataHub.Wholesale.SubsystemTests.Models;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NodaTime;
@@ -43,15 +28,11 @@ public class BalanceFixingCalculationJobScenario : SubsystemTestsBase<Calculatio
         var createdTime = SystemClock.Instance.GetCurrentInstant();
         var createdByUserId = Guid.Parse("DED7734B-DD56-43AD-9EE8-0D7EFDA6C783");
         Fixture.ScenarioState.CalculationJobInput = new Calculation(
-            createdTime: createdTime,
-            calculationType: Common.Interfaces.Models.CalculationType.BalanceFixing,
+            calculationType: CalculationType.BalanceFixing,
             gridAreaCodes: new List<GridAreaCode> { new("543") },
             periodStart: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 1, 11, 23, 0, 0, TimeSpan.Zero)),
             periodEnd: Instant.FromDateTimeOffset(new DateTimeOffset(2022, 1, 12, 23, 0, 0, TimeSpan.Zero)),
-            scheduledAt: createdTime, // Schedule to run immediately
-            dateTimeZone: DateTimeZoneProviders.Tzdb.GetZoneOrNull("Europe/Copenhagen")!,
             createdByUserId: createdByUserId,
-            version: createdTime.ToDateTimeUtc().Ticks,
             false);
     }
 

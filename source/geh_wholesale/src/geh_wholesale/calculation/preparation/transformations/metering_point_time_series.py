@@ -1,17 +1,3 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import pyspark.sql.functions as f
 from geh_common.testing.dataframes.assert_schemas import assert_schema
 from pyspark.sql import DataFrame
@@ -38,8 +24,11 @@ def get_metering_point_time_series(
     Thus, there will be no missing points for a given metering point when it's connected. It may, however, not be
     connected for the entire period of the calculation.
     """
-    assert_schema(raw_time_series_points_df.schema, time_series_points_schema)
-    assert_schema(metering_point_periods_df.schema, metering_point_periods_schema)
+    # When reading Parquet/Delta files, all columns are automatically converted to be nullable for compatibility reasons
+    # See 'https://github.com/delta-io/delta/issues/873#issuecomment-1012426632' for more context
+    # This is a workaround to ensure that the schema of the DataFrame matches the contract
+    assert_schema(raw_time_series_points_df.schema, time_series_points_schema, ignore_nullability=True)
+    assert_schema(metering_point_periods_df.schema, metering_point_periods_schema, ignore_nullability=True)
 
     quarterly_mp_df = metering_point_periods_df.where(
         f.col(Colname.resolution) == MeteringPointResolution.QUARTER.value

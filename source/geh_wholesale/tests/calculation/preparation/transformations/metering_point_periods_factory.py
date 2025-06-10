@@ -1,18 +1,3 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-
 from datetime import datetime
 
 from pyspark.sql import DataFrame, Row, SparkSession
@@ -37,8 +22,10 @@ DEFAULT_TO_GRID_AREA = None
 DEFAULT_PARENT_METERING_POINT_ID = None
 DEFAULT_ENERGY_SUPPLIER_ID = "9999999999999"
 DEFAULT_BALANCE_RESPONSIBLE_PARTY_ID = "1234567890123"
-DEFAULT_FROM_DATE = datetime(2020, 1, 1, 0, 0)
-DEFAULT_TO_DATE = datetime(2020, 2, 1, 0, 0)
+DEFAULT_FROM_DATE = datetime(2019, 12, 31, 23, 0)
+"""Midnight the 1st of January 2020 assuming local time zone is Europe/copenhagen"""
+DEFAULT_TO_DATE = datetime(2020, 1, 1, 23, 0)
+"""Midnight the 2st of January 2020 assuming local time zone is Europe/copenhagen"""
 
 
 def create_row(

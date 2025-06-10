@@ -1,16 +1,3 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 import os
 import sys
 import uuid
@@ -32,6 +19,7 @@ from geh_wholesale.codelists.calculation_type import (
 from geh_wholesale.databases import migrations_wholesale, wholesale_internal
 from geh_wholesale.databases.table_column_names import TableColumnNames
 from geh_wholesale.infrastructure import paths
+from tests import SPARK_CATALOG_NAME
 
 from . import configuration as C
 
@@ -89,7 +77,6 @@ def calculator_args_wholesale_fixing() -> CalculatorArgs:
 def executed_balance_fixing(
     spark: SparkSession,
     calculator_args_balance_fixing: CalculatorArgs,
-    migrations_executed: None,
     energy_input_data_written_to_delta: None,
     grid_loss_metering_point_ids_input_data_written_to_delta,
     calculation_input_database: str,
@@ -101,9 +88,9 @@ def executed_balance_fixing(
     without awaiting the execution in each test."""
 
     migrations_wholesale_repository = migrations_wholesale.MigrationsWholesaleRepository(
-        spark, "spark_catalog", calculation_input_database
+        spark, SPARK_CATALOG_NAME, calculation_input_database
     )
-    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
+    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, SPARK_CATALOG_NAME)
     prepared_data_reader = PreparedDataReader(migrations_wholesale_repository, wholesale_internal_repository)
     calculation.execute(
         calculator_args_balance_fixing,
@@ -118,7 +105,6 @@ def executed_balance_fixing(
 def executed_wholesale_fixing(
     spark: SparkSession,
     calculator_args_wholesale_fixing: CalculatorArgs,
-    migrations_executed: None,
     energy_input_data_written_to_delta: None,
     price_input_data_written_to_delta: None,
     grid_loss_metering_point_ids_input_data_written_to_delta,
@@ -131,9 +117,9 @@ def executed_wholesale_fixing(
     without awaiting the execution in each test."""
 
     migrations_wholesale_repository = migrations_wholesale.MigrationsWholesaleRepository(
-        spark, "spark_catalog", calculation_input_database
+        spark, SPARK_CATALOG_NAME, calculation_input_database
     )
-    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, "spark_catalog")
+    wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, SPARK_CATALOG_NAME)
     prepared_data_reader = PreparedDataReader(migrations_wholesale_repository, wholesale_internal_repository)
     calculation.execute(
         calculator_args_wholesale_fixing,

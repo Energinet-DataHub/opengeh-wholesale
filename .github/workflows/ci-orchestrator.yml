@@ -1,16 +1,3 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 name: CI orchestrator
 
 on:
@@ -19,6 +6,13 @@ on:
       - main
   merge_group:
     types: [checks_requested]
+
+permissions: # Use same permissions as in measurements
+  checks: write
+  contents: write
+  id-token: write
+  issues: read
+  pull-requests: write
 
 jobs:
   #
@@ -39,7 +33,7 @@ jobs:
 
   ci_dotnet:
     needs: changes
-    if: ${{ needs.changes.outputs.dotnet == 'true' || needs.changes.outputs.db_migrations == 'true' }}
+    if: ${{ needs.changes.outputs.dotnet == 'true' }}
     uses: ./.github/workflows/ci-dotnet.yml
 
   verify_migration_scripts:
@@ -62,13 +56,13 @@ jobs:
           - name: Wholesale (calculator_job)
             paths: tests/calculator_job/test_wholesale_calculation.py
           - name: Energy logic
-            paths: tests/scenarios/energy_calculation
+            paths: tests/scenario_tests/energy_calculation
           - name: Wholesale logic
-            paths: tests/scenarios/wholesale_calculation
+            paths: tests/scenario_tests/wholesale_calculation
           - name: Data products
-            paths: tests/scenarios/data_products contracts
+            paths: tests/scenario_tests/data_products contracts
           - name: Unit tests
-            paths: tests/calculation tests/codelists tests/common tests/optimize_job tests/databases tests/infrastructure
+            paths: tests/calculation tests/codelists tests/common tests/databases tests/infrastructure
           - name: Entry point tests
             paths: tests/entry_points
           - name: Test Unity Catalog
@@ -96,10 +90,14 @@ jobs:
       azure_spn_id: ${{ vars.integration_test_azure_spn_id_oidc }}
       azure_keyvault_url: ${{ vars.integration_test_azure_keyvault_url }}
 
-  ci_packages:
-    needs: changes
-    if: ${{ needs.changes.outputs.packages == 'true' }}
-    uses: ./.github/workflows/packages-publish.yml
+  ci_covernator:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Covernator
+        uses: Energinet-DataHub/.github/.github/actions/python-covernator-generate-files@v14
+        with:
+          project_name: geh-wholesale
+          project_directory: source/geh_wholesale
 
   render_c4model_views:
     needs: changes
@@ -121,7 +119,6 @@ jobs:
         changes,
         ci_base,
         ci_dotnet,
-        ci_packages,
         ci_python,
         ci_python_integration,
         verify_migration_scripts,

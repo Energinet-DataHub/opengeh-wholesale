@@ -1,17 +1,3 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 name: Detect changes
 
 # DESCRIPTION:
@@ -25,8 +11,6 @@ on:
     outputs:
       dotnet:
         value: ${{ jobs.changes.outputs.dotnet }}
-      db_migrations:
-        value: ${{ jobs.changes.outputs.db_migrations }}
       packages:
         value: ${{ jobs.changes.outputs.packages }}
       render_c4model_views:
@@ -39,7 +23,6 @@ jobs:
     # Set job outputs to values from filter step
     outputs:
       dotnet: ${{ steps.filter.outputs.dotnet }}
-      db_migrations: ${{ steps.filter.outputs.db_migrations }}
       packages: ${{ steps.filter.outputs.packages }}
       render_c4model_views: ${{ steps.filter.outputs.render_c4model_views }}
     steps:
@@ -58,16 +41,8 @@ jobs:
               - '.github/workflows/cd.yml'
               - '.github/workflows/ci-dotnet.yml'
               - '.github/actions/dotnet-*/**'
-              - 'source/dotnet/!(Packages/**)/**'
-              - 'source/databricks/calculation_engine/contracts/calculation-job-parameters-reference.txt'
-              - 'source/dotnet/!(database-migration/**)/**'
-            db_migrations:
-              - '.github/workflows/ci-dotnet.yml'  # If building and packaging of database migrations currently part of Wholesale.sln changes
-              - 'source/dotnet/database-migration/**'
-            packages:
-              - 'source/dotnet/wholesale-integration-events-package/**'
-              - 'source/dotnet/wholesale-api/Events/Events.Infrastructure/IntegrationEvents/**'
-              - '.github/workflows/packages-publish.yml'
+              - 'source/dotnet/**'
+              - 'source/geh_wholesale/contracts/calculation-job-parameters-reference.txt'
             render_c4model_views:
               - 'docs/diagrams/c4-model/views.dsl'
               - 'docs/diagrams/c4-model/views.json'

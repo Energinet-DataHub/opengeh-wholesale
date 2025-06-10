@@ -1,19 +1,6 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 from datetime import datetime
 
+from geh_common.pyspark.clamp import clamp_period_end, clamp_period_start
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import (
     col,
@@ -21,7 +8,6 @@ from pyspark.sql.functions import (
     when,
 )
 
-from geh_wholesale.calculation.preparation.transformations.clamp_period import clamp_period
 from geh_wholesale.codelists import (
     InputMeteringPointType,
     InputSettlementMethod,
@@ -49,13 +35,9 @@ def get_metering_point_periods_df(
         .where(col(Colname.to_date).isNull() | (col(Colname.to_date) > period_start))
     )
 
-    metering_point_periods_df = clamp_period(
-        metering_point_periods_df,
-        period_start,
-        period_end,
-        Colname.from_date,
-        Colname.to_date,
-    )
+    metering_point_periods_df = metering_point_periods_df.withColumn(
+        Colname.from_date, clamp_period_start(Colname.from_date, period_start)
+    ).withColumn(Colname.to_date, clamp_period_end(Colname.to_date, period_end))
     metering_point_periods_df = _fix_settlement_method(metering_point_periods_df)
     metering_point_periods_df = _fix_metering_point_type(metering_point_periods_df)
 

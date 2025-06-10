@@ -3,25 +3,23 @@ name = "geh_wholesale"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-authors = [{ name = "Jens Peder Meldgaard", email = "jpm@halfspace.io" }]
 requires-python = ">=3.11"
 dependencies = [
     "configargparse>=1.7",
-    "pyspark==3.5.1",
+    "pyspark==3.5.3",
     "azure-identity==1.17.1",
     "dependency-injector==4.43.0",
     "urllib3==2.2.*",
-    "delta-spark==3.2.0",
+    "delta-spark==3.3.0",
     "python-dateutil==2.8.2",
-    "azure-monitor-opentelemetry==1.6.4",
+    "azure-monitor-opentelemetry==1.6.7",
     "azure-core==1.32.0",
-    "geh_common @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@geh_common_5.5.2#subdirectory=source/geh_common",
+    "geh_common @ git+https://git@github.com/Energinet-DataHub/opengeh-python-packages@geh_common_5.9.0#subdirectory=source/geh_common",
 ]
 
 [project.scripts]
 start_calculator = "geh_wholesale.calculator_job:start"
 migrate_data_lake = "geh_wholesale.datamigration.migration:migrate_data_lake"
-optimize_delta_tables = "geh_wholesale.optimize_job.delta_optimization:optimize_tables"
 
 [build-system]
 requires = ["hatchling"]
@@ -55,7 +53,7 @@ addopts = [
     "-s",
     # pytest-xdist options
     # "-n=auto",
-    # "--dist=load",
+    # "--dist=loadfile",
 ]
 
 [tool.coverage.report]

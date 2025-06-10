@@ -1,19 +1,4 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-from datetime import datetime
-from zoneinfo import ZoneInfo
+from datetime import UTC, datetime
 
 from pyspark.sql import Row, SparkSession
 
@@ -26,12 +11,10 @@ from geh_wholesale.constants import Colname
 
 DEFAULT_METERING_POINT_ID = "1234567890123"
 DEFAULT_GRID_AREA = "100"
-DEFAULT_FROM_DATE = datetime.strptime("2020-01-01T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z").replace(
-    tzinfo=ZoneInfo("Europe/Copenhagen")
-)
-DEFAULT_TO_DATE = datetime.strptime("2020-01-02T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z").replace(
-    tzinfo=ZoneInfo("Europe/Copenhagen")
-)
+DEFAULT_FROM_DATE = datetime(2019, 12, 31, 23, 0, tzinfo=UTC)
+"""Midnight the 1st of January 2020 assuming local time zone is Europe/copenhagen"""
+DEFAULT_TO_DATE = datetime(2020, 1, 1, 23, 0, tzinfo=UTC)
+"""Midnight the 2st of January 2020 assuming local time zone is Europe/copenhagen"""
 DEFAULT_METERING_POINT_TYPE = MeteringPointType.CONSUMPTION
 DEFAULT_ENERGY_SUPPLIER_ID = "1234567890123"
 DEFAULT_BALANCE_RESPONSIBLE_ID = "2345678901234"

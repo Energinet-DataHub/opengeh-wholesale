@@ -1,16 +1,3 @@
-# Copyright 2020 Energinet DataHub A/S
-#
-# Licensed under the Apache License, Version 2.0 (the "License2");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 import pathlib
 from datetime import datetime
 from unittest import mock
@@ -25,6 +12,7 @@ from geh_wholesale.databases.migrations_wholesale.schemas import (
     charge_price_information_periods_schema,
 )
 from geh_wholesale.infrastructure.paths import MigrationsWholesaleDatabase
+from tests import SPARK_CATALOG_NAME
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 
@@ -90,7 +78,7 @@ class TestWhenValidInput:
             charge_price_information_periods_schema,
         )
         expected = df
-        reader = MigrationsWholesaleRepository(spark, "spark_catalog", "test_database")
+        reader = MigrationsWholesaleRepository(spark, SPARK_CATALOG_NAME, "test_database")
 
         # Act
         actual = reader.read_charge_price_information_periods()
