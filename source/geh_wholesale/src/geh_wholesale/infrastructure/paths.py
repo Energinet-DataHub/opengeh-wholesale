@@ -23,10 +23,6 @@ class UnityCatalogDatabaseNames:
         return values
 
 
-class MeasurementsDatabase:
-    MEASUREMENTS_GOLD = "measurements_gold"
-
-
 class MigrationsWholesaleDatabase:
     DATABASE_NAME = "shared_wholesale_input"
     METERING_POINT_PERIODS_TABLE_NAME = "metering_point_periods_view_v1"
