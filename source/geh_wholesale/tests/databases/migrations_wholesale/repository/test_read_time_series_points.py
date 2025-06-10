@@ -15,7 +15,6 @@ from geh_wholesale.databases.migrations_wholesale.repository import measurements
 from geh_wholesale.databases.migrations_wholesale.schemas import time_series_points_schema
 from geh_wholesale.infrastructure.paths import MeasurementsGoldDatabase, MigrationsWholesaleDatabase
 from tests import SPARK_CATALOG_NAME
-from tests.calculation.preparation.test_prepared_data_reader import patch
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 
