@@ -20,7 +20,6 @@ DEFAULT_ARGS = {
     "time-series-points-table-name": "time_series_points",
     "metering-point-periods-table-name": "metering_point_periods",
     "grid-loss-metering-point-ids-table-name": "grid_loss_metering_point_ids",
-    "measurements-gold-current-v1-view-name": "current_v1",
 }
 
 
