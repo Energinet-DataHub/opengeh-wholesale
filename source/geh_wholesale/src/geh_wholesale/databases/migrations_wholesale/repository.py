@@ -78,8 +78,9 @@ class MigrationsWholesaleRepository:
         )
 
     def read_time_series_points(self) -> DataFrame:
-        # This a temporary release toggle to switch between using measurements and
-        # migrations wholesale repository when fetching time series points.
+        # This a temporary release toggle (feature flag).
+        # If the flag is enabled time series points are fetched from measurements gold table,
+        # otherwise from migrations table.
         if self._feature_manager.is_enabled(FeatureFlags.measuredata_measurements):
             return read_table(
                 self._spark,

@@ -87,12 +87,12 @@ class TestWhenValidInput:
 
 
 class TestWhenValidInputAndExtraColumns:
-    def test_returns_expected_df(self, spark: SparkSession) -> None:
+    def test_returns_expected_df(self, spark: SparkSession, mock_feature_manager_false: FeatureManager) -> None:
         # Arrange
         row = _create_time_series_point_row()
         reader = MigrationsWholesaleRepository(
             mock.Mock(),
-            mock.Mock(),
+            mock_feature_manager_false,
             "dummy_catalog_name",
             "dummy_database_name",
             "dummy_database_name2",
@@ -103,3 +103,39 @@ class TestWhenValidInputAndExtraColumns:
         # Act & Assert
         with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
             reader.read_time_series_points()
+
+
+class TestFeatureFlagWhenToggling:
+    def test_returns_expected_df_when_feature_flag_disabled(
+        self,
+        spark: SparkSession,
+        mock_feature_manager_false: FeatureManager,
+        tmp_path: pathlib.Path,
+        calculation_input_folder: str,
+    ) -> None:
+        # Arrange
+        calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
+        time_series_points_table_location = (
+            f"{calculation_input_path}/{MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
+        )
+        row = _create_time_series_point_row()
+        df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
+        write_dataframe_to_table(
+            spark,
+            df,
+            "test_database",
+            MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+            time_series_points_table_location,
+            time_series_points_schema,
+        )
+        expected = df
+
+        reader = MigrationsWholesaleRepository(
+            spark, mock_feature_manager_false, SPARK_CATALOG_NAME, "test_database", "test_database2"
+        )
+
+        # Act
+        actual = reader.read_time_series_points()
+
+        # Assert
+        assert_dataframes_equal(actual, expected)
