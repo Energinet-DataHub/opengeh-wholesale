@@ -14,7 +14,6 @@ DEFAULT_ENV_VARS = {
     EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
     EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
     EnvironmentVariable.MEASUREMENTS_GOLD_DATABASE_NAME.value: "measurements_gold_database",
-    EnvironmentVariable.MEASUREMENTS_GOLD_CURRENT_V1_VIEW_NAME.value: "measurements_gold_current_v1_view",
     EnvironmentVariable.AZURE_APP_CONFIGURATION_ENDPOINT.value: "https://example.azconfig.io",
 }
 DEFAULT_ARGS = {
@@ -22,6 +21,7 @@ DEFAULT_ARGS = {
     "time-series-points-table-name": "time_series_points",
     "metering-point-periods-table-name": "metering_point_periods",
     "grid-loss-metering-point-ids-table-name": "grid_loss_metering_point_ids",
+    "measurements-gold-current-v1-view-name": "current_v1",
 }
 
 
