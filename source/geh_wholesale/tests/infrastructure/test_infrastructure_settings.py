@@ -13,7 +13,6 @@ DEFAULT_ENV_VARS = {
     EnvironmentVariable.TENANT_ID.value: "tenant_id",
     EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
     EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
-    EnvironmentVariable.MEASUREMENTS_GOLD_DATABASE_NAME.value: "measurements_gold_database",
     EnvironmentVariable.AZURE_APP_CONFIGURATION_ENDPOINT.value: "https://example.azconfig.io",
 }
 DEFAULT_ARGS = {
