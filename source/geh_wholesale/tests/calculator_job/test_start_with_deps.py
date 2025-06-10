@@ -17,9 +17,11 @@ from geh_wholesale.infrastructure.paths import WholesaleInternalDatabase
     "calculation_id_already_used",
     [True, False],
 )
+@patch("geh_wholesale.calculator_job.create_feature_manager")
 @patch("geh_wholesale.calculator_job.calculation.execute")
 def test_start_with_deps__throws_exception_when_calculation_id_already_used(
     calculation_executor_mock,
+    create_feature_manager_mock,
     spark: SparkSession,
     any_calculator_args: CalculatorArgs,
     infrastructure_settings: InfrastructureSettings,

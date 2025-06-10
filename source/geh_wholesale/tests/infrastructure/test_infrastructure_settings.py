@@ -15,6 +15,7 @@ DEFAULT_ENV_VARS = {
     EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
     EnvironmentVariable.MEASUREMENTS_GOLD_DATABASE_NAME.value: "measurements_gold_database",
     EnvironmentVariable.MEASUREMENTS_GOLD_CURRENT_V1_VIEW_NAME.value: "measurements_gold_current_v1_view",
+    EnvironmentVariable.AZURE_APP_CONFIGURATION_ENDPOINT.value: "https://example.azconfig.io",
 }
 DEFAULT_ARGS = {
     "calculation-input-folder-name": "calculation_input_folder",
