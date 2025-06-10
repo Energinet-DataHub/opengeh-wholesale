@@ -22,7 +22,7 @@ class TestWhenValidInput:
         spark: SparkSession,
         tmp_path: pathlib.Path,
         calculation_input_folder: str,
-        mock_feature_manager: FeatureManager,
+        mock_feature_manager_false: FeatureManager,
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
@@ -38,7 +38,7 @@ class TestWhenValidInput:
             metering_point_periods_schema,
         )
         reader = MigrationsWholesaleRepository(
-            spark, mock_feature_manager, SPARK_CATALOG_NAME, "test_database", "test_database"
+            spark, mock_feature_manager_false, SPARK_CATALOG_NAME, "test_database", "test_database"
         )
 
         # Act

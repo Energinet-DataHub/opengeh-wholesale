@@ -13,8 +13,6 @@ class UnityCatalogDatabaseNames:
     WHOLESALE_INTERNAL = "wholesale_internal"
     WHOLESALE_SAP = "wholesale_sap"
 
-    MEASUREMENTS_GOLD = "measurements_gold"
-
     @classmethod
     def get_names(cls) -> list[str]:
         values = []
@@ -23,6 +21,10 @@ class UnityCatalogDatabaseNames:
             if not attr.startswith("__") and isinstance(value, str):
                 values.append(value)
         return values
+
+
+class MeasurementsDatabase:
+    MEASUREMENTS_GOLD = "measurements_gold"
 
 
 class MigrationsWholesaleDatabase:
@@ -164,7 +166,7 @@ class WholesaleBasisDataInternalDatabase:
 
 
 class MeasurementsGoldDatabase:
-    DATABASE_NAME = UnityCatalogDatabaseNames.MEASUREMENTS_GOLD
+    DATABASE_NAME = "measurements_gold"
     CURRENT_V1 = "current_v1"
 
     VIEW_NAMES = [

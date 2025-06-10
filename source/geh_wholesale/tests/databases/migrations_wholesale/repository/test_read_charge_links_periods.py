@@ -60,7 +60,7 @@ class TestWhenValidInput:
     def test_returns_expected_df(
         self,
         spark: SparkSession,
-        mock_feature_manager: FeatureManager,
+        mock_feature_manager_false: FeatureManager,
         tmp_path: pathlib.Path,
         calculation_input_folder: str,
     ) -> None:
@@ -79,7 +79,7 @@ class TestWhenValidInput:
         )
         expected = df
         reader = MigrationsWholesaleRepository(
-            spark, mock_feature_manager, SPARK_CATALOG_NAME, "test_database", "test_database"
+            spark, mock_feature_manager_false, SPARK_CATALOG_NAME, "test_database", "test_database"
         )
 
         # Act
