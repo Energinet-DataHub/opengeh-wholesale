@@ -2,6 +2,7 @@ import pathlib
 from datetime import datetime
 from decimal import Decimal
 from unittest import mock
+from unittest.mock import patch
 
 import pyspark.sql.functions as f
 import pytest
@@ -10,9 +11,11 @@ from pyspark.sql import SparkSession
 
 from geh_wholesale.constants import Colname
 from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
+from geh_wholesale.databases.migrations_wholesale.repository import measurements_current_v1_schmea
 from geh_wholesale.databases.migrations_wholesale.schemas import time_series_points_schema
-from geh_wholesale.infrastructure.paths import MigrationsWholesaleDatabase
+from geh_wholesale.infrastructure.paths import MeasurementsGoldDatabase, MigrationsWholesaleDatabase
 from tests import SPARK_CATALOG_NAME
+from tests.calculation.preparation.test_prepared_data_reader import patch
 from tests.helpers.data_frame_utils import assert_dataframes_equal
 from tests.helpers.delta_table_utils import write_dataframe_to_table
 
@@ -106,36 +109,52 @@ class TestWhenValidInputAndExtraColumns:
 
 
 class TestFeatureFlagWhenToggling:
-    def test_returns_expected_df_when_feature_flag_disabled(
+    def test_false_feature_flag_uses_migrations_table(
         self,
         spark: SparkSession,
         mock_feature_manager_false: FeatureManager,
-        tmp_path: pathlib.Path,
-        calculation_input_folder: str,
     ) -> None:
         # Arrange
-        calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
-        time_series_points_table_location = (
-            f"{calculation_input_path}/{MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
-        )
-        row = _create_time_series_point_row()
-        df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
-        write_dataframe_to_table(
-            spark,
-            df,
-            "test_database",
-            MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
-            time_series_points_table_location,
-            time_series_points_schema,
-        )
-        expected = df
-
         reader = MigrationsWholesaleRepository(
             spark, mock_feature_manager_false, SPARK_CATALOG_NAME, "test_database", "test_database2"
         )
 
         # Act
-        actual = reader.read_time_series_points()
+        with patch(
+            "geh_wholesale.databases.migrations_wholesale.repository.read_table",
+        ) as read_table_mock:
+            reader.read_time_series_points()
 
-        # Assert
-        assert_dataframes_equal(actual, expected)
+            # Assert
+            read_table_mock.assert_called_once_with(
+                mock.ANY,
+                SPARK_CATALOG_NAME,
+                "test_database",
+                MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+                time_series_points_schema,
+            )
+
+    def test_true_feature_flag_uses_measurements_gold_table(
+        self,
+        spark: SparkSession,
+        mock_feature_manager_true: FeatureManager,
+    ) -> None:
+        # Arrange
+        reader = MigrationsWholesaleRepository(
+            spark, mock_feature_manager_true, SPARK_CATALOG_NAME, "test_database", "test_database2"
+        )
+
+        # Act
+        with patch(
+            "geh_wholesale.databases.migrations_wholesale.repository.read_table",
+        ) as read_table_mock:
+            reader.read_time_series_points()
+
+            # Assert
+            read_table_mock.assert_called_once_with(
+                mock.ANY,
+                SPARK_CATALOG_NAME,
+                "test_database2",
+                MeasurementsGoldDatabase.CURRENT_V1,
+                measurements_current_v1_schmea,
+            )
