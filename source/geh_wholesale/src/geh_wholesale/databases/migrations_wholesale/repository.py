@@ -4,6 +4,7 @@ from geh_common.data_products.measurements_core.measurements_gold.current_v1 imp
 )
 from pyspark.sql import DataFrame, SparkSession
 
+from geh_wholesale.constants import Colname
 from geh_wholesale.databases.feature_flag_manager import FeatureFlags
 from geh_wholesale.infrastructure.paths import (
     MeasurementsGoldDatabase,
@@ -69,13 +70,25 @@ class MigrationsWholesaleRepository:
         # If the flag is enabled time series points are fetched from measurements gold table,
         # otherwise from migrations table.
         if self._feature_manager.is_enabled(FeatureFlags.measuredata_measurements):  # type: ignore
-            return read_table(
+            df = read_table(
                 self._spark,
                 self._catalog_name,
                 self._measurements_gold_database_name,
                 self._measurements_current_v1_table_name,
                 measurements_current_v1_schmea,
             )
+
+            # Later in the flow assert_schema will fails if the column "metering_point_type" is present.
+            # Therefore, it is dropped here. The columns are also reordered to match the schema.
+            df = df.select(
+                Colname.metering_point_id,
+                Colname.quantity,
+                Colname.quality,
+                Colname.observation_time,
+            )
+
+            return df
+
         else:
             return read_table(
                 self._spark,
