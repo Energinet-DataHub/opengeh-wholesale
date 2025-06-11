@@ -4,6 +4,7 @@ from unittest import mock
 
 import pyspark.sql.functions as f
 import pytest
+from featuremanagement import FeatureManager
 from pyspark.sql import SparkSession
 
 from geh_wholesale.constants import Colname
@@ -39,8 +40,10 @@ class TestWhenContractMismatch:
         row = _create_charge_link_period_row()
         reader = MigrationsWholesaleRepository(
             mock.Mock(),
+            mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
+            "dummy_database_name2",
         )
         df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)
         df = df.drop(Colname.charge_type)
@@ -57,6 +60,7 @@ class TestWhenValidInput:
     def test_returns_expected_df(
         self,
         spark: SparkSession,
+        mock_feature_manager_false: FeatureManager,
         tmp_path: pathlib.Path,
         calculation_input_folder: str,
     ) -> None:
@@ -74,7 +78,9 @@ class TestWhenValidInput:
             charge_link_periods_schema,
         )
         expected = df
-        reader = MigrationsWholesaleRepository(spark, SPARK_CATALOG_NAME, "test_database")
+        reader = MigrationsWholesaleRepository(
+            spark, mock_feature_manager_false, SPARK_CATALOG_NAME, "test_database", "test_database"
+        )
 
         # Act
         actual = reader.read_charge_link_periods()
@@ -88,8 +94,10 @@ class TestWhenValidInputAndMoreColumns:
         # Arrange
         reader = MigrationsWholesaleRepository(
             mock.Mock(),
+            mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
+            "dummy_database_name2",
         )
         row = _create_charge_link_period_row()
         df = spark.createDataFrame(data=[row], schema=charge_link_periods_schema)

@@ -23,6 +23,7 @@ class TestWhenInvokedWithValidArguments:
     ) -> None:
         mock_calculation_execute = Mock()
         mock_prepared_data_reader = Mock()
+        mock_feature_manager = Mock()
         mock_prepared_data_reader.is_calculation_id_unique.return_value = True
 
         with patch("geh_wholesale.calculation.execute", mock_calculation_execute):
@@ -30,8 +31,12 @@ class TestWhenInvokedWithValidArguments:
                 "geh_wholesale.calculation.PreparedDataReader",
                 return_value=mock_prepared_data_reader,
             ):
-                # Act
-                start_with_deps(
-                    args=any_calculator_args,
-                    infrastructure_settings=infrastructure_settings,
-                )
+                with patch(
+                    "geh_wholesale.calculator_job.create_feature_manager",
+                    return_value=mock_feature_manager,
+                ):
+                    # Act
+                    start_with_deps(
+                        args=any_calculator_args,
+                        infrastructure_settings=infrastructure_settings,
+                    )

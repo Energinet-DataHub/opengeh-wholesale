@@ -1,4 +1,6 @@
 import geh_common.telemetry.logging_configuration as config
+from featuremanagement import FeatureManager
+from geh_common.data_products.measurements_core.measurements_gold import current_v1
 from geh_common.telemetry.decorators import start_trace
 from geh_common.telemetry.logger import Logger
 from pyspark.sql import SparkSession
@@ -10,7 +12,9 @@ from geh_wholesale.calculation.calculation_output_service import CalculationOutp
 from geh_wholesale.calculation.calculator_args import CalculatorArgs
 from geh_wholesale.container import create_and_configure_container
 from geh_wholesale.databases import migrations_wholesale, wholesale_internal
+from geh_wholesale.databases.feature_flag_manager import FeatureManagerFactory
 from geh_wholesale.infrastructure import initialize_spark
+from geh_wholesale.infrastructure.environment_variables import get_storage_account_credential
 from geh_wholesale.infrastructure.infrastructure_settings import InfrastructureSettings
 
 
@@ -47,7 +51,9 @@ def start_with_deps(
     spark = initialize_spark()
     create_and_configure_container(spark, infrastructure_settings)
 
-    prepared_data_reader = create_prepared_data_reader(infrastructure_settings, spark)
+    feature_manager = create_feature_manager(infrastructure_settings)
+
+    prepared_data_reader = create_prepared_data_reader(infrastructure_settings, spark, feature_manager)
 
     if not prepared_data_reader.is_calculation_id_unique(args.calculation_id):
         raise Exception(f"Calculation ID '{args.calculation_id}' is already used.")
@@ -64,15 +70,19 @@ def start_with_deps(
 def create_prepared_data_reader(
     settings: InfrastructureSettings,
     spark: SparkSession,
+    feature_manager: FeatureManager,
 ) -> calculation.PreparedDataReader:
     """Create calculation execution dependencies."""
     migrations_wholesale_repository = migrations_wholesale.MigrationsWholesaleRepository(
         spark,
+        feature_manager,
         settings.catalog_name,
         settings.calculation_input_database_name,
+        current_v1.database_name,
         settings.time_series_points_table_name,
         settings.metering_point_periods_table_name,
         settings.grid_loss_metering_point_ids_table_name,
+        current_v1.view_name,
     )
 
     wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(
@@ -84,3 +94,11 @@ def create_prepared_data_reader(
         migrations_wholesale_repository, wholesale_internal_repository
     )
     return prepared_data_reader
+
+
+def create_feature_manager(infrastructure_settings: InfrastructureSettings) -> FeatureManager:
+    feature_manager = FeatureManagerFactory(
+        get_storage_account_credential(),
+        infrastructure_settings.azure_app_configuration_endpoint,
+    ).build()
+    return feature_manager

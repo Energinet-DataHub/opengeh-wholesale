@@ -3,6 +3,7 @@ from unittest import mock
 
 import pyspark.sql.functions as f
 import pytest
+from featuremanagement import FeatureManager
 from pyspark.sql import SparkSession
 
 import tests.databases.migrations_wholesale.repository.input_metering_point_periods_factory as factory
@@ -21,6 +22,7 @@ class TestWhenValidInput:
         spark: SparkSession,
         tmp_path: pathlib.Path,
         calculation_input_folder: str,
+        mock_feature_manager_false: FeatureManager,
     ) -> None:
         # Arrange
         calculation_input_path = f"{str(tmp_path)}/{calculation_input_folder}"
@@ -35,7 +37,9 @@ class TestWhenValidInput:
             table_location,
             metering_point_periods_schema,
         )
-        reader = MigrationsWholesaleRepository(spark, SPARK_CATALOG_NAME, "test_database")
+        reader = MigrationsWholesaleRepository(
+            spark, mock_feature_manager_false, SPARK_CATALOG_NAME, "test_database", "test_database"
+        )
 
         # Act
         actual = reader.read_metering_point_periods()
@@ -49,8 +53,10 @@ class TestWhenValidInputAndMoreColumns:
         # Arrange
         reader = MigrationsWholesaleRepository(
             mock.Mock(),
+            mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
+            "dummy_database_name2",
         )
         row = factory.create_row()
         df = factory.create(spark, row)
@@ -66,8 +72,10 @@ class TestWhenContractMismatch:
         # Arrange
         reader = MigrationsWholesaleRepository(
             mock.Mock(),
+            mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
+            "dummy_database_name2",
         )
         row = factory.create_row()
         df = factory.create(spark, row)

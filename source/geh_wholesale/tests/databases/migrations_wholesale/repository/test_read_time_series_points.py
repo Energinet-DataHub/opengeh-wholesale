@@ -2,13 +2,17 @@ import pathlib
 from datetime import datetime
 from decimal import Decimal
 from unittest import mock
+from unittest.mock import patch
 
 import pyspark.sql.functions as f
 import pytest
+from featuremanagement import FeatureManager
+from geh_common.data_products.measurements_core.measurements_gold import current_v1 as measurements_gold_current_v1
 from pyspark.sql import SparkSession
 
 from geh_wholesale.constants import Colname
 from geh_wholesale.databases.migrations_wholesale import MigrationsWholesaleRepository
+from geh_wholesale.databases.migrations_wholesale.repository import measurements_current_v1_schmea
 from geh_wholesale.databases.migrations_wholesale.schemas import time_series_points_schema
 from geh_wholesale.infrastructure.paths import MigrationsWholesaleDatabase
 from tests import SPARK_CATALOG_NAME
@@ -33,8 +37,10 @@ class TestWhenContractMismatch:
         row = _create_time_series_point_row()
         reader = MigrationsWholesaleRepository(
             mock.Mock(),
+            mock.Mock(),
             "dummy_catalog_name",
             "dummy_database_name",
+            "dummy_database_name2",
         )
         df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
         df = df.drop(Colname.metering_point_id)
@@ -51,6 +57,7 @@ class TestWhenValidInput:
     def test_returns_expected_df(
         self,
         spark: SparkSession,
+        mock_feature_manager_false: FeatureManager,
         tmp_path: pathlib.Path,
         calculation_input_folder: str,
     ) -> None:
@@ -71,7 +78,9 @@ class TestWhenValidInput:
         )
         expected = df
 
-        reader = MigrationsWholesaleRepository(spark, SPARK_CATALOG_NAME, "test_database")
+        reader = MigrationsWholesaleRepository(
+            spark, mock_feature_manager_false, SPARK_CATALOG_NAME, "test_database", "test_database2"
+        )
 
         # Act
         actual = reader.read_time_series_points()
@@ -81,13 +90,15 @@ class TestWhenValidInput:
 
 
 class TestWhenValidInputAndExtraColumns:
-    def test_returns_expected_df(self, spark: SparkSession) -> None:
+    def test_returns_expected_df(self, spark: SparkSession, mock_feature_manager_false: FeatureManager) -> None:
         # Arrange
         row = _create_time_series_point_row()
         reader = MigrationsWholesaleRepository(
             mock.Mock(),
+            mock_feature_manager_false,
             "dummy_catalog_name",
             "dummy_database_name",
+            "dummy_database_name2",
         )
         df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
         df = df.withColumn("test", f.lit("test"))
@@ -95,3 +106,55 @@ class TestWhenValidInputAndExtraColumns:
         # Act & Assert
         with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
             reader.read_time_series_points()
+
+
+class TestFeatureFlagWhenToggling:
+    def test_false_feature_flag_uses_migrations_table(
+        self,
+        spark: SparkSession,
+        mock_feature_manager_false: FeatureManager,
+    ) -> None:
+        # Arrange
+        reader = MigrationsWholesaleRepository(
+            spark, mock_feature_manager_false, SPARK_CATALOG_NAME, "test_database", "test_database2"
+        )
+
+        # Act
+        with patch(
+            "geh_wholesale.databases.migrations_wholesale.repository.read_table",
+        ) as read_table_mock:
+            reader.read_time_series_points()
+
+            # Assert
+            read_table_mock.assert_called_once_with(
+                mock.ANY,
+                SPARK_CATALOG_NAME,
+                "test_database",
+                MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
+                time_series_points_schema,
+            )
+
+    def test_true_feature_flag_uses_measurements_gold_table(
+        self,
+        spark: SparkSession,
+        mock_feature_manager_true: FeatureManager,
+    ) -> None:
+        # Arrange
+        reader = MigrationsWholesaleRepository(
+            spark, mock_feature_manager_true, SPARK_CATALOG_NAME, "test_database", "test_database2"
+        )
+
+        # Act
+        with patch(
+            "geh_wholesale.databases.migrations_wholesale.repository.read_table",
+        ) as read_table_mock:
+            reader.read_time_series_points()
+
+            # Assert
+            read_table_mock.assert_called_once_with(
+                mock.ANY,
+                SPARK_CATALOG_NAME,
+                "test_database2",
+                measurements_gold_current_v1.view_name,
+                measurements_current_v1_schmea,
+            )

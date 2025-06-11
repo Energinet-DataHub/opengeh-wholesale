@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 
 import pyspark.sql.functions as F
 import pytest
+from featuremanagement import FeatureManager
 from pyspark.sql import DataFrame, SparkSession
 
 import geh_wholesale.calculation as calculation
@@ -13,6 +14,7 @@ from geh_wholesale.calculation.calculation_metadata_service import CalculationMe
 from geh_wholesale.calculation.calculation_output_service import CalculationOutputService
 from geh_wholesale.calculation.calculator_args import CalculatorArgs
 from geh_wholesale.calculation.preparation import PreparedDataReader
+from geh_wholesale.calculation.preparation.prepared_data_reader import MigrationsWholesaleRepository
 from geh_wholesale.codelists.calculation_type import (
     CalculationType,
 )
@@ -74,22 +76,35 @@ def calculator_args_wholesale_fixing() -> CalculatorArgs:
 
 
 @pytest.fixture(scope="session")
+def migrations_wholesale_repository(
+    spark: SparkSession,
+    mock_feature_manager_false: FeatureManager,
+    calculation_input_database: str,
+    measurements_gold_database: str,
+) -> migrations_wholesale.MigrationsWholesaleRepository:
+    """Create a migrations wholesale repository."""
+    return migrations_wholesale.MigrationsWholesaleRepository(
+        spark,
+        mock_feature_manager_false,
+        SPARK_CATALOG_NAME,
+        calculation_input_database,
+        measurements_gold_database,
+    )
+
+
+@pytest.fixture(scope="session")
 def executed_balance_fixing(
     spark: SparkSession,
+    migrations_wholesale_repository: MigrationsWholesaleRepository,
     calculator_args_balance_fixing: CalculatorArgs,
     energy_input_data_written_to_delta: None,
     grid_loss_metering_point_ids_input_data_written_to_delta,
-    calculation_input_database: str,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
     This act is made as a session-scoped fixture because it is a slow process
     and because lots of assertions can be made and split into separate tests
     without awaiting the execution in each test."""
-
-    migrations_wholesale_repository = migrations_wholesale.MigrationsWholesaleRepository(
-        spark, SPARK_CATALOG_NAME, calculation_input_database
-    )
     wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, SPARK_CATALOG_NAME)
     prepared_data_reader = PreparedDataReader(migrations_wholesale_repository, wholesale_internal_repository)
     calculation.execute(
@@ -104,21 +119,17 @@ def executed_balance_fixing(
 @pytest.fixture(scope="session")
 def executed_wholesale_fixing(
     spark: SparkSession,
+    migrations_wholesale_repository: MigrationsWholesaleRepository,
     calculator_args_wholesale_fixing: CalculatorArgs,
     energy_input_data_written_to_delta: None,
     price_input_data_written_to_delta: None,
     grid_loss_metering_point_ids_input_data_written_to_delta,
-    calculation_input_database: str,
 ) -> None:
     """Execute the calculator job.
     This is the act part of a test in the arrange-act-assert paradigm.
     This act is made as a session-scoped fixture because it is a slow process
     and because lots of assertions can be made and split into seperate tests
     without awaiting the execution in each test."""
-
-    migrations_wholesale_repository = migrations_wholesale.MigrationsWholesaleRepository(
-        spark, SPARK_CATALOG_NAME, calculation_input_database
-    )
     wholesale_internal_repository = wholesale_internal.WholesaleInternalRepository(spark, SPARK_CATALOG_NAME)
     prepared_data_reader = PreparedDataReader(migrations_wholesale_repository, wholesale_internal_repository)
     calculation.execute(

@@ -161,6 +161,15 @@ class WholesaleBasisDataInternalDatabase:
     ]
 
 
+class MeasurementsGoldDatabase:
+    DATABASE_NAME = "measurements_gold"
+    CURRENT_V1 = "current_v1"
+
+    VIEW_NAMES = [
+        CURRENT_V1,
+    ]
+
+
 WHOLESALE_CONTAINER_NAME = "wholesale"
 """The name of the container in the storage account"""
 

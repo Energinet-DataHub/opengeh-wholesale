@@ -30,3 +30,5 @@ class InfrastructureSettings(BaseSettings):  # type: ignore
     time_series_points_table_name: str | None = Field(init=False, default=None)
     metering_point_periods_table_name: str | None = Field(init=False, default=None)
     grid_loss_metering_point_ids_table_name: str | None = Field(init=False, default=None)
+
+    azure_app_configuration_endpoint: str = Field(init=False)

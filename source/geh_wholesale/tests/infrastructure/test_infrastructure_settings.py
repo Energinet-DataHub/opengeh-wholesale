@@ -13,6 +13,7 @@ DEFAULT_ENV_VARS = {
     EnvironmentVariable.TENANT_ID.value: "tenant_id",
     EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
     EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
+    EnvironmentVariable.AZURE_APP_CONFIGURATION_ENDPOINT.value: "https://example.azconfig.io",
 }
 DEFAULT_ARGS = {
     "calculation-input-folder-name": "calculation_input_folder",

@@ -24,6 +24,34 @@ wheels = [
 ]
 
 [[package]]
+name = "azure-appconfiguration"
+version = "1.7.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "azure-core" },
+    { name = "isodate" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2c/ff/cd3804d1aa1789f393a3174ca2b701edf7f0092c615ab384fd065afd4433/azure-appconfiguration-1.7.1.tar.gz", hash = "sha256:3ebe41e9be3f4ae6ca61e5dbc42c4b7cc007a01054a8506501a26dfc199fd3ec", size = 113698 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fa/6f/e4d2645a70a2e19c23e47350737e7f6d44bc883666c9099c79fb775a4e10/azure_appconfiguration-1.7.1-py3-none-any.whl", hash = "sha256:6e62b040a0210071be4423aafbdca3b053884c0d412855e3f8eff8e8d0b1a02b", size = 90971 },
+]
+
+[[package]]
+name = "azure-appconfiguration-provider"
+version = "2.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "azure-appconfiguration" },
+    { name = "azure-core" },
+    { name = "azure-keyvault-secrets" },
+    { name = "dnspython" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/97/83/433171eaf840e41028619a266da339b97e2f9b037fbbf48704f6dfabea80/azure_appconfiguration_provider-2.1.0.tar.gz", hash = "sha256:5010bacf40eb1bbbbb05f9738f59c0b5fc787f3b8d42f4e4394781f719935bbf", size = 52669 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/19/02/043757cc647dd36f4691f2eaee07dc402f76084be82172bf663fcf10accf/azure_appconfiguration_provider-2.1.0-py3-none-any.whl", hash = "sha256:239e1f39c50279363155c19256af484cc7d81eb419afc1ba81e6a4931208e5cb", size = 39468 },
+]
+
+[[package]]
 name = "azure-core"
 version = "1.32.0"
 source = { registry = "https://pypi.org/simple" }
@@ -434,12 +462,30 @@ wheels = [
 ]
 
 [[package]]
+name = "dnspython"
+version = "2.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b5/4a/263763cb2ba3816dd94b08ad3a33d5fdae34ecb856678773cc40a3605829/dnspython-2.7.0.tar.gz", hash = "sha256:ce9c432eda0dc91cf618a5cedf1a4e142651196bbcd2c80e89ed5a907e5cfaf1", size = 345197 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/68/1b/e0a87d256e40e8c888847551b20a017a6b98139178505dc7ffb96f04e954/dnspython-2.7.0-py3-none-any.whl", hash = "sha256:b4c34b7d10b51bcc3a5071e7b8dee77939f1e878477eeecc965e9835f63c6c86", size = 313632 },
+]
+
+[[package]]
 name = "execnet"
 version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/bb/ff/b4c0dc78fbe20c3e59c0c7334de0c27eb4001a2b2017999af398bf730817/execnet-2.1.1.tar.gz", hash = "sha256:5189b52c6121c24feae288166ab41b32549c7e2348652736540b9e6e7d4e72e3", size = 166524 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/43/09/2aea36ff60d16dd8879bdb2f5b3ee0ba8d08cbbdcdfe870e695ce3784385/execnet-2.1.1-py3-none-any.whl", hash = "sha256:26dee51f1b80cebd6d0ca8e74dd8745419761d3bef34163928cbebbdc4749fdc", size = 40612 },
+]
+
+[[package]]
+name = "featuremanagement"
+version = "2.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/53/9b/7cfd3dc8e15be40a7d16b82b6cc8c601b701332ce80a84bf2b4687a41190/featuremanagement-2.1.0.tar.gz", hash = "sha256:63e339427e7cbacad0fd931255df797537b7c51206bf53be9ccb3f4314a99e89", size = 35716 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d6/5c/fc9d744746086803b388b3d2d7d7d4383ccb21474c2bf5aaf0b48e4b10b2/featuremanagement-2.1.0-py3-none-any.whl", hash = "sha256:d73710dc483d8b944e5afb82fb335c278e24f5ceda18bdd5c1c10dff2ccf55cb", size = 50913 },
 ]
 
 [[package]]
@@ -453,8 +499,8 @@ wheels = [
 
 [[package]]
 name = "geh-common"
-version = "5.8.14"
-source = { git = "https://github.com/Energinet-DataHub/opengeh-python-packages?subdirectory=source%2Fgeh_common&rev=geh_common_5.8.14#df2e1d40098ff8e790c78c6851bc80fe4209833d" }
+version = "5.10.11"
+source = { git = "https://github.com/Energinet-DataHub/opengeh-python-packages?subdirectory=source%2Fgeh_common&rev=geh_common_5.10.11#c572f406ae85335f212f918e7523adc39b808560" }
 dependencies = [
     { name = "azure-core" },
     { name = "azure-identity" },
@@ -476,12 +522,14 @@ name = "geh-wholesale"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "azure-appconfiguration-provider" },
     { name = "azure-core" },
     { name = "azure-identity" },
     { name = "azure-monitor-opentelemetry" },
     { name = "configargparse" },
     { name = "delta-spark" },
     { name = "dependency-injector" },
+    { name = "featuremanagement" },
     { name = "geh-common" },
     { name = "pyspark" },
     { name = "python-dateutil" },
@@ -500,13 +548,15 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "azure-appconfiguration-provider", specifier = "==2.1.0" },
     { name = "azure-core", specifier = "==1.32.0" },
     { name = "azure-identity", specifier = "==1.17.1" },
     { name = "azure-monitor-opentelemetry", specifier = "==1.6.7" },
     { name = "configargparse", specifier = ">=1.7" },
     { name = "delta-spark", specifier = "==3.3.0" },
     { name = "dependency-injector", specifier = "==4.43.0" },
-    { name = "geh-common", git = "https://github.com/Energinet-DataHub/opengeh-python-packages?subdirectory=source%2Fgeh_common&rev=geh_common_5.8.14" },
+    { name = "featuremanagement", specifier = "==2.1.0" },
+    { name = "geh-common", git = "https://github.com/Energinet-DataHub/opengeh-python-packages?subdirectory=source%2Fgeh_common&rev=geh_common_5.10.11" },
     { name = "pyspark", specifier = "==3.5.3" },
     { name = "python-dateutil", specifier = "==2.8.2" },
     { name = "urllib3", specifier = "==2.2.*" },

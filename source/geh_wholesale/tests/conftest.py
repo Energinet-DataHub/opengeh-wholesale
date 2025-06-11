@@ -15,6 +15,7 @@ from unittest import mock
 import geh_common.telemetry.logging_configuration as config
 import pytest
 import yaml
+from featuremanagement import FeatureManager
 from geh_common.pyspark.read_csv import read_csv_path
 from geh_common.testing.spark.spark_test_session import get_spark_test_session
 from pyspark.sql import SparkSession
@@ -117,6 +118,11 @@ def calculation_input_database() -> str:
 
 
 @pytest.fixture(scope="session")
+def measurements_gold_database() -> str:
+    return paths.MeasurementsGoldDatabase.DATABASE_NAME
+
+
+@pytest.fixture(scope="session")
 def test_session_configuration() -> TestSessionConfiguration:
     return test_session_config
 
@@ -154,6 +160,8 @@ def infrastructure_settings(monkeypatch: pytest.MonkeyPatch) -> InfrastructureSe
             EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
             EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
             EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
+            EnvironmentVariable.MEASUREMENTS_GOLD_DATABASE_NAME.value: "measurements_gold",
+            EnvironmentVariable.AZURE_APP_CONFIGURATION_ENDPOINT.value: "https://example.azconfig.io",
         },
     )
     return InfrastructureSettings()
@@ -177,6 +185,8 @@ def dependency_injection_container(spark: SparkSession) -> Container:
                 EnvironmentVariable.SPN_APP_ID.value: "spn_app_id",
                 EnvironmentVariable.SPN_APP_SECRET.value: "spn_app_secret",
                 EnvironmentVariable.CALCULATION_INPUT_FOLDER_NAME.value: "calculation_input_folder",
+                EnvironmentVariable.MEASUREMENTS_GOLD_DATABASE_NAME.value: "measurements_gold",
+                EnvironmentVariable.AZURE_APP_CONFIGURATION_ENDPOINT.value: "https://example.azconfig.io",
             },
         )
         infrastructure_settings = InfrastructureSettings()
@@ -215,6 +225,22 @@ def migrations_executed(
         spark,
         migrations_execution=test_session_configuration.migrations.execute,
     )
+
+
+@pytest.fixture(scope="session")
+def mock_feature_manager_false() -> FeatureManager:
+    """Mock FeatureManager where is_enabled always returns False."""
+    mock_feature_manager = mock.Mock()
+    mock_feature_manager.is_enabled.return_value = False
+    return mock_feature_manager
+
+
+@pytest.fixture(scope="session")
+def mock_feature_manager_true() -> FeatureManager:
+    """Mock FeatureManager where is_enabled always returns True."""
+    mock_feature_manager = mock.Mock()
+    mock_feature_manager.is_enabled.return_value = True
+    return mock_feature_manager
 
 
 @pytest.fixture(scope="session")
