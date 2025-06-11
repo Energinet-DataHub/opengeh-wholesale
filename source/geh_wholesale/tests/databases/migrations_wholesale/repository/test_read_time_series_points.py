@@ -35,21 +35,16 @@ class TestWhenContractMismatch:
     def test_raises_assertion_error(self, spark: SparkSession) -> None:
         # Arrange
         row = _create_time_series_point_row()
-        reader = MigrationsWholesaleRepository(
-            mock.Mock(),
-            mock.Mock(),
-            "dummy_catalog_name",
-            "dummy_database_name",
-            "dummy_database_name2",
-        )
+        repository = create_migration_wholesale_repository()
         df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
         df = df.drop(Colname.metering_point_id)
 
-        # Act & Assert
-        with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
+        # Act
+        with mock.patch.object(repository._spark.read.format("delta"), "table", return_value=df):
             with pytest.raises(AssertionError) as exc_info:
-                reader.read_time_series_points()
+                repository.read_time_series_points()
 
+            # Assert
             assert "Schema mismatch" in str(exc_info.value)
 
 
@@ -67,23 +62,20 @@ class TestWhenValidInput:
             f"{calculation_input_path}/{MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME}"
         )
         row = _create_time_series_point_row()
-        df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
+        expected = spark.createDataFrame(data=[row], schema=time_series_points_schema)
         write_dataframe_to_table(
             spark,
-            df,
-            "test_database",
+            expected,
+            "dummy_database_name",
             MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
             time_series_points_table_location,
             time_series_points_schema,
         )
-        expected = df
 
-        reader = MigrationsWholesaleRepository(
-            spark, mock_feature_manager_false, SPARK_CATALOG_NAME, "test_database", "test_database2"
-        )
+        repository = create_migration_wholesale_repository(spark, mock_feature_manager_false)
 
         # Act
-        actual = reader.read_time_series_points()
+        actual = repository.read_time_series_points()
 
         # Assert
         assert_dataframes_equal(actual, expected)
@@ -93,19 +85,13 @@ class TestWhenValidInputAndExtraColumns:
     def test_returns_expected_df(self, spark: SparkSession, mock_feature_manager_false: FeatureManager) -> None:
         # Arrange
         row = _create_time_series_point_row()
-        reader = MigrationsWholesaleRepository(
-            mock.Mock(),
-            mock_feature_manager_false,
-            "dummy_catalog_name",
-            "dummy_database_name",
-            "dummy_database_name2",
-        )
+        repository = create_migration_wholesale_repository(feature_manager_mock=mock_feature_manager_false)
         df = spark.createDataFrame(data=[row], schema=time_series_points_schema)
         df = df.withColumn("test", f.lit("test"))
 
         # Act & Assert
-        with mock.patch.object(reader._spark.read.format("delta"), "table", return_value=df):
-            reader.read_time_series_points()
+        with mock.patch.object(repository._spark.read.format("delta"), "table", return_value=df):
+            repository.read_time_series_points()
 
 
 class TestFeatureFlagWhenToggling:
@@ -115,21 +101,19 @@ class TestFeatureFlagWhenToggling:
         mock_feature_manager_false: FeatureManager,
     ) -> None:
         # Arrange
-        reader = MigrationsWholesaleRepository(
-            spark, mock_feature_manager_false, SPARK_CATALOG_NAME, "test_database", "test_database2"
-        )
+        repository = create_migration_wholesale_repository(spark, mock_feature_manager_false)
 
         # Act
         with patch(
             "geh_wholesale.databases.migrations_wholesale.repository.read_table",
         ) as read_table_mock:
-            reader.read_time_series_points()
+            repository.read_time_series_points()
 
             # Assert
             read_table_mock.assert_called_once_with(
-                mock.ANY,
+                spark,
                 SPARK_CATALOG_NAME,
-                "test_database",
+                "dummy_database_name",
                 MigrationsWholesaleDatabase.TIME_SERIES_POINTS_TABLE_NAME,
                 time_series_points_schema,
             )
@@ -140,21 +124,35 @@ class TestFeatureFlagWhenToggling:
         mock_feature_manager_true: FeatureManager,
     ) -> None:
         # Arrange
-        reader = MigrationsWholesaleRepository(
-            spark, mock_feature_manager_true, SPARK_CATALOG_NAME, "test_database", "test_database2"
-        )
+        repository = create_migration_wholesale_repository(spark, mock_feature_manager_true)
 
         # Act
         with patch(
             "geh_wholesale.databases.migrations_wholesale.repository.read_table",
         ) as read_table_mock:
-            reader.read_time_series_points()
+            repository.read_time_series_points()
 
             # Assert
             read_table_mock.assert_called_once_with(
-                mock.ANY,
+                spark,
                 SPARK_CATALOG_NAME,
-                "test_database2",
+                "dummy_database_name2",
                 measurements_gold_current_v1.view_name,
                 measurements_current_v1_schmea,
             )
+
+
+def create_migration_wholesale_repository(
+    spark: SparkSession = mock.Mock(),
+    feature_manager_mock: FeatureManager = mock.Mock(),
+    catalog_name: str = SPARK_CATALOG_NAME,
+    calculation_input_database_name: str = "dummy_database_name",
+    measurements_gold_database_name: str = "dummy_database_name2",
+) -> MigrationsWholesaleRepository:
+    return MigrationsWholesaleRepository(
+        spark,
+        feature_manager_mock,
+        catalog_name,
+        calculation_input_database_name,
+        measurements_gold_database_name,
+    )
