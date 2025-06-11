@@ -150,7 +150,7 @@ class TestFeatureFlagWhenToggling:
                 SPARK_CATALOG_NAME,
                 "dummy_database_name2",
                 measurements_gold_current_v1.view_name,
-                measurements_current_v1_schmea,
+                measurements_gold_current_v1.schema,
             )
 
     def test_dropping_column_when_reading_from_measurements_gold_table(
@@ -174,7 +174,7 @@ class TestFeatureFlagWhenToggling:
             assert "metering_point_type" not in actual.columns
             assert_schema(actual.schema, time_series_points_schema)
 
-            
+
 def create_migration_wholesale_repository(
     spark: SparkSession = mock.Mock(),
     feature_manager_mock: FeatureManager = mock.Mock(),
