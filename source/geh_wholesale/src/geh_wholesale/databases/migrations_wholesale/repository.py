@@ -79,11 +79,7 @@ class MigrationsWholesaleRepository:
             )
 
             # Later in the flow assert_schema will fails if the column "metering_point_type" is present.
-            # Therefore, it is dropped here.
-            if "metering_point_type" in df.columns:
-                df = df.drop("metering_point_type")
-
-            # Reorder the columns to match time series point schema.
+            # Therefore, it is dropped here. The columns are also reordered to match the schema.
             df = df.select(
                 Colname.metering_point_id,
                 Colname.quantity,
