@@ -2,7 +2,6 @@ from featuremanagement import FeatureManager
 from geh_common.data_products.measurements_core.measurements_gold.current_v1 import (
     schema as measurements_current_v1_schmea,
 )
-from geh_common.telemetry import Logger
 from pyspark.sql import DataFrame, SparkSession
 
 from geh_wholesale.constants import Colname
@@ -71,12 +70,7 @@ class MigrationsWholesaleRepository:
         # If the flag is enabled time series points are fetched from measurements gold table,
         # otherwise from migrations table.
 
-        logger = Logger(__name__)
-
         if self._feature_manager.is_enabled(FeatureFlags.measuredata_measurements):  # type: ignore
-            logger.info(
-                f"Feature Flag ({FeatureFlags.measuredata_measurements}): enabled. Reading from {self._measurements_current_v1_table_name}."
-            )
             df = read_table(
                 self._spark,
                 self._catalog_name,
@@ -97,10 +91,6 @@ class MigrationsWholesaleRepository:
             return df
 
         else:
-            logger.info(
-                f"Feature Flag ({FeatureFlags.measuredata_measurements}): disabled. Reading from {self._time_series_points_table_name}."
-            )
-
             return read_table(
                 self._spark,
                 self._catalog_name,
