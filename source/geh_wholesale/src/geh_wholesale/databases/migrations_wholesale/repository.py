@@ -69,6 +69,7 @@ class MigrationsWholesaleRepository:
         # This a temporary release toggle (feature flag).
         # If the flag is enabled time series points are fetched from measurements gold table,
         # otherwise from migrations table.
+
         if self._feature_manager.is_enabled(FeatureFlags.measuredata_measurements):  # type: ignore
             df = read_table(
                 self._spark,

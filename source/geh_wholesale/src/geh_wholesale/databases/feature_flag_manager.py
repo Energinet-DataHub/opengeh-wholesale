@@ -1,6 +1,7 @@
 from azure.appconfiguration.provider import load
 from azure.identity import ClientSecretCredential
 from featuremanagement import FeatureManager
+from featuremanagement.azuremonitor import publish_telemetry
 
 
 # This class contains all relevant feature flag management logic for the wholesale calculation.
@@ -23,11 +24,11 @@ class FeatureManagerFactory:
             feature_flag_enabled=True,
             #
             # Enables automatic refreshing of feature flags when a refresh is triggered (e.g., by a change in a watched key).
-            # However, we don't want these values to change during the job execution there it is False.
+            # However, we don't want these values to change during the job execution, therefore it is False.
             feature_flag_refresh_enabled=False,
         )
 
-        return FeatureManager(config)
+        return FeatureManager(config, on_feature_evaluated=publish_telemetry)
 
 
 class FeatureFlags:
